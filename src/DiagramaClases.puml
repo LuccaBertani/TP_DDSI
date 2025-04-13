@@ -6,48 +6,83 @@ class Persona{
 class Administradora {
     +crearColeccion()
     +importarHechos(hechos: Lista<Hecho>)
+    +aceptarSolicitudDeEliminacion(hecho: Hecho)
+    +rechazarSolicitudDeEliminacion(hecho: Hecho)
+    'aceptar y solicitar se podrian simplificar en un metodo evaluarSolicitudDeEliminacion(hecho)'
+    'la solicitud la manda el Contribuyente'
 }
 
 class Contribuyente {
     -nombre: String
     -apellido: String
     -edad: Integer
-    +obtenerHechosDeColeccion()
+    +solicitarEliminacion(hecho: H)
 }
 
-'Class Filtro'
+
+class Filtro {
+    -criterioDeFiltrado: Criterio criterio
+    +filtrarPorCriterio()
+}
+
+
+'lista de hechos: Fuegos locos
+'[titulo, fecha]
+'Fuegos locos -> titulos
+'Fuegos locos filtrada por titulos -> fecha
+'Fuegos locos filtrada por titulo y fecha
+
+class Criterio {
+
+}
+
 class Visualizador {
     -hechosDisponibles: List<Hecho>
     -filtros: List<Filtro>
-    +navegarPorHechos(hechosDisponibles: List<Hecho>)
-    +aplicarFiltros(filtros, hechosDisponibles)
+    +navegarPorHechos()
+    +aplicarFiltros(filtros: List<Filtro>)
+    +subirHechos(hechos: List<Hecho>)
 }
 
 'DATO DE COLOR: Los hechos son los archivos .csv
 class Hecho {
     -titulo: String
     -descripcion: String
-    -categoria: String
+    -categoria: Categoria
     -contenidoMultimediaOpcional: ContenidoMultimedia
     -lugarAcontecimiento: Lugar
     -fechaAcontecimiento: Date
     -fechaDeCarga: Date
-    -origen: Enum
+    -origen: Origen
 }
 
-enum Origen{
-    -CARGAMANUAL
-    -DATASET
-    -CONTRIBUYENTE
+class Categoria {
+    -criterio: String
 }
 
-enum Tipo{
-    - ???
+class Coleccion {
+    -titulo: String
+    -descripcion: String
+    -hechos: List<Hecho>
+    -categoria: Categoria
+    -fuente: Horacio
 }
 
-class ContenidoMultimedia{
+enum Origen {
+    CARGA_MANUAL
+    DATASET
+    CONTRIBUYENTE
+}
 
-    -Tipo: Enum
+enum TipoContenido {
+    TEXTO
+    IMAGEN
+    AUDIO
+    VIDEO
+}
+
+class ContenidoMultimedia {
+    -tipoContenido: Enum
 
 }
 
