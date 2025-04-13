@@ -1,0 +1,56 @@
+@startuml
+class Persona{
+
+}
+
+class Administradora {
+    +crearColeccion()
+    +importarHechos(hechos: Lista<Hecho>)
+}
+
+class Contribuyente {
+    -nombre: String
+    -apellido: String
+    -edad: Integer
+    +obtenerHechosDeColeccion()
+}
+
+'Class Filtro'
+class Visualizador {
+    -hechosDisponibles: List<Hecho>
+    -filtros: List<Filtro>
+    +navegarPorHechos(hechosDisponibles: List<Hecho>)
+    +aplicarFiltros(filtros, hechosDisponibles)
+}
+
+'DATO DE COLOR: Los hechos son los archivos .csv
+class Hecho {
+    -titulo: String
+    -descripcion: String
+    -categoria: String
+    -contenidoMultimediaOpcional: ContenidoMultimedia
+    -lugarAcontecimiento: Lugar
+    -fechaAcontecimiento: Date
+    -fechaDeCarga: Date
+    -origen: Enum
+}
+
+enum Origen{
+    -CARGAMANUAL
+    -DATASET
+    -CONTRIBUYENTE
+}
+
+enum Tipo{
+    - ???
+}
+
+class ContenidoMultimedia{
+
+    -Tipo: Enum
+
+}
+
+' -tipo: tipoDeHecho
+
+@enduml
