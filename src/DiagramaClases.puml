@@ -6,7 +6,7 @@ class Hecho {
     -descripcion: String
     -categoria: Categoria
     -contenidoMultimediaOpcional: ContenidoMultimedia
-    -lugarAcontecimiento: Pais
+    -pais: Pais
     -fechaAcontecimiento: Date
     -fechaDeCarga: Date
     -origen: Origen
@@ -55,17 +55,17 @@ class DatosColeccion {
     -descripcion: String
 }
 
-class Administradora {
-    +crearColeccion(datosColeccion: DatosColeccion)
+class Administrador {
+    +crearColeccion(datosColeccion: DatosColeccion): void
     +importarHechos(fuente: Fuente)
-    +evaluarSolicitudEliminacion(hecho: Hecho)
+    +evaluarSolicitudEliminacion(hecho: Hecho): Boolean
     '+etiquetarHecho(hecho: Hecho) etiqueta no sería el conjunto de filtros¿
     ' Se puede etiquetar al hecho si fue cargado por contribuyente
 }
 
 ' Los publicadores pueden ser tanto el contribuyente como el visualizador
 class Publicador {
-    +subirHechos(hechos: Lista<Hecho>)
+    +subirHechos(hechos: List<Hecho>)
     ' En el caso del contribuyente, va a poder subir con sus datos personales
 }
 
