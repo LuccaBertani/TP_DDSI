@@ -1,48 +1,4 @@
 @startuml
-class Persona{
-
-}
-
-class Administradora {
-    +crearColeccion()
-    +importarHechos(hechos: Lista<Hecho>)
-    +aceptarSolicitudDeEliminacion(hecho: Hecho)
-    +rechazarSolicitudDeEliminacion(hecho: Hecho)
-    'aceptar y solicitar se podrian simplificar en un metodo evaluarSolicitudDeEliminacion(hecho)'
-    'la solicitud la manda el Contribuyente'
-}
-
-class Contribuyente {
-    -nombre: String
-    -apellido: String
-    -edad: Integer
-    +solicitarEliminacion(hecho: H)
-}
-
-
-class Filtro {
-    -criterioDeFiltrado: Criterio criterio
-    +filtrarPorCriterio()
-}
-
-
-'lista de hechos: Fuegos locos
-'[titulo, fecha]
-'Fuegos locos -> titulos
-'Fuegos locos filtrada por titulos -> fecha
-'Fuegos locos filtrada por titulo y fecha
-
-class Criterio {
-
-}
-
-class Visualizador {
-    -hechosDisponibles: List<Hecho>
-    -filtros: List<Filtro>
-    +navegarPorHechos()
-    +aplicarFiltros(filtros: List<Filtro>)
-    +subirHechos(hechos: List<Hecho>)
-}
 
 'DATO DE COLOR: Los hechos son los archivos .csv
 class Hecho {
@@ -50,29 +6,113 @@ class Hecho {
     -descripcion: String
     -categoria: Categoria
     -contenidoMultimediaOpcional: ContenidoMultimedia
-    -lugarAcontecimiento: Lugar
+    -lugarAcontecimiento: Pais
     -fechaAcontecimiento: Date
     -fechaDeCarga: Date
     -origen: Origen
 }
 
-class Categoria {
-    -criterio: String
-}
-
-class Coleccion {
-    -titulo: String
-    -descripcion: String
-    -hechos: List<Hecho>
-    -categoria: Categoria
-    -fuente: Horacio
+class Pais {
+    -pais: String
 }
 
 enum Origen {
     CARGA_MANUAL
     DATASET
+    'DATASET -> csv
     CONTRIBUYENTE
 }
+
+' La clase Fuente es necesaria a futuro ya que después habrán fuentes dinamicas y proxys
+interface Fuente {
+    +leerFuente(): Lista<Hecho>
+}
+
+class FuenteEstatica implements Fuente {
+    ' dataSet sería el nombre del archivo csv
+    -dataSet: String
+    +leerFuente(): List<Hecho>
+}
+
+class FuenteDinamica implements Fuente {
+    +leerFuente(): List<Hecho>
+}
+
+class FuenteProxy implements Fuente{
+    +leerFuente(): List<Hecho>
+}
+class Coleccion {
+    -titulo: String
+    -descripcion: String
+    -hechos: List<Hecho>
+    -fuente: Fuente
+    -criterio: List<Filtro>
+}
+
+' Clase para evitar parámetros largos a futuro
+class DatosColeccion {
+    -titulo: String
+    -descripcion: String
+}
+
+class Administradora {
+    +crearColeccion(datosColeccion: DatosColeccion)
+    +importarHechos(fuente: Fuente)
+    +evaluarSolicitudEliminacion(hecho: Hecho)
+    '+etiquetarHecho(hecho: Hecho) etiqueta no sería el conjunto de filtros¿
+    ' Se puede etiquetar al hecho si fue cargado por contribuyente
+}
+
+' Los publicadores pueden ser tanto el contribuyente como el visualizador
+class Publicador {
+    +subirHechos(hechos: Lista<Hecho>)
+    ' En el caso del contribuyente, va a poder subir con sus datos personales
+}
+
+
+class Contribuyente extends Publicador{
+    -nombre: String
+    -apellido: String
+    -edad: Integer
+    +solicitarEliminacion(hecho: Hecho)
+}
+
+class Visualizador extends Publicador{
+    -hechosDisponibles: List<Hecho>
+    -filtros: List<Filtro>
+    +navegarPorHechos()
+    +aplicarFiltros(filtros: List<Filtro>)
+}
+
+Interface Filtro {
+    +aprobarFiltro(hecho: Hecho): Boolean
+}
+
+class FiltroFecha implements Filtro{
+    -fechaInicial: LocalDate
+    -fechaFinal: LocalDate
+    +aprobarFiltro(hecho: Hecho): Boolean
+}
+'Pais puede ser una clase o enum
+class FiltroPais implements Filtro{
+    -pais: Pais
+    +aprobarFiltro(hecho: Hecho): Boolean
+}
+'el titulo puede ser una clase o enum
+class FiltroCategoria implements Filtro{
+    -categoria: Categoria
+    +aprobarFiltro(hecho:Hecho): Boolean
+}
+
+class Categoria{
+    -titulo: String
+}
+
+'lista de hechos: Fuegos locos
+'[titulo, fecha]
+'Fuegos locos -> titulos
+'Fuegos locos filtrada por titulos -> fecha
+'Fuegos locos filtrada por titulo y fecha
 
 enum TipoContenido {
     TEXTO
@@ -85,7 +125,21 @@ class ContenidoMultimedia {
     -tipoContenido: Enum
 
 }
-
 ' -tipo: tipoDeHecho
+
+' Una coleccion está compuesta por hechos
+Coleccion *-- Hecho
+' Un contribuyente sí o sí debe tener hechos asociados, sino no es un contribuyente
+Contribuyente *-- Hecho
+
+Pais --* Hecho
+
+Hecho --> ContenidoMultimedia
+
+ContenidoMultimedia *-- TipoContenido
+
+Hecho *-- Categoria
+
+Hecho *-- Origen
 
 @enduml
