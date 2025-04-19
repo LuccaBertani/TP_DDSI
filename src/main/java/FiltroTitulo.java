@@ -13,8 +13,8 @@ public class FiltroTitulo implements Filtro{
     public Boolean aprobarHecho(Hecho hecho){
         List<String> descripcionEnlistada = Arrays.asList(hecho.getTitulo().split(" "));
         List<String> descripcionFiltro = Arrays.asList(this.titulo.toLowerCase().split(" "));
-        descripcionEnlistada.forEach(palabra->palabra.toLowerCase()); //
-        descripcionFiltro.forEach(palabra->palabra.toLowerCase()); //
+        descripcionEnlistada.replaceAll(String::toLowerCase);
+        descripcionFiltro.replaceAll(String::toLowerCase);
 
         // Si el titulo del hecho enviado por parametro tiene todas sus palabras contenidas en el filtro del titulo
         return descripcionFiltro.containsAll(descripcionEnlistada);

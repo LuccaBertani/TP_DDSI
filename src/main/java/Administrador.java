@@ -2,7 +2,7 @@ public class Administrador {
 
     public Coleccion crearColeccion(DatosColeccion datosColeccion){
         Coleccion coleccion = new Coleccion(datosColeccion);
-        
+
 
         return coleccion;
     }
@@ -17,5 +17,6 @@ public class Administrador {
     // Va a servir para proximas entregas
     public Boolean evaluarSolicitudHecho(Hecho hecho){
         //TODO
+        return true;
     }
 }

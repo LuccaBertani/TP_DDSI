@@ -12,6 +12,8 @@ public class Hecho {
     @Getter
     @Setter
     private String descripcion;
+    @Getter
+    @Setter
     private Categoria categoria;
     private ContenidoMultimedia contenidoMultimediaOpcional;
     @Getter
