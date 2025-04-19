@@ -34,6 +34,7 @@ class FuenteEstatica implements Fuente {
     +leerFuente(): List<Hecho>
 }
 
+
 class FuenteDinamica implements Fuente {
     +leerFuente(): List<Hecho>
 }
