@@ -8,7 +8,7 @@ class FiltroDescripcionTest {
         Hecho hecho = new Hecho();
         hecho.setDescripcion("InCendio");
 
-        FiltroDescripcion filtroDescripcion = new FiltroDescripcion();
+        FiltroDescripcion filtroDescripcion = new FiltroDescripcion("incendio");
         filtroDescripcion.setDescripcion("incendio");
 
         assertEquals(true, filtroDescripcion.aprobarHecho(hecho));

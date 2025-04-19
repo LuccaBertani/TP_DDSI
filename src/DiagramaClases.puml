@@ -141,6 +141,16 @@ class Categoria{
     -titulo: String
 }
 
+class Geocodificador {
+    +obtenerPais(Double: latitud, Double: longitud)
+}
+
+' Si bien no hay que almacenar en memoria los hechos, sirve para testear funciones
+class Globales {
+    +hechosTotales: List
+    +solicitudesEliminacion: List
+}
+
 'lista de hechos: Fuegos locos
 '[titulo, fecha]
 'Fuegos locos -> titulos

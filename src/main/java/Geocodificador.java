@@ -3,13 +3,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import org.json.JSONOBJECT;
+import org.json.JSONObject;
 
 public class Geocodificador {
 
-    public static String obtenerPais(double latitud, double longitud) {
+    public static String obtenerPais(Double latitud, Double longitud) {
         try {
             String urlStr = String.format(
+                    java.util.Locale.US,
                     "https://nominatim.openstreetmap.org/reverse?format=json&lat=%f&lon=%f",
                     latitud, longitud
             );
@@ -37,5 +38,6 @@ public class Geocodificador {
             return "País no encontrado";
         }
     }
+
 
 }

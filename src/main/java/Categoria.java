@@ -3,10 +3,9 @@ import lombok.Setter;
 
 @Getter
 public class Categoria {
+    @Getter
+    @Setter
     private String titulo;
 
-    public Categoria(String titulo) {
-        this.titulo = titulo;
-    }
 
 }

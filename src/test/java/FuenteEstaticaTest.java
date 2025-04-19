@@ -10,7 +10,20 @@ class FuenteEstaticaTest {
         FuenteEstatica fuenteEstatica = new FuenteEstatica();
         fuenteEstatica.setDataSet("C:\\Users\\nehue\\Downloads\\Libro2.csv");
 
-        fuenteEstatica.leerFuente();
+        List<Hecho> hechos = fuenteEstatica.leerFuente();
+
+
+        for (Hecho hecho : hechos){
+            System.out.println(hecho.getTitulo());
+            System.out.println(hecho.getDescripcion());
+            System.out.println(hecho.getCategoria().getTitulo());
+            System.out.println(hecho.getPais().getPais());
+            System.out.println(hecho.getFechaAcontecimiento());
+            System.out.println(hecho.getFechaDeCarga());
+        }
+
+
+
 
 
 

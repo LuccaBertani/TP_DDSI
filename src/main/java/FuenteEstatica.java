@@ -1,10 +1,13 @@
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.swing.text.html.Option;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +22,7 @@ public class FuenteEstatica implements Fuente{
 
         String linea;
         List<Hecho> listaHechos = new ArrayList<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        DateTimeFormatter formatter =  DateTimeFormatter.ISO_ZONED_DATE_TIME;
         try (BufferedReader br = new BufferedReader(
                 new InputStreamReader(new FileInputStream(this.dataSet), Charset.forName("ISO-8859-1"))))
         {
@@ -30,36 +33,48 @@ public class FuenteEstatica implements Fuente{
 
                 String titulo = valores[0];
                 String descripcion = valores[1];
-                String categoria = valores[2];
+                String categoriaString = valores[2];
+
                 Double latitud = Double.parseDouble(valores[3]);
                 Double longitud = Double.parseDouble(valores[4]);
 
                 String nombrePais = Geocodificador.obtenerPais(latitud, longitud);
 
-                Optional<Hecho> hecho = Globales.hechosTotales.stream().filter(hecho->hecho.getPais().getPais() == nombrePais).findFirst();
+                Optional<Hecho> hecho0 = Globales.hechosTotales.stream().filter(h->h.getCategoria().getTitulo().toLowerCase()
+                        == categoriaString.toLowerCase()).findFirst();
+
+                Categoria categoria;
+                if (hecho0.isEmpty()){
+                    categoria = new Categoria();
+                    categoria.setTitulo(categoriaString);
+                }
+                else{
+                    categoria = hecho0.get().getCategoria();
+                }
+
+                Optional<Hecho> hecho1 = Globales.hechosTotales.stream().filter(h->h.getPais().getPais().toLowerCase()
+                        == nombrePais.toLowerCase()).findFirst();
                 Pais pais;
-                if (hecho.isEmpty()){
+                if (hecho1.isEmpty()){
                     pais = new Pais();
                     pais.setPais(nombrePais);
                 }
                 else{
-                    pais = hecho.get().getPais();
+                    pais = hecho1.get().getPais();
                 }
 
-                LocalDate fechaAcontecimiento = LocalDate.parse(valores[5],formatter);
-                for (String valor : valores) {
-                    System.out.print(valor + " | ");
-                }
-                System.out.println(); // salta de línea por cada fila
+                ZonedDateTime fechaAcontecimiento = ZonedDateTime.parse(valores[5],formatter);
+                ZonedDateTime fechaCarga = ZonedDateTime.now();
 
-                Hecho hecho = new Hecho();
-                hecho.setTitulo(titulo);
-                hecho.setDescripcion(descripcion);
-                hecho.setCategoria(categoria);
-                hecho.setPais(pais);
-                hecho.setFechaAcontecimiento(fechaAcontecimiento);
-
-                Globales.hechosTotales.add(hecho);
+                Hecho nuevoHecho = new Hecho();
+                nuevoHecho.setTitulo(titulo);
+                nuevoHecho.setDescripcion(descripcion);
+                nuevoHecho.setCategoria(categoria);
+                nuevoHecho.setPais(pais);
+                nuevoHecho.setFechaAcontecimiento(fechaAcontecimiento);
+                nuevoHecho.setFechaDeCarga(fechaCarga);
+                listaHechos.add(nuevoHecho);
+                Globales.hechosTotales.add(nuevoHecho);
             }
 
 
