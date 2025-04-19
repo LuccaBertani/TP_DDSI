@@ -8,7 +8,9 @@ public class FiltroDescripcion implements Filtro{
     @Setter
     String descripcion;
 
-
+    public FiltroDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
     public Boolean aprobarHecho(Hecho hecho){
         List<String> descripcionEnlistada = Arrays.asList(hecho.getDescripcion().split(" "));

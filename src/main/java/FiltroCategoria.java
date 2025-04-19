@@ -6,4 +6,8 @@ public class FiltroCategoria implements Filtro{
         }
         return false;
     }
+
+    public FiltroCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
 }

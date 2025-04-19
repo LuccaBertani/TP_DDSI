@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 
 public class FuenteEstatica implements Fuente{
     @Getter
@@ -31,11 +33,33 @@ public class FuenteEstatica implements Fuente{
                 String categoria = valores[2];
                 Double latitud = Double.parseDouble(valores[3]);
                 Double longitud = Double.parseDouble(valores[4]);
+
+                String nombrePais = Geocodificador.obtenerPais(latitud, longitud);
+
+                Optional<Hecho> hecho = Globales.hechosTotales.stream().filter(hecho->hecho.getPais().getPais() == nombrePais).findFirst();
+                Pais pais;
+                if (hecho.isEmpty()){
+                    pais = new Pais();
+                    pais.setPais(nombrePais);
+                }
+                else{
+                    pais = hecho.get().getPais();
+                }
+
                 LocalDate fechaAcontecimiento = LocalDate.parse(valores[5],formatter);
                 for (String valor : valores) {
                     System.out.print(valor + " | ");
                 }
                 System.out.println(); // salta de línea por cada fila
+
+                Hecho hecho = new Hecho();
+                hecho.setTitulo(titulo);
+                hecho.setDescripcion(descripcion);
+                hecho.setCategoria(categoria);
+                hecho.setPais(pais);
+                hecho.setFechaAcontecimiento(fechaAcontecimiento);
+
+                Globales.hechosTotales.add(hecho);
             }
 
 

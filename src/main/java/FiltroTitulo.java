@@ -10,6 +10,10 @@ public class FiltroTitulo implements Filtro{
     @Setter
     String titulo;
 
+    public FiltroTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
     public Boolean aprobarHecho(Hecho hecho){
         List<String> descripcionEnlistada = Arrays.asList(hecho.getTitulo().split(" "));
         List<String> descripcionFiltro = Arrays.asList(this.titulo.toLowerCase().split(" "));

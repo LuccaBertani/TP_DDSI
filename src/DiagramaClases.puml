@@ -58,8 +58,8 @@ class DatosColeccion {
 }
 
 class Administrador {
-    +crearColeccion(datosColeccion: DatosColeccion): void
-    +importarHechos(fuente: Fuente): void
+    +crearColeccion(datosColeccion: DatosColeccion, criterios: List<Filtro>, hechosTotales: List<Hecho>): List<Coleccion>
+    +importarHechos(fuente: Fuente): List<Hecho>
     +evaluarSolicitudEliminacion(hecho: Hecho): Boolean
     '+etiquetarHecho(hecho: Hecho) etiqueta no sería el conjunto de filtros¿
     ' Se puede etiquetar al hecho si fue cargado por contribuyente

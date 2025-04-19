@@ -15,7 +15,9 @@ public class Hecho {
     @Getter
     @Setter
     private Categoria categoria;
-    private ContenidoMultimedia contenidoMultimediaOpcional;
+    @Getter
+    @Setter
+    private TipoContenido contenidoMultimediaOpcional;
     @Getter
     @Setter
     private Pais pais;
