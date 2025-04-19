@@ -1,7 +1,10 @@
 public class Administrador {
 
-    public void crearColeccion(DatosColeccion datosColeccion){
-        //TODO
+    public Coleccion crearColeccion(DatosColeccion datosColeccion){
+        Coleccion coleccion = new Coleccion(datosColeccion);
+        
+
+        return coleccion;
     }
     public void importarHecho(Fuente fuente){
         //TODO
@@ -11,4 +14,8 @@ public class Administrador {
         return true;
     }
 
+    // Va a servir para proximas entregas
+    public Boolean evaluarSolicitudHecho(Hecho hecho){
+        //TODO
+    }
 }

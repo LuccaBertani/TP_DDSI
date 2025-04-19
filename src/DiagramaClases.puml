@@ -5,7 +5,7 @@ class Hecho {
     -titulo: String
     -descripcion: String
     -categoria: Categoria
-    -contenidoMultimediaOpcional: ContenidoMultimedia
+    -contenidoMultimediaOpcional: TipoContenido
     -pais: Pais
     -fechaAcontecimiento: Date
     -fechaDeCarga: Date
@@ -53,19 +53,21 @@ class Coleccion {
 class DatosColeccion {
     -titulo: String
     -descripcion: String
+    -fuente: Fuente
 }
 
 class Administrador {
     +crearColeccion(datosColeccion: DatosColeccion): void
-    +importarHechos(fuente: Fuente)
+    +importarHechos(fuente: Fuente): void
     +evaluarSolicitudEliminacion(hecho: Hecho): Boolean
     '+etiquetarHecho(hecho: Hecho) etiqueta no sería el conjunto de filtros¿
     ' Se puede etiquetar al hecho si fue cargado por contribuyente
+    +evaluarSolicitudHecho(hecho: Hecho): Boolean
 }
 
 ' Los publicadores pueden ser tanto el contribuyente como el visualizador
 class Publicador {
-    +subirHechos(hechos: List<Hecho>)
+    +subirHechos(hechos: List<Hecho>): void
     ' En el caso del contribuyente, va a poder subir con sus datos personales
 }
 
@@ -88,21 +90,51 @@ Interface Filtro {
     +aprobarFiltro(hecho: Hecho): Boolean
 }
 
-class FiltroFecha implements Filtro{
-    -fechaInicial: LocalDate
-    -fechaFinal: LocalDate
-    +aprobarFiltro(hecho: Hecho): Boolean
+class FiltroFechaAcontecimiento implements Filtro{
+    -fechaInicial: ZonedDateTime
+    -fechaFinal: ZonedDateTime
+    +aprobarHecho(hecho: Hecho): Boolean
 }
 'Pais puede ser una clase o enum
 class FiltroPais implements Filtro{
     -pais: Pais
-    +aprobarFiltro(hecho: Hecho): Boolean
+    +aprobarHecho(hecho: Hecho): Boolean
 }
 'el titulo puede ser una clase o enum
 class FiltroCategoria implements Filtro{
     -categoria: Categoria
-    +aprobarFiltro(hecho:Hecho): Boolean
+    +aprobarHecho(hecho:Hecho): Boolean
 }
+
+class FiltroDescripcion implements Filtro{
+    -Descripcion: String
+    +aprobarHecho(hecho: Hecho): Boolean
+}
+
+class FiltroTitulo implements Filtro{
+    -Titulo: String
+    +aprobarHecho(hecho: Hecho): Boolean
+}
+
+class FiltroContenidoMultimedia implements Filtro{
+    -tipoContenido: TipoContenido
+    +aprobarHecho(hecho: Hecho): Boolean
+}
+
+class FiltroFechaCarga implements Filtro{
+    -fechaInicial: ZonedDateTime
+    -fechaFinal: ZonedDateTime
+    +aprobarHecho(Hecho: hecho): Boolean
+}
+
+class FiltroOrigen implements Filtro{
+    -origen: Origen
+    +aprobarHecho(Hecho: hecho): Boolean
+}
+
+'Todas las palabras de la descripcion del filtro deben
+' estar contenidas en la descripcion del hecho para que
+' devuelva true. (lo mismo con el titulo)
 
 class Categoria{
     -titulo: String
@@ -121,10 +153,10 @@ enum TipoContenido {
     VIDEO
 }
 
-class ContenidoMultimedia {
-    -tipoContenido: Enum
-
-}
+'class ContenidoMultimedia {
+'    -tipoContenido: Enum
+'
+'}
 ' -tipo: tipoDeHecho
 
 ' Una coleccion está compuesta por hechos
@@ -134,9 +166,11 @@ Contribuyente *-- Hecho
 
 Pais --* Hecho
 
-Hecho --> ContenidoMultimedia
+'Hecho --> ContenidoMultimedia
 
-ContenidoMultimedia *-- TipoContenido
+Hecho *-- TipoContenido
+
+'ContenidoMultimedia *-- TipoContenido
 
 Hecho *-- Categoria
 

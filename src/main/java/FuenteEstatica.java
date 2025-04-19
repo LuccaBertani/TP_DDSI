@@ -3,7 +3,6 @@ import java.util.List;
 
 public class FuenteEstatica implements Fuente{
     private String dataSet;
-
     public List<Hecho> leerFuente(){
         //TODO
         List<Hecho> listaTmp = new ArrayList<>();
