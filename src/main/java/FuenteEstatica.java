@@ -73,6 +73,7 @@ public class FuenteEstatica implements Fuente{
                 nuevoHecho.setPais(pais);
                 nuevoHecho.setFechaAcontecimiento(fechaAcontecimiento);
                 nuevoHecho.setFechaDeCarga(fechaCarga);
+                nuevoHecho.setOrigen(Origen.DATASET);
                 listaHechos.add(nuevoHecho);
                 Globales.hechosTotales.add(nuevoHecho);
             }

@@ -58,25 +58,27 @@ class DatosColeccion {
 }
 
 class Administrador {
+    ' se almacenarán y quedarán a disposición de las personas administradoras.
+    -listaContribuyentes: List<Contribuyente>
+    +agregarContribuyente(contribuyente: Contribuyente)
+    +listaContribuyentesContains(contribuyente: Contribuyente): Boolean
     +crearColeccion(datosColeccion: DatosColeccion, criterios: List<Filtro>, hechosTotales: List<Hecho>): List<Coleccion>
     +importarHechos(fuente: Fuente): List<Hecho>
     +evaluarSolicitudEliminacion(hecho: Hecho): Boolean
     '+etiquetarHecho(hecho: Hecho) etiqueta no sería el conjunto de filtros¿
     ' Se puede etiquetar al hecho si fue cargado por contribuyente
-    +evaluarSolicitudHecho(hecho: Hecho): Boolean
 }
 
 ' Los publicadores pueden ser tanto el contribuyente como el visualizador
 class Publicador {
-    +subirHechos(hechos: List<Hecho>): void
+    -datosPersonales: DatosPersonalesPublicador
+    +subirHechos(quiereAnonimato: Boolean, hechos: List<Hecho>)
     ' En el caso del contribuyente, va a poder subir con sus datos personales
 }
 
 
 class Contribuyente extends Publicador{
-    -nombre: String
-    -apellido: String
-    -edad: Integer
+    -cantHechosSubidos: Integer
     +solicitarEliminacion(hecho: Hecho)
 }
 
@@ -84,7 +86,13 @@ class Visualizador extends Publicador{
     -hechosDisponibles: List<Hecho>
     -filtros: List<Filtro>
     +navegarPorHechos()
-    +aplicarFiltros(filtros: List<Filtro>)
+    +aplicarFiltros(filtros: List<Filtro>): List<Hecho>
+}
+
+class DatosPersonalesPublicador {
+    -nombre: String
+    -apellido: String
+    -edad: Integer
 }
 
 Interface Filtro {
@@ -147,8 +155,8 @@ class Geocodificador {
 
 ' Si bien no hay que almacenar en memoria los hechos, sirve para testear funciones
 class Globales {
-    +hechosTotales: List
-    +solicitudesEliminacion: List
+    +hechosTotales: List<Hecho>
+    +solicitudesEliminacion: List<Hecho>
 }
 
 'lista de hechos: Fuegos locos

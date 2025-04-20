@@ -4,8 +4,8 @@ import java.util.List;
 
 public class FuenteDinamica implements Fuente{
     public List<Hecho> leerFuente(){
-        //TODO
-        List<Hecho> listaTmp = new ArrayList<>();
-        return listaTmp;
+        return Globales.hechosTotales.stream().
+                filter(hecho -> hecho.getOrigen().equals(Origen.CONTRIBUYENTE))
+                .toList();
     }
 }
