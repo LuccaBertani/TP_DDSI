@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public Abstract Publicador {
+public abstract class Publicador {
     private DatosPersonalesPublicador datosPersonales; // Si se setearon, significa que el publicador inició sesión
 
     public void subirHechos(List<Hecho> hechos){
