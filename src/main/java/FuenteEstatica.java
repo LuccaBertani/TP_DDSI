@@ -38,10 +38,18 @@ public class FuenteEstatica implements Fuente{
                 Double longitud = Double.parseDouble(valores[4]);
 
                 String nombrePais = Geocodificador.obtenerPais(latitud, longitud);
-                Optional<Hecho> hecho0 = Globales.hechosTotales.stream().filter(h-> h.getCategoria().getTitulo().toLowerCase().equals(categoriaString.toLowerCase())).findFirst();
+
+                Optional<Hecho> hecho0 = Globales.hechosTotales.stream().filter(h->h.getTitulo().equals(titulo)).findFirst();
+
+                if (!hecho0.isEmpty()){
+                    Globales.hechosTotales.remove(hecho0); // El hecho se sobreescribe cuando se repite el título
+                }
+
+                //TODO
+                Optional<Hecho> hecho1 = Globales.hechosTotales.stream().filter(h-> h.getCategoria().getTitulo().toLowerCase().equals(categoriaString.toLowerCase())).findFirst();
 
                 Categoria categoria;
-                if (hecho0.isEmpty()){
+                if (hecho1.isEmpty()){
                     categoria = new Categoria();
                     categoria.setTitulo(categoriaString);
                 }
@@ -49,14 +57,15 @@ public class FuenteEstatica implements Fuente{
                     categoria = hecho0.get().getCategoria();
                 }
 
-                Optional<Hecho> hecho1 = Globales.hechosTotales.stream().filter(h-> h.getPais().getPais().toLowerCase().equals(nombrePais.toLowerCase())).findFirst();
+                //TODO
+                Optional<Hecho> hecho2 = Globales.hechosTotales.stream().filter(h-> h.getPais().getPais().toLowerCase().equals(nombrePais.toLowerCase())).findFirst();
                 Pais pais;
-                if (hecho1.isEmpty()){
+                if (hecho2.isEmpty()){
                     pais = new Pais();
                     pais.setPais(nombrePais);
                 }
                 else{
-                    pais = hecho1.get().getPais();
+                    pais = hecho2.get().getPais();
                 }
 
                 ZonedDateTime fechaAcontecimiento = ZonedDateTime.parse(valores[5],formatter);

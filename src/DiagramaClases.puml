@@ -157,12 +157,6 @@ class Globales {
     +solicitudesEliminacion: List<Hecho>
 }
 
-'lista de hechos: Fuegos locos
-'[titulo, fecha]
-'Fuegos locos -> titulos
-'Fuegos locos filtrada por titulos -> fecha
-'Fuegos locos filtrada por titulo y fecha
-
 enum TipoContenido {
     TEXTO
     IMAGEN

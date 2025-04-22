@@ -6,12 +6,11 @@ class FiltroDescripcionTest {
     @Test
     public void pasaDescripcion(){
         Hecho hecho = new Hecho();
-        hecho.setDescripcion("InCendio");
+        hecho.setTitulo("InCendio");
 
-        FiltroDescripcion filtroDescripcion = new FiltroDescripcion("incendio");
-        filtroDescripcion.setDescripcion("incendio");
+        FiltroTitulo filtroTitulo = new FiltroTitulo("incendio jijo");
 
-        assertEquals(true, filtroDescripcion.aprobarHecho(hecho));
+        assertEquals(true, filtroTitulo.aprobarHecho(hecho));
 
 
     }

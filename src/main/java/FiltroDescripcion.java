@@ -13,12 +13,16 @@ public class FiltroDescripcion implements Filtro{
     }
 
     public Boolean aprobarHecho(Hecho hecho){
-        List<String> descripcionEnlistada = Arrays.asList(hecho.getDescripcion().split(" "));
-        List<String> descripcionFiltro = Arrays.asList(this.descripcion.toLowerCase().split(" "));
-        descripcionEnlistada.replaceAll(String::toLowerCase);
-        descripcionFiltro.replaceAll(String::toLowerCase);
+        List<String> palabrasHecho = Arrays.stream(hecho.getDescripcion().toLowerCase().split(" "))
+                .map(String::trim)
+                .toList();
+
+        List<String> palabrasFiltro = Arrays.stream(this.descripcion.toLowerCase().split(" "))
+                .map(String::trim)
+                .toList();
+
 
         // Si la descripcion del hecho enviado por parametro tiene todas sus palabras contenidas en el filtro de la descripcion
-        return descripcionFiltro.containsAll(descripcionEnlistada);
+        return palabrasHecho.containsAll(palabrasFiltro);
     }
 }

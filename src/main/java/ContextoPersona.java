@@ -1,20 +1,22 @@
+import lombok.Getter;
+
 public class ContextoPersona {
+    @Getter
+    private Visualizador visualizador;
 
-    private Publicador publicador;
-
-    public ContextoPersona(Publicador publicador){
-        this.publicador = publicador;
+    public ContextoPersona(Visualizador visualizador){
+        this.visualizador = visualizador;
     }
 
     public void ContribuyenteAVisualizador(){
-        DatosPersonalesPublicador datos = this.publicador.getDatosPersonales();
-        this.publicador = new Visualizador();
-        this.publicador.setDatosPersonales(datos);
+        DatosPersonalesPublicador datos = this.visualizador.getDatosPersonales();
+        this.visualizador = new Visualizador();
+        this.visualizador.setDatosPersonales(datos);
     }
     public void VisualizadorAContribuyente(){
-        DatosPersonalesPublicador datos = this.publicador.getDatosPersonales();
-        this.publicador = new Contribuyente();
-        this.publicador.setDatosPersonales(datos);
+        DatosPersonalesPublicador datos = this.visualizador.getDatosPersonales();
+        this.visualizador = new Contribuyente();
+        this.visualizador.setDatosPersonales(datos);
     }
 
 }

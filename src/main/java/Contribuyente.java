@@ -1,10 +1,7 @@
 import lombok.Getter;
-import lombok.Setter;
 
-import java.util.List;
-
-
-public class Contribuyente extends Publicador {
+@Getter
+public class Contribuyente extends Visualizador {
     private Integer cantHechosSubidos; // Cuando llegue a 0, el contribuyente debería pasar a ser visualizador
     public Contribuyente(){
         cantHechosSubidos = 1;
@@ -13,14 +10,19 @@ public class Contribuyente extends Publicador {
             Administrador.agregarContribuyente(this);*/
     }
 
-    @Override
-    public void subirHechos(List<Hecho> hechos){
-        super.subirHechos(hechos);
-        cantHechosSubidos++;
+    public void incrementarHechosSubidos(){
+        this.cantHechosSubidos++;
     }
 
-    void solicitarEliminacionHecho(Hecho hecho){
-        //TODO
+    public void disminuirHechosSubidos(){
+        this.cantHechosSubidos--;
+    }
+
+
+    public void solicitarEliminacionHecho(Hecho hecho){
+        ContextoPersona contextoPersona = new ContextoPersona((Visualizador)this);
+        SolicitudHecho solicitud = new SolicitudHecho(contextoPersona, hecho);
+        Globales.solicitudesEliminacion.add(solicitud);
     }
 
 
