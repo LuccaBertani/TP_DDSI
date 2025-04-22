@@ -36,20 +36,10 @@ class VisualizadorTest {
         //hechos.add(hecho);
         visualizador.subirHechos(hechos);
 
-
-        Set<Hecho> hechosFiltrados = visualizador.aplicarFiltros(filtros);
-
-        System.out.println("LENGTH HECHOS FILTRADOS: " + hechosFiltrados.size());
-        for (Hecho h : hechosFiltrados){
-            System.out.println(h.getTitulo());
-            /*System.out.println(h.getDescripcion());
-            System.out.println(h.getCategoria().getTitulo());
-            System.out.println(h.getPais().getPais());
-            System.out.println(h.getFechaAcontecimiento());
-            System.out.println(h.getFechaDeCarga());*/
-        }
+        visualizador.navegarPorHechos(filtros);
 
     }
+
 
 
 }

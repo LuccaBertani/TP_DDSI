@@ -10,21 +10,9 @@ public class Visualizador extends Publicador{
     @Override
     public void subirHechos(List<Hecho> hechos){
         super.subirHechos(hechos);
-        Contribuyente contribuyente = new Contribuyente(); // El visualizador pasa a ser contribuyent3e
+        Contribuyente contribuyente = new Contribuyente(); // El visualizador pasa a ser contribuyente
         /*if (!this.getDatosPersonales().getNombre().isEmpty())
             contribuyente.setDatosPersonales(this.getDatosPersonales());*/
     }
 
-    public void navegarPorHechos(){
-        //TODO
-    }
-
-    // Devuelve los hechos que cumplan con todos los filtros
-    public Set<Hecho> aplicarFiltros(List<Filtro> filtros){
-        return Globales.hechosTotales.stream().filter(
-                hecho -> filtros.
-                                stream().
-                                allMatch(filtro->filtro.aprobarHecho(hecho))
-                ).collect(Collectors.toSet());
-    }
 }

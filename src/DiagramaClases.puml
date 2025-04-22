@@ -57,7 +57,16 @@ class DatosColeccion {
     -fuente: Fuente
 }
 
-class Administrador {
+' Los publicadores pueden ser tanto el contribuyente como el visualizador
+class Publicador {
+    -datosPersonales: DatosPersonalesPublicador
+    +subirHechos(hechos: List<Hecho>)
+    +navegarPorHechos()
+    +aplicarFiltros(filtros: List<Filtro>): Set<Hecho>
+    ' En el caso del contribuyente, va a poder subir con sus datos personales
+}
+
+class Administrador extends Publicador {
     ' se almacenarán y quedarán a disposición de las personas administradoras.
     -listaContribuyentes: List<Contribuyente>
     +agregarContribuyente(contribuyente: Contribuyente)
@@ -69,23 +78,13 @@ class Administrador {
     ' Se puede etiquetar al hecho si fue cargado por contribuyente
 }
 
-' Los publicadores pueden ser tanto el contribuyente como el visualizador
-class Publicador {
-    -datosPersonales: DatosPersonalesPublicador
-    +subirHechos(quiereAnonimato: Boolean, hechos: List<Hecho>)
-    ' En el caso del contribuyente, va a poder subir con sus datos personales
-}
-
-
 class Contribuyente extends Publicador{
     -cantHechosSubidos: Integer
     +solicitarEliminacion(hecho: Hecho)
 }
 
 class Visualizador extends Publicador{
-    -filtros: List<Filtro>
-    +navegarPorHechos()
-    +aplicarFiltros(filtros: List<Filtro>): Set<Hecho>
+
 }
 
 class DatosPersonalesPublicador {

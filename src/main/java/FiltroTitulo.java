@@ -20,6 +20,11 @@ public class FiltroTitulo implements Filtro{
         descripcionEnlistada.replaceAll(String::toLowerCase);
         descripcionFiltro.replaceAll(String::toLowerCase);
 
+        for (int i = 0; i < descripcionEnlistada.size(); i++){
+            System.out.println("INDICE: "+ i);
+            System.out.println(descripcionEnlistada.get(i));
+        }
+
         // Si el titulo del hecho enviado por parametro tiene todas sus palabras contenidas en el filtro del titulo
         return descripcionFiltro.containsAll(descripcionEnlistada);
     }

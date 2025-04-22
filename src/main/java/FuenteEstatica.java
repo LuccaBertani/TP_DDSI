@@ -34,12 +34,10 @@ public class FuenteEstatica implements Fuente{
                 String titulo = valores[0];
                 String descripcion = valores[1];
                 String categoriaString = valores[2];
-
                 Double latitud = Double.parseDouble(valores[3]);
                 Double longitud = Double.parseDouble(valores[4]);
 
                 String nombrePais = Geocodificador.obtenerPais(latitud, longitud);
-                System.out.println(nombrePais);
                 Optional<Hecho> hecho0 = Globales.hechosTotales.stream().filter(h-> h.getCategoria().getTitulo().toLowerCase().equals(categoriaString.toLowerCase())).findFirst();
 
                 Categoria categoria;
@@ -50,7 +48,7 @@ public class FuenteEstatica implements Fuente{
                 else{
                     categoria = hecho0.get().getCategoria();
                 }
-                Globales.hechosTotales.forEach(h->System.out.println(h.getPais().getPais()));
+
                 Optional<Hecho> hecho1 = Globales.hechosTotales.stream().filter(h-> h.getPais().getPais().toLowerCase().equals(nombrePais.toLowerCase())).findFirst();
                 Pais pais;
                 if (hecho1.isEmpty()){
