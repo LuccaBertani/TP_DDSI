@@ -1,53 +1,39 @@
 @startuml
 
-'DATO DE COLOR: Los hechos son los archivos .csv
-class Hecho {
+class Administrador extends Visualizador {
+    ' se almacenarán y quedarán a disposición de las personas administradoras.
+    -listaContribuyentes: List<Contribuyente>
+    'Subida manual del hecho
+    +subirHecho(Hecho: hecho)
+    +crearColeccion(datosColeccion: DatosColeccion, criterios: List<Filtro>, hechosTotales: List<Hecho>)
+    +importarHechos(fuente: Fuente)
+    +evaluarSolicitudEliminacion(solicitud: SolicitudHecho, respuesta: Boolean)
+    +evaluarSolicitudSubirHecho(solicitud: SolicitudHecho, respuesta: Boolean)
+}
+
+class Categoria{
     -titulo: String
-    -descripcion: String
-    -categoria: Categoria
-    -contenidoMultimediaOpcional: TipoContenido
-    -pais: Pais
-    -fechaAcontecimiento: Date
-    -fechaDeCarga: Date
-    -origen: Origen
 }
 
-class Pais {
-    -pais: String
-}
-
-enum Origen {
-    CARGA_MANUAL
-    DATASET
-    'DATASET -> csv
-    CONTRIBUYENTE
-}
-
-' La clase Fuente es necesaria a futuro ya que después habrán fuentes dinamicas y proxys
-interface Fuente {
-    +leerFuente(): Lista<Hecho>
-}
-
-class FuenteEstatica implements Fuente {
-    ' dataSet sería el nombre del archivo csv
-    -dataSet: String
-    +leerFuente(): List<Hecho>
-}
-
-
-class FuenteDinamica implements Fuente {
-    +leerFuente(): List<Hecho>
-}
-
-class FuenteProxy implements Fuente{
-    +leerFuente(): List<Hecho>
-}
 class Coleccion {
     -titulo: String
     -descripcion: String
     -hechos: List<Hecho>
     -fuente: Fuente
     -criterio: List<Filtro>
+}
+
+class ContextoPersona {
+    -visualizador: Visualizador
+    +ContribuyenteAVisualizador()
+    +VisualizadorAContribuyente()
+}
+
+class Contribuyente extends Visualizador{
+    -cantHechosSubidos: Integer
+    +incrementarHechosSubidos()
+    +disminuirHechosSubidos()
+    +solicitarEliminacion(hecho: Hecho)
 }
 
 ' Clase para evitar parámetros largos a futuro
@@ -57,36 +43,6 @@ class DatosColeccion {
     -fuente: Fuente
 }
 
-' Los publicadores pueden ser tanto el contribuyente como el visualizador
-class Publicador {
-    -datosPersonales: DatosPersonalesPublicador
-    +subirHechos(hechos: List<Hecho>)
-    +navegarPorHechos()
-    +aplicarFiltros(filtros: List<Filtro>): Set<Hecho>
-    ' En el caso del contribuyente, va a poder subir con sus datos personales
-}
-
-class Administrador extends Publicador {
-    ' se almacenarán y quedarán a disposición de las personas administradoras.
-    -listaContribuyentes: List<Contribuyente>
-    +agregarContribuyente(contribuyente: Contribuyente)
-    +listaContribuyentesContains(contribuyente: Contribuyente): Boolean
-    +crearColeccion(datosColeccion: DatosColeccion, criterios: List<Filtro>, hechosTotales: List<Hecho>): List<Coleccion>
-    +importarHechos(fuente: Fuente): List<Hecho>
-    +evaluarSolicitudEliminacion(hecho: Hecho): Boolean
-    '+etiquetarHecho(hecho: Hecho) etiqueta no sería el conjunto de filtros¿
-    ' Se puede etiquetar al hecho si fue cargado por contribuyente
-}
-
-class Contribuyente extends Publicador{
-    -cantHechosSubidos: Integer
-    +solicitarEliminacion(hecho: Hecho)
-}
-
-class Visualizador extends Publicador{
-
-}
-
 class DatosPersonalesPublicador {
     -nombre: String
     -apellido: String
@@ -94,37 +50,27 @@ class DatosPersonalesPublicador {
 }
 
 Interface Filtro {
-    +aprobarFiltro(hecho: Hecho): Boolean
+    +aprobarHecho(hecho: Hecho): Boolean
 }
 
-class FiltroFechaAcontecimiento implements Filtro{
-    -fechaInicial: ZonedDateTime
-    -fechaFinal: ZonedDateTime
-    +aprobarHecho(hecho: Hecho): Boolean
-}
-'Pais puede ser una clase o enum
-class FiltroPais implements Filtro{
-    -pais: Pais
-    +aprobarHecho(hecho: Hecho): Boolean
-}
-'el titulo puede ser una clase o enum
 class FiltroCategoria implements Filtro{
     -categoria: Categoria
     +aprobarHecho(hecho:Hecho): Boolean
 }
 
-class FiltroDescripcion implements Filtro{
-    -Descripcion: String
-    +aprobarHecho(hecho: Hecho): Boolean
-}
-
-class FiltroTitulo implements Filtro{
-    -Titulo: String
-    +aprobarHecho(hecho: Hecho): Boolean
-}
-
 class FiltroContenidoMultimedia implements Filtro{
     -tipoContenido: TipoContenido
+    +aprobarHecho(hecho: Hecho): Boolean
+}
+
+class FiltroDescripcion implements Filtro{
+    -descripcion: String
+    +aprobarHecho(hecho: Hecho): Boolean
+}
+
+class FiltroFechaAcontecimiento implements Filtro{
+    -fechaInicial: ZonedDateTime
+    -fechaFinal: ZonedDateTime
     +aprobarHecho(hecho: Hecho): Boolean
 }
 
@@ -135,26 +81,75 @@ class FiltroFechaCarga implements Filtro{
 }
 
 class FiltroOrigen implements Filtro{
-    -origen: Origen
+    -origenDeseado: Origen
     +aprobarHecho(Hecho: hecho): Boolean
 }
 
-'Todas las palabras de la descripcion del filtro deben
-' estar contenidas en la descripcion del hecho para que
-' devuelva true. (lo mismo con el titulo)
+class FiltroPais implements Filtro{
+    -pais: Pais
+    +aprobarHecho(hecho: Hecho): Boolean
+}
 
-class Categoria{
+class FiltroTitulo implements Filtro{
     -titulo: String
+    +aprobarHecho(hecho: Hecho): Boolean
 }
 
+interface Fuente {
+    +leerFuente(): Lista<Hecho>
+}
+
+class FuenteDinamica implements Fuente {
+    +leerFuente(): List<Hecho>
+}
+
+class FuenteEstatica implements Fuente {
+    -dataSet: String
+    +leerFuente(): List<Hecho>
+}
+
+' Para próximas entregas
+class FuenteProxy implements Fuente{
+    +leerFuente(): List<Hecho>
+}
+
+' Implementación de API de openstreetmap para obtener país en base a latitud y longitud
 class Geocodificador {
-    +obtenerPais(Double: latitud, Double: longitud)
+    +obtenerPais(latitud: Double, longitud: Double)
 }
 
-' Si bien no hay que almacenar en memoria los hechos, sirve para testear funciones
+' Atributos de clase
 class Globales {
     +hechosTotales: List<Hecho>
-    +solicitudesEliminacion: List<Hecho>
+    +solicitudesEliminacion: List<SolicitudHecho>
+    +solicitudesSubirHecho: List<SolicitudHecho>
+    +coleccionesTotales: List<Coleccion>
+}
+
+class Hecho {
+    -titulo: String
+    -descripcion: String
+    -categoria: Categoria
+    -contenidoMultimediaOpcional: TipoContenido
+    -pais: Pais
+    -fechaAcontecimiento: ZonedDateTime
+    -fechaDeCarga: ZonedDateTime
+    -origen: Origen
+}
+
+enum Origen {
+    CARGA_MANUAL
+    DATASET
+    CONTRIBUYENTE
+}
+
+class Pais {
+    -pais: String
+}
+
+class SolicitudHecho {
+    -GestorPersona: ContextoPersona
+    -hecho: Hecho
 }
 
 enum TipoContenido {
@@ -164,27 +159,31 @@ enum TipoContenido {
     VIDEO
 }
 
-'class ContenidoMultimedia {
-'    -tipoContenido: Enum
-'
-'}
-' -tipo: tipoDeHecho
+class Visualizador{
+    -datosPersonales: DatosPersonalesPublicador
+    +solicitudSubirHecho(hecho: Hecho, GestorPersona: ContextoPersona)
+    +navegarPorHechos(filtros: List<Filtro>, coleccion: Coleccion)
+    +navegarPorHechos(coleccion: Coleccion)
+    -aplicarFiltros(filtros: List<Filtro>, coleccion: Coleccion): Set<Hecho>
+}
 
-' Una coleccion está compuesta por hechos
+
 Coleccion *-- Hecho
 ' Un contribuyente sí o sí debe tener hechos asociados, sino no es un contribuyente
 Contribuyente *-- Hecho
 
 Pais --* Hecho
 
-'Hecho --> ContenidoMultimedia
-
 Hecho *-- TipoContenido
-
-'ContenidoMultimedia *-- TipoContenido
 
 Hecho *-- Categoria
 
 Hecho *-- Origen
+
+ContextoPersona --* Visualizador
+
+SolicitudHecho --* Hecho
+
+SolicitudHecho --* Visualizador
 
 @enduml

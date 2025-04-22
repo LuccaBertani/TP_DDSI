@@ -1,11 +1,7 @@
 import lombok.Getter;
 import lombok.Setter;
-
 @Getter
+@Setter
 public class Categoria {
-    @Getter
-    @Setter
     private String titulo;
-
-
 }

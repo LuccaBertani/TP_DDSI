@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-//Filtro contenido en Titulo. Manzana. Manzana podrida, Manzana sana. 
+//Filtro contenido en Titulo. Manzana. Manzana podrida, Manzana sana.
 class VisualizadorTest {
     @Test
     public void a(){
@@ -33,7 +33,7 @@ class VisualizadorTest {
             System.out.println("-----------");
         }
 
-        visualizador.navegarPorHechos(filtros);
+        //visualizador.navegarPorHechos(filtros);
 
     }
 

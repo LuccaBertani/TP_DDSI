@@ -15,7 +15,7 @@ public class FiltroDescripcion implements Filtro{
     public Boolean aprobarHecho(Hecho hecho){
         List<String> palabrasHecho = Arrays.stream(hecho.getDescripcion().toLowerCase().split(" "))
                 .map(String::trim)
-                .toList();
+                .toList(); // Mapear las palabras de la descripcion del hecho sin espacios y en minúsculas
 
         List<String> palabrasFiltro = Arrays.stream(this.descripcion.toLowerCase().split(" "))
                 .map(String::trim)
