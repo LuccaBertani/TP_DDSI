@@ -83,10 +83,9 @@ class Contribuyente extends Publicador{
 }
 
 class Visualizador extends Publicador{
-    -hechosDisponibles: List<Hecho>
     -filtros: List<Filtro>
     +navegarPorHechos()
-    +aplicarFiltros(filtros: List<Filtro>): List<Hecho>
+    +aplicarFiltros(filtros: List<Filtro>): Set<Hecho>
 }
 
 class DatosPersonalesPublicador {

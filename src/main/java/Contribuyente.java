@@ -9,8 +9,8 @@ public class Contribuyente extends Publicador {
     public Contribuyente(){
         cantHechosSubidos = 1;
         // Si el usuario se logueó y no está en la lista de contribuyentes de los administradores
-        if (!this.getDatosPersonales().getNombre().isEmpty() && !Administrador.listaContribuyentesContains(this))
-            Administrador.agregarContribuyente(this);
+        /*if (!this.getDatosPersonales().getNombre().isEmpty() && !Administrador.listaContribuyentesContains(this))
+            Administrador.agregarContribuyente(this);*/
     }
 
     @Override
