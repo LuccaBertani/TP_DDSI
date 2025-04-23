@@ -13,6 +13,7 @@ public class ContextoPersona {
         this.visualizador = new Visualizador();
         this.visualizador.setDatosPersonales(datos);
     }
+
     public void VisualizadorAContribuyente(){
         DatosPersonalesPublicador datos = this.visualizador.getDatosPersonales();
         this.visualizador = new Contribuyente();

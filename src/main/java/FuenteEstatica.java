@@ -54,7 +54,7 @@ public class FuenteEstatica implements Fuente{
                     categoria.setTitulo(categoriaString);
                 }
                 else{
-                    categoria = hecho0.get().getCategoria();
+                    categoria = hecho1.get().getCategoria();
                 }
 
                 //TODO

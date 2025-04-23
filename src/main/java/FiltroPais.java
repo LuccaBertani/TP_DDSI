@@ -6,8 +6,8 @@ private Pais pais;
         this.pais = pais;
     }
 
+    @Override
     public Boolean aprobarHecho(Hecho hecho){
-
-    return hecho.getPais() == pais;
-}
+        return hecho.getPais() == pais;
+    }
 }

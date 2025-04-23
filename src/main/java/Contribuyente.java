@@ -1,5 +1,9 @@
 import lombok.Getter;
 
+/*
+* Contribuyentes: personas que suben hechos a la plataforma, ya sean anónimas o registradas con datos personales.
+* */
+
 @Getter
 public class Contribuyente extends Visualizador {
     private Integer cantHechosSubidos; // Cuando llegue a 0, el contribuyente debería pasar a ser visualizador

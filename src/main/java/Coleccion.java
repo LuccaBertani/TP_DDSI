@@ -4,6 +4,11 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+* Colecciones: conjuntos de hechos organizados bajo un título y descripción, creados y gestionados por administradores.
+* Son públicas y no pueden ser editadas ni eliminadas manualmente.
+* */
+
 @Getter
 public class Coleccion {
 

@@ -12,6 +12,7 @@ public class FiltroDescripcion implements Filtro{
         this.descripcion = descripcion;
     }
 
+    @Override
     public Boolean aprobarHecho(Hecho hecho){
         List<String> palabrasHecho = Arrays.stream(hecho.getDescripcion().toLowerCase().split(" "))
                 .map(String::trim)

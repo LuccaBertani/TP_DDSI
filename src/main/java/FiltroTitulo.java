@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.util.Arrays;
 import java.util.List;
 
-public class FiltroTitulo implements Filtro{
+public class FiltroTitulo implements Filtro {
     @Getter
     @Setter
     String titulo;
@@ -14,7 +14,8 @@ public class FiltroTitulo implements Filtro{
         this.titulo = titulo;
     }
 
-    public Boolean aprobarHecho(Hecho hecho){
+    @Override
+    public Boolean aprobarHecho(Hecho hecho) {
         List<String> palabrasHecho = Arrays.stream(hecho.getTitulo().toLowerCase().split(" "))
                 .map(String::trim)
                 .toList();
