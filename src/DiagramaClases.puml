@@ -1,39 +1,44 @@
 @startuml
 
+class Persona{
+
+}
+
 class Administrador extends Visualizador {
     ' se almacenarán y quedarán a disposición de las personas administradoras.
     -listaContribuyentes: List<Contribuyente>
     'Subida manual del hecho
-    +subirHecho(Hecho: hecho)
-    +crearColeccion(datosColeccion: DatosColeccion, criterios: List<Filtro>, hechosTotales: List<Hecho>)
-    +importarHechos(fuente: Fuente)
-    +evaluarSolicitudEliminacion(solicitud: SolicitudHecho, respuesta: Boolean)
-    +evaluarSolicitudSubirHecho(solicitud: SolicitudHecho, respuesta: Boolean)
+'    +subirHecho(Hecho: hecho)
+'   +crearColeccion(datosColeccion: DatosColeccion, criterios: List<Filtro>, hechosTotales: List<Hecho>)
+'   +importarHechos(fuente: Fuente)
+'   +evaluarSolicitudEliminacion(solicitud: SolicitudHecho, respuesta: Boolean)
+'   +evaluarSolicitudSubirHecho(solicitud: SolicitudHecho, respuesta: Boolean)
+}
+
+
+
+class aplicarFiltro{
 }
 
 class Categoria{
     -titulo: String
 }
 
+' Agregar metodos, APLICAR FILTRO,...
 class Coleccion {
     -titulo: String
     -descripcion: String
     -hechos: List<Hecho>
     -fuente: Fuente
-    -criterio: List<Filtro>
+    -criterioDePertenencia: List<Filtro>
+    +crearColeccion(datosColeccion: DatosColeccion, criterios: List<Filtro>, hechosTotales: List<Hecho>)
 }
 
-class ContextoPersona {
-    -visualizador: Visualizador
-    +ContribuyenteAVisualizador()
-    +VisualizadorAContribuyente()
-}
-
-class Contribuyente extends Visualizador{
+class Contribuyente extends Visualizador {
     -cantHechosSubidos: Integer
     +incrementarHechosSubidos()
     +disminuirHechosSubidos()
-    +solicitarEliminacion(hecho: Hecho)
+    '+solicitarEliminacion(hecho: Hecho)
 }
 
 ' Clase para evitar parámetros largos a futuro
@@ -121,11 +126,14 @@ class Geocodificador {
 ' Atributos de clase
 class Globales {
     +hechosTotales: List<Hecho>
-    +solicitudesEliminacion: List<SolicitudHecho>
-    +solicitudesSubirHecho: List<SolicitudHecho>
+'    +solicitudesEliminacion: List<SolicitudHecho>
+'    +solicitudesSubirHecho: List<SolicitudHecho>
     +coleccionesTotales: List<Coleccion>
 }
 
+
+
+' agregar metodos
 class Hecho {
     -titulo: String
     -descripcion: String
@@ -135,6 +143,8 @@ class Hecho {
     -fechaAcontecimiento: ZonedDateTime
     -fechaDeCarga: ZonedDateTime
     -origen: Origen
+    +subirHecho(Hecho: hecho)
+    +importarHechos(fuente: Fuente)
 }
 
 enum Origen {
@@ -150,6 +160,11 @@ class Pais {
 class SolicitudHecho {
     -GestorPersona: ContextoPersona
     -hecho: Hecho
+    '+subirHecho(hecho: Hecho, GestorPersona: ContextoPersona)
+    +solicitudesEliminacion: List<SolicitudHecho>
+    +solicitudesSubir: List<SolicitudHecho>
+    +evaluarEliminacionHecho(solicitud: SolicitudHecho, respuesta: Boolean)
+    +evaluarSubirHecho(solicitud: SolicitudHecho, respuesta: Boolean)
 }
 
 enum TipoContenido {
@@ -161,9 +176,10 @@ enum TipoContenido {
 
 class Visualizador{
     -datosPersonales: DatosPersonalesPublicador
-    +solicitudSubirHecho(hecho: Hecho, GestorPersona: ContextoPersona)
+'    +solicitudSubirHecho(hecho: Hecho, GestorPersona: ContextoPersona)
     +navegarPorHechos(filtros: List<Filtro>, coleccion: Coleccion)
     +navegarPorHechos(coleccion: Coleccion)
+    ' Llevarlo a clase
     -aplicarFiltros(filtros: List<Filtro>, coleccion: Coleccion): Set<Hecho>
 }
 
