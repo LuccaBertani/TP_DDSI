@@ -1,10 +1,31 @@
 package models.entities.personas;
 
 import lombok.Getter;
+import lombok.Setter;
+import models.entities.DatosPersonalesPublicador;
 
 public class Persona {
+
+
     @Getter
     private Integer cantHechosSubidos = 0;
+
+    @Getter
+    @Setter
+    private Integer nivel = 0; // 0 visualizador, 1 contribuyente, 2 admin
+
+    @Getter
+    @Setter
+    private DatosPersonalesPublicador datosPersonales;
+
+
+    public void incrementarNivel(){
+        this.nivel++;
+    }
+
+    public void disminuirNivel(){
+        this.nivel--;
+    }
 
     public void incrementarHechosSubidos(){
         this.cantHechosSubidos++;
