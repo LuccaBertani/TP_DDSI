@@ -9,6 +9,12 @@ import java.util.List;
 
 public class Administrador extends Visualizador {
 
+    Usuario usuario;
+
+    public Administrador(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
     private static List<Contribuyente> listaContribuyentes = new ArrayList<>();
 
     // Subida manual del hecho
@@ -17,21 +23,6 @@ public class Administrador extends Visualizador {
         Globales.hechosTotales.add(hecho);
     }
 
-
-    //Criterios es una lista traida supongo del front donde el usuario indica los filtros y la lista de hechos totales es una global
-    public void crearColeccion(DatosColeccion datosColeccion, List<Filtro> criterios, List<Hecho> hechosTotales){
-        Coleccion coleccion = new Coleccion(datosColeccion);
-        coleccion.getCriterio().addAll(criterios);
-        Globales.hechosTotales.forEach(hecho -> {
-            Boolean condicion = coleccion.getCriterio().stream()
-                    .allMatch(criterio -> criterio.aprobarHecho(hecho));
-            if(condicion) {
-            coleccion.getHechos().add(hecho);
-            }
-            Globales.coleccionesTotales.add(coleccion);
-        });
-
-    }
     //Esos hechos habrian que agregarlos a la lista global
     public void importarHechos(Fuente fuente){
         Globales.hechosTotales.addAll(fuente.leerFuente());

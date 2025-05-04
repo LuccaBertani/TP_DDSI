@@ -9,6 +9,13 @@ import models.entities.*;
 
 @Getter
 public class Contribuyente extends Visualizador {
+
+    Usuario usuario;
+
+    public Contribuyente(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
     private Integer cantHechosSubidos; // Cuando llegue a 0, el contribuyente debería pasar a ser visualizador
     public Contribuyente(){
         cantHechosSubidos = 1;
