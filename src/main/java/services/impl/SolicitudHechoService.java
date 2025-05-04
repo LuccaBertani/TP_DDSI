@@ -2,23 +2,27 @@ package services.impl;
 
 import models.entities.Hecho;
 import models.entities.SolicitudHecho;
-import models.entities.personas.Contribuyente;
 import models.entities.personas.Persona;
-import models.repositories.ISolicitudHechoRepository;
+import models.repositories.IRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import services.ISolicitudHechoService;
 
 @Service
 public class SolicitudHechoService implements ISolicitudHechoService {
+
+    private final IRepository<SolicitudHecho> solicitudHechoRepo;
+
     @Autowired
-    private ISolicitudHechoRepository solicitudHechoRepository;
+    public SolicitudHechoService(IRepository<SolicitudHecho> solicitudHechoRepo) {
+        this.solicitudHechoRepo = solicitudHechoRepo;
+    }
 
     @Override
     public void solicitarSubirHecho(Hecho hecho, Persona persona) {
         // LA PERSONA DEBE SER O VISUALIZADORA O CONTRIBUYENTE
         SolicitudHecho solicitudHecho = new SolicitudHecho(persona, hecho);
-        solicitudHechoRepository.save(solicitudHecho);
+        solicitudHechoRepo.save(solicitudHecho);
     }
 
     @Override
@@ -37,13 +41,13 @@ public class SolicitudHechoService implements ISolicitudHechoService {
             }
             solicitud.getPersona().incrementarHechosSubidos();
         }
-        solicitudHechoRepository.delete(solicitud);
+        solicitudHechoRepo.delete(solicitud);
     }
 
     @Override
     public void evaluarEliminacionHecho(SolicitudHecho solicitud, Boolean respuesta) {
         if(respuesta){
-            solicitudHechoRepository.delete(solicitud);
+            solicitudHechoRepo.delete(solicitud);
             // El hecho deberia dejar de mostrarse en la pagina, pero NUNCA se borra por completo
             solicitud.getHecho().setActivo(false);
 

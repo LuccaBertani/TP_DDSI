@@ -1,8 +1,9 @@
 package services.impl;
 
 import models.entities.DatosPersonalesPublicador;
+import models.entities.SolicitudHecho;
 import models.entities.personas.Persona;
-import models.repositories.IDatosPersonalesRepository;
+import models.repositories.IRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import permissions.PermisoAccesoDatosContribuyentes;
@@ -13,14 +14,18 @@ import java.util.List;
 @Service
 public class DatosPersonalesService implements IDatosPersonalesService {
 
+    private final IRepository<Persona> personasRepo;
+
     @Autowired
-    private IDatosPersonalesRepository datosPersonalesRepository;
+    public DatosPersonalesService(IRepository<Persona> personasRepo) {
+        this.personasRepo = personasRepo;
+    }
 
     @Override
-    public List<DatosPersonalesPublicador> obtenerListaContribuyentes(Persona persona){
+    public List<Persona> obtenerListaContribuyentes(Persona persona){
 
         if (PermisoAccesoDatosContribuyentes.tienePermisos(persona)){
-            return datosPersonalesRepository.findAll();
+            return personasRepo.findAll();
         }
         return null;
 

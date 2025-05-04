@@ -1,12 +1,12 @@
 package models.repositories.impl;
 
 import models.entities.Coleccion;
-import models.repositories.IColeccionRepository;
+import models.repositories.IRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MemoriaColeccionRepository implements IColeccionRepository {
+public class MemoriaColeccionRepository implements IRepository<Coleccion> {
     List <Coleccion> colecciones;
 
     public MemoriaColeccionRepository(){
@@ -24,6 +24,7 @@ public class MemoriaColeccionRepository implements IColeccionRepository {
     public List<Coleccion> findAll() {
         return this.colecciones;
     }
+
 
     @Override
     public void save(Coleccion coleccion) {

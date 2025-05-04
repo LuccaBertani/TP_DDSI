@@ -3,7 +3,7 @@ package services.impl;
 import models.entities.Hecho;
 import models.entities.fuentes.Fuente;
 import models.entities.personas.Persona;
-import models.repositories.IHechosRepository;
+import models.repositories.IRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import permissions.PermisoImportarHechos;
@@ -13,13 +13,18 @@ import java.util.List;
 @Service
 public class HechosService implements IHechosService {
 
+
+    private final IRepository<Hecho> hechosRepo;
+
     @Autowired
-    private IHechosRepository hechosRepository;
+    public HechosService(IRepository<Hecho> repo) {
+        this.hechosRepo = repo;
+    }
 
     @Override
     public void subirHecho(Hecho hecho, Persona persona) {
 
-        hechosRepository.save(hecho);
+        hechosRepo.save(hecho);
 
         if (persona.getNivel() == 0){
             persona.incrementarNivel();
@@ -34,7 +39,7 @@ public class HechosService implements IHechosService {
             List<Hecho> hechos = fuente.leerFuente();
 
             for (Hecho hecho : hechos){
-                hechosRepository.save(hecho);
+                hechosRepo.save(hecho);
             }
         }
 

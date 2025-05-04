@@ -1,12 +1,12 @@
 package models.repositories.impl;
 
 import models.entities.SolicitudHecho;
-import models.repositories.ISolicitudHechoRepository;
+import models.repositories.IRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MemoriaSolicitudAgregarHechoRepository implements ISolicitudHechoRepository {
+public class MemoriaSolicitudAgregarHechoRepository implements IRepository<SolicitudHecho> {
     List<SolicitudHecho> solicitudesAgregarHecho;
 
     public MemoriaSolicitudAgregarHechoRepository(){

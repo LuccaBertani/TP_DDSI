@@ -1,12 +1,12 @@
 package models.repositories.impl;
 import models.entities.Hecho;
-import models.repositories.IHechosRepository;
+import models.repositories.IRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 //Maneja los datos en memoria
-public class MemoriaHechosRepository implements IHechosRepository {
+public class MemoriaHechosRepository implements IRepository<Hecho> {
     private List<Hecho> hechos;
 
     public MemoriaHechosRepository(){

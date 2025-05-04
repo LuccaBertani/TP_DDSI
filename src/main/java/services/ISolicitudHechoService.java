@@ -3,8 +3,6 @@ package services;
 import models.entities.Hecho;
 import models.entities.SolicitudHecho;
 import models.entities.personas.Persona;
-import models.repositories.ISolicitudHechoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public interface ISolicitudHechoService {
 
