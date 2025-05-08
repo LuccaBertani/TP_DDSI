@@ -12,10 +12,12 @@ import services.ISolicitudHechoService;
 public class SolicitudHechoService implements ISolicitudHechoService {
 
     private final IRepository<SolicitudHecho> solicitudHechoRepo;
+    private final IRepository<Persona> personaRepository;
 
     @Autowired
-    public SolicitudHechoService(IRepository<SolicitudHecho> solicitudHechoRepo) {
+    public SolicitudHechoService(IRepository<SolicitudHecho> solicitudHechoRepo, IRepository<Persona> personaRepository) {
         this.solicitudHechoRepo = solicitudHechoRepo;
+        this.personaRepository = personaRepository;
     }
 
     @Override
@@ -35,8 +37,7 @@ public class SolicitudHechoService implements ISolicitudHechoService {
                 // Cambio el "rol" a contribuyente
                 solicitud.getPersona().incrementarNivel();
 
-                // TODO
-                // Hay que hacer una lista de contribuyentes a la que solo tengan acceso los admins
+                this.personaRepository.save(solicitud.getPersona());
 
             }
             solicitud.getPersona().incrementarHechosSubidos();

@@ -30,5 +30,4 @@ public class MemoriaPersonaRepository implements IRepository<Persona> {
     public void delete(Persona persona){
         this.personas.remove(persona);
     }
-
 }
