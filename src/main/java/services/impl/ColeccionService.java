@@ -3,6 +3,10 @@ package services.impl;
 import models.entities.*;
 import models.entities.filtros.Filtro;
 import models.entities.personas.Persona;
+import models.entities.personas.Rol;
+import models.entities.personas.Usuario;
+import models.repositories.IMemoriaColeccionRepository;
+import models.repositories.IMemoriaHechosRepository;
 import models.repositories.IRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,28 +17,32 @@ import java.util.List;
 @Service
 public class ColeccionService implements IColeccionService {
 
-    private final IRepository<Hecho> hechosRepo;
-    private final IRepository<Coleccion> coleccionesRepo;
+    private final IMemoriaHechosRepository hechosRepo;
+    private final IMemoriaColeccionRepository coleccionesRepo;
 
     @Autowired
-    public ColeccionService(IRepository<Hecho> hechosRepo, IRepository<Coleccion> coleccionesRepo) {
+    public ColeccionService(IMemoriaHechosRepository hechosRepo, IMemoriaColeccionRepository coleccionesRepo) {
         this.hechosRepo = hechosRepo;
         this.coleccionesRepo = coleccionesRepo;
     }
 
     @Override
-    public void CrearColeccion(List<Filtro> criterios, DatosColeccion datos){
+    public void CrearColeccion(List<Filtro> criterios, DatosColeccion datos, Usuario usuario) {
 
-        Coleccion coleccion = new Coleccion(datos);
-        coleccion.addCriterios(criterios);
-        List<Hecho> hechos = hechosRepo.findAll();
+        if (usuario.getRol().equals(Rol.ADMINISTRADOR)) {
 
-        Filtrador filtrador = new Filtrador();
+            Coleccion coleccion = new Coleccion(datos);
+            coleccion.addCriterios(criterios);
+            List<Hecho> hechos = hechosRepo.findAll();
 
-        coleccion.addHechos(filtrador.aplicarFiltros(criterios,hechos));
+            Filtrador filtrador = new Filtrador();
 
-        coleccionesRepo.save(coleccion);
+            coleccion.addHechos(filtrador.aplicarFiltros(criterios, hechos));
 
+            coleccionesRepo.save(coleccion);
+
+        } else {
+            //tirar excepcion
+        }
     }
-
 }

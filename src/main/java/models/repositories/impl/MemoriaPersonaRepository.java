@@ -1,13 +1,14 @@
 package models.repositories.impl;
 
 import models.entities.personas.Persona;
+import models.repositories.IMemoriaPersonaRepository;
 import models.repositories.IRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public class MemoriaPersonaRepository implements IRepository<Persona> {
+public class MemoriaPersonaRepository implements IMemoriaPersonaRepository {
 
     private List<Persona> personas;
 

@@ -33,11 +33,4 @@ public class Contribuyente extends Visualizador {
     }
 
 
-    public void solicitarEliminacionHecho(Hecho hecho){
-        ContextoPersona contextoPersona = new ContextoPersona((Visualizador)this);
-        SolicitudHecho solicitud = new SolicitudHecho(contextoPersona, hecho);
-        Globales.solicitudesEliminacion.add(solicitud);
-    }
-
-
 }

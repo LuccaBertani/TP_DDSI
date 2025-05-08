@@ -1,8 +1,10 @@
 package services.impl;
 
-import models.entities.Hecho;
-import models.entities.SolicitudHecho;
+import models.entities.*;
 import models.entities.personas.Persona;
+import models.repositories.IMemoriaPersonaRepository;
+import models.repositories.IMemoriaSolicitudAgregarHechoRepository;
+import models.repositories.IMemoriaSolicitudEliminarHechoRepository;
 import models.repositories.IRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,12 +13,16 @@ import services.ISolicitudHechoService;
 @Service
 public class SolicitudHechoService implements ISolicitudHechoService {
 
-    private final IRepository<SolicitudHecho> solicitudHechoRepo;
-    private final IRepository<Persona> personaRepository;
+    private final IMemoriaSolicitudAgregarHechoRepository solicitudAgregarHechoRepo;
+    private final IMemoriaSolicitudEliminarHechoRepository solicitudEliminarHechoRepo;
+
+    private final IMemoriaPersonaRepository personaRepository;
 
     @Autowired
-    public SolicitudHechoService(IRepository<SolicitudHecho> solicitudHechoRepo, IRepository<Persona> personaRepository) {
-        this.solicitudHechoRepo = solicitudHechoRepo;
+    public SolicitudHechoService(IMemoriaSolicitudAgregarHechoRepository solicitudAgregarHechoRepo,IMemoriaSolicitudEliminarHechoRepository solicitudEliminarHechoRepo,
+                                 IMemoriaPersonaRepository personaRepository) {
+        this.solicitudAgregarHechoRepo = solicitudAgregarHechoRepo;
+        this.solicitudEliminarHechoRepo = solicitudEliminarHechoRepo;
         this.personaRepository = personaRepository;
     }
 
@@ -24,7 +30,15 @@ public class SolicitudHechoService implements ISolicitudHechoService {
     public void solicitarSubirHecho(Hecho hecho, Persona persona) {
         // LA PERSONA DEBE SER O VISUALIZADORA O CONTRIBUYENTE
         SolicitudHecho solicitudHecho = new SolicitudHecho(persona, hecho);
-        solicitudHechoRepo.save(solicitudHecho);
+        solicitudAgregarHechoRepo.save(solicitudHecho);
+    }
+
+    @Override
+    public void solicitarEliminacionHecho(Persona persona, Hecho hecho){
+
+        SolicitudHecho solicitud = new SolicitudHecho(persona, hecho);
+
+        solicitudEliminarHechoRepo.save(solicitud);
     }
 
     @Override
@@ -42,13 +56,13 @@ public class SolicitudHechoService implements ISolicitudHechoService {
             }
             solicitud.getPersona().incrementarHechosSubidos();
         }
-        solicitudHechoRepo.delete(solicitud);
+        this.solicitudAgregarHechoRepo.delete(solicitud);
     }
 
     @Override
     public void evaluarEliminacionHecho(SolicitudHecho solicitud, Boolean respuesta) {
         if(respuesta){
-            solicitudHechoRepo.delete(solicitud);
+            solicitudEliminarHechoRepo.delete(solicitud);
             // El hecho deberia dejar de mostrarse en la pagina, pero NUNCA se borra por completo
             solicitud.getHecho().setActivo(false);
 

@@ -1,12 +1,15 @@
 package models.repositories.impl;
 
 import models.entities.SolicitudHecho;
+import models.repositories.IMemoriaSolicitudAgregarHechoRepository;
 import models.repositories.IRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MemoriaSolicitudAgregarHechoRepository implements IRepository<SolicitudHecho> {
+@Repository
+public class MemoriaSolicitudAgregarHechoRepository implements IMemoriaSolicitudAgregarHechoRepository {
     List<SolicitudHecho> solicitudesAgregarHecho;
 
     public MemoriaSolicitudAgregarHechoRepository(){

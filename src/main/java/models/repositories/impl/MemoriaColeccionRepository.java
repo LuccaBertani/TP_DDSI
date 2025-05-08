@@ -1,12 +1,15 @@
 package models.repositories.impl;
 
 import models.entities.Coleccion;
+import models.repositories.IMemoriaColeccionRepository;
 import models.repositories.IRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MemoriaColeccionRepository implements IRepository<Coleccion> {
+@Repository
+public class MemoriaColeccionRepository implements IMemoriaColeccionRepository {
     List <Coleccion> colecciones;
 
     public MemoriaColeccionRepository(){

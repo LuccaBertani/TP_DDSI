@@ -1,12 +1,15 @@
 package models.repositories.impl;
 
 import models.entities.SolicitudHecho;
+import models.repositories.IMemoriaSolicitudEliminarHechoRepository;
 import models.repositories.IRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MemoriaSolicitudEliminarHechoRepository implements IRepository<SolicitudHecho> {
+@Repository
+public class MemoriaSolicitudEliminarHechoRepository implements IMemoriaSolicitudEliminarHechoRepository {
     List<SolicitudHecho> solicitudesEliminarHecho;
 
     public MemoriaSolicitudEliminarHechoRepository(){
