@@ -5,7 +5,6 @@ import models.entities.DatosColeccion;
 import models.entities.Hecho;
 import models.entities.filtros.Filtro;
 import models.entities.personas.Usuario;
-import models.repositories.IRepository;
 
 import java.util.List;
 

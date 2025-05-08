@@ -1,8 +1,7 @@
 package models.repositories.impl;
 
-import models.entities.personas.Persona;
+import models.entities.personas.Usuario;
 import models.repositories.IMemoriaPersonaRepository;
-import models.repositories.IRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,25 +9,25 @@ import java.util.List;
 @Repository
 public class MemoriaPersonaRepository implements IMemoriaPersonaRepository {
 
-    private List<Persona> personas;
+    private List<Usuario> personas;
 
     @Override
-    public void save(Persona persona) {
-        this.personas.add(persona);
+    public void save(Usuario usuario) {
+        this.personas.add(usuario);
     }
 
     @Override
-    public List<Persona> findAll(){
+    public List<Usuario> findAll(){
         return this.personas;
     }
 
     @Override
-    public Persona findById(Long id) {
+    public Usuario findById(Long id) {
         return this.personas.stream().filter(persona -> persona.getDatosPersonales().getId().equals(id)).findFirst().orElse(null);
     }
 
     @Override
-    public void delete(Persona persona){
-        this.personas.remove(persona);
+    public void delete(Usuario usuario){
+        this.personas.remove(usuario);
     }
 }

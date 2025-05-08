@@ -6,11 +6,11 @@ import lombok.Getter;
 
 @Getter
 public class SolicitudHecho {
-    private Persona persona;
+    private Usuario usuario;
     private Hecho hecho;
 
-    public SolicitudHecho(Persona persona, Hecho hecho) {
-        this.persona = persona;
+    public SolicitudHecho(Usuario usuario, Hecho hecho) {
+        this.usuario = usuario;
         this.hecho = hecho;
     }
 }

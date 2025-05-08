@@ -2,7 +2,6 @@ package models.repositories.impl;
 
 import models.entities.Coleccion;
 import models.repositories.IMemoriaColeccionRepository;
-import models.repositories.IRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

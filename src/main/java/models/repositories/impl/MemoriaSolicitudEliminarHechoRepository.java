@@ -2,7 +2,6 @@ package models.repositories.impl;
 
 import models.entities.SolicitudHecho;
 import models.repositories.IMemoriaSolicitudEliminarHechoRepository;
-import models.repositories.IRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

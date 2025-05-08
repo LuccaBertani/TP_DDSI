@@ -1,11 +1,11 @@
 package services.impl;
 
 import models.entities.*;
-import models.entities.personas.Persona;
+import models.entities.personas.Rol;
+import models.entities.personas.Usuario;
 import models.repositories.IMemoriaPersonaRepository;
 import models.repositories.IMemoriaSolicitudAgregarHechoRepository;
 import models.repositories.IMemoriaSolicitudEliminarHechoRepository;
-import models.repositories.IRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import services.ISolicitudHechoService;
@@ -27,16 +27,16 @@ public class SolicitudHechoService implements ISolicitudHechoService {
     }
 
     @Override
-    public void solicitarSubirHecho(Hecho hecho, Persona persona) {
+    public void solicitarSubirHecho(Hecho hecho, Usuario usuario) {
         // LA PERSONA DEBE SER O VISUALIZADORA O CONTRIBUYENTE
-        SolicitudHecho solicitudHecho = new SolicitudHecho(persona, hecho);
+        SolicitudHecho solicitudHecho = new SolicitudHecho(usuario, hecho);
         solicitudAgregarHechoRepo.save(solicitudHecho);
     }
 
     @Override
-    public void solicitarEliminacionHecho(Persona persona, Hecho hecho){
+    public void solicitarEliminacionHecho(Usuario usuario, Hecho hecho){
 
-        SolicitudHecho solicitud = new SolicitudHecho(persona, hecho);
+        SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho);
 
         solicitudEliminarHechoRepo.save(solicitud);
     }
@@ -45,16 +45,16 @@ public class SolicitudHechoService implements ISolicitudHechoService {
     public void evaluarSolicitudSubirHecho(SolicitudHecho solicitud, Boolean respuesta) {
         if(respuesta){
             solicitud.getHecho().setActivo(true);
-            if(solicitud.getPersona().getNivel() == 0
-                    && !solicitud.getPersona().getDatosPersonales().getNombre().isEmpty()){
+            if(solicitud.getUsuario().getRol().equals(Rol.VISUALIZADOR)
+                    && !solicitud.getUsuario().getDatosPersonales().getNombre().isEmpty()){
 
                 // Cambio el "rol" a contribuyente
-                solicitud.getPersona().incrementarNivel();
+                solicitud.getUsuario().setRol(Rol.CONTRIBUYENTE);
 
-                this.personaRepository.save(solicitud.getPersona());
+                this.personaRepository.save(solicitud.getUsuario());
 
             }
-            solicitud.getPersona().incrementarHechosSubidos();
+            solicitud.getUsuario().incrementarHechosSubidos();
         }
         this.solicitudAgregarHechoRepo.delete(solicitud);
     }
@@ -66,10 +66,10 @@ public class SolicitudHechoService implements ISolicitudHechoService {
             // El hecho deberia dejar de mostrarse en la pagina, pero NUNCA se borra por completo
             solicitud.getHecho().setActivo(false);
 
-            solicitud.getPersona().disminuirHechosSubidos();
-            if (solicitud.getPersona().getCantHechosSubidos() == 0){
+            solicitud.getUsuario().disminuirHechosSubidos();
+            if (solicitud.getUsuario().getCantHechosSubidos() == 0){
                 // CAMBIAR ROL A VISUALIZADOR
-                solicitud.getPersona().disminuirNivel();
+                solicitud.getUsuario().setRol(Rol.VISUALIZADOR);
             }
 
         }

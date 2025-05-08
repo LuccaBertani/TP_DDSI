@@ -2,12 +2,10 @@ package services.impl;
 
 import models.entities.*;
 import models.entities.filtros.Filtro;
-import models.entities.personas.Persona;
 import models.entities.personas.Rol;
 import models.entities.personas.Usuario;
 import models.repositories.IMemoriaColeccionRepository;
 import models.repositories.IMemoriaHechosRepository;
-import models.repositories.IRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import services.IColeccionService;
@@ -42,7 +40,7 @@ public class ColeccionService implements IColeccionService {
             coleccionesRepo.save(coleccion);
 
         } else {
-            //tirar excepcion
+            // TODO excepcion
         }
     }
 }

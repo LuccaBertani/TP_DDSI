@@ -1,7 +1,6 @@
 package models.repositories.impl;
 import models.entities.Hecho;
 import models.repositories.IMemoriaHechosRepository;
-import models.repositories.IRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

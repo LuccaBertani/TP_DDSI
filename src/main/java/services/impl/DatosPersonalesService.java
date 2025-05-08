@@ -2,14 +2,11 @@ package services.impl;
 
 import models.entities.DatosPersonalesPublicador;
 import models.entities.SolicitudHecho;
-import models.entities.personas.Persona;
 import models.entities.personas.Rol;
 import models.entities.personas.Usuario;
 import models.repositories.IMemoriaPersonaRepository;
-import models.repositories.IRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import permissions.PermisoAccesoDatosContribuyentes;
 import services.IDatosPersonalesService;
 
 import java.util.List;
@@ -30,7 +27,11 @@ public class DatosPersonalesService implements IDatosPersonalesService {
         if (usuario.getRol().equals(Rol.ADMINISTRADOR)){
             return personasRepo.findAll();
         }
+        else{
+            //TODO excepcion
+        }
         return null;
+
 
     }
 }

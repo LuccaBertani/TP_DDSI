@@ -9,7 +9,7 @@ public class Filtrador {
 
     public List<Hecho> aplicarFiltros(List<Filtro> filtros, List<Hecho> hechos){
 
-            List<Hecho> hechosFiltrados = new ArrayList<>();
+        List<Hecho> hechosFiltrados = new ArrayList<>();
 
         hechos.forEach(hecho -> {
             Boolean condicion = filtros.stream()

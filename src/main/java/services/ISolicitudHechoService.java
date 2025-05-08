@@ -2,7 +2,6 @@ package services;
 
 import models.entities.Hecho;
 import models.entities.SolicitudHecho;
-import models.entities.personas.Persona;
 import models.entities.personas.Usuario;
 
 public interface ISolicitudHechoService {
