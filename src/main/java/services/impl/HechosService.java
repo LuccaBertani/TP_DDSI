@@ -7,21 +7,20 @@ import models.entities.filtros.Filtro;
 import models.entities.fuentes.Fuente;
 import models.entities.personas.Rol;
 import models.entities.personas.Usuario;
-import models.repositories.IMemoriaHechosRepository;
+import models.repositories.IHechosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import services.IHechosService;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class HechosService implements IHechosService {
 
 
-    private final IMemoriaHechosRepository hechosRepo;
+    private final IHechosRepository hechosRepo;
 
     @Autowired
-    public HechosService(IMemoriaHechosRepository repo) {
+    public HechosService(IHechosRepository repo) {
         this.hechosRepo = repo;
     }
 
@@ -31,7 +30,7 @@ public class HechosService implements IHechosService {
         hechosRepo.save(hecho);
     }
     else{
-        //TODO exception
+        throw new SecurityException("No tiene permisos para ejecutar el caso de uso");
     }
 
     }
@@ -47,7 +46,7 @@ public class HechosService implements IHechosService {
             }
         }
         else{
-            //TODO exception
+            throw new SecurityException("No tiene permisos para ejecutar el caso de uso");
         }
 
     }
@@ -56,6 +55,8 @@ public class HechosService implements IHechosService {
     public void navegarPorHechos(List<Filtro> filtros, Coleccion coleccion){
         Filtrador filtrador = new Filtrador();
         List<Hecho> lista = filtrador.aplicarFiltros(filtros, coleccion.getHechos());
+        //Este for lo tendria que hacer otra clase (No es responsabilidad del service).
+        // En el caso de que se printee de otra manera se tendria que cambiar el service y eso esta mal
         for (Hecho hecho : lista){
             System.out.println(hecho.getTitulo());
         }
@@ -63,6 +64,8 @@ public class HechosService implements IHechosService {
 
     @Override
     public void navegarPorHechos(Coleccion coleccion){
+        //Este for lo tendria que hacer otra clase (No es responsabilidad del service).
+        // En el caso de que se printee de otra manera se tendria que cambiar el service y eso esta mal
         for(Hecho hecho : coleccion.getHechos()){
             System.out.println(hecho.getTitulo());
         }

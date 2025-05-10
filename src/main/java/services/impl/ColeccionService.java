@@ -4,8 +4,8 @@ import models.entities.*;
 import models.entities.filtros.Filtro;
 import models.entities.personas.Rol;
 import models.entities.personas.Usuario;
-import models.repositories.IMemoriaColeccionRepository;
-import models.repositories.IMemoriaHechosRepository;
+import models.repositories.IColeccionRepository;
+import models.repositories.IHechosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import services.IColeccionService;
@@ -15,11 +15,11 @@ import java.util.List;
 @Service
 public class ColeccionService implements IColeccionService {
 
-    private final IMemoriaHechosRepository hechosRepo;
-    private final IMemoriaColeccionRepository coleccionesRepo;
+    private final IHechosRepository hechosRepo;
+    private final IColeccionRepository coleccionesRepo;
 
     @Autowired
-    public ColeccionService(IMemoriaHechosRepository hechosRepo, IMemoriaColeccionRepository coleccionesRepo) {
+    public ColeccionService(IHechosRepository hechosRepo, IColeccionRepository coleccionesRepo) {
         this.hechosRepo = hechosRepo;
         this.coleccionesRepo = coleccionesRepo;
     }
@@ -29,10 +29,9 @@ public class ColeccionService implements IColeccionService {
 
         if (usuario.getRol().equals(Rol.ADMINISTRADOR)) {
 
-            Coleccion coleccion = new Coleccion(datos);
+            Coleccion coleccion = new Coleccion(datos,coleccionesRepo.getProxId());
             coleccion.addCriterios(criterios);
             List<Hecho> hechos = hechosRepo.findAll();
-
             Filtrador filtrador = new Filtrador();
 
             coleccion.addHechos(filtrador.aplicarFiltros(criterios, hechos));
@@ -40,7 +39,7 @@ public class ColeccionService implements IColeccionService {
             coleccionesRepo.save(coleccion);
 
         } else {
-            // TODO excepcion
+            throw new SecurityException("No tiene permisos para ejecutar el caso de uso");
         }
     }
 }

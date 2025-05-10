@@ -1,14 +1,15 @@
 package models.repositories.impl;
 
 import models.entities.SolicitudHecho;
-import models.repositories.IMemoriaSolicitudAgregarHechoRepository;
+import models.entities.personas.Usuario;
+import models.repositories.ISolicitudAgregarHechoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class MemoriaSolicitudAgregarHechoRepository implements IMemoriaSolicitudAgregarHechoRepository {
+public class MemoriaSolicitudAgregarHechoRepository implements ISolicitudAgregarHechoRepository {
     List<SolicitudHecho> solicitudesAgregarHecho;
 
     public MemoriaSolicitudAgregarHechoRepository(){
@@ -20,6 +21,19 @@ public class MemoriaSolicitudAgregarHechoRepository implements IMemoriaSolicitud
         return this.solicitudesAgregarHecho.stream()
                 .filter(solicitud -> solicitud.getHecho().getId().equals(id))
                 .findFirst().orElse(null);
+    }
+
+    @Override
+    public long getProxId() {
+        long id_aux = -1;
+        for(SolicitudHecho solicitudHecho: solicitudesAgregarHecho){
+            if(id_aux == -1){
+                id_aux = solicitudHecho.getId();
+            } else if (id_aux < solicitudHecho.getId()) {
+                id_aux = solicitudHecho.getId();
+            }
+        }
+        return id_aux + 1;
     }
 
     @Override

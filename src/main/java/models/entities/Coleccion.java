@@ -42,9 +42,10 @@ public class Coleccion {
         this.hechos.addAll(hechos);
     }
 
-    public Coleccion(DatosColeccion datosColeccion) {
+    public Coleccion(DatosColeccion datosColeccion, long id) {
         this.titulo = datosColeccion.getTitulo();
         this.descripcion = datosColeccion.getDescripcion();
         this.fuente = datosColeccion.getFuente();
+        this.id = id;
     }
 }

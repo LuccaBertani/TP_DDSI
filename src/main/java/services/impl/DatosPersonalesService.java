@@ -1,10 +1,8 @@
 package services.impl;
 
-import models.entities.DatosPersonalesPublicador;
-import models.entities.SolicitudHecho;
 import models.entities.personas.Rol;
 import models.entities.personas.Usuario;
-import models.repositories.IMemoriaPersonaRepository;
+import models.repositories.IPersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import services.IDatosPersonalesService;
@@ -14,10 +12,10 @@ import java.util.List;
 @Service
 public class DatosPersonalesService implements IDatosPersonalesService {
 
-    private final IMemoriaPersonaRepository personasRepo;
+    private final IPersonaRepository personasRepo;
 
     @Autowired
-    public DatosPersonalesService(IMemoriaPersonaRepository personasRepo) {
+    public DatosPersonalesService(IPersonaRepository personasRepo) {
         this.personasRepo = personasRepo;
     }
 
@@ -27,11 +25,8 @@ public class DatosPersonalesService implements IDatosPersonalesService {
         if (usuario.getRol().equals(Rol.ADMINISTRADOR)){
             return personasRepo.findAll();
         }
-        else{
-            //TODO excepcion
+        else {
+            throw new SecurityException("No tiene permisos para ejecutar el caso de uso");
         }
-        return null;
-
-
     }
 }
