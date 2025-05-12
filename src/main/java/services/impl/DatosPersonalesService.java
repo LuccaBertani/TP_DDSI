@@ -21,7 +21,6 @@ public class DatosPersonalesService implements IDatosPersonalesService {
 
     @Override
     public List<Usuario> obtenerListaContribuyentes(Usuario usuario){
-
         if (usuario.getRol().equals(Rol.ADMINISTRADOR)){
             return personasRepo.findAll();
         }

@@ -39,6 +39,12 @@ public class MemoriaPersonaRepository implements IPersonaRepository {
     }
 
     @Override
+    public void update(Usuario usuario) {
+        this.delete(findById(usuario.getId()));
+        this.save(usuario);
+    }
+
+    @Override
     public void delete(Usuario usuario){
         this.personas.remove(usuario);
     }

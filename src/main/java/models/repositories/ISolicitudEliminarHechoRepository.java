@@ -10,4 +10,5 @@ public interface ISolicitudEliminarHechoRepository {
     void delete(SolicitudHecho entidad);
     SolicitudHecho findById(Long id);
     long getProxId();
+    void update(SolicitudHecho entidad);
 }

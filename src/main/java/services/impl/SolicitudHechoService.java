@@ -18,7 +18,7 @@ public class SolicitudHechoService implements ISolicitudHechoService {
     private final ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo;
     private final IHechosRepository hechosRepository;
 
-    GestorRoles gestorRoles = new GestorRoles();
+    GestorRoles gestorRoles;
 
     @Autowired
     public SolicitudHechoService(ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo, ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo,
@@ -26,9 +26,11 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         this.solicitudAgregarHechoRepo = solicitudAgregarHechoRepo;
         this.solicitudEliminarHechoRepo = solicitudEliminarHechoRepo;
         this.hechosRepository = hechosRepository;
+        gestorRoles = new GestorRoles();
     }
 
-    //Si el campo Usuario es NULL significa que es anonimo
+
+
     @Override
     public void solicitarSubirHecho(Hecho hecho, Usuario usuario) {
         // LA PERSONA DEBE SER O VISUALIZADORA O CONTRIBUYENTE
@@ -39,7 +41,6 @@ public class SolicitudHechoService implements ISolicitudHechoService {
     //Si el campo Usuario es NULL significa que es anonimo
     @Override
     public void solicitarEliminacionHecho(Usuario usuario, Hecho hecho){
-
         if(usuario.getRol().equals(Rol.VISUALIZADOR)){
             throw new SecurityException("No tiene permisos para ejecutar el caso de uso");
         }

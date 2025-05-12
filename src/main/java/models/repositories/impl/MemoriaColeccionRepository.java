@@ -51,7 +51,10 @@ public class MemoriaColeccionRepository implements IColeccionRepository {
         coleccion.setActivo(false);
     }
 
-    public void update(Coleccion coleccion){
-        //TODO actualizar datos (igual para todos los repos)
+    @Override
+    public void update(Coleccion coleccion) {
+       this.delete(findById(coleccion.getId()));
+       this.save(coleccion);
     }
+
 }

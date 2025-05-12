@@ -1,6 +1,7 @@
 package models.repositories.impl;
 
 import models.entities.SolicitudHecho;
+import models.entities.personas.Usuario;
 import models.repositories.ISolicitudEliminarHechoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -48,5 +49,11 @@ public class MemoriaSolicitudEliminarHechoRepository implements ISolicitudElimin
     @Override
     public void delete(SolicitudHecho solicitud) {
         this.solicitudesEliminarHecho.remove(solicitud);
+    }
+
+    @Override
+    public void update(SolicitudHecho solicitud) {
+        this.delete(findById(solicitud.getId()));
+        this.save(solicitud);
     }
 }

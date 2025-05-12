@@ -11,4 +11,5 @@ public interface IHechosRepository {
     void delete(Hecho entidad);
     Hecho findById(Long id);
     long getProxId();
+    void update(Hecho entidad);
 }

@@ -25,7 +25,7 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public void CrearColeccion(List<Filtro> criterios, DatosColeccion datos, Usuario usuario) {
+    public void crearColeccion(List<Filtro> criterios, DatosColeccion datos, Usuario usuario) {
 
         if (usuario.getRol().equals(Rol.ADMINISTRADOR)) {
 

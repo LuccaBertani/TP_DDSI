@@ -50,4 +50,10 @@ public class MemoriaSolicitudAgregarHechoRepository implements ISolicitudAgregar
     public void delete(SolicitudHecho solicitud) {
         this.solicitudesAgregarHecho.remove(solicitud);
     }
+
+    @Override
+    public void update(SolicitudHecho solicitud) {
+        this.delete(findById(solicitud.getId()));
+        this.save(solicitud);
+    }
 }
