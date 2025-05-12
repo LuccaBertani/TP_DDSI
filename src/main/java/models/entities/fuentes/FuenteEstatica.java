@@ -2,41 +2,35 @@ package models.entities.fuentes;
 
 import lombok.Getter;
 import lombok.Setter;
+import models.entities.ModificadorHechos;
 import models.entities.*;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 
 public class FuenteEstatica implements Fuente {
     @Getter
     @Setter
     private String dataSet;
-    public List<Hecho> leerFuente(){
+    public ModificadorHechos leerFuente(List<Hecho> hechos){
 
         String[] nombreArchivo = this.dataSet.split("\\.");
         String formato = nombreArchivo[1].toLowerCase();
         if (formato.equals("csv")){
             var lectorCSV = new LectorCSV(this.dataSet);
-            return lectorCSV.leerCSV();
+            return lectorCSV.leerCSV(hechos);
         }
         else if (formato.equals("json")){
-            //TODO el lector del formato JSON
+            //TODO el lector del formato JSON en la entrega 2, porque habría que usar mapeo de urls
             List<Hecho>invento = new ArrayList<>();
-            return invento;
+            ModificadorHechos modificadorHechos = new ModificadorHechos(new ArrayList<>(), new ArrayList<>());
+            return modificadorHechos;
         }
 
 
-        List<Hecho> listaTmp = new ArrayList<>();
-        return listaTmp;
+        ModificadorHechos modificadorHechos = new ModificadorHechos(new ArrayList<>(), new ArrayList<>());
+        return modificadorHechos;
 
     }
 }

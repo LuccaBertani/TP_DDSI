@@ -2,15 +2,16 @@ package models.entities.fuentes;
 
 import models.entities.Globales;
 import models.entities.Hecho;
+import models.entities.ModificadorHechos;
 import models.entities.Origen;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class FuenteDinamica implements Fuente {
-    public List<Hecho> leerFuente(){
-        return Globales.hechosTotales.stream().
-                filter(hecho -> hecho.getOrigen().equals(Origen.CONTRIBUYENTE))
-                .toList();
+    // TODO en entrega 2. Mapeo de urls
+    public ModificadorHechos leerFuente(List<Hecho> hechos){
+        return new ModificadorHechos(new ArrayList<>(),new ArrayList<>());
     }
 }
