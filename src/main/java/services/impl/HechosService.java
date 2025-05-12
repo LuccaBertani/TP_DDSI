@@ -47,6 +47,7 @@ public class HechosService implements IHechosService {
             List<Hecho> hechosAModificar = modificadorHechos.getHechosAModificar();
 
             for (Hecho hecho : hechosASubir){
+                hecho.setId(hechosRepo.getProxId());
                 hechosRepo.save(hecho);
             }
             for (Hecho hecho : hechosAModificar){

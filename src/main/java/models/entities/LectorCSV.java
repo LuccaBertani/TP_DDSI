@@ -94,6 +94,7 @@ public class LectorCSV {
                     hechosASubir.add(hecho);
                 }
                 else{
+                    hecho.setId(hecho0.get().getId()); // Se mantiene el id
                     hechosAModificar.add(hecho);
                 }
 
