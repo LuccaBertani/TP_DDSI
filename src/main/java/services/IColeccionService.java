@@ -9,5 +9,5 @@ import models.entities.personas.Usuario;
 import java.util.List;
 
 public interface IColeccionService {
-    public void CrearColeccion(List<Filtro> criterios, DatosColeccion datos, Usuario usuario);
+    public void crearColeccion(List<Filtro> criterios, DatosColeccion datos, Usuario usuario);
 }

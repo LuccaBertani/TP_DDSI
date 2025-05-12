@@ -1,13 +1,13 @@
 package models.repositories.impl;
 
 import models.entities.personas.Usuario;
-import models.repositories.IMemoriaPersonaRepository;
+import models.repositories.IPersonaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public class MemoriaPersonaRepository implements IMemoriaPersonaRepository {
+public class MemoriaPersonaRepository implements IPersonaRepository {
 
     private List<Usuario> personas;
 
@@ -24,6 +24,24 @@ public class MemoriaPersonaRepository implements IMemoriaPersonaRepository {
     @Override
     public Usuario findById(Long id) {
         return this.personas.stream().filter(persona -> persona.getDatosPersonales().getId().equals(id)).findFirst().orElse(null);
+    }
+    @Override
+    public long getProxId(){
+        long id_aux = -1;
+        for(Usuario persona: personas){
+            if(id_aux == -1){
+                id_aux = persona.getId();
+            } else if (id_aux < persona.getId()) {
+                id_aux = persona.getId();
+            }
+        }
+        return id_aux + 1;
+    }
+
+    @Override
+    public void update(Usuario usuario) {
+        this.delete(findById(usuario.getId()));
+        this.save(usuario);
     }
 
     @Override

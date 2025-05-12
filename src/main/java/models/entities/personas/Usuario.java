@@ -6,7 +6,16 @@ import models.entities.DatosPersonalesPublicador;
 
 
 public class Usuario {
+
+    @Setter
     String contrasenia;
+
+    @Getter
+    Long id;
+
+    public Usuario(Long id) {
+        this.id = id;
+    }
 
     @Getter
     private Integer cantHechosSubidos = 0;
@@ -19,8 +28,6 @@ public class Usuario {
     @Setter
     private DatosPersonalesPublicador datosPersonales;
 
-
-
     public void incrementarHechosSubidos(){
         this.cantHechosSubidos++;
     }
@@ -28,7 +35,5 @@ public class Usuario {
     public void disminuirHechosSubidos(){
         this.cantHechosSubidos--;
     }
-
-
 
 }
