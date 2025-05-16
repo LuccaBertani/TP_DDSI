@@ -1,6 +1,6 @@
 package services;
 
-import models.entities.DatosPersonalesPublicador;
+import models.entities.personas.DatosPersonalesPublicador;
 
 public interface IUsuarioService {
     public void crearUsuario(String contrasenia, DatosPersonalesPublicador datosPersonales);

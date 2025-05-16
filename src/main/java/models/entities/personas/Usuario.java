@@ -2,16 +2,15 @@ package models.entities.personas;
 
 import lombok.Getter;
 import lombok.Setter;
-import models.entities.DatosPersonalesPublicador;
 
 
 public class Usuario {
 
     @Setter
-    String contrasenia;
+    private String contrasenia;
 
     @Getter
-    Long id;
+    private Long id;
 
     public Usuario(Long id) {
         this.id = id;

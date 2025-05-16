@@ -1,4 +1,4 @@
-package models.entities;
+package models.entities.personas;
 
 import lombok.Getter;
 import lombok.Setter;

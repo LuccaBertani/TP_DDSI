@@ -1,6 +1,5 @@
 package services;
 
-import models.entities.DatosPersonalesPublicador;
 import models.entities.personas.Usuario;
 
 import java.util.List;

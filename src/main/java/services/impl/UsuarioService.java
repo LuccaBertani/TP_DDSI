@@ -1,6 +1,6 @@
 package services.impl;
 
-import models.entities.DatosPersonalesPublicador;
+import models.entities.personas.DatosPersonalesPublicador;
 import models.entities.personas.Usuario;
 import models.repositories.IPersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
