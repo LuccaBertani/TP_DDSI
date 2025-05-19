@@ -2,11 +2,10 @@ package models.entities;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.text.Normalizer;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class LectorCSV {
 
@@ -35,18 +34,24 @@ public class LectorCSV {
                 new InputStreamReader(new FileInputStream(this.dataSet), Charset.forName("ISO-8859-1"))))
         {
 
-            linea = br.readLine(); // Me salteo la primera fila
+            linea = br.readLine();
+            List<String> valoresColumnas = List.of(linea.split(";"));
+            Map<String, Integer> mapeoValorXIndice = this.filtrarColumnas(valoresColumnas);
+
+
             while ((linea = br.readLine()) != null) {
                 Boolean seModificaHecho = false;
                 String[] valores = linea.split(";");
+                String titulo;
 
-                String titulo = valores[0];
-                String descripcion = valores[1];
-                String categoriaString = valores[2];
-                Double latitud = Double.parseDouble(valores[3]);
-                Double longitud = Double.parseDouble(valores[4]);
+                if (mapeoValorXIndice.containsKey("titulo")){
+                    titulo = valores[mapeoValorXIndice.get("titulo")];
+                }
 
-                String nombrePais = Geocodificador.obtenerPais(latitud, longitud);
+                // TODO así con el resto
+
+
+                /*String nombrePais = Geocodificador.obtenerPais(latitud, longitud);
 
                 Optional<Hecho> hecho0 = hechos.stream().filter(h->h.getTitulo().equals(titulo)).findFirst();
 
@@ -96,7 +101,7 @@ public class LectorCSV {
                 else{
                     hecho.setId(hecho0.get().getId()); // Se mantiene el id
                     hechosAModificar.add(hecho);
-                }
+                }*/
 
             }
 
@@ -107,6 +112,58 @@ public class LectorCSV {
         }
 
         return new ModificadorHechos(hechosASubir, hechosAModificar);
+    }
+
+    // Analizo qué columnas me interesan. Solo leo esas despues.
+    private Map<String, Integer> filtrarColumnas(List<String> valoresColumnas){
+
+        List<String>camposEsperados = new ArrayList<>(Arrays.asList("titulo","descripcion","categoria","latitud","longitud","fechadelhecho"));
+
+
+        Map<String, Integer> mapeoValorXIndice = new HashMap<>();
+
+
+
+
+        for (String valorColumna : valoresColumnas){
+            Boolean encontrado = false;
+            for (String campoEsperado : camposEsperados){
+                if (valorColumna.equals(campoEsperado)){
+                    encontrado = true;
+                    mapeoValorXIndice.put(campoEsperado, valoresColumnas.indexOf(valorColumna));
+                }
+            }
+            if (!encontrado){
+                // Capaz los títulos no se guardan y tienen algún id para identificarlos
+                if (valorColumna.equals("id_hecho")){
+                    mapeoValorXIndice.put("titulo", valoresColumnas.indexOf(valorColumna));
+                }
+                // Una columna puede decir fecha en vez de fecha del hecho
+                else if (valorColumna.contains("fecha")){
+                    mapeoValorXIndice.put("fechadelhecho", valoresColumnas.indexOf(valorColumna));
+                }
+                // El lugar del hecho puede estar determinado de otras formas
+                else if (!mapeoValorXIndice.containsKey("longitud") && (valorColumna.contains("lugar") || valorColumna.contains("pais"))){
+                    mapeoValorXIndice.put("pais", valoresColumnas.indexOf(valorColumna));
+                }
+
+            }
+        }
+
+        return mapeoValorXIndice;
+
+
+    }
+
+
+
+    private String normalizar(String texto) {
+        // Quitar tildes
+        String sinTildes = Normalizer.normalize(texto, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+
+        // Quitar espacios y pasar a minúsculas
+        return sinTildes.replaceAll("\\s+", "").toLowerCase();
     }
 
 }
