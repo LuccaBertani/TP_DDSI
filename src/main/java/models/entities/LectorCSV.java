@@ -49,6 +49,7 @@ public class LectorCSV {
                 String categoriaString = mapeoValorXIndice.containsKey("categoria") ? valores[mapeoValorXIndice.get("categoria")] : null;
                 String latitudString = mapeoValorXIndice.containsKey("latitud") ? valores[mapeoValorXIndice.get("latitud")] : null;
                 String longitudString = mapeoValorXIndice.containsKey("longitud") ? valores[mapeoValorXIndice.get("longitud")] : null;
+                String paisOLugar = mapeoValorXIndice.containsKey("pais") ? valores[mapeoValorXIndice.get("pais")] : null;
                 String fechaString = mapeoValorXIndice.containsKey("fechadelhecho") ? valores[mapeoValorXIndice.get("fechadelhecho")] : null;
 
                 // Por las dudas, no se como me vienen en el csv
@@ -57,7 +58,17 @@ public class LectorCSV {
                 ZonedDateTime fechaAcontecimiento = fechaString != null ? ZonedDateTime.parse(fechaString, formatter) : null;
 
                 ZonedDateTime fechaCarga = ZonedDateTime.now();
-                String nombrePais = Geocodificador.obtenerPais(latitud, longitud);
+                //String nombrePais = Geocodificador.obtenerPais(latitud, longitud);
+
+                // Determinar el PAIS
+                String nombrePais;
+                if (latitud != null && longitud != null) {
+                    nombrePais = Geocodificador.obtenerPais(latitud, longitud);
+                } else if (paisOLugar != null) {
+                    nombrePais = paisOLugar;
+                } else {
+                    throw new IllegalArgumentException("No se pudo determinar la ubicación del hecho");
+                }
 
                 Optional<Hecho> hecho0 = hechos.stream().filter(h->h.getTitulo().equals(titulo)).findFirst();
 
@@ -77,8 +88,11 @@ public class LectorCSV {
                     categoria = hecho1.get().getCategoria();
                 }
 
-                Optional<Hecho> hecho2 = Globales.hechosTotales.stream().filter(h-> h.getPais().getPais().toLowerCase().equals(nombrePais.toLowerCase())).findFirst();
+                Optional<Hecho> hecho2 = Globales.hechosTotales.stream()
+                        .filter(h -> h.getPais().getPais().equalsIgnoreCase(nombrePais))
+                        .findFirst();
                 Pais pais;
+
 
                 // Si el país no existe, se crea
                 if (hecho2.isEmpty()){
@@ -127,9 +141,8 @@ public class LectorCSV {
         Map<String, String> sinonimos = Map.of(
                 "id_hecho", "titulo",
                 "evento", "titulo",
-                "ubicacion", "latitud",
-                "coordenadas", "latitud",
                 "fecha", "fechadelhecho",
+                "ubicacion","pais",
                 "lugar", "pais",
                 "pais", "pais"
         );
@@ -182,7 +195,7 @@ public class LectorCSV {
                 // Si no se encuentran buscamos a ver si hay sinonimos
                 if (!encontrado) {
                     for (Map.Entry<String, String> entrada : sinonimos.entrySet()) {
-                        if (valorColumna.toLowerCase().contains(entrada.getKey().toLowerCase())) {
+                        if (valorColumna.contains(entrada.getKey())) {
                             mapeoValorXIndice.putIfAbsent(entrada.getValue(), i); // putIfAbsent: me fijo si ya lo agregue, para no repetir
                             break;
                         }
@@ -190,10 +203,6 @@ public class LectorCSV {
                 }
             }
 
-        // Para asegurar que todos los campos esten, los declaro en null
-        for (String campoEsperado : camposEsperados) {
-            mapeoValorXIndice.putIfAbsent(campoEsperado, null);
-        }
 
         return mapeoValorXIndice;
 
