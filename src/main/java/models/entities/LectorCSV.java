@@ -167,6 +167,7 @@ public class LectorCSV {
  */
             for (int i = 0; i < valoresColumnas.size(); i++) {
                 String valorColumna = valoresColumnas.get(i);
+                valorColumna = this.normalizar(valorColumna);
                 boolean encontrado = false;
 
                 // 1. Búsqueda exacta entre los campos esperados
