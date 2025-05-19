@@ -143,8 +143,7 @@ public class LectorCSV {
                 "evento", "titulo",
                 "fecha", "fechadelhecho",
                 "ubicacion","pais",
-                "lugar", "pais",
-                "pais", "pais"
+                "lugar", "pais"
         );
 
 /*
