@@ -42,16 +42,22 @@ public class LectorCSV {
             while ((linea = br.readLine()) != null) {
                 Boolean seModificaHecho = false;
                 String[] valores = linea.split(";");
-                String titulo;
-
-                if (mapeoValorXIndice.containsKey("titulo")){
-                    titulo = valores[mapeoValorXIndice.get("titulo")];
-                }
-
-                // TODO así con el resto
 
 
-                /*String nombrePais = Geocodificador.obtenerPais(latitud, longitud);
+                String titulo = mapeoValorXIndice.containsKey("titulo") ? valores[mapeoValorXIndice.get("titulo")] : null;
+                String descripcion = mapeoValorXIndice.containsKey("descripcion") ? valores[mapeoValorXIndice.get("descripcion")] : null;
+                String categoriaString = mapeoValorXIndice.containsKey("categoria") ? valores[mapeoValorXIndice.get("categoria")] : null;
+                String latitudString = mapeoValorXIndice.containsKey("latitud") ? valores[mapeoValorXIndice.get("latitud")] : null;
+                String longitudString = mapeoValorXIndice.containsKey("longitud") ? valores[mapeoValorXIndice.get("longitud")] : null;
+                String fechaString = mapeoValorXIndice.containsKey("fechadelhecho") ? valores[mapeoValorXIndice.get("fechadelhecho")] : null;
+
+                // Por las dudas, no se como me vienen en el csv
+                Double latitud = latitudString != null ? Double.valueOf(latitudString) : null;
+                Double longitud = longitudString != null ? Double.valueOf(longitudString) : null;
+                ZonedDateTime fechaAcontecimiento = fechaString != null ? ZonedDateTime.parse(fechaString, formatter) : null;
+
+                ZonedDateTime fechaCarga = ZonedDateTime.now();
+                String nombrePais = Geocodificador.obtenerPais(latitud, longitud);
 
                 Optional<Hecho> hecho0 = hechos.stream().filter(h->h.getTitulo().equals(titulo)).findFirst();
 
@@ -83,9 +89,6 @@ public class LectorCSV {
                     pais = hecho2.get().getPais();
                 }
 
-                ZonedDateTime fechaAcontecimiento = ZonedDateTime.parse(valores[5],formatter);
-                ZonedDateTime fechaCarga = ZonedDateTime.now();
-
                 Hecho hecho = new Hecho();
                 hecho.setTitulo(titulo);
                 hecho.setDescripcion(descripcion);
@@ -101,7 +104,7 @@ public class LectorCSV {
                 else{
                     hecho.setId(hecho0.get().getId()); // Se mantiene el id
                     hechosAModificar.add(hecho);
-                }*/
+                }
 
             }
 
@@ -118,21 +121,32 @@ public class LectorCSV {
     private Map<String, Integer> filtrarColumnas(List<String> valoresColumnas){
 
         List<String>camposEsperados = new ArrayList<>(Arrays.asList("titulo","descripcion","categoria","latitud","longitud","fechadelhecho"));
-
-
         Map<String, Integer> mapeoValorXIndice = new HashMap<>();
 
+        // Mapa de sinónimos: cada clave es un patrón, el valor es el campo real que representa
+        Map<String, String> sinonimos = Map.of(
+                "id_hecho", "titulo",
+                "evento", "titulo",
+                "ubicacion", "latitud",
+                "coordenadas", "latitud",
+                "fecha", "fechadelhecho",
+                "lugar", "pais",
+                "pais", "pais"
+        );
 
-
-
-        for (String valorColumna : valoresColumnas){
+/*
+            for (String valorColumna : valoresColumnas){
             Boolean encontrado = false;
+
+            // Buscamos si la columna coincide con algún campo esperado
             for (String campoEsperado : camposEsperados){
                 if (valorColumna.equals(campoEsperado)){
                     encontrado = true;
                     mapeoValorXIndice.put(campoEsperado, valoresColumnas.indexOf(valorColumna));
                 }
             }
+
+            // Evaluamos nombres alternativos si no se encontraron
             if (!encontrado){
                 // Capaz los títulos no se guardan y tienen algún id para identificarlos
                 if (valorColumna.equals("id_hecho")){
@@ -150,8 +164,37 @@ public class LectorCSV {
             }
         }
 
-        return mapeoValorXIndice;
+ */
+            for (int i = 0; i < valoresColumnas.size(); i++) {
+                String valorColumna = valoresColumnas.get(i);
+                boolean encontrado = false;
 
+                // 1. Búsqueda exacta entre los campos esperados
+                for (String campoEsperado : camposEsperados) {
+                    if (valorColumna.equalsIgnoreCase(campoEsperado)) {
+                        mapeoValorXIndice.putIfAbsent(campoEsperado, i);
+                        encontrado = true;
+                        break;
+                    }
+                }
+
+                // Si no se encuentran buscamos a ver si hay sinonimos
+                if (!encontrado) {
+                    for (Map.Entry<String, String> entrada : sinonimos.entrySet()) {
+                        if (valorColumna.toLowerCase().contains(entrada.getKey().toLowerCase())) {
+                            mapeoValorXIndice.putIfAbsent(entrada.getValue(), i); // putIfAbsent: me fijo si ya lo agregue, para no repetir
+                            break;
+                        }
+                    }
+                }
+            }
+
+        // Para asegurar que todos los campos esten, los declaro en null
+        for (String campoEsperado : camposEsperados) {
+            mapeoValorXIndice.putIfAbsent(campoEsperado, null);
+        }
+
+        return mapeoValorXIndice;
 
     }
 
