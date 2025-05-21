@@ -3,9 +3,15 @@ package models.entities;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.text.Normalizer;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import models.repositories.IHechosRepository;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 
 public class LectorCSV {
 
@@ -15,116 +21,132 @@ public class LectorCSV {
         this.dataSet=dataSet;
     }
 
-    public ModificadorHechos leerCSV(List<Hecho> hechos){
+    public ModificadorHechos leerCSV(List<Hecho> hechos) {
 
-        File archivo = new File(this.dataSet);
-
-        if (!archivo.exists() || !archivo.canRead()) {
-            throw new SecurityException("No se puede acceder al archivo CSV: " + this.dataSet);
-        }
-
-        // Los cambios en la lista de hechos actuales tienen que verse reflejados en el repo de hechos
-        // Hago una lista de los hechos a subir, y una lista de hechos a modificar
         List<Hecho> hechosASubir = new ArrayList<>();
         List<Hecho> hechosAModificar = new ArrayList<>();
 
-        String linea;
-        DateTimeFormatter formatter =  DateTimeFormatter.ISO_ZONED_DATE_TIME;
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(new FileInputStream(this.dataSet), Charset.forName("ISO-8859-1"))))
-        {
+        try {
+            Reader reader = new FileReader(this.dataSet);
 
-            linea = br.readLine();
-            List<String> valoresColumnas = List.of(linea.split(";"));
-            Map<String, Integer> mapeoValorXIndice = this.filtrarColumnas(valoresColumnas);
+            CSVFormat formato = CSVFormat.DEFAULT
+                    .withFirstRecordAsHeader()
+                    .withDelimiter(';')
+                    .withQuote('"'); // Esto es por defecto, pero podés dejarlo explícito
+            CSVParser parser = new CSVParser(reader, formato);
 
+            List<String> headers = parser.getHeaderNames();
 
-            while ((linea = br.readLine()) != null) {
-                Boolean seModificaHecho = false;
-                String[] valores = linea.split(";");
+            // Se cambia el delimitador a una ','
+            if(headers.size() == 1){
+                parser.close();
 
+                reader = new FileReader(this.dataSet);
 
-                String titulo = mapeoValorXIndice.containsKey("titulo") ? valores[mapeoValorXIndice.get("titulo")] : null;
-                String descripcion = mapeoValorXIndice.containsKey("descripcion") ? valores[mapeoValorXIndice.get("descripcion")] : null;
-                String categoriaString = mapeoValorXIndice.containsKey("categoria") ? valores[mapeoValorXIndice.get("categoria")] : null;
-                String latitudString = mapeoValorXIndice.containsKey("latitud") ? valores[mapeoValorXIndice.get("latitud")] : null;
-                String longitudString = mapeoValorXIndice.containsKey("longitud") ? valores[mapeoValorXIndice.get("longitud")] : null;
-                String paisOLugar = mapeoValorXIndice.containsKey("pais") ? valores[mapeoValorXIndice.get("pais")] : null;
-                String fechaString = mapeoValorXIndice.containsKey("fechadelhecho") ? valores[mapeoValorXIndice.get("fechadelhecho")] : null;
+                formato = CSVFormat.DEFAULT
+                        .withFirstRecordAsHeader()
+                        .withDelimiter(',')
+                        .withQuote('"'); // Esto es por defecto, pero podés dejarlo explícito
+                parser = new CSVParser(reader, formato);
 
-                // Por las dudas, no se como me vienen en el csv
-                Double latitud = latitudString != null ? Double.valueOf(latitudString) : null;
-                Double longitud = longitudString != null ? Double.valueOf(longitudString) : null;
-                ZonedDateTime fechaAcontecimiento = fechaString != null ? ZonedDateTime.parse(fechaString, formatter) : null;
-
-                ZonedDateTime fechaCarga = ZonedDateTime.now();
-                //String nombrePais = Geocodificador.obtenerPais(latitud, longitud);
-
-                // Determinar el PAIS
-                String nombrePais;
-                if (latitud != null && longitud != null) {
-                    nombrePais = Geocodificador.obtenerPais(latitud, longitud);
-                } else if (paisOLugar != null) {
-                    nombrePais = paisOLugar;
-                } else {
-                    throw new IllegalArgumentException("No se pudo determinar la ubicación del hecho");
-                }
-
-                Optional<Hecho> hecho0 = hechos.stream().filter(h->h.getTitulo().equals(titulo)).findFirst();
-
-                if (!hecho0.isEmpty()){
-                    seModificaHecho = true; // El hecho se sobreescribe cuando se repite el título
-                }
-
-                Optional<Hecho> hecho1 = hechos.stream().filter(h-> h.getCategoria().getTitulo().toLowerCase().equals(categoriaString.toLowerCase())).findFirst();
-                Categoria categoria;
-
-                // Si la categoría no existe, se crea
-                if (hecho1.isEmpty()){
-                    categoria = new Categoria();
-                    categoria.setTitulo(categoriaString);
-                }
-                else{
-                    categoria = hecho1.get().getCategoria();
-                }
-
-                Optional<Hecho> hecho2 = Globales.hechosTotales.stream()
-                        .filter(h -> h.getPais().getPais().equalsIgnoreCase(nombrePais))
-                        .findFirst();
-                Pais pais;
-
-
-                // Si el país no existe, se crea
-                if (hecho2.isEmpty()){
-                    pais = new Pais();
-                    pais.setPais(nombrePais);
-                }
-                else{
-                    pais = hecho2.get().getPais();
-                }
-
-                Hecho hecho = new Hecho();
-                hecho.setTitulo(titulo);
-                hecho.setDescripcion(descripcion);
-                hecho.setCategoria(categoria);
-                hecho.setPais(pais);
-                hecho.setFechaAcontecimiento(fechaAcontecimiento);
-                hecho.setFechaDeCarga(fechaCarga);
-                hecho.setOrigen(Origen.DATASET);
-
-                if (!seModificaHecho){
-                    hechosASubir.add(hecho);
-                }
-                else{
-                    hecho.setId(hecho0.get().getId()); // Se mantiene el id
-                    hechosAModificar.add(hecho);
-                }
+                headers = parser.getHeaderNames();
 
             }
 
 
+            List<Integer> indicesColumnas = this.filtrarColumnas(headers);
+            List<CSVRecord> registrosCSV = parser.getRecords();
+            for (int f = 0; f < registrosCSV.size(); f++) {
+                CSVRecord fila = registrosCSV.get(f);
+                boolean seModificaHecho = false;
+                // Campos: [Titulo,Descripcion,Categoria,Latitud,Longitud,FechaDelHecho,Pais]
+                // headersDelArchivo: [Titulo,FechaDelAccidente,Auto,Matricula,Pais,Descripcion]
+                // indicesColumnas: [0,5,-1,-1,-1,-1,-1] -> filtrarColumnas
+                //PrimeraLectura : [Cataratas,10/10/10,reno12,23125412,Argentina,Skibidi]
+                // guardo nombre: if(lista.get(0) != -1){
+                // hecho.setNombre(registro.get(0));
+                // guardo descripcion: if(lista.get(5) != -1){
+                // hecho.setDescripcion(registro.get(5))
+                // }
 
-        } catch (IOException e) {
+                // if(lista.get(1) == 1) {hecho.setDescripcion("N/A")}
+
+                List<String> registros = new ArrayList<>();
+                fila.forEach(registros::add);
+
+
+                Hecho hecho = new Hecho();
+
+
+
+                hecho.setTitulo((indicesColumnas.get(0) != -1) ? registros.get(0) : "N/A");
+
+                Optional<Hecho> hecho0 = hechos.stream().filter(h->this.normalizarYComparar(h.getTitulo(), hecho.getTitulo())).findFirst();
+
+                if (hecho0.isPresent() && !hecho0.get().getTitulo().equals("NA")){
+                    seModificaHecho = true; // El hecho se sobreescribe cuando se repite el título
+                }
+
+                hecho.setDescripcion((indicesColumnas.get(1) != -1) ? registros.get(1) : "N/A");
+
+                String categoriaString = indicesColumnas.get(2) != -1 ? registros.get(2) : "N/A";
+                Optional<Hecho> hecho1 = hechos.stream().filter(h->this.normalizarYComparar(h.getCategoria().getTitulo(), categoriaString)).findFirst();
+                Categoria categoria;
+                // Si la categoría no existe, se crea
+
+                if (hecho1.isPresent() && !hecho1.get().getCategoria().getTitulo().equals("N/A")){
+                    categoria = hecho1.get().getCategoria();
+                    hecho.setCategoria(categoria);
+                }
+                else if (hecho1.isEmpty()){
+                    categoria = new Categoria();
+                    categoria.setTitulo(categoriaString);
+                    hecho.setCategoria(categoria);
+                }
+
+
+                String paisString;
+                if (indicesColumnas.get(3) != -1 && indicesColumnas.get(4) != -1){
+                    Double latitud = Double.parseDouble(registros.get(3));
+                    Double longitud = Double.parseDouble(registros.get(4));
+                    paisString = Geocodificador.obtenerPais(latitud, longitud);
+                }
+
+                else {
+                    paisString = indicesColumnas.get(6) != -1 ? registros.get(6) : "N/A";
+                }
+
+                Optional<Hecho> hecho2 = hechos.stream().filter(h->this.normalizarYComparar(h.getPais().getPais(), paisString)).findFirst();
+                Pais pais;
+                // Si el país no existe, se crea
+
+                if (hecho2.isPresent() && !hecho2.get().getPais().getPais().equals("N/A")){
+                    pais = hecho2.get().getPais();
+                    hecho.setPais(pais);
+
+                } else if (hecho2.isEmpty()){
+                    pais = new Pais();
+                    pais.setPais(paisString);
+                    hecho.setPais(pais);
+                }
+
+                ZonedDateTime fecha = ZonedDateTime.parse(registros.get(5));
+
+                hecho.setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? fecha : ZonedDateTime.of(0, 0, 0, 0, 0, 0, 0, ZoneId.of("UTC")));
+
+                hecho.setFechaDeCarga(ZonedDateTime.now());
+
+                if (seModificaHecho){
+                    hechosAModificar.add(hecho);
+                }
+                else{
+                    hechosASubir.add(hecho);
+                }
+            }
+
+            parser.close();
+        }
+        catch(IOException e){
             throw new RuntimeException("Error al leer el archivo CSV: " + e.getMessage(), e);
         }
 
@@ -132,81 +154,41 @@ public class LectorCSV {
     }
 
     // Analizo qué columnas me interesan. Solo leo esas despues.
-    private Map<String, Integer> filtrarColumnas(List<String> valoresColumnas){
+    private List<Integer> filtrarColumnas(List<String> headers) {
 
-        List<String>camposEsperados = new ArrayList<>(Arrays.asList("titulo","descripcion","categoria","latitud","longitud","fechadelhecho"));
-        Map<String, Integer> mapeoValorXIndice = new HashMap<>();
+        // Campos: [Titulo,Descripcion,Categoria,Latitud,Longitud,FechaDelHecho]
+        // headersDelArchivo: [Titulo,FechaDelAccidente,Auto,Matricula,Pais,Descripcion]
+        // lista: [0,5,-1,-1,-1,-1]
+
+        List<Integer> indicesColumnas = new ArrayList<>(Collections.nCopies(Globales.campos.size(), -1));
+
 
         // Mapa de sinónimos: cada clave es un patrón, el valor es el campo real que representa
-        Map<String, String> sinonimos = Map.of(
+        /*Map<String, String> sinonimos = Map.of(
+                "titulo_hecho", "titulo",
                 "id_hecho", "titulo",
                 "evento", "titulo",
-                "fecha", "fechadelhecho",
-                "ubicacion","pais",
-                "lugar", "pais"
-        );
+                "fecha", "fechadelhecho"
+        );*/
 
-/*
-            for (String valorColumna : valoresColumnas){
-            Boolean encontrado = false;
+        for (int i = 0; i < headers.size(); i++) {
+            String valorColumna = headers.get(i);
+            valorColumna = this.normalizar(valorColumna);
+            boolean encontrado = false;
 
-            // Buscamos si la columna coincide con algún campo esperado
-            for (String campoEsperado : camposEsperados){
-                if (valorColumna.equals(campoEsperado)){
+            // 1. Búsqueda exacta entre los campos esperados
+            for (String campoEsperado : Globales.campos) {
+                if (valorColumna.equals(campoEsperado)) {
+                    indicesColumnas.add(i);
                     encontrado = true;
-                    mapeoValorXIndice.put(campoEsperado, valoresColumnas.indexOf(valorColumna));
+                    break;
                 }
             }
 
-            // Evaluamos nombres alternativos si no se encontraron
-            if (!encontrado){
-                // Capaz los títulos no se guardan y tienen algún id para identificarlos
-                if (valorColumna.equals("id_hecho")){
-                    mapeoValorXIndice.put("titulo", valoresColumnas.indexOf(valorColumna));
-                }
-                // Una columna puede decir fecha en vez de fecha del hecho
-                else if (valorColumna.contains("fecha")){
-                    mapeoValorXIndice.put("fechadelhecho", valoresColumnas.indexOf(valorColumna));
-                }
-                // El lugar del hecho puede estar determinado de otras formas
-                else if (!mapeoValorXIndice.containsKey("longitud") && (valorColumna.contains("lugar") || valorColumna.contains("pais"))){
-                    mapeoValorXIndice.put("pais", valoresColumnas.indexOf(valorColumna));
-                }
 
-            }
         }
-
- */
-            for (int i = 0; i < valoresColumnas.size(); i++) {
-                String valorColumna = valoresColumnas.get(i);
-                valorColumna = this.normalizar(valorColumna);
-                boolean encontrado = false;
-
-                // 1. Búsqueda exacta entre los campos esperados
-                for (String campoEsperado : camposEsperados) {
-                    if (valorColumna.equalsIgnoreCase(campoEsperado)) {
-                        mapeoValorXIndice.putIfAbsent(campoEsperado, i);
-                        encontrado = true;
-                        break;
-                    }
-                }
-
-                // Si no se encuentran buscamos a ver si hay sinonimos
-                if (!encontrado) {
-                    for (Map.Entry<String, String> entrada : sinonimos.entrySet()) {
-                        if (valorColumna.contains(entrada.getKey())) {
-                            mapeoValorXIndice.putIfAbsent(entrada.getValue(), i); // putIfAbsent: me fijo si ya lo agregue, para no repetir
-                            break;
-                        }
-                    }
-                }
-            }
-
-
-        return mapeoValorXIndice;
-
+        return indicesColumnas;
     }
-
 
 
     private String normalizar(String texto) {
@@ -216,6 +198,13 @@ public class LectorCSV {
 
         // Quitar espacios y pasar a minúsculas
         return sinTildes.replaceAll("\\s+", "").toLowerCase();
+    }
+
+    private Boolean normalizarYComparar(String s1, String s2){
+        s1=normalizar(s1);
+        s2=normalizar(s2);
+
+        return s1.equals(s2);
     }
 
 }
