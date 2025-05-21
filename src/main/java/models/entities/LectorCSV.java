@@ -13,6 +13,9 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.time.temporal.WeekFields.ISO;
+
 public class LectorCSV {
 
     private String dataSet;
@@ -27,7 +30,7 @@ public class LectorCSV {
         List<Hecho> hechosAModificar = new ArrayList<>();
 
         try {
-            Reader reader = new FileReader(this.dataSet);
+            Reader reader = new InputStreamReader(new FileInputStream(this.dataSet), Charset.forName("ISO-8859-1"));
 
             CSVFormat formato = CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
@@ -36,6 +39,7 @@ public class LectorCSV {
             CSVParser parser = new CSVParser(reader, formato);
 
             List<String> headers = parser.getHeaderNames();
+
 
             // Se cambia el delimitador a una ','
             if(headers.size() == 1){
@@ -51,10 +55,14 @@ public class LectorCSV {
 
                 headers = parser.getHeaderNames();
 
+
             }
 
-
+            System.out.println(headers);
             List<Integer> indicesColumnas = this.filtrarColumnas(headers);
+            System.out.println(indicesColumnas);
+            //indicesColumnas.forEach(i->i.);
+
             List<CSVRecord> registrosCSV = parser.getRecords();
             for (int f = 0; f < registrosCSV.size(); f++) {
                 CSVRecord fila = registrosCSV.get(f);
@@ -77,19 +85,20 @@ public class LectorCSV {
 
                 Hecho hecho = new Hecho();
 
+                hecho.setOrigen(Origen.DATASET);
 
-
-                hecho.setTitulo((indicesColumnas.get(0) != -1) ? registros.get(0) : "N/A");
+                hecho.setTitulo((indicesColumnas.get(0) != -1) ? registros.get(indicesColumnas.get(0)) : "N/A");
 
                 Optional<Hecho> hecho0 = hechos.stream().filter(h->this.normalizarYComparar(h.getTitulo(), hecho.getTitulo())).findFirst();
 
-                if (hecho0.isPresent() && !hecho0.get().getTitulo().equals("NA")){
+                if (hecho0.isPresent() && !hecho0.get().getTitulo().equals("N/A")){
+                    System.out.println("El hecho está repetido");
                     seModificaHecho = true; // El hecho se sobreescribe cuando se repite el título
                 }
 
-                hecho.setDescripcion((indicesColumnas.get(1) != -1) ? registros.get(1) : "N/A");
+                hecho.setDescripcion((indicesColumnas.get(1) != -1) ? registros.get(indicesColumnas.get(1)) : "N/A");
 
-                String categoriaString = indicesColumnas.get(2) != -1 ? registros.get(2) : "N/A";
+                String categoriaString = indicesColumnas.get(2) != -1 ? registros.get(indicesColumnas.get(2)) : "N/A";
                 Optional<Hecho> hecho1 = hechos.stream().filter(h->this.normalizarYComparar(h.getCategoria().getTitulo(), categoriaString)).findFirst();
                 Categoria categoria;
                 // Si la categoría no existe, se crea
@@ -107,13 +116,13 @@ public class LectorCSV {
 
                 String paisString;
                 if (indicesColumnas.get(3) != -1 && indicesColumnas.get(4) != -1){
-                    Double latitud = Double.parseDouble(registros.get(3));
-                    Double longitud = Double.parseDouble(registros.get(4));
+                    Double latitud = Double.parseDouble(registros.get(indicesColumnas.get(3)));
+                    Double longitud = Double.parseDouble(registros.get(indicesColumnas.get(4)));
                     paisString = Geocodificador.obtenerPais(latitud, longitud);
                 }
 
                 else {
-                    paisString = indicesColumnas.get(6) != -1 ? registros.get(6) : "N/A";
+                    paisString = indicesColumnas.get(6) != -1 ? registros.get(indicesColumnas.get(6)) : "N/A";
                 }
 
                 Optional<Hecho> hecho2 = hechos.stream().filter(h->this.normalizarYComparar(h.getPais().getPais(), paisString)).findFirst();
@@ -130,9 +139,9 @@ public class LectorCSV {
                     hecho.setPais(pais);
                 }
 
-                ZonedDateTime fecha = ZonedDateTime.parse(registros.get(5));
+                ZonedDateTime fecha = ZonedDateTime.parse(registros.get(indicesColumnas.get(5)));
 
-                hecho.setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? fecha : ZonedDateTime.of(0, 0, 0, 0, 0, 0, 0, ZoneId.of("UTC")));
+                hecho.setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? fecha : ZonedDateTime.of(0, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")));
 
                 hecho.setFechaDeCarga(ZonedDateTime.now());
 
@@ -174,17 +183,18 @@ public class LectorCSV {
         for (int i = 0; i < headers.size(); i++) {
             String valorColumna = headers.get(i);
             valorColumna = this.normalizar(valorColumna);
-            boolean encontrado = false;
-
+            //boolean encontrado = false;
+            int j = 0;
+            // public static List<String> campos = new ArrayList<>(Arrays.asList("titulo","descripcion","categoria","latitud","longitud","fechadelhecho","pais"));
+            // [Incendios Forestales, ...]
             // 1. Búsqueda exacta entre los campos esperados
             for (String campoEsperado : Globales.campos) {
                 if (valorColumna.equals(campoEsperado)) {
-                    indicesColumnas.add(i);
-                    encontrado = true;
-                    break;
+                    indicesColumnas.set(j, i); // i: posicion del campo del header. j: posicion de la lista
+                    //encontrado = true;
                 }
+                j++;
             }
-
 
         }
         return indicesColumnas;
