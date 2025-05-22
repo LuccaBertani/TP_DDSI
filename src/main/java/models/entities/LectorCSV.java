@@ -103,11 +103,11 @@ public class LectorCSV {
                 Categoria categoria;
                 // Si la categoría no existe, se crea
 
-                if (hecho1.isPresent() && !hecho1.get().getCategoria().getTitulo().equals("N/A")){
+                if (hecho1.isPresent()){
                     categoria = hecho1.get().getCategoria();
                     hecho.setCategoria(categoria);
                 }
-                else if (hecho1.isEmpty()){
+                else{
                     categoria = new Categoria();
                     categoria.setTitulo(categoriaString);
                     hecho.setCategoria(categoria);

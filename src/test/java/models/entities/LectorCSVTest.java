@@ -32,7 +32,19 @@ class LectorCSVTest {
 
         var modificadorHechos = lectorCSV.leerCSV(hechos);
 
+        System.out.println("Hechos a modificar: ");
         for (Hecho hechoASubir : modificadorHechos.getHechosAModificar()){
+            System.out.println(hechoASubir.getTitulo());
+            System.out.println(hechoASubir.getDescripcion());
+            System.out.println(hechoASubir.getCategoria().getTitulo());
+            System.out.println(hechoASubir.getPais().getPais());
+            System.out.println(hechoASubir.getFechaDeCarga());
+            System.out.println(hechoASubir.getFechaAcontecimiento());
+        }
+
+
+        System.out.println("Hechos a subir: ");
+        for (Hecho hechoASubir : modificadorHechos.getHechosASubir()){
             System.out.println(hechoASubir.getTitulo());
             System.out.println(hechoASubir.getDescripcion());
             System.out.println(hechoASubir.getCategoria().getTitulo());

@@ -39,10 +39,7 @@ class GestorRoles {
 }
 
 class Globales {
-    +hechosTotales: List<Hecho>
-'   +solicitudesEliminacion: List<SolicitudHecho>
-'   +solicitudesSubirHecho: List<SolicitudHecho>
-    +coleccionesTotales: List<Coleccion>
+    +campos: List<String>
 }
 
 class Hecho {
@@ -61,6 +58,9 @@ class Hecho {
 class LectorCSV {
     -dataSet: String
     +leerCSV(hechos: List<Hecho>): ModificadorHechos
+    -filtrarColumnas(headers: List<String>): Integer
+    -normalizar(texto: String): String
+    -normalizarYComparar(s1: String, s2: String): Boolean
 }
 
 class LectorJSON{
@@ -158,21 +158,21 @@ class FiltroTitulo implements Filtro {
 '-----------------------------------------------
 'CLASES DENTRO DE FUENTES'
 interface Fuente {
-    +leerFuente(): Lista<Hecho>
+    +leerFuente(): ModificadorHechos
 }
 
 class FuenteDinamica implements Fuente {
-    +leerFuente(): List<Hecho>
+    +leerFuente(): ModificadorHechos
 }
 
 class FuenteEstatica implements Fuente {
     -dataSet: String
-    +leerFuente(): List<Hecho>
+    +leerFuente(): ModificadorHechos
 }
 
 ' Para próximas entregas
 class FuenteProxy implements Fuente{
-    +leerFuente(): List<Hecho>
+    +leerFuente(): ModificadorHechos
 }
 
 '-----------------------------------------------
