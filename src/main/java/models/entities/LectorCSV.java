@@ -17,7 +17,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.temporal.WeekFields.ISO;
 
 public class LectorCSV {
-
+    private static List<String> campos = new ArrayList<>(Arrays.asList("titulo","descripcion","categoria","latitud","longitud","fechadelhecho","pais"));
     private String dataSet;
 
     public LectorCSV(String dataSet){
@@ -67,17 +67,6 @@ public class LectorCSV {
             for (int f = 0; f < registrosCSV.size(); f++) {
                 CSVRecord fila = registrosCSV.get(f);
                 boolean seModificaHecho = false;
-                // Campos: [Titulo,Descripcion,Categoria,Latitud,Longitud,FechaDelHecho,Pais]
-                // headersDelArchivo: [Titulo,FechaDelAccidente,Auto,Matricula,Pais,Descripcion]
-                // indicesColumnas: [0,5,-1,-1,-1,-1,-1] -> filtrarColumnas
-                //PrimeraLectura : [Cataratas,10/10/10,reno12,23125412,Argentina,Skibidi]
-                // guardo nombre: if(lista.get(0) != -1){
-                // hecho.setNombre(registro.get(0));
-                // guardo descripcion: if(lista.get(5) != -1){
-                // hecho.setDescripcion(registro.get(5))
-                // }
-
-                // if(lista.get(1) == 1) {hecho.setDescripcion("N/A")}
 
                 List<String> registros = new ArrayList<>();
                 fila.forEach(registros::add);
@@ -116,12 +105,11 @@ public class LectorCSV {
 
                 String paisString;
                 if (indicesColumnas.get(3) != -1 && indicesColumnas.get(4) != -1 &&
-                        (!registros.get(indicesColumnas.get(3)).equals("") && !registros.get(indicesColumnas.get(4)).equals(""))){
+                        (!registros.get(indicesColumnas.get(3)).equals("") && !registros.get(indicesColumnas.get(4)).equals(""))) {
                     Double latitud = Double.parseDouble(registros.get(indicesColumnas.get(3)));
                     Double longitud = Double.parseDouble(registros.get(indicesColumnas.get(4)));
                     paisString = Geocodificador.obtenerPais(latitud, longitud);
                 }
-
                 else {
                     paisString = indicesColumnas.get(6) != -1 ? registros.get(indicesColumnas.get(6)) : "N/A";
                 }
@@ -186,11 +174,8 @@ public class LectorCSV {
     // Analizo qué columnas me interesan. Solo leo esas despues.
     private List<Integer> filtrarColumnas(List<String> headers) {
 
-        // Campos: [Titulo,Descripcion,Categoria,Latitud,Longitud,FechaDelHecho]
-        // headersDelArchivo: [Titulo,FechaDelAccidente,Auto,Matricula,Pais,Descripcion]
-        // lista: [0,5,-1,-1,-1,-1]
 
-        List<Integer> indicesColumnas = new ArrayList<>(Collections.nCopies(Globales.campos.size(), -1));
+        List<Integer> indicesColumnas = new ArrayList<>(Collections.nCopies(LectorCSV.campos.size(), -1));
 
 
         // Mapa de sinónimos: cada clave es un patrón, el valor es el campo real que representa
@@ -205,7 +190,7 @@ public class LectorCSV {
             String valorColumna = headers.get(i);
             valorColumna = this.normalizar(valorColumna);
             int j = 0;
-            for (String campoEsperado : Globales.campos) {
+            for (String campoEsperado : LectorCSV.campos) {
                 if (valorColumna.equals(campoEsperado)) {
                     indicesColumnas.set(j, i); // i: posicion del campo del header. j: posicion de la lista
                 }

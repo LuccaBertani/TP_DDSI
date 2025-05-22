@@ -7,8 +7,8 @@ import models.entities.personas.Usuario;
 import java.util.List;
 
 public interface IHechosService {
-    public void subirHecho(Hecho hecho, Usuario usuario); // Habria que ver si la persona es administradora
-    public void importarHechos(Fuente fuente, Usuario usuario);
+    public Integer subirHecho(Hecho hecho, Usuario usuario); // Habria que ver si la persona es administradora
+    public Integer importarHechos(Fuente fuente, Usuario usuario);
     public void navegarPorHechos(List<Filtro> filtros, Coleccion coleccion);
     public void navegarPorHechos(Coleccion coleccion);
 }

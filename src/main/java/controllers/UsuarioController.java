@@ -1,0 +1,28 @@
+package controllers;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import services.IHechosService;
+
+
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import services.IColeccionService;
+import services.IHechosService;
+import services.IUsuarioService;
+
+@RestController
+@RequestMapping("/api/usuario")
+@CrossOrigin(origins = "http://localhost:3000")
+public class UsuarioController {
+
+    private IUsuarioService hechosService;
+
+    public SolicitudHechoController(IHechosService hechosService) {
+        this.hechosService = hechosService;
+    }
+
+
+}

@@ -26,7 +26,7 @@ public class HechosService implements IHechosService {
     }
 
     @Override
-    public void subirHecho(Hecho hecho, Usuario usuario) {
+    public Integer subirHecho(Hecho hecho, Usuario usuario) {
         if(usuario.getRol().equals(Rol.ADMINISTRADOR)){
             hechosRepo.save(hecho);
         }
@@ -36,7 +36,7 @@ public class HechosService implements IHechosService {
     }
 
     @Override
-    public void importarHechos(Fuente fuente, Usuario usuario){
+    public Integer importarHechos(Fuente fuente, Usuario usuario){
 
         if (usuario.getRol().equals(Rol.ADMINISTRADOR)){
             // Se borran y suben hechos constantemente => Guardamos los que se tienen hasta el momento en una lista

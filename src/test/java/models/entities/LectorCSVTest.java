@@ -16,7 +16,7 @@ class LectorCSVTest {
 
         List<Hecho> hechos = new ArrayList<>();
 
-        LectorCSV lectorCSV = new LectorCSV("C:\\Users\\nehue\\Downloads\\SAT-MV-BU_2017-2023.csv");
+        LectorCSV lectorCSV = new LectorCSV("C:\\Users\\nehue\\Downloads\\Libro2.csv");
 
 
         Hecho hecho = new Hecho();

@@ -3,5 +3,5 @@ package services;
 import models.entities.personas.DatosPersonalesPublicador;
 
 public interface IUsuarioService {
-    public void crearUsuario(String contrasenia, DatosPersonalesPublicador datosPersonales);
+    public Integer crearUsuario(String contrasenia, DatosPersonalesPublicador datosPersonales);
 }

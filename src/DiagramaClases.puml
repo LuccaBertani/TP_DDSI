@@ -38,10 +38,6 @@ class GestorRoles {
     +ContribuyenteAVisualizador(usuario: Usuario): Boolean
 }
 
-class Globales {
-    +campos: List<String>
-}
-
 class Hecho {
     -activo: Boolean
     -id: Long
@@ -57,6 +53,7 @@ class Hecho {
 
 class LectorCSV {
     -dataSet: String
+    -campos: List<String>
     +leerCSV(hechos: List<Hecho>): ModificadorHechos
     -filtrarColumnas(headers: List<String>): Integer
     -normalizar(texto: String): String

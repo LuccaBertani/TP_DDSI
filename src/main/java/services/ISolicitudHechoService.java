@@ -6,8 +6,8 @@ import models.entities.personas.Usuario;
 
 public interface ISolicitudHechoService {
 
-    public void solicitarSubirHecho(Hecho hecho, Usuario usuario);
-    public void evaluarSolicitudSubirHecho(Usuario usuario, SolicitudHecho solicitud, Boolean respuesta);
-    public void evaluarEliminacionHecho(Usuario usuario, SolicitudHecho solicitud, Boolean respuesta);
-    public void solicitarEliminacionHecho(Usuario Usuario, Hecho hecho);
+    public Integer solicitarSubirHecho(Hecho hecho, Usuario usuario);
+    public Integer evaluarSolicitudSubirHecho(Usuario usuario, SolicitudHecho solicitud, Boolean respuesta);
+    public Integer evaluarEliminacionHecho(Usuario usuario, SolicitudHecho solicitud, Boolean respuesta);
+    public Integer solicitarEliminacionHecho(Usuario Usuario, Hecho hecho);
 }

@@ -1,5 +1,6 @@
 package services.impl;
 
+import models.entities.HttpCode;
 import models.entities.personas.DatosPersonalesPublicador;
 import models.entities.personas.Usuario;
 import models.repositories.IPersonaRepository;
@@ -18,11 +19,12 @@ public class UsuarioService implements IUsuarioService {
     }
     //Momento en el que un usuario se registra y guarda datos personales (NO LLAMAR A ESTE METODO SI ES ANONIMO)
     @Override
-    public void crearUsuario(String contrasenia, DatosPersonalesPublicador datosPersonales){
+    public Integer crearUsuario(String contrasenia, DatosPersonalesPublicador datosPersonales){
         Usuario usuario = new Usuario(personasRepo.getProxId());
         usuario.setDatosPersonales(datosPersonales);
         usuario.setContrasenia(contrasenia);
         personasRepo.save(usuario);
+        return HttpCode.OK.getCode();
     }
 
 }

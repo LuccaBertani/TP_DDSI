@@ -32,71 +32,67 @@ public class SolicitudHechoService implements ISolicitudHechoService {
 
 
     @Override
-    public void solicitarSubirHecho(Hecho hecho, Usuario usuario) {
+    public Integer solicitarSubirHecho(Hecho hecho, Usuario usuario) {
         // LA PERSONA DEBE SER O VISUALIZADORA O CONTRIBUYENTE
         SolicitudHecho solicitudHecho = new SolicitudHecho(usuario, hecho, solicitudAgregarHechoRepo.getProxId());
         solicitudAgregarHechoRepo.save(solicitudHecho);
+        return HttpCode.OK.getCode();
     }
 
     //Si el campo Usuario es NULL significa que es anonimo
     @Override
-    public void solicitarEliminacionHecho(Usuario usuario, Hecho hecho){
+    public Integer solicitarEliminacionHecho(Usuario usuario, Hecho hecho){
         if(usuario.getRol().equals(Rol.VISUALIZADOR)){
-            throw new SecurityException("No tiene permisos para ejecutar el caso de uso");
+            return HttpCode.UNAUTHORIZED.getCode();
         }
         else {
             SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, solicitudEliminarHechoRepo.getProxId());
-
             solicitudEliminarHechoRepo.save(solicitud);
+            return HttpCode.OK.getCode();
         }
     }
 
     @Override
-    public void evaluarSolicitudSubirHecho(Usuario usuario, SolicitudHecho solicitud, Boolean respuesta) {
+    public Integer evaluarSolicitudSubirHecho(Usuario usuario, SolicitudHecho solicitud, Boolean respuesta) {
         if(!usuario.getRol().equals(Rol.ADMINISTRADOR)){
-
-            throw new SecurityException("No tiene permisos para ejecutar el caso de uso");
-
+            return HttpCode.UNAUTHORIZED.getCode();
         }
         else {
 
             if (respuesta) {
 
                 solicitud.getHecho().setActivo(true);
-
+                solicitud.getUsuario().incrementarHechosSubidos();
                 hechosRepository.save(solicitud.getHecho());
 
-                if(gestorRoles.VisualizadorAContribuyente(solicitud.getUsuario())){
-
-                    solicitud.getUsuario().incrementarHechosSubidos();
-
+                if (solicitud.getUsuario().getRol().equals(Rol.VISUALIZADOR)){
+                    gestorRoles.VisualizadorAContribuyente(solicitud.getUsuario());
                 }
-
             }
             this.solicitudAgregarHechoRepo.delete(solicitud);
         }
+        return HttpCode.OK.getCode();
     }
 
     @Override
-    public void evaluarEliminacionHecho(Usuario usuario, SolicitudHecho solicitud, Boolean respuesta) {
+    public Integer evaluarEliminacionHecho(Usuario usuario, SolicitudHecho solicitud, Boolean respuesta) {
         if(!usuario.getRol().equals(Rol.ADMINISTRADOR)){
-
-            throw new SecurityException("No tiene permisos para ejecutar el caso de uso");
-
+            return HttpCode.UNAUTHORIZED.getCode();
         }
         else {
             if (respuesta) {
 
                 // El hecho debería dejar de mostrarse en la página, pero NUNCA se borra por completo
                 solicitud.getHecho().setActivo(false);
-
                 solicitud.getUsuario().disminuirHechosSubidos();
 
-                gestorRoles.ContribuyenteAVisualizador(solicitud.getUsuario());
-
+                if (solicitud.getUsuario().getCantHechosSubidos() == 0){
+                    gestorRoles.ContribuyenteAVisualizador(solicitud.getUsuario());
+                }
             }
 
         }
         solicitudEliminarHechoRepo.delete(solicitud);
+        return HttpCode.OK.getCode();
     }
 }
