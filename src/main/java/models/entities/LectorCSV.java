@@ -115,7 +115,8 @@ public class LectorCSV {
 
 
                 String paisString;
-                if (indicesColumnas.get(3) != -1 && indicesColumnas.get(4) != -1){
+                if (indicesColumnas.get(3) != -1 && indicesColumnas.get(4) != -1 &&
+                        (!registros.get(indicesColumnas.get(3)).equals("") && !registros.get(indicesColumnas.get(4)).equals(""))){
                     Double latitud = Double.parseDouble(registros.get(indicesColumnas.get(3)));
                     Double longitud = Double.parseDouble(registros.get(indicesColumnas.get(4)));
                     paisString = Geocodificador.obtenerPais(latitud, longitud);
@@ -138,10 +139,9 @@ public class LectorCSV {
                     pais.setPais(paisString);
                     hecho.setPais(pais);
                 }
-
-                ZonedDateTime fecha = ZonedDateTime.parse(registros.get(indicesColumnas.get(5)));
-
-                hecho.setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? fecha : ZonedDateTime.of(0, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")));
+                //ZonedDateTime fecha = FechaParser.parsearFecha(registros.get(indicesColumnas.get(5)));
+                //ZonedDateTime fecha = (indicesColumnas.get(5) != -1) ? fecha :ZonedDateTime.parse(registros.get(indicesColumnas.get(5)));
+                hecho.setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))) : ZonedDateTime.of(0, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")));
 
                 hecho.setFechaDeCarga(ZonedDateTime.now());
 
@@ -150,6 +150,27 @@ public class LectorCSV {
                 }
                 else{
                     hechosASubir.add(hecho);
+                }
+
+                System.out.println("Hechos a modificar: ");
+                for (Hecho hechoASubir : hechosAModificar){
+                    System.out.println(hechoASubir.getTitulo());
+                    System.out.println(hechoASubir.getDescripcion());
+                    System.out.println(hechoASubir.getCategoria().getTitulo());
+                    System.out.println(hechoASubir.getPais().getPais());
+                    System.out.println(hechoASubir.getFechaAcontecimiento());
+                    System.out.println(hechoASubir.getFechaDeCarga());
+                }
+
+
+                System.out.println("Hechos a subir: ");
+                for (Hecho hechoASubir : hechosASubir){
+                    System.out.println(hechoASubir.getTitulo());
+                    System.out.println(hechoASubir.getDescripcion());
+                    System.out.println(hechoASubir.getCategoria().getTitulo());
+                    System.out.println(hechoASubir.getPais().getPais());
+                    System.out.println(hechoASubir.getFechaAcontecimiento());
+                    System.out.println(hechoASubir.getFechaDeCarga());
                 }
             }
 
@@ -183,15 +204,10 @@ public class LectorCSV {
         for (int i = 0; i < headers.size(); i++) {
             String valorColumna = headers.get(i);
             valorColumna = this.normalizar(valorColumna);
-            //boolean encontrado = false;
             int j = 0;
-            // public static List<String> campos = new ArrayList<>(Arrays.asList("titulo","descripcion","categoria","latitud","longitud","fechadelhecho","pais"));
-            // [Incendios Forestales, ...]
-            // 1. Búsqueda exacta entre los campos esperados
             for (String campoEsperado : Globales.campos) {
                 if (valorColumna.equals(campoEsperado)) {
                     indicesColumnas.set(j, i); // i: posicion del campo del header. j: posicion de la lista
-                    //encontrado = true;
                 }
                 j++;
             }

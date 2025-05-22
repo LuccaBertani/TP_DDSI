@@ -16,7 +16,7 @@ class LectorCSVTest {
 
         List<Hecho> hechos = new ArrayList<>();
 
-        LectorCSV lectorCSV = new LectorCSV("C:\\Users\\nehue\\Downloads\\Libro2.csv");
+        LectorCSV lectorCSV = new LectorCSV("C:\\Users\\nehue\\Downloads\\SAT-MV-BU_2017-2023.csv");
 
 
         Hecho hecho = new Hecho();
@@ -49,8 +49,8 @@ class LectorCSVTest {
             System.out.println(hechoASubir.getDescripcion());
             System.out.println(hechoASubir.getCategoria().getTitulo());
             System.out.println(hechoASubir.getPais().getPais());
-            System.out.println(hechoASubir.getFechaDeCarga());
             System.out.println(hechoASubir.getFechaAcontecimiento());
+            System.out.println(hechoASubir.getFechaDeCarga());
         }
 
         assertEquals(true, true);
