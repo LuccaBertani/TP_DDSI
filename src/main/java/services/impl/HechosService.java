@@ -1,8 +1,8 @@
 package services.impl;
 
-import models.entities.Coleccion;
-import models.entities.Hecho;
-import models.entities.ModificadorHechos;
+import models.dtos.input.HechosInputDTO;
+import models.dtos.output.HechosOutputDTO;
+import models.entities.*;
 import models.entities.casosDeUso.NavegarPorHechos;
 import models.entities.filtros.Filtro;
 import models.entities.fuentes.Fuente;
@@ -26,17 +26,18 @@ public class HechosService implements IHechosService {
     }
 
     @Override
-    public Integer subirHecho(Hecho hecho, Usuario usuario) {
+    public RespuestaHttp<Integer> subirHecho(Hecho hecho, Usuario usuario) {
         if(usuario.getRol().equals(Rol.ADMINISTRADOR)){
             hechosRepo.save(hecho);
+            return new RespuestaHttp<>(-1, HttpCode.OK.getCode());
         }
         else{
-            throw new SecurityException("No tiene permisos para ejecutar el caso de uso");
+            return new RespuestaHttp<>(-1, HttpCode.UNAUTHORIZED.getCode());
         }
     }
 
     @Override
-    public Integer importarHechos(Fuente fuente, Usuario usuario){
+    public RespuestaHttp<Integer> importarHechos(Fuente fuente, Usuario usuario){
 
         if (usuario.getRol().equals(Rol.ADMINISTRADOR)){
             // Se borran y suben hechos constantemente => Guardamos los que se tienen hasta el momento en una lista
@@ -53,9 +54,10 @@ public class HechosService implements IHechosService {
             for (Hecho hecho : hechosAModificar){
                 hechosRepo.update(hecho);
             }
+            return new RespuestaHttp<>(-1, HttpCode.OK.getCode());
         }
         else{
-            throw new SecurityException("No tiene permisos para ejecutar el caso de uso");
+            return new RespuestaHttp<>(-1, HttpCode.UNAUTHORIZED.getCode());
         }
     }
 
@@ -70,6 +72,8 @@ public class HechosService implements IHechosService {
         var objetoNavegarPorHechos = new NavegarPorHechos();
         objetoNavegarPorHechos.navegarPorHechos(coleccion);
     }
+
+
 
 
 }

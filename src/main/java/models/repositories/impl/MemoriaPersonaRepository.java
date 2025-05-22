@@ -23,7 +23,7 @@ public class MemoriaPersonaRepository implements IPersonaRepository {
 
     @Override
     public Usuario findById(Long id) {
-        return this.personas.stream().filter(persona -> persona.getDatosPersonales().getId().equals(id)).findFirst().orElse(null);
+        return this.personas.stream().filter(persona -> persona.getId().equals(id)).findFirst().orElse(null);
     }
     @Override
     public long getProxId(){
@@ -40,7 +40,7 @@ public class MemoriaPersonaRepository implements IPersonaRepository {
 
     @Override
     public void update(Usuario usuario) {
-        this.delete(findById(usuario.getId()));
+        this.delete(usuario);
         this.save(usuario);
     }
 

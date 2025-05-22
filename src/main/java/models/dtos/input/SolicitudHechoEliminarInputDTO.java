@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Data
-public class DatosPersonalesInputDTO {
-    private Long id_usuario;
+public class SolicitudHechoEliminarInputDTO {
+    Long id_usuario;
+    Long id_hecho;
 }

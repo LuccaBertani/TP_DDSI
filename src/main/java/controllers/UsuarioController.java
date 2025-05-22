@@ -1,8 +1,8 @@
 package controllers;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import models.dtos.input.ColeccionInputDTO;
+import models.dtos.output.ColeccionOutputDTO;
+import org.springframework.web.bind.annotation.*;
 import services.IHechosService;
 
 
@@ -22,6 +22,11 @@ public class UsuarioController {
 
     public SolicitudHechoController(IHechosService hechosService) {
         this.hechosService = hechosService;
+    }
+
+    @GetMapping("/obtener/lista-contribuyentes")
+    public ColeccionOutputDTO(@RequestBody ColeccionInputDTO dtoInput){
+
     }
 
 

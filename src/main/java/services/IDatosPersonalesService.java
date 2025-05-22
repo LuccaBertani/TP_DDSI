@@ -1,9 +1,13 @@
 package services;
 
+import models.dtos.input.ColeccionInputDTO;
+import models.dtos.input.DatosPersonalesInputDTO;
+import models.entities.RespuestaHttp;
 import models.entities.personas.Usuario;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface IDatosPersonalesService {
-    public List<Usuario> obtenerListaContribuyentes(Usuario usuario);
+    public RespuestaHttp<List<Usuario>> obtenerListaContribuyentes(DatosPersonalesInputDTO inputDTO);
 }

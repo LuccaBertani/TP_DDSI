@@ -78,7 +78,7 @@ public class LectorCSV {
 
                 hecho.setTitulo((indicesColumnas.get(0) != -1) ? registros.get(indicesColumnas.get(0)) : "N/A");
 
-                Optional<Hecho> hecho0 = hechos.stream().filter(h->this.normalizarYComparar(h.getTitulo(), hecho.getTitulo())).findFirst();
+                Optional<Hecho> hecho0 = hechos.stream().filter(h->Normalizador.normalizarYComparar(h.getTitulo(), hecho.getTitulo())).findFirst();
 
                 if (hecho0.isPresent() && !hecho0.get().getTitulo().equals("N/A")){
                     System.out.println("El hecho está repetido");
@@ -88,7 +88,7 @@ public class LectorCSV {
                 hecho.setDescripcion((indicesColumnas.get(1) != -1) ? registros.get(indicesColumnas.get(1)) : "N/A");
 
                 String categoriaString = indicesColumnas.get(2) != -1 ? registros.get(indicesColumnas.get(2)) : "N/A";
-                Optional<Hecho> hecho1 = hechos.stream().filter(h->this.normalizarYComparar(h.getCategoria().getTitulo(), categoriaString)).findFirst();
+                Optional<Hecho> hecho1 = hechos.stream().filter(h->Normalizador.normalizarYComparar(h.getCategoria().getTitulo(), categoriaString)).findFirst();
                 Categoria categoria;
                 // Si la categoría no existe, se crea
 
@@ -114,15 +114,15 @@ public class LectorCSV {
                     paisString = indicesColumnas.get(6) != -1 ? registros.get(indicesColumnas.get(6)) : "N/A";
                 }
 
-                Optional<Hecho> hecho2 = hechos.stream().filter(h->this.normalizarYComparar(h.getPais().getPais(), paisString)).findFirst();
+                Optional<Hecho> hecho2 = hechos.stream().filter(h->Normalizador.normalizarYComparar(h.getPais().getPais(), paisString)).findFirst();
                 Pais pais;
                 // Si el país no existe, se crea
 
-                if (hecho2.isPresent() && !hecho2.get().getPais().getPais().equals("N/A")){
+                if (hecho2.isPresent()){
                     pais = hecho2.get().getPais();
                     hecho.setPais(pais);
 
-                } else if (hecho2.isEmpty()){
+                } else{
                     pais = new Pais();
                     pais.setPais(paisString);
                     hecho.setPais(pais);
@@ -188,7 +188,7 @@ public class LectorCSV {
 
         for (int i = 0; i < headers.size(); i++) {
             String valorColumna = headers.get(i);
-            valorColumna = this.normalizar(valorColumna);
+            valorColumna = Normalizador.normalizar(valorColumna);
             int j = 0;
             for (String campoEsperado : LectorCSV.campos) {
                 if (valorColumna.equals(campoEsperado)) {
@@ -202,20 +202,5 @@ public class LectorCSV {
     }
 
 
-    private String normalizar(String texto) {
-        // Quitar tildes
-        String sinTildes = Normalizer.normalize(texto, Normalizer.Form.NFD)
-                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-
-        // Quitar espacios y pasar a minúsculas
-        return sinTildes.replaceAll("\\s+", "").toLowerCase();
-    }
-
-    private Boolean normalizarYComparar(String s1, String s2){
-        s1=normalizar(s1);
-        s2=normalizar(s2);
-
-        return s1.equals(s2);
-    }
 
 }

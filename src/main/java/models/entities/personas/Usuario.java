@@ -16,6 +16,7 @@ public class Usuario {
         this.id = id;
     }
 
+    @Setter
     @Getter
     private Integer cantHechosSubidos = 0;
 

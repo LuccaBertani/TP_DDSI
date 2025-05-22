@@ -53,7 +53,7 @@ public class MemoriaHechosRepository implements IHechosRepository {
 
     @Override
     public void update(Hecho hecho) {
-        this.delete(findById(hecho.getId()));
+        this.delete(hecho);
         this.save(hecho);
     }
 }

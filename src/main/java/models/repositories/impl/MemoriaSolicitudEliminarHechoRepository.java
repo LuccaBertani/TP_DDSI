@@ -53,7 +53,7 @@ public class MemoriaSolicitudEliminarHechoRepository implements ISolicitudElimin
 
     @Override
     public void update(SolicitudHecho solicitud) {
-        this.delete(findById(solicitud.getId()));
+        this.delete(solicitud);
         this.save(solicitud);
     }
 }

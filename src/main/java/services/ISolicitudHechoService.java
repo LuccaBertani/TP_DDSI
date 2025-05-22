@@ -1,13 +1,16 @@
 package services;
 
+import models.dtos.input.SolicitudHechoEliminarInputDTO;
+import models.dtos.input.SolicitudHechoEvaluarInputDTO;
+import models.dtos.input.SolicitudHechoInputDTO;
 import models.entities.Hecho;
+import models.entities.RespuestaHttp;
 import models.entities.SolicitudHecho;
 import models.entities.personas.Usuario;
 
 public interface ISolicitudHechoService {
-
-    public Integer solicitarSubirHecho(Hecho hecho, Usuario usuario);
-    public Integer evaluarSolicitudSubirHecho(Usuario usuario, SolicitudHecho solicitud, Boolean respuesta);
-    public Integer evaluarEliminacionHecho(Usuario usuario, SolicitudHecho solicitud, Boolean respuesta);
-    public Integer solicitarEliminacionHecho(Usuario Usuario, Hecho hecho);
+    public RespuestaHttp<Integer> solicitarSubirHecho(SolicitudHechoInputDTO dto);
+    public RespuestaHttp<Integer> evaluarSolicitudSubirHecho(SolicitudHechoEvaluarInputDTO dto);
+    public RespuestaHttp<Integer> evaluarEliminacionHecho(SolicitudHechoEvaluarInputDTO dto);
+    public RespuestaHttp<Integer> solicitarEliminacionHecho(SolicitudHechoEliminarInputDTO dto);
 }

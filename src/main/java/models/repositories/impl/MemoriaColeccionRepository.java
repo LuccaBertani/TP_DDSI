@@ -53,7 +53,7 @@ public class MemoriaColeccionRepository implements IColeccionRepository {
 
     @Override
     public void update(Coleccion coleccion) {
-       this.delete(findById(coleccion.getId()));
+       this.delete(coleccion);
        this.save(coleccion);
     }
 

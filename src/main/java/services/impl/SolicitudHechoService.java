@@ -1,6 +1,10 @@
 package services.impl;
 
+import models.dtos.input.SolicitudHechoEliminarInputDTO;
+import models.dtos.input.SolicitudHechoEvaluarInputDTO;
+import models.dtos.input.SolicitudHechoInputDTO;
 import models.entities.*;
+import models.entities.fuentes.FuenteDinamica;
 import models.entities.personas.Rol;
 import models.entities.personas.Usuario;
 import models.repositories.IHechosRepository;
@@ -11,59 +15,95 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import services.ISolicitudHechoService;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class SolicitudHechoService implements ISolicitudHechoService {
 
     private final ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo;
     private final ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo;
     private final IHechosRepository hechosRepository;
-
+    private final IPersonaRepository usuariosRepository;
     GestorRoles gestorRoles;
 
-    @Autowired
     public SolicitudHechoService(ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo, ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo,
-                                 IPersonaRepository personaRepository, IHechosRepository hechosRepository) {
+                                 IPersonaRepository personaRepository, IHechosRepository hechosRepository, IPersonaRepository usuariosRepository) {
         this.solicitudAgregarHechoRepo = solicitudAgregarHechoRepo;
         this.solicitudEliminarHechoRepo = solicitudEliminarHechoRepo;
         this.hechosRepository = hechosRepository;
+        this.usuariosRepository = usuariosRepository;
         gestorRoles = new GestorRoles();
     }
 
-
-
     @Override
-    public Integer solicitarSubirHecho(Hecho hecho, Usuario usuario) {
-        // LA PERSONA DEBE SER O VISUALIZADORA O CONTRIBUYENTE
-        SolicitudHecho solicitudHecho = new SolicitudHecho(usuario, hecho, solicitudAgregarHechoRepo.getProxId());
-        solicitudAgregarHechoRepo.save(solicitudHecho);
-        return HttpCode.OK.getCode();
+    public RespuestaHttp<Integer> solicitarSubirHecho(SolicitudHechoInputDTO dto) {
+
+        Usuario usuario = usuariosRepository.findById(dto.getId_usuario());
+
+        List<Hecho> hechos = hechosRepository.findAll(); // TODO cambiar x la temporal
+
+        Optional<Hecho> hecho2 = hechos.stream().filter(h->Normalizador.normalizarYComparar(h.getPais().getPais(), dto.getPais())).findFirst();
+        Pais pais;
+
+        if (hecho2.isPresent()){
+            pais = hecho2.get().getPais();
+        } else {
+            pais = new Pais();
+            pais.setPais(dto.getPais());
+        }
+
+        HechosData hechosData = new HechosData(dto.getTitulo(), dto.getDescripcion(), dto.getTipoContenido(),
+                pais, dto.getFechaAcontecimiento(), hechosRepository.getProxId());
+
+        if (!usuario.getRol().equals(Rol.ADMINISTRADOR)){
+            FuenteDinamica fuenteDinamica = new FuenteDinamica();
+            Hecho hecho = fuenteDinamica.crearHecho(hechosData);
+            SolicitudHecho solicitudHecho = new SolicitudHecho(usuario, hecho, solicitudAgregarHechoRepo.getProxId());
+            solicitudAgregarHechoRepo.save(solicitudHecho);
+            hechosRepository.save(hecho);
+
+            return new RespuestaHttp<>(-1, HttpCode.OK.getCode());
+        }
+        return new RespuestaHttp<>(-1, HttpCode.UNAUTHORIZED.getCode());
     }
 
-    //Si el campo Usuario es NULL significa que es anonimo
+
+    //El usuario manda una solicitud para eliminar un hecho -> guardar la solicitud en la base de datos
     @Override
-    public Integer solicitarEliminacionHecho(Usuario usuario, Hecho hecho){
+    public RespuestaHttp<Integer> solicitarEliminacionHecho(SolicitudHechoEliminarInputDTO dto){
+
+        Usuario usuario = usuariosRepository.findById(dto.getId_usuario());
+        Hecho hecho = hechosRepository.findById(dto.getId_hecho());
+
         if(usuario.getRol().equals(Rol.VISUALIZADOR)){
-            return HttpCode.UNAUTHORIZED.getCode();
+            return new RespuestaHttp<>(-1, HttpCode.UNAUTHORIZED.getCode());
         }
-        else {
+        else if (usuario.getRol().equals(Rol.CONTRIBUYENTE)) {
             SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, solicitudEliminarHechoRepo.getProxId());
             solicitudEliminarHechoRepo.save(solicitud);
-            return HttpCode.OK.getCode();
+            return new RespuestaHttp<>(-1, HttpCode.OK.getCode());
         }
+        return new RespuestaHttp<>(-1, HttpCode.UNAUTHORIZED.getCode()); // Un admin no deberia solicitar eliminar, los elimina directamente
+
     }
 
     @Override
-    public Integer evaluarSolicitudSubirHecho(Usuario usuario, SolicitudHecho solicitud, Boolean respuesta) {
+    public RespuestaHttp<Integer> evaluarSolicitudSubirHecho(SolicitudHechoEvaluarInputDTO dtoInput) {
+
+        SolicitudHecho solicitud = solicitudAgregarHechoRepo.findById(dtoInput.getId_solicitud());
+        Usuario usuario = usuariosRepository.findById(dtoInput.getId_usuario());//el que ejecuta la acción
+
         if(!usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return HttpCode.UNAUTHORIZED.getCode();
+            return new RespuestaHttp<>(-1, HttpCode.UNAUTHORIZED.getCode());
         }
         else {
 
-            if (respuesta) {
+            if (dtoInput.getRespuesta()) {
 
                 solicitud.getHecho().setActivo(true);
                 solicitud.getUsuario().incrementarHechosSubidos();
-                hechosRepository.save(solicitud.getHecho());
+                hechosRepository.update(solicitud.getHecho());
 
                 if (solicitud.getUsuario().getRol().equals(Rol.VISUALIZADOR)){
                     gestorRoles.VisualizadorAContribuyente(solicitud.getUsuario());
@@ -71,20 +111,25 @@ public class SolicitudHechoService implements ISolicitudHechoService {
             }
             this.solicitudAgregarHechoRepo.delete(solicitud);
         }
-        return HttpCode.OK.getCode();
+        return new RespuestaHttp<>(-1, HttpCode.OK.getCode());
     }
 
     @Override
-    public Integer evaluarEliminacionHecho(Usuario usuario, SolicitudHecho solicitud, Boolean respuesta) {
+    public RespuestaHttp<Integer> evaluarEliminacionHecho(SolicitudHechoEvaluarInputDTO dtoInput) {
+
+        SolicitudHecho solicitud = solicitudEliminarHechoRepo.findById(dtoInput.getId_solicitud());
+        Usuario usuario = usuariosRepository.findById(dtoInput.getId_usuario());//el que ejecuta la acción
+
         if(!usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return HttpCode.UNAUTHORIZED.getCode();
+            return new RespuestaHttp<>(-1, HttpCode.UNAUTHORIZED.getCode());
         }
         else {
-            if (respuesta) {
+            if (dtoInput.getRespuesta()) {
 
                 // El hecho debería dejar de mostrarse en la página, pero NUNCA se borra por completo
                 solicitud.getHecho().setActivo(false);
                 solicitud.getUsuario().disminuirHechosSubidos();
+                hechosRepository.update(solicitud.getHecho());
 
                 if (solicitud.getUsuario().getCantHechosSubidos() == 0){
                     gestorRoles.ContribuyenteAVisualizador(solicitud.getUsuario());
@@ -93,6 +138,8 @@ public class SolicitudHechoService implements ISolicitudHechoService {
 
         }
         solicitudEliminarHechoRepo.delete(solicitud);
-        return HttpCode.OK.getCode();
+        return new RespuestaHttp<>(-1, HttpCode.OK.getCode());
     }
 }
+
+
