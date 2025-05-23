@@ -6,6 +6,7 @@ import models.dtos.input.VisualizarHechosInputDTO;
 import models.dtos.output.VisualizarHechosOutputDTO;
 import models.entities.*;
 import models.entities.buscadores.BuscadorCategoria;
+import models.entities.buscadores.BuscadorPais;
 import models.entities.casosDeUso.NavegarPorHechos;
 import models.entities.filtros.*;
 import models.entities.fuentes.Fuente;
@@ -81,6 +82,7 @@ public class HechosService implements IHechosService {
         Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario());
         if (usuario.getRol().equals(Rol.ADMINISTRADOR)){
             // Se borran y suben hechos constantemente => Guardamos los que se tienen hasta el momento en una lista
+            // TODO lista temporal
             List<Hecho> hechosActuales = hechosRepo.findAll();
             FuenteEstatica fuente = new FuenteEstatica();
             fuente.setDataSet(dtoInput.getFuenteString());

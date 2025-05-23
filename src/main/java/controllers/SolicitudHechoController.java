@@ -45,7 +45,12 @@ public class SolicitudHechoController {
     }
 
     @PostMapping("/solicitud/modificar-hecho")
-    public ResponseEntity<Void> enviarSolicitudEliminarHecho(@RequestBody SolicitudHechoModificarInputDTO dtoInput){
+    public ResponseEntity<Void> enviarSolicitudModificarHecho(@RequestBody SolicitudHechoModificarInputDTO dtoInput){
+
+        if (dtoInput.getTitulo() == null || dtoInput.getTitulo().isBlank()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
         RespuestaHttp<Integer> respuesta = solicitudHechoService.solicitarModificacionHecho(dtoInput);
         return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
     }

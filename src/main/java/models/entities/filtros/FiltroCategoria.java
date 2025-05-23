@@ -13,7 +13,7 @@ public class FiltroCategoria implements Filtro {
 
     @Override
     public Boolean aprobarHecho(Hecho hecho){
-        return hecho.getCategoria() == this.categoria;
+        return hecho.getCategoria() == this.categoria; // Busca si las dos variables apuntan al mismo objeto
     }
 
 }

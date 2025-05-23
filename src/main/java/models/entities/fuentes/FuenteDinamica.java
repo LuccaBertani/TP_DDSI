@@ -17,7 +17,7 @@ public class FuenteDinamica {
         hecho.setTitulo(data.getTitulo());
         hecho.setActivo(false);
         hecho.setDescripcion(data.getDescripcion());
-        hecho.setContenidoMultimediaOpcional(TipoContenido.fromCodigo(data.getTipoContenido()));
+        hecho.setContenidoMultimedia(TipoContenido.fromCodigo(data.getTipoContenido()));
         ZonedDateTime fecha = FechaParser.parsearFecha(data.getFechaAcontecimiento());
         hecho.setFechaAcontecimiento(fecha);
         hecho.setFechaDeCarga(ZonedDateTime.now());

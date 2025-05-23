@@ -12,6 +12,6 @@ public class FiltroOrigen implements Filtro {
 
     @Override
     public Boolean aprobarHecho(Hecho hecho){
-        return hecho.getOrigen() == origenDeseado;
+        return hecho.getOrigen().equals(origenDeseado);
     }
 }

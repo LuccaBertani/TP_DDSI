@@ -19,15 +19,8 @@ public class FiltroTitulo implements Filtro {
 
     @Override
     public Boolean aprobarHecho(Hecho hecho) {
-
-        List<String> palabrasHecho = Arrays.stream(Normalizador.normalizarSeparado(hecho.getTitulo()))
-                .map(String::trim)
-                .toList();
-
-        List<String> palabrasFiltro = Arrays.stream(Normalizador.normalizar(this.titulo))
-                .map(String::trim)
-                .toList();
-
+        List<String> palabrasHecho = Normalizador.normalizarSeparado(hecho.getTitulo());
+        List<String> palabrasFiltro = Normalizador.normalizarSeparado(this.titulo);
 
         // Si la descripcion del hecho enviado por parametro tiene todas sus palabras contenidas en el filtro de la descripcion
         return palabrasHecho.containsAll(palabrasFiltro);

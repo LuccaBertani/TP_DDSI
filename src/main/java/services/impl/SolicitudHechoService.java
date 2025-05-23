@@ -72,6 +72,7 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         Hecho hecho = fuenteDinamica.crearHecho(hechosData);
         SolicitudHecho solicitudHecho = new SolicitudHecho(usuario, hecho, solicitudAgregarHechoRepo.getProxId());
         solicitudAgregarHechoRepo.save(solicitudHecho);
+        hecho.setId_usuario(usuario.getId());
         hechosRepository.save(hecho);
 
         return new RespuestaHttp<>(-1, HttpStatus.OK.value());
@@ -97,20 +98,19 @@ public class SolicitudHechoService implements ISolicitudHechoService {
 
         Usuario usuario = usuariosRepository.findById(dto.getId_usuario());
 
-        if (usuario == null || usuario.getRol().equals(Rol.ADMINISTRADOR) || usuario.getRol().equals(Rol.VISUALIZADOR)){
+        if (usuario == null || usuario.getId().equals(hechosRepository.findById(dto.getId_hecho()).getId_usuario()) || usuario.getRol().equals(Rol.ADMINISTRADOR) || usuario.getRol().equals(Rol.VISUALIZADOR)){
             return new RespuestaHttp<>(-1, HttpStatus.UNAUTHORIZED.value());
         }
-
+        // TODO cambiar x cronjob
         Hecho hecho = hechosRepository.findById(dto.getId_hecho());
 
         hecho.setTitulo(dto.getTitulo());
-        // TODO cambiar x temporal
         hecho.setPais(BuscadorPais.buscar(hechosRepository.findAll(), dto.getPais()));
         hecho.setCategoria(BuscadorCategoria.buscar(hechosRepository.findAll(), dto.getPais()));
         hecho.setTitulo(dto.getTitulo());
         hecho.setFechaAcontecimiento(FechaParser.parsearFecha(dto.getFechaAcontecimiento()));
         hecho.setFechaDeCarga(ZonedDateTime.now()); // Nueva fecha de modificación
-        hecho.setContenidoMultimediaOpcional(TipoContenido.fromCodigo(dto.getTipoContenido()));
+        hecho.setContenidoMultimedia(TipoContenido.fromCodigo(dto.getTipoContenido()));
 
         SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, solicitudModificarHechoRepo.getProxId());
         solicitudModificarHechoRepo.save(solicitud);

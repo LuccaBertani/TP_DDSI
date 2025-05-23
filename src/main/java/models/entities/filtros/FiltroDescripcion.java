@@ -3,6 +3,7 @@ package models.entities.filtros;
 import lombok.Getter;
 import lombok.Setter;
 import models.entities.Hecho;
+import models.entities.Normalizador;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,14 +20,8 @@ public class FiltroDescripcion implements Filtro {
 
     @Override
     public Boolean aprobarHecho(Hecho hecho){
-        List<String> palabrasHecho = Arrays.stream(hecho.getDescripcion().toLowerCase().split(" "))
-                .map(String::trim)
-                .toList(); // Mapear las palabras de la descripcion del hecho sin espacios y en minúsculas
-
-        List<String> palabrasFiltro = Arrays.stream(this.descripcion.toLowerCase().split(" "))
-                .map(String::trim)
-                .toList();
-
+        List<String> palabrasHecho = Normalizador.normalizarSeparado(hecho.getDescripcion());
+        List<String> palabrasFiltro = Normalizador.normalizarSeparado(this.descripcion);
 
         // Si la descripcion del hecho enviado por parametro tiene todas sus palabras contenidas en el filtro de la descripcion
         return palabrasHecho.containsAll(palabrasFiltro);
