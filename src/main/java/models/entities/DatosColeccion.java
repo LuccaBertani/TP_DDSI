@@ -9,9 +9,9 @@ import models.entities.fuentes.Fuente;
 public class DatosColeccion {
     private String titulo;
     private String descripcion;
-    private Fuente fuente;
+    private String fuente;
 
-    public DatosColeccion(String titulo, String descripcion, Fuente fuente) {
+    public DatosColeccion(String titulo, String descripcion, String fuente) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.fuente = fuente;

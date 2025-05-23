@@ -1,4 +1,5 @@
 package services;
+import models.dtos.input.FiltroHechosDTO;
 import models.dtos.input.ImportacionHechosInputDTO;
 import models.dtos.input.SolicitudHechoInputDTO;
 import models.dtos.input.VisualizarHechosInputDTO;
@@ -11,8 +12,8 @@ import models.entities.personas.Usuario;
 import java.util.List;
 
 public interface IHechosService {
-    public RespuestaHttp<Integer> subirHecho(SolicitudHechoInputDTO dtoInput);
-    public RespuestaHttp<Integer> importarHechos(ImportacionHechosInputDTO dtoInput);
-    public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechos(List<String> filtros, Long id_coleccion);
+    public RespuestaHttp<Void> subirHecho(SolicitudHechoInputDTO dtoInput);
+    public RespuestaHttp<Void> importarHechos(ImportacionHechosInputDTO dtoInput);
+    public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechos(FiltroHechosDTO inputDTO);
     public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechos(Long id_coleccion);
 }

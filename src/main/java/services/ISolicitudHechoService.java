@@ -10,10 +10,10 @@ import models.entities.SolicitudHecho;
 import models.entities.personas.Usuario;
 
 public interface ISolicitudHechoService {
-    public RespuestaHttp<Integer> solicitarSubirHecho(SolicitudHechoInputDTO dto);
-    public RespuestaHttp<Integer> evaluarSolicitudSubirHecho(SolicitudHechoEvaluarInputDTO dto);
-    public RespuestaHttp<Integer> evaluarEliminacionHecho(SolicitudHechoEvaluarInputDTO dto);
-    public RespuestaHttp<Integer> solicitarEliminacionHecho(SolicitudHechoEliminarInputDTO dto);
-    public RespuestaHttp<Integer> solicitarModificacionHecho(SolicitudHechoModificarInputDTO dto);
-    public RespuestaHttp<Integer> evaluarModificacionHecho(SolicitudHechoEvaluarInputDTO dtoInput);
+    public RespuestaHttp<Void> solicitarSubirHecho(SolicitudHechoInputDTO dto);
+    public RespuestaHttp<Void> evaluarSolicitudSubirHecho(SolicitudHechoEvaluarInputDTO dto);
+    public RespuestaHttp<Void> evaluarEliminacionHecho(SolicitudHechoEvaluarInputDTO dto);
+    public RespuestaHttp<Void> solicitarEliminacionHecho(SolicitudHechoEliminarInputDTO dto);
+    public RespuestaHttp<Void> solicitarModificacionHecho(SolicitudHechoModificarInputDTO dto);
+    public RespuestaHttp<Void> evaluarModificacionHecho(SolicitudHechoEvaluarInputDTO dtoInput);
 }

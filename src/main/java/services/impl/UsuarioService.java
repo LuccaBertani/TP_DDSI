@@ -22,12 +22,6 @@ public class UsuarioService implements IUsuarioService {
     @Override
     public RespuestaHttp<Usuario> crearUsuario(UsuarioInputDTO inputDTO){
 
-
-        // El usuario si se quiere registrar de minimas tiene que mandarme un nombre y una password
-        if (inputDTO.getNombre().isEmpty() || inputDTO.getContrasenia().isEmpty()){
-            return new RespuestaHttp<>(null, HttpStatus.BAD_REQUEST.value());
-        }
-
         Usuario usuario = new Usuario(personasRepo.getProxId());
 
         usuario.getDatosPersonales().setNombre(inputDTO.getNombre());

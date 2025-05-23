@@ -1,5 +1,6 @@
 package services.impl;
 
+import models.dtos.input.FiltroHechosDTO;
 import models.dtos.input.ImportacionHechosInputDTO;
 import models.dtos.input.SolicitudHechoInputDTO;
 import models.dtos.input.VisualizarHechosInputDTO;
@@ -23,6 +24,7 @@ import services.IColeccionService;
 import services.IHechosService;
 
 import java.sql.Array;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +44,7 @@ public class HechosService implements IHechosService {
     }
 
     @Override
-    public RespuestaHttp<Integer> subirHecho(SolicitudHechoInputDTO dtoInput) {
+    public RespuestaHttp<Void> subirHecho(SolicitudHechoInputDTO dtoInput) {
         Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario());
         if(usuario.getRol().equals(Rol.ADMINISTRADOR)){
 
@@ -51,34 +53,52 @@ public class HechosService implements IHechosService {
 
             List<Hecho> hechos = hechosRepo.findAll(); // TODO cambiar x la temporal
 
-            Optional<Hecho> hecho2 = hechos.stream().filter(h->Normalizador.normalizarYComparar(h.getPais().getPais(), dtoInput.getPais())).findFirst();
-            Pais pais;
-
-            if (hecho2.isPresent()){
-                pais = hecho2.get().getPais();
-            } else {
-                pais = new Pais();
-                pais.setPais(dtoInput.getPais());
+            if(dtoInput.getPais() != null) {
+                Pais pais = BuscadorPais.buscar(hechosRepo.findAll(),dtoInput.getPais());
+                hecho.setPais(pais);
+            }else{
+                Pais pais = BuscadorPais.buscar(hechosRepo.findAll(),"N/A");
+                hecho.setPais(pais);
             }
 
             hecho.setTitulo(dtoInput.getTitulo());
-            hecho.setDescripcion(dtoInput.getDescripcion());
-            hecho.setPais(pais);
-            hecho.setFechaAcontecimiento(FechaParser.parsearFecha(dtoInput.getFechaAcontecimiento()));
+            if(dtoInput.getDescripcion() != null) {
+                hecho.setDescripcion(dtoInput.getDescripcion());
+            }else{
+                hecho.setDescripcion("N/A");
+            }
+            if(dtoInput.getFechaAcontecimiento() != null) {
+                hecho.setFechaAcontecimiento(FechaParser.parsearFecha(dtoInput.getFechaAcontecimiento()));
+            }else{
+                hecho.setFechaAcontecimiento(ZonedDateTime.of(0, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")));
+            }
+            if(dtoInput.getTipoContenido() != null){
+                hecho.setContenidoMultimedia(TipoContenido.fromCodigo(dtoInput.getTipoContenido()));
+            }else{
+                hecho.setContenidoMultimedia(TipoContenido.INVALIDO);
+            }
+            if(dtoInput.getCategoria() != null){
+                Categoria categoria = BuscadorCategoria.buscar(hechosRepo.findAll(),dtoInput.getCategoria());
+                hecho.setCategoria(categoria);
+            }
+            else{
+                Categoria categoria = BuscadorCategoria.buscar(hechosRepo.findAll(),"N/A");
+                hecho.setCategoria(categoria);
+            }
             hecho.setOrigen(Origen.CARGA_MANUAL);
             hecho.setId(hechosRepo.getProxId());
             hecho.setActivo(true);
             hecho.setFechaDeCarga(ZonedDateTime.now());
             hechosRepo.save(hecho);
-            return new RespuestaHttp<>(-1, HttpStatus.OK.value());
+            return new RespuestaHttp<>(null, HttpStatus.OK.value());
         }
         else{
-            return new RespuestaHttp<>(-1, HttpStatus.UNAUTHORIZED.value());
+            return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
     }
 
     @Override
-    public RespuestaHttp<Integer> importarHechos(ImportacionHechosInputDTO dtoInput){
+    public RespuestaHttp<Void> importarHechos(ImportacionHechosInputDTO dtoInput){
         Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario());
         if (usuario.getRol().equals(Rol.ADMINISTRADOR)){
             // Se borran y suben hechos constantemente => Guardamos los que se tienen hasta el momento en una lista
@@ -98,84 +118,71 @@ public class HechosService implements IHechosService {
             for (Hecho hecho : hechosAModificar){
                 hechosRepo.update(hecho);
             }
-            return new RespuestaHttp<>(-1, HttpStatus.OK.value());
+            return new RespuestaHttp<>(null, HttpStatus.OK.value());
         }
 
-        return new RespuestaHttp<>(-1, HttpStatus.UNAUTHORIZED.value());
+        return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
 
     }
 
     @Override
-    public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechos(List<String> filtros, Long id_coleccion){
+    public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechos(FiltroHechosDTO inputDTO) {
 
         List<Filtro> filter = new ArrayList<>();
 
-        if(!filtros.get(0).equals("N/A")){
-
-
-            Filtro filtroCategoria = new FiltroCategoria(BuscadorCategoria.buscar(hechosRepo.findAll(),filtros.get(0)));
-            filter.add(filtroCategoria);
-        }
-        if(!filtros.get(1).equals("N/A")){
-            TipoContenido contenido = TipoContenido.fromCodigo(Integer.parseInt(filtros.get(1)));
-            Filtro filtroContenidoMultimedia = new FiltroContenidoMultimedia(contenido);
-            filter.add(filtroContenidoMultimedia);
-        }
-        if(!filtros.get(2).equals("N/A")){
-            Filtro filtroDescripcion = new FiltroDescripcion(filtros.get(2));
-            filter.add(filtroDescripcion);
-        }
-        if(!filtros.get(3).equals("N/A") && !filtros.get(4).equals("N/A")){
-            ZonedDateTime fechaInicial = FechaParser.parsearFecha(filtros.get(3));
-            ZonedDateTime fechaFinal = FechaParser.parsearFecha(filtros.get(4));
-            Filtro filtroFechaAcontecimiento = new FiltroFechaAcontecimiento(fechaInicial,fechaFinal);
-            filter.add(filtroFechaAcontecimiento);
-        }
-        if(!filtros.get(5).equals("N/A") && !filtros.get(6).equals("N/A")){
-            ZonedDateTime fechaInicial = FechaParser.parsearFecha(filtros.get(5));
-            ZonedDateTime fechaFinal = FechaParser.parsearFecha(filtros.get(6));
-            Filtro filtroFechaCarga = new FiltroFechaCarga(fechaInicial,fechaFinal);
-            filter.add(filtroFechaCarga);
-        }
-        if(!filtros.get(7).equals("N/A")){
-            Origen origen = Origen.fromCodigo(Integer.parseInt(filtros.get(7)));
-            Filtro filtroOrigen = new FiltroOrigen(origen);
-            filter.add(filtroOrigen);
-        }
-        if(!filtros.get(8).equals("N/A")){
-
-            Filtro filtroPais = new FiltroPais(BuscadorPais.buscar(hechosRepo.findAll(),filtros.get(8)));
-            filter.add(filtroPais);
-
-        }
-        if(!filtros.get(9).equals("N/A")){
-            Filtro filtroTitulo = new FiltroTitulo(filtros.get(9));
-            filter.add(filtroTitulo);
+        if (inputDTO.getCategoria() != null) {
+            filter.add(new FiltroCategoria(BuscadorCategoria.buscar(hechosRepo.findAll(), inputDTO.getCategoria())));
         }
 
-        Filtrador filtrador = new Filtrador();
-
-        List<Hecho> lista = filtrador.aplicarFiltros(filter, coleccionRepo.findById(id_coleccion).getHechos());
-
-        List<VisualizarHechosOutputDTO> outputDTO = new ArrayList<>();
-
-        for(Hecho hecho : lista){
-
-            VisualizarHechosOutputDTO hechoDTO = new VisualizarHechosOutputDTO();
-
-            hechoDTO.setId(hecho.getId());
-            hechoDTO.setPais(hecho.getPais().getPais());
-            hechoDTO.setTitulo(hecho.getTitulo());
-            hechoDTO.setDescripcion(hecho.getDescripcion());
-            hechoDTO.setFechaAcontecimiento(hecho.getFechaAcontecimiento().toString());
-            hechoDTO.setCategoria(hecho.getCategoria().getTitulo());
-
-            outputDTO.add(hechoDTO);
-
+        if (inputDTO.getContenidoMultimedia() != null) {
+            TipoContenido contenido = TipoContenido.fromCodigo(Integer.parseInt(inputDTO.getContenidoMultimedia()));
+            filter.add(new FiltroContenidoMultimedia(contenido));
         }
 
-        return new RespuestaHttp<>(outputDTO,HttpStatus.OK.value());
+        if (inputDTO.getDescripcion() != null) {
+            filter.add(new FiltroDescripcion(inputDTO.getDescripcion()));
+        }
 
+        if (inputDTO.getFechaAcontecimientoInicial() != null && inputDTO.getFechaAcontecimientoFinal() != null) {
+            ZonedDateTime inicio = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoInicial());
+            ZonedDateTime fin = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoFinal());
+            filter.add(new FiltroFechaAcontecimiento(inicio, fin));
+        }
+
+        if (inputDTO.getFechaCargaInicial() != null && inputDTO.getFechaCargaFinal() != null) {
+            ZonedDateTime inicio = FechaParser.parsearFecha(inputDTO.getFechaCargaInicial());
+            ZonedDateTime fin = FechaParser.parsearFecha(inputDTO.getFechaCargaFinal());
+            filter.add(new FiltroFechaCarga(inicio, fin));
+        }
+
+        if (inputDTO.getOrigen() != null) {
+            Origen origen = Origen.fromCodigo(Integer.parseInt(inputDTO.getOrigen()));
+            filter.add(new FiltroOrigen(origen));
+        }
+
+        if (inputDTO.getPais() != null) {
+            filter.add(new FiltroPais(BuscadorPais.buscar(hechosRepo.findAll(), inputDTO.getPais())));
+        }
+
+        if (inputDTO.getTitulo() != null) {
+            filter.add(new FiltroTitulo(inputDTO.getTitulo()));
+        }
+
+        List<Hecho> hechosFiltrados = new Filtrador()
+                .aplicarFiltros(filter, coleccionRepo.findById(inputDTO.getId_coleccion()).getHechos());
+
+        List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream().map(hecho -> {
+            VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
+            dto.setId(hecho.getId());
+            dto.setPais(hecho.getPais().getPais());
+            dto.setTitulo(hecho.getTitulo());
+            dto.setDescripcion(hecho.getDescripcion());
+            dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento().toString());
+            dto.setCategoria(hecho.getCategoria().getTitulo());
+            return dto;
+        }).toList();
+
+        return new RespuestaHttp<>(outputDTO, HttpStatus.OK.value());
     }
 
     @Override

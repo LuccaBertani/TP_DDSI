@@ -1,5 +1,6 @@
 package controllers;
 
+import jakarta.validation.Valid;
 import models.dtos.input.UsuarioInputDTO;
 import models.entities.RespuestaHttp;
 import models.entities.personas.Usuario;
@@ -25,7 +26,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/crear")
-    public ResponseEntity<String> crearUsuario(@RequestBody UsuarioInputDTO dtoInput){
+    public ResponseEntity<String> crearUsuario(@Valid @RequestBody UsuarioInputDTO dtoInput){
         RespuestaHttp<Usuario> respuesta = usuarioService.crearUsuario(dtoInput);
         Integer codigo = respuesta.getCodigo();
         if (codigo.equals(HttpStatus.BAD_REQUEST.value())){

@@ -1,9 +1,27 @@
 package models.dtos.input;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.Getter;
 
 @Data
 public class ColeccionInputDTO {
+    @NotNull(message = "El id_usuario es obligatorio")
     private Long id_usuario;
+    @NotNull(message = "El campo titulo es obligatorio")
+    private String titulo;
+    @NotNull(message = "La descripción es obligatoria")
+    private String descripcion;
+    @NotNull(message = "La fuente es obligatoria")
+    private String fuente;
+
+    //Criterios (es decir los filtros)
+    private String categoria;
+    private Integer contenidoMultimedia;
+    private String fechaAcontecimientoInicial;
+    private String fechaAcontecimientoFinal;
+    private String fechaCargaInicial;
+    private String fechaCargaFinal;
+    private String origen;
+    private String pais;
 }

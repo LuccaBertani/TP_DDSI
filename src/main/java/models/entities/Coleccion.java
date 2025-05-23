@@ -23,8 +23,15 @@ public class Coleccion {
     private String titulo;
     private String descripcion;
     private List<Hecho> hechos = new ArrayList<>();
-    private Fuente fuente;
+    private String fuente;
     private List<Filtro> criterio = new ArrayList<>();
+
+    public Coleccion(DatosColeccion datosColeccion, long id) {
+        this.titulo = datosColeccion.getTitulo();
+        this.descripcion = datosColeccion.getDescripcion();
+        this.fuente = datosColeccion.getFuente();
+        this.id = id;
+    }
 
     public void addCriterios(Filtro ... filtros){
         this.criterio.addAll(List.of(filtros));
@@ -42,10 +49,5 @@ public class Coleccion {
         this.hechos.addAll(hechos);
     }
 
-    public Coleccion(DatosColeccion datosColeccion, long id) {
-        this.titulo = datosColeccion.getTitulo();
-        this.descripcion = datosColeccion.getDescripcion();
-        this.fuente = datosColeccion.getFuente();
-        this.id = id;
-    }
+
 }

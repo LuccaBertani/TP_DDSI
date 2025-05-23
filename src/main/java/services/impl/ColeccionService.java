@@ -1,16 +1,23 @@
 package services.impl;
 
+import models.dtos.input.ColeccionInputDTO;
 import models.entities.*;
-import models.entities.filtros.Filtro;
+import models.entities.buscadores.BuscadorCategoria;
+import models.entities.buscadores.BuscadorPais;
+import models.entities.filtros.*;
 import models.entities.personas.Rol;
 import models.entities.personas.Usuario;
 import models.repositories.IColeccionRepository;
 import models.repositories.IHechosRepository;
+import models.repositories.IPersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import services.IColeccionService;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,11 +25,12 @@ public class ColeccionService implements IColeccionService {
 
     private final IHechosRepository hechosRepo;
     private final IColeccionRepository coleccionesRepo;
+    private final IPersonaRepository usuariosRepo;
 
-    @Autowired
-    public ColeccionService(IHechosRepository hechosRepo, IColeccionRepository coleccionesRepo) {
+    public ColeccionService(IHechosRepository hechosRepo, IColeccionRepository coleccionesRepo, IPersonaRepository usuariosRepo) {
         this.hechosRepo = hechosRepo;
         this.coleccionesRepo = coleccionesRepo;
+        this.usuariosRepo = usuariosRepo;
     }
 
 
@@ -42,23 +50,54 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     */
 
     @Override
-    public RespuestaHttp<Integer> crearColeccion(List<Filtro> criterios, DatosColeccion datos, Usuario usuario) {
+    public RespuestaHttp<Void> crearColeccion(ColeccionInputDTO dtoInput) {
 
-        if (usuario.getRol().equals(Rol.ADMINISTRADOR)) {
+        Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario());
 
-            Coleccion coleccion = new Coleccion(datos,coleccionesRepo.getProxId());
-            coleccion.addCriterios(criterios);
-            List<Hecho> hechos = hechosRepo.findAll();
-            Filtrador filtrador = new Filtrador();
-
-            coleccion.addHechos(filtrador.aplicarFiltros(criterios, hechos));
-
-            coleccionesRepo.save(coleccion);
-
-            return new RespuestaHttp<>(-1, HttpStatus.OK.value());
-
+        if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
+            return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
-        return new RespuestaHttp<>(-1, HttpStatus.UNAUTHORIZED.value());
+
+        DatosColeccion datosColeccion = new DatosColeccion(dtoInput.getTitulo(), dtoInput.getDescripcion(), dtoInput.getFuente());
+
+        Coleccion coleccion = new Coleccion(datosColeccion,coleccionesRepo.getProxId());
+
+        List<Filtro> criterios = new ArrayList<>();
+
+
+        if(dtoInput.getPais() != null) {
+            Pais pais = BuscadorPais.buscar(hechosRepo.findAll(),dtoInput.getPais());
+            Filtro filtroPais = new FiltroPais(pais);
+            criterios.add(filtroPais);
+        }
+        if(dtoInput.getFechaAcontecimientoFinal() != null && dtoInput.getFechaAcontecimientoInicial() != null) {
+            Filtro filtroFechaAcontecimiento = new FiltroFechaAcontecimiento(FechaParser.parsearFecha(dtoInput.getFechaAcontecimientoInicial()),FechaParser.parsearFecha(dtoInput.getFechaAcontecimientoFinal()));
+            criterios.add(filtroFechaAcontecimiento);
+        }
+        if(dtoInput.getContenidoMultimedia() != null) {
+            Filtro filtroContenidoMultimedia = new FiltroContenidoMultimedia(TipoContenido.fromCodigo(dtoInput.getContenidoMultimedia()));
+            criterios.add(filtroContenidoMultimedia);
+        }
+        if(dtoInput.getCategoria() != null){
+            Categoria categoria = BuscadorCategoria.buscar(hechosRepo.findAll(),dtoInput.getCategoria());
+            Filtro filtroCategoria = new FiltroCategoria(categoria);
+            criterios.add(filtroCategoria);
+        }
+        if (dtoInput.getFechaCargaInicial()!=null && dtoInput.getFechaCargaFinal() !=null){
+            Filtro filtroFechaCarga = new FiltroFechaAcontecimiento(FechaParser.parsearFecha(dtoInput.getFechaCargaInicial()), FechaParser.parsearFecha(dtoInput.getFechaCargaFinal()));
+        }
+
+        coleccion.addCriterios(criterios);
+        List<Hecho> hechos = hechosRepo.findAll();
+        Filtrador filtrador = new Filtrador();
+
+        coleccion.addHechos(filtrador.aplicarFiltros(criterios, hechos));
+
+        coleccionesRepo.save(coleccion);
+
+        return new RespuestaHttp<>(null, HttpStatus.OK.value());
 
     }
 }
+
+//TODO Cada vez que se crea un hecho que se meta el en las colecciones que el hecho cumple su criterio

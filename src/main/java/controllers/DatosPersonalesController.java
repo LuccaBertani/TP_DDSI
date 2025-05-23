@@ -1,5 +1,6 @@
 package controllers;
 
+import jakarta.validation.Valid;
 import models.dtos.output.DatosPersonalesOutputDTO;
 import models.entities.RespuestaHttp;
 import models.entities.personas.Usuario;

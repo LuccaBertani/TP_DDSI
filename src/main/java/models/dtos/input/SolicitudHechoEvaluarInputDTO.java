@@ -1,5 +1,6 @@
 package models.dtos.input;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,8 +8,11 @@ import lombok.Setter;
 
 @Data
 public class SolicitudHechoEvaluarInputDTO {
+    @NotNull(message = "Debe seleccionar una opción")
     private Boolean respuesta;
+    @NotNull(message = "El id_solicitud es obligatorio")
     private Long id_solicitud;
+    @NotNull(message = "El id_usuario es obligatorio")
     private Long id_usuario; //el que ejecuta la acción
 }
 

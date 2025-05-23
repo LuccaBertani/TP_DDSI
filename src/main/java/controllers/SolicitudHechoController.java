@@ -1,5 +1,6 @@
 package controllers;
 
+import jakarta.validation.Valid;
 import models.dtos.input.SolicitudHechoEliminarInputDTO;
 import models.dtos.input.SolicitudHechoEvaluarInputDTO;
 import models.dtos.input.SolicitudHechoInputDTO;
@@ -15,43 +16,43 @@ import services.ISolicitudHechoService;
 @CrossOrigin(origins = "http://localhost:3000")
 public class SolicitudHechoController {
 
-    private ISolicitudHechoService solicitudHechoService;
+    private final ISolicitudHechoService solicitudHechoService;
     public SolicitudHechoController(ISolicitudHechoService solicitudHechoService){
         this.solicitudHechoService = solicitudHechoService;
     }
 
     @PostMapping("/evaluar/subir")
-    public ResponseEntity<Void> evaluarSolicitudSubida(@RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
-        RespuestaHttp<Integer> respuesta = solicitudHechoService.evaluarSolicitudSubirHecho(dtoInput);
+    public ResponseEntity<Void> evaluarSolicitudSubida(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
+        RespuestaHttp<Void> respuesta = solicitudHechoService.evaluarSolicitudSubirHecho(dtoInput);
         return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
     }
 
     @PostMapping("/evaluar/eliminar")
-    public ResponseEntity<Void> evaluarSolicitudEliminacion(@RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
-        RespuestaHttp<Integer> respuesta = solicitudHechoService.evaluarEliminacionHecho(dtoInput);
+    public ResponseEntity<Void> evaluarSolicitudEliminacion(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
+        RespuestaHttp<Void> respuesta = solicitudHechoService.evaluarEliminacionHecho(dtoInput);
         return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
     }
 
     @PostMapping("/solicitud/subir-hecho")
-    public ResponseEntity<Void> enviarSolicitudSubirHecho(@RequestBody SolicitudHechoInputDTO dtoInput){
-        RespuestaHttp<Integer> respuesta = solicitudHechoService.solicitarSubirHecho(dtoInput);
+    public ResponseEntity<Void> enviarSolicitudSubirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput){
+        RespuestaHttp<Void> respuesta = solicitudHechoService.solicitarSubirHecho(dtoInput);
         return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
     }
 
     @PostMapping("/solicitud/eliminar-hecho")
-    public ResponseEntity<Void> enviarSolicitudEliminarHecho(@RequestBody SolicitudHechoEliminarInputDTO dtoInput){
-        RespuestaHttp<Integer> respuesta = solicitudHechoService.solicitarEliminacionHecho(dtoInput);
+    public ResponseEntity<Void> enviarSolicitudEliminarHecho(@Valid @RequestBody SolicitudHechoEliminarInputDTO dtoInput){
+        RespuestaHttp<Void> respuesta = solicitudHechoService.solicitarEliminacionHecho(dtoInput);
         return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
     }
 
     @PostMapping("/solicitud/modificar-hecho")
-    public ResponseEntity<Void> enviarSolicitudModificarHecho(@RequestBody SolicitudHechoModificarInputDTO dtoInput){
+    public ResponseEntity<Void> enviarSolicitudModificarHecho(@Valid @RequestBody SolicitudHechoModificarInputDTO dtoInput){
 
         if (dtoInput.getTitulo() == null || dtoInput.getTitulo().isBlank()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        RespuestaHttp<Integer> respuesta = solicitudHechoService.solicitarModificacionHecho(dtoInput);
+        RespuestaHttp<Void> respuesta = solicitudHechoService.solicitarModificacionHecho(dtoInput);
         return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
     }
 

@@ -3,6 +3,7 @@ package models.entities;
 import models.entities.personas.Rol;
 
 public enum TipoContenido {
+    INVALIDO(-1),
     TEXTO(0),
     IMAGEN(1),
     AUDIO(2),
