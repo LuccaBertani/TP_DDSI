@@ -9,5 +9,5 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface IDatosPersonalesService {
-    public RespuestaHttp<List<Usuario>> obtenerListaContribuyentes(DatosPersonalesInputDTO inputDTO);
+    public RespuestaHttp<List<Usuario>> obtenerListaContribuyentes(Long id_usuario);
 }

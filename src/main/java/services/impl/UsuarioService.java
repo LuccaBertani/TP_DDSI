@@ -1,10 +1,11 @@
 package services.impl;
 
-import models.entities.HttpCode;
-import models.entities.personas.DatosPersonalesPublicador;
+import models.dtos.input.UsuarioInputDTO;
+import models.entities.RespuestaHttp;
 import models.entities.personas.Usuario;
 import models.repositories.IPersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import services.IUsuarioService;
 
@@ -19,12 +20,22 @@ public class UsuarioService implements IUsuarioService {
     }
     //Momento en el que un usuario se registra y guarda datos personales (NO LLAMAR A ESTE METODO SI ES ANONIMO)
     @Override
-    public Integer crearUsuario(String contrasenia, DatosPersonalesPublicador datosPersonales){
+    public RespuestaHttp<Usuario> crearUsuario(UsuarioInputDTO inputDTO){
+
+
+        // El usuario si se quiere registrar de minimas tiene que mandarme un nombre y una password
+        if (inputDTO.getNombre().isEmpty() || inputDTO.getContrasenia().isEmpty()){
+            return new RespuestaHttp<>(null, HttpStatus.BAD_REQUEST.value());
+        }
+
         Usuario usuario = new Usuario(personasRepo.getProxId());
-        usuario.setDatosPersonales(datosPersonales);
-        usuario.setContrasenia(contrasenia);
+
+        usuario.getDatosPersonales().setNombre(inputDTO.getNombre());
+        usuario.getDatosPersonales().setApellido(inputDTO.getApellido());
+        usuario.getDatosPersonales().setEdad(inputDTO.getEdad());
+        usuario.setContrasenia(inputDTO.getContrasenia());
         personasRepo.save(usuario);
-        return HttpCode.OK.getCode();
+        return new RespuestaHttp<>(usuario, HttpStatus.OK.value());
     }
 
 }

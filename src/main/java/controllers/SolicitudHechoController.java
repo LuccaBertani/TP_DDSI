@@ -3,15 +3,10 @@ package controllers;
 import models.dtos.input.SolicitudHechoEliminarInputDTO;
 import models.dtos.input.SolicitudHechoEvaluarInputDTO;
 import models.dtos.input.SolicitudHechoInputDTO;
-import models.dtos.output.SolicitudHechoOutputDTO;
-import models.entities.HttpCode;
 import models.entities.RespuestaHttp;
-import models.entities.personas.Rol;
-import models.entities.personas.Usuario;
-import models.repositories.IColeccionRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import services.IColeccionService;
-import services.IHechosService;
 import services.ISolicitudHechoService;
 
 @RestController
@@ -25,37 +20,27 @@ public class SolicitudHechoController {
     }
 
     @PostMapping("/evaluar/subir")
-    public SolicitudHechoOutputDTO evaluarSolicitudSubida(@RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
-
+    public ResponseEntity<Void> evaluarSolicitudSubida(@RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
         RespuestaHttp<Integer> respuesta = solicitudHechoService.evaluarSolicitudSubirHecho(dtoInput);
-        SolicitudHechoOutputDTO output = new SolicitudHechoOutputDTO();
-        output.setCodigoHTTP(respuesta.getCodigo());
-        return output;
+        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
     }
 
     @PostMapping("/evaluar/eliminar")
-    public SolicitudHechoOutputDTO evaluarSolicitudEliminacion(@RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
-
+    public ResponseEntity<Void> evaluarSolicitudEliminacion(@RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
         RespuestaHttp<Integer> respuesta = solicitudHechoService.evaluarEliminacionHecho(dtoInput);
-        SolicitudHechoOutputDTO output = new SolicitudHechoOutputDTO();
-        output.setCodigoHTTP(respuesta.getCodigo());
-        return output;
+        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
     }
 
     @PostMapping("/solicitud/subir-hecho")
-    public SolicitudHechoOutputDTO enviarSolicitudSubirHecho(@RequestBody SolicitudHechoInputDTO dtoInput){
+    public ResponseEntity<Void> enviarSolicitudSubirHecho(@RequestBody SolicitudHechoInputDTO dtoInput){
         RespuestaHttp<Integer> respuesta = solicitudHechoService.solicitarSubirHecho(dtoInput);
-        SolicitudHechoOutputDTO output = new SolicitudHechoOutputDTO();
-        output.setCodigoHTTP(respuesta.getCodigo());
-        return output;
+        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
     }
 
     @PostMapping("/solicitud/eliminar-hecho")
-    public SolicitudHechoOutputDTO enviarSolicitudEliminarHecho(@RequestBody SolicitudHechoEliminarInputDTO dtoInput){
+    public ResponseEntity<Void> enviarSolicitudEliminarHecho(@RequestBody SolicitudHechoEliminarInputDTO dtoInput){
         RespuestaHttp<Integer> respuesta = solicitudHechoService.solicitarEliminacionHecho(dtoInput);
-        SolicitudHechoOutputDTO output = new SolicitudHechoOutputDTO();
-        output.setCodigoHTTP(respuesta.getCodigo());
-        return output;
+        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
     }
 
 }

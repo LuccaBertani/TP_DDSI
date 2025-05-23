@@ -12,6 +12,7 @@ import models.repositories.IPersonaRepository;
 import models.repositories.ISolicitudAgregarHechoRepository;
 import models.repositories.ISolicitudEliminarHechoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import services.ISolicitudHechoService;
 
@@ -41,6 +42,10 @@ public class SolicitudHechoService implements ISolicitudHechoService {
 
         Usuario usuario = usuariosRepository.findById(dto.getId_usuario());
 
+        if (usuario.getRol().equals(Rol.ADMINISTRADOR)){
+            return new RespuestaHttp<>(-1, HttpStatus.UNAUTHORIZED.value());
+        }
+
         List<Hecho> hechos = hechosRepository.findAll(); // TODO cambiar x la temporal
 
         Optional<Hecho> hecho2 = hechos.stream().filter(h->Normalizador.normalizarYComparar(h.getPais().getPais(), dto.getPais())).findFirst();
@@ -56,16 +61,13 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         HechosData hechosData = new HechosData(dto.getTitulo(), dto.getDescripcion(), dto.getTipoContenido(),
                 pais, dto.getFechaAcontecimiento(), hechosRepository.getProxId());
 
-        if (!usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            FuenteDinamica fuenteDinamica = new FuenteDinamica();
-            Hecho hecho = fuenteDinamica.crearHecho(hechosData);
-            SolicitudHecho solicitudHecho = new SolicitudHecho(usuario, hecho, solicitudAgregarHechoRepo.getProxId());
-            solicitudAgregarHechoRepo.save(solicitudHecho);
-            hechosRepository.save(hecho);
+        FuenteDinamica fuenteDinamica = new FuenteDinamica();
+        Hecho hecho = fuenteDinamica.crearHecho(hechosData);
+        SolicitudHecho solicitudHecho = new SolicitudHecho(usuario, hecho, solicitudAgregarHechoRepo.getProxId());
+        solicitudAgregarHechoRepo.save(solicitudHecho);
+        hechosRepository.save(hecho);
 
-            return new RespuestaHttp<>(-1, HttpCode.OK.getCode());
-        }
-        return new RespuestaHttp<>(-1, HttpCode.UNAUTHORIZED.getCode());
+        return new RespuestaHttp<>(-1, HttpStatus.OK.value());
     }
 
 
@@ -77,14 +79,14 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         Hecho hecho = hechosRepository.findById(dto.getId_hecho());
 
         if(usuario.getRol().equals(Rol.VISUALIZADOR)){
-            return new RespuestaHttp<>(-1, HttpCode.UNAUTHORIZED.getCode());
+            return new RespuestaHttp<>(-1, HttpStatus.UNAUTHORIZED.value());
         }
         else if (usuario.getRol().equals(Rol.CONTRIBUYENTE)) {
             SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, solicitudEliminarHechoRepo.getProxId());
             solicitudEliminarHechoRepo.save(solicitud);
-            return new RespuestaHttp<>(-1, HttpCode.OK.getCode());
+            return new RespuestaHttp<>(-1, HttpStatus.OK.value());
         }
-        return new RespuestaHttp<>(-1, HttpCode.UNAUTHORIZED.getCode()); // Un admin no deberia solicitar eliminar, los elimina directamente
+        return new RespuestaHttp<>(-1, HttpStatus.UNAUTHORIZED.value()); // Un admin no deberia solicitar eliminar, los elimina directamente
 
     }
 
@@ -95,7 +97,7 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         Usuario usuario = usuariosRepository.findById(dtoInput.getId_usuario());//el que ejecuta la acción
 
         if(!usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return new RespuestaHttp<>(-1, HttpCode.UNAUTHORIZED.getCode());
+            return new RespuestaHttp<>(-1, HttpStatus.UNAUTHORIZED.value());
         }
         else {
 
@@ -111,7 +113,7 @@ public class SolicitudHechoService implements ISolicitudHechoService {
             }
             this.solicitudAgregarHechoRepo.delete(solicitud);
         }
-        return new RespuestaHttp<>(-1, HttpCode.OK.getCode());
+        return new RespuestaHttp<>(-1, HttpStatus.OK.value());
     }
 
     @Override
@@ -121,7 +123,7 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         Usuario usuario = usuariosRepository.findById(dtoInput.getId_usuario());//el que ejecuta la acción
 
         if(!usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return new RespuestaHttp<>(-1, HttpCode.UNAUTHORIZED.getCode());
+            return new RespuestaHttp<>(-1, HttpStatus.UNAUTHORIZED.value());
         }
         else {
             if (dtoInput.getRespuesta()) {
@@ -138,7 +140,7 @@ public class SolicitudHechoService implements ISolicitudHechoService {
 
         }
         solicitudEliminarHechoRepo.delete(solicitud);
-        return new RespuestaHttp<>(-1, HttpCode.OK.getCode());
+        return new RespuestaHttp<>(-1, HttpStatus.OK.value());
     }
 }
 

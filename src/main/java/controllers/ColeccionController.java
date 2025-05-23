@@ -1,11 +1,5 @@
 package controllers;
 
-import models.dtos.input.ColeccionInputDTO;
-import models.dtos.input.SolicitudHechoEvaluarInputDTO;
-import models.dtos.output.ColeccionOutputDTO;
-import models.dtos.output.SolicitudHechoOutputDTO;
-import models.entities.RespuestaHttp;
-import models.repositories.IColeccionRepository;
 import org.springframework.web.bind.annotation.*;
 import services.IColeccionService;
 
@@ -19,11 +13,7 @@ public class ColeccionController {
         this.coleccionService = coleccionService;
     }
 
-    @PostMapping("/crear")
-    public ColeccionOutputDTO crearColeccion(@RequestBody ColeccionInputDTO dtoInput){
-
-        //coleccionService.crearColeccion(dtoInput);
-    }
+    // TODO lo relacionado a colecciones
 
 
 }

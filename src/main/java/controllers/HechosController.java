@@ -1,41 +1,38 @@
 package controllers;
 
-import models.dtos.input.HechosInputDTO;
-import models.dtos.output.HechosOutputDTO;
-import models.repositories.IColeccionRepository;
-import org.springframework.validation.annotation.Validated;
+import models.dtos.input.ImportacionHechosInputDTO;
+import models.dtos.input.SolicitudHechoEliminarInputDTO;
+import models.dtos.input.SolicitudHechoEvaluarInputDTO;
+import models.dtos.input.SolicitudHechoInputDTO;
+import models.entities.RespuestaHttp;
+import models.repositories.IHechosRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import services.IColeccionService;
 import services.IHechosService;
-
-import java.util.List;
-import java.util.Optional;
+import services.ISolicitudHechoService;
 
 @RestController
-@RequestMapping("/api/hechos")
+@RequestMapping("/api/hecho")
 @CrossOrigin(origins = "http://localhost:3000")
 public class HechosController {
 
     private IHechosService hechosService;
-
     public HechosController(IHechosService hechosService){
         this.hechosService = hechosService;
     }
 
-    @PostMapping
-    public HechosOutputDTO crearHecho(@RequestBody HechosInputDTO inputDTO){
-        return hechosService.crearHecho(inputDTO);
+    @PostMapping("/subir")
+    public ResponseEntity<Void> subirHecho(@RequestBody SolicitudHechoInputDTO dtoInput){
+        RespuestaHttp<Integer> respuesta = hechosService.subirHecho(dtoInput);
+        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
     }
 
-    @GetMapping
-    public List<HechosOutputDTO> obtenerTodosLosHechos() {
-        return hechosService.obtenerTodosLosHechos();
+    @PostMapping("/importar")
+    public ResponseEntity<Void> importarHechos(@RequestBody ImportacionHechosInputDTO dtoInput){
+        RespuestaHttp<Integer> respuesta = hechosService.importarHechos(dtoInput);
+        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
     }
-
-    @GetMapping("/{id}")
-    public Optional<HechosOutputDTO> obtenerHechoPorId(@PathVariable Long id) {
-        return hechosService.obtenerHechoPorId(id);
-    }
-
 
 }
+

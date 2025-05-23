@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
+
 @Data
 public class SolicitudHechoEvaluarInputDTO {
     private Boolean respuesta;

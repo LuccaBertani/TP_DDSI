@@ -7,6 +7,7 @@ import models.entities.personas.Usuario;
 import models.repositories.IColeccionRepository;
 import models.repositories.IHechosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import services.IColeccionService;
 
@@ -54,10 +55,10 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
             coleccionesRepo.save(coleccion);
 
-            return new RespuestaHttp<>(-1, HttpCode.OK.getCode());
+            return new RespuestaHttp<>(-1, HttpStatus.OK.value());
 
-        } else {
-            return new RespuestaHttp<>(-1, HttpCode.UNAUTHORIZED.getCode());
         }
+        return new RespuestaHttp<>(-1, HttpStatus.UNAUTHORIZED.value());
+
     }
 }

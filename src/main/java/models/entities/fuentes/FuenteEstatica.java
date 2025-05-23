@@ -8,10 +8,9 @@ import models.entities.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Getter
+@Setter
 public class FuenteEstatica implements Fuente {
-    @Getter
-    @Setter
     private String dataSet;
     public ModificadorHechos leerFuente(List<Hecho> hechos){
 

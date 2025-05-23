@@ -1,18 +1,14 @@
 package controllers;
 
-import models.dtos.input.DatosPersonalesInputDTO;
 import models.dtos.output.DatosPersonalesOutputDTO;
 import models.entities.RespuestaHttp;
-import models.entities.personas.DatosPersonalesPublicador;
 import models.entities.personas.Usuario;
-import models.repositories.IColeccionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import services.IColeccionService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import services.IDatosPersonalesService;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -29,13 +25,31 @@ public class DatosPersonalesController {
 
 
     @GetMapping("/contribuyentes")
-    public DatosPersonalesOutputDTO buscarTodos(DatosPersonalesInputDTO inputDto) {
+    public ResponseEntity<List<DatosPersonalesOutputDTO>> buscarTodos(@RequestParam Long id_usuario) {
+        RespuestaHttp<List<Usuario>> respuestaHttp = datosPersonalesService.obtenerListaContribuyentes(id_usuario);
 
-        RespuestaHttp<List<Usuario>> respuestaHttp = datosPersonalesService.obtenerListaContribuyentes(inputDto);
-        DatosPersonalesOutputDTO outputDTO = new DatosPersonalesOutputDTO();
+        Integer codigo = respuestaHttp.getCodigo();
 
+        if (codigo.equals(HttpStatus.UNAUTHORIZED.value())) {
+            return ResponseEntity.status(codigo).build();
+        }
 
+        List<Usuario> usuarios = respuestaHttp.getDatos();
+        List<DatosPersonalesOutputDTO> datos = new ArrayList<>();
+
+        for (Usuario usuario : usuarios) {
+            DatosPersonalesOutputDTO dto = new DatosPersonalesOutputDTO();
+            dto.setId(usuario.getId());
+            dto.setApellido(usuario.getDatosPersonales().getApellido());
+            dto.setNombre(usuario.getDatosPersonales().getNombre());
+            dto.setEdad(usuario.getDatosPersonales().getEdad());
+            datos.add(dto);
+        }
+        return ResponseEntity.status(codigo).body(datos); // Asumo que es un 200 OK
     }
+
+
+
 
 
 }

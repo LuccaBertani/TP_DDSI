@@ -1,16 +1,16 @@
 package controllers;
 
-import models.dtos.input.ColeccionInputDTO;
-import models.dtos.output.ColeccionOutputDTO;
+import models.dtos.input.UsuarioInputDTO;
+import models.entities.RespuestaHttp;
+import models.entities.personas.Usuario;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import services.IHechosService;
 
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import services.IColeccionService;
-import services.IHechosService;
 import services.IUsuarioService;
 
 @RestController
@@ -18,16 +18,21 @@ import services.IUsuarioService;
 @CrossOrigin(origins = "http://localhost:3000")
 public class UsuarioController {
 
-    private IUsuarioService hechosService;
+    private IUsuarioService usuarioService;
 
-    public SolicitudHechoController(IHechosService hechosService) {
-        this.hechosService = hechosService;
+    public UsuarioController(IUsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
     }
 
-    @GetMapping("/obtener/lista-contribuyentes")
-    public ColeccionOutputDTO(@RequestBody ColeccionInputDTO dtoInput){
+    @PostMapping("/crear")
+    public ResponseEntity<String> crearUsuario(@RequestBody UsuarioInputDTO dtoInput){
+        RespuestaHttp<Usuario> respuesta = usuarioService.crearUsuario(dtoInput);
+        Integer codigo = respuesta.getCodigo();
+        if (codigo.equals(HttpStatus.BAD_REQUEST.value())){
+            return ResponseEntity.status(codigo).build();
+        }
 
+        return ResponseEntity.status(codigo).body("El usuario se creó correctamente"); // Asumo 200 OK
     }
-
 
 }
