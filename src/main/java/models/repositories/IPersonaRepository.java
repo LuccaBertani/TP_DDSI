@@ -1,6 +1,7 @@
 package models.repositories;
 
 import models.entities.Hecho;
+import models.entities.SolicitudHecho;
 import models.entities.personas.Usuario;
 
 import java.util.List;

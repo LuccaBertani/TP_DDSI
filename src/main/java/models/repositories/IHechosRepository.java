@@ -1,6 +1,7 @@
 package models.repositories;
 
 import models.entities.Hecho;
+import models.entities.SolicitudHecho;
 
 import java.util.List;
 

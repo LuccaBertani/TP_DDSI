@@ -1,5 +1,6 @@
 package models.repositories.impl;
 
+import models.entities.Coleccion;
 import models.entities.SolicitudHecho;
 import models.entities.personas.Usuario;
 import models.repositories.ISolicitudAgregarHechoRepository;
@@ -52,8 +53,8 @@ public class MemoriaSolicitudAgregarHechoRepository implements ISolicitudAgregar
     }
 
     @Override
-    public void update(SolicitudHecho solicitud) {
-        this.delete(solicitud);
-        this.save(solicitud);
+    public void update(SolicitudHecho entidad){
+        this.delete(entidad);
+        this.save(entidad);
     }
 }

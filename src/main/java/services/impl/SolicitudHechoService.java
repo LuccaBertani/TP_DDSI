@@ -3,7 +3,10 @@ package services.impl;
 import models.dtos.input.SolicitudHechoEliminarInputDTO;
 import models.dtos.input.SolicitudHechoEvaluarInputDTO;
 import models.dtos.input.SolicitudHechoInputDTO;
+import models.dtos.input.SolicitudHechoModificarInputDTO;
 import models.entities.*;
+import models.entities.buscadores.BuscadorCategoria;
+import models.entities.buscadores.BuscadorPais;
 import models.entities.fuentes.FuenteDinamica;
 import models.entities.personas.Rol;
 import models.entities.personas.Usuario;
@@ -11,11 +14,13 @@ import models.repositories.IHechosRepository;
 import models.repositories.IPersonaRepository;
 import models.repositories.ISolicitudAgregarHechoRepository;
 import models.repositories.ISolicitudEliminarHechoRepository;
+import models.repositories.ISolicitudModificarHechoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import services.ISolicitudHechoService;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,16 +29,18 @@ public class SolicitudHechoService implements ISolicitudHechoService {
 
     private final ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo;
     private final ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo;
+    private final ISolicitudModificarHechoRepository solicitudModificarHechoRepo;
     private final IHechosRepository hechosRepository;
     private final IPersonaRepository usuariosRepository;
     GestorRoles gestorRoles;
 
     public SolicitudHechoService(ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo, ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo,
-                                 IPersonaRepository personaRepository, IHechosRepository hechosRepository, IPersonaRepository usuariosRepository) {
+                                 IPersonaRepository personaRepository, IHechosRepository hechosRepository, IPersonaRepository usuariosRepository, ISolicitudModificarHechoRepository solicitudModificarHechoRepo) {
         this.solicitudAgregarHechoRepo = solicitudAgregarHechoRepo;
         this.solicitudEliminarHechoRepo = solicitudEliminarHechoRepo;
         this.hechosRepository = hechosRepository;
         this.usuariosRepository = usuariosRepository;
+        this.solicitudModificarHechoRepo = solicitudModificarHechoRepo;
         gestorRoles = new GestorRoles();
     }
 
@@ -70,25 +77,46 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         return new RespuestaHttp<>(-1, HttpStatus.OK.value());
     }
 
-
+    // TODO habría que ver si el hecho está relacionado con el usuario
     //El usuario manda una solicitud para eliminar un hecho -> guardar la solicitud en la base de datos
     @Override
     public RespuestaHttp<Integer> solicitarEliminacionHecho(SolicitudHechoEliminarInputDTO dto){
-
         Usuario usuario = usuariosRepository.findById(dto.getId_usuario());
-        Hecho hecho = hechosRepository.findById(dto.getId_hecho());
-
-        if(usuario.getRol().equals(Rol.VISUALIZADOR)){
+        if (usuario == null || usuario.getRol().equals(Rol.ADMINISTRADOR) || usuario.getRol().equals(Rol.VISUALIZADOR)){
             return new RespuestaHttp<>(-1, HttpStatus.UNAUTHORIZED.value());
         }
-        else if (usuario.getRol().equals(Rol.CONTRIBUYENTE)) {
-            SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, solicitudEliminarHechoRepo.getProxId());
-            solicitudEliminarHechoRepo.save(solicitud);
-            return new RespuestaHttp<>(-1, HttpStatus.OK.value());
-        }
-        return new RespuestaHttp<>(-1, HttpStatus.UNAUTHORIZED.value()); // Un admin no deberia solicitar eliminar, los elimina directamente
-
+        Hecho hecho = hechosRepository.findById(dto.getId_hecho());
+        SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, solicitudEliminarHechoRepo.getProxId());
+        solicitudEliminarHechoRepo.save(solicitud);
+        return new RespuestaHttp<>(-1, HttpStatus.OK.value()); // Un admin no deberia solicitar eliminar, los elimina directamente
     }
+
+
+    // TODO habría que ver si el hecho está relacionado con el usuario
+    public RespuestaHttp<Integer> solicitarModificacionHecho(SolicitudHechoModificarInputDTO dto){
+
+        Usuario usuario = usuariosRepository.findById(dto.getId_usuario());
+
+        if (usuario == null || usuario.getRol().equals(Rol.ADMINISTRADOR) || usuario.getRol().equals(Rol.VISUALIZADOR)){
+            return new RespuestaHttp<>(-1, HttpStatus.UNAUTHORIZED.value());
+        }
+
+        Hecho hecho = hechosRepository.findById(dto.getId_hecho());
+
+        hecho.setTitulo(dto.getTitulo());
+        // TODO cambiar x temporal
+        hecho.setPais(BuscadorPais.buscar(hechosRepository.findAll(), dto.getPais()));
+        hecho.setCategoria(BuscadorCategoria.buscar(hechosRepository.findAll(), dto.getPais()));
+        hecho.setTitulo(dto.getTitulo());
+        hecho.setFechaAcontecimiento(FechaParser.parsearFecha(dto.getFechaAcontecimiento()));
+        hecho.setFechaDeCarga(ZonedDateTime.now()); // Nueva fecha de modificación
+        hecho.setContenidoMultimediaOpcional(TipoContenido.fromCodigo(dto.getTipoContenido()));
+
+        SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, solicitudModificarHechoRepo.getProxId());
+        solicitudModificarHechoRepo.save(solicitud);
+        return new RespuestaHttp<>(-1, HttpStatus.OK.value());
+    }
+
 
     @Override
     public RespuestaHttp<Integer> evaluarSolicitudSubirHecho(SolicitudHechoEvaluarInputDTO dtoInput) {
@@ -128,8 +156,7 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         else {
             if (dtoInput.getRespuesta()) {
 
-                // El hecho debería dejar de mostrarse en la página, pero NUNCA se borra por completo
-                solicitud.getHecho().setActivo(false);
+
                 solicitud.getUsuario().disminuirHechosSubidos();
                 hechosRepository.update(solicitud.getHecho());
 
@@ -142,6 +169,26 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         solicitudEliminarHechoRepo.delete(solicitud);
         return new RespuestaHttp<>(-1, HttpStatus.OK.value());
     }
+
+    @Override
+    public RespuestaHttp<Integer> evaluarModificacionHecho(SolicitudHechoEvaluarInputDTO dtoInput) {
+
+        SolicitudHecho solicitud = solicitudModificarHechoRepo.findById(dtoInput.getId_solicitud());
+        Usuario usuario = usuariosRepository.findById(dtoInput.getId_usuario());//el que ejecuta la acción
+
+        if(!usuario.getRol().equals(Rol.ADMINISTRADOR)){
+            return new RespuestaHttp<>(-1, HttpStatus.UNAUTHORIZED.value());
+        }
+        else {
+            if (dtoInput.getRespuesta()) {
+                // El hecho debe modificarse
+                hechosRepository.update(solicitud.getHecho());
+            }
+        }
+        solicitudModificarHechoRepo.delete(solicitud);
+        return new RespuestaHttp<>(-1, HttpStatus.OK.value());
+    }
+
 }
 
 

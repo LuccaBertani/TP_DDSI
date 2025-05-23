@@ -1,6 +1,7 @@
 package models.repositories.impl;
 
 import models.entities.Coleccion;
+import models.entities.Hecho;
 import models.repositories.IColeccionRepository;
 import org.springframework.stereotype.Repository;
 
@@ -48,13 +49,14 @@ public class MemoriaColeccionRepository implements IColeccionRepository {
 
     @Override
     public void delete(Coleccion coleccion) {
-        coleccion.setActivo(false);
+        Coleccion busqueda = this.findById(coleccion.getId());
+        busqueda.setActivo(false);
     }
 
     @Override
-    public void update(Coleccion coleccion) {
-       this.delete(coleccion);
-       this.save(coleccion);
+    public void update(Coleccion entidad){
+       this.colecciones.remove(entidad);
+       this.save(entidad);
     }
 
 }

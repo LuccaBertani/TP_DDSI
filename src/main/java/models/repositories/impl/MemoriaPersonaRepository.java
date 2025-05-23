@@ -1,5 +1,8 @@
 package models.repositories.impl;
 
+import models.entities.Coleccion;
+import models.entities.Hecho;
+import models.entities.SolicitudHecho;
 import models.entities.personas.Usuario;
 import models.repositories.IPersonaRepository;
 import org.springframework.stereotype.Repository;
@@ -38,14 +41,14 @@ public class MemoriaPersonaRepository implements IPersonaRepository {
         return id_aux + 1;
     }
 
-    @Override
-    public void update(Usuario usuario) {
-        this.delete(usuario);
-        this.save(usuario);
+    public void delete(Usuario entidad) {
+        this.personas.remove(entidad);
     }
 
     @Override
-    public void delete(Usuario usuario){
-        this.personas.remove(usuario);
+    public void update(Usuario entidad) {
+        this.delete(entidad);
+        this.save(entidad);
     }
+
 }

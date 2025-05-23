@@ -48,12 +48,13 @@ public class MemoriaHechosRepository implements IHechosRepository {
 
     @Override
     public void delete(Hecho hecho) {
-    hecho.setActivo(false);
+        Hecho busquedaHecho = this.findById(hecho.getId());
+        busquedaHecho.setActivo(false);
     }
 
     @Override
-    public void update(Hecho hecho) {
-        this.delete(hecho);
-        this.save(hecho);
+    public void update(Hecho entidad){
+        this.hechos.remove(entidad);
+        this.save(entidad);
     }
 }

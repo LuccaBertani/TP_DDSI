@@ -3,6 +3,7 @@ package controllers;
 import models.dtos.input.SolicitudHechoEliminarInputDTO;
 import models.dtos.input.SolicitudHechoEvaluarInputDTO;
 import models.dtos.input.SolicitudHechoInputDTO;
+import models.dtos.input.SolicitudHechoModificarInputDTO;
 import models.entities.RespuestaHttp;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,12 @@ public class SolicitudHechoController {
     @PostMapping("/solicitud/eliminar-hecho")
     public ResponseEntity<Void> enviarSolicitudEliminarHecho(@RequestBody SolicitudHechoEliminarInputDTO dtoInput){
         RespuestaHttp<Integer> respuesta = solicitudHechoService.solicitarEliminacionHecho(dtoInput);
+        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
+    }
+
+    @PostMapping("/solicitud/modificar-hecho")
+    public ResponseEntity<Void> enviarSolicitudEliminarHecho(@RequestBody SolicitudHechoModificarInputDTO dtoInput){
+        RespuestaHttp<Integer> respuesta = solicitudHechoService.solicitarModificacionHecho(dtoInput);
         return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
     }
 

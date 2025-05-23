@@ -3,6 +3,7 @@ package models.entities.filtros;
 import lombok.Getter;
 import lombok.Setter;
 import models.entities.Hecho;
+import models.entities.Normalizador;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,11 +19,12 @@ public class FiltroTitulo implements Filtro {
 
     @Override
     public Boolean aprobarHecho(Hecho hecho) {
-        List<String> palabrasHecho = Arrays.stream(hecho.getTitulo().toLowerCase().split(" "))
+
+        List<String> palabrasHecho = Arrays.stream(Normalizador.normalizarSeparado(hecho.getTitulo()))
                 .map(String::trim)
                 .toList();
 
-        List<String> palabrasFiltro = Arrays.stream(this.titulo.toLowerCase().split(" "))
+        List<String> palabrasFiltro = Arrays.stream(Normalizador.normalizar(this.titulo))
                 .map(String::trim)
                 .toList();
 
