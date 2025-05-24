@@ -78,7 +78,6 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         return new RespuestaHttp<>(null, HttpStatus.OK.value());
     }
 
-    // TODO habría que ver si el hecho está relacionado con el usuario
     //El usuario manda una solicitud para eliminar un hecho -> guardar la solicitud en la base de datos
     @Override
     public RespuestaHttp<Void> solicitarEliminacionHecho(SolicitudHechoEliminarInputDTO dto){
@@ -92,8 +91,6 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         return new RespuestaHttp<>(null, HttpStatus.OK.value()); // Un admin no deberia solicitar eliminar, los elimina directamente
     }
 
-
-    // TODO habría que ver si el hecho está relacionado con el usuario
     public RespuestaHttp<Void> solicitarModificacionHecho(SolicitudHechoModificarInputDTO dto){
 
         Usuario usuario = usuariosRepository.findById(dto.getId_usuario());

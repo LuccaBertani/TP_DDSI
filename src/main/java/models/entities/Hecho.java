@@ -10,7 +10,7 @@ import java.time.ZonedDateTime;
 public class Hecho {
     private Boolean activo;
     private Long id;
-    private Long id_usuario; // TODO relacionar hechos con el usuario que lo creo
+    private Long id_usuario;
     private String titulo;
     private String descripcion;
     private Categoria categoria;

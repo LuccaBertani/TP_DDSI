@@ -19,6 +19,7 @@ import models.repositories.IHechosRepository;
 import models.repositories.IPersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import services.IColeccionService;
 import services.IHechosService;
@@ -37,10 +38,58 @@ public class HechosService implements IHechosService {
     private final IHechosRepository hechosRepo;
     private final IPersonaRepository usuariosRepo;
     private final IColeccionRepository coleccionRepo;
+
+    private List<Hecho> snapshotHechos;
+    private Boolean hechosNuevosSubidos;
+
     public HechosService(IHechosRepository repo, IPersonaRepository usuariosRepo, IColeccionRepository coleccionRepo) {
         this.hechosRepo = repo;
         this.usuariosRepo = usuariosRepo;
         this.coleccionRepo = coleccionRepo;
+        snapshotHechos = new ArrayList<>();
+        hechosNuevosSubidos = false;
+    }
+
+    // Hay que controlar condiciones de carrera entre el chequeo de nuevos hechos y la actualizacion de la snapshot
+    @Scheduled(cron = "0 */20 * * * *") // cada 20 minutos
+    public void chequearNuevosHechos(){
+        List<Hecho> todosHechos = hechosRepo.findAll()
+                .stream()
+                .filter(hecho -> !this.seEncuentraEnColeccionProxyMetaMapa(hecho))
+                .toList();
+
+        // Si la cantidad de hechos totales es mayor a la cantidad de hechos en la snapshot, significa que hay nuevos hechos subidos
+        if (todosHechos.size() > snapshotHechos.size()){
+            this.hechosNuevosSubidos = true;
+        }
+    }
+    /* Se pide que, una vez por hora, el servicio de agregación actualice los hechos pertenecientes a las distintas colecciones,
+     en caso de que las fuentes hayan incorporado nuevos hechos.*/
+    @Scheduled(cron = "0 0 * * * *") // cada hora
+    public void refrescarSnapshot() {
+        if (this.hechosNuevosSubidos){
+            List<Hecho> hechosTotales = hechosRepo.findAll()
+                    .stream()
+                    .filter(hecho -> !this.seEncuentraEnColeccionProxyMetaMapa(hecho))
+                    .toList();
+
+            // Cómo sabemos a qué colección van a parar los hechos?
+            // this.snapshotHechos = ???
+
+            this.hechosNuevosSubidos = false;
+        }
+    }
+
+    /*Se excluye de este requerimiento la actualización de los hechos provenientes de fuentes proxy MetaMapa, que deben ser obtenidos
+    en tiempo real en todos los casos.*/
+    public Boolean seEncuentraEnColeccionProxyMetaMapa(Hecho hecho){
+        List<Coleccion> colecciones = coleccionRepo.findAll();
+        List<Coleccion> coleccionesProxy = colecciones.stream().filter(coleccion->coleccion.getFuente().equals("ProxyMetaMapa")).toList();
+        return coleccionesProxy.stream().anyMatch(c->c.getHechos().contains(hecho));
+    }
+
+    public List<Hecho> getSnapshot() {
+        return this.snapshotHechos;
     }
 
     @Override
@@ -48,7 +97,6 @@ public class HechosService implements IHechosService {
         Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario());
         if(usuario.getRol().equals(Rol.ADMINISTRADOR)){
 
-            // TODO: METER ESTE ALGORITMO QUE CHEQUEA PAIS EXISTENTE Y CREA UN HECHO DESDE 0 EN UN METODO APARTE
             Hecho hecho = new Hecho();
 
             List<Hecho> hechos = hechosRepo.findAll(); // TODO cambiar x la temporal
@@ -102,8 +150,12 @@ public class HechosService implements IHechosService {
         Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario());
         if (usuario.getRol().equals(Rol.ADMINISTRADOR)){
             // Se borran y suben hechos constantemente => Guardamos los que se tienen hasta el momento en una lista
-            // TODO lista temporal
+            // TODO SNAPSHOT
+            // En vez de usar el find all, en este caso como la fuente es estatica, se usaria la snapshot
             List<Hecho> hechosActuales = hechosRepo.findAll();
+
+
+
             FuenteEstatica fuente = new FuenteEstatica();
             fuente.setDataSet(dtoInput.getFuenteString());
             ModificadorHechos modificadorHechos = fuente.leerFuente(hechosActuales);

@@ -13,7 +13,7 @@ public class FiltroContenidoMultimedia implements Filtro {
 
     @Override
     public Boolean aprobarHecho(Hecho hecho) {
-        return tipoContenido.equals(hecho.getContenidoMultimediaOpcional());
+        return tipoContenido.equals(hecho.getContenidoMultimedia());
     }
 
 
