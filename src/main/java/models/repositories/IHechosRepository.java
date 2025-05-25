@@ -13,4 +13,6 @@ public interface IHechosRepository {
     Hecho findById(Long id);
     long getProxId();
     void update(Hecho entidad);
+    public List<Hecho> getSnapshotHechos();
+    public void clearSnapshotHechos();
 }

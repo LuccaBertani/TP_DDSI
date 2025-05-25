@@ -89,9 +89,8 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
         coleccion.addCriterios(criterios);
         List<Hecho> hechos = hechosRepo.findAll();
-        Filtrador filtrador = new Filtrador();
 
-        coleccion.addHechos(filtrador.aplicarFiltros(criterios, hechos));
+        coleccion.addHechos(Filtrador.aplicarFiltros(criterios, hechos));
 
         coleccionesRepo.save(coleccion);
 

@@ -17,10 +17,12 @@ import models.repositories.ISolicitudEliminarHechoRepository;
 import models.repositories.ISolicitudModificarHechoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import services.ISolicitudHechoService;
 
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,7 +55,7 @@ public class SolicitudHechoService implements ISolicitudHechoService {
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
 
-        List<Hecho> hechos = hechosRepository.findAll(); // TODO cambiar x la temporal
+        List<Hecho> hechos = hechosRepository.findAll();
 
         Optional<Hecho> hecho2 = hechos.stream().filter(h->Normalizador.normalizarYComparar(h.getPais().getPais(), dto.getPais())).findFirst();
         Pais pais;
@@ -98,7 +100,7 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         if (usuario == null || usuario.getId().equals(hechosRepository.findById(dto.getId_hecho()).getId_usuario()) || usuario.getRol().equals(Rol.ADMINISTRADOR) || usuario.getRol().equals(Rol.VISUALIZADOR)){
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
-        // TODO cambiar x cronjob
+
         Hecho hecho = hechosRepository.findById(dto.getId_hecho());
 
         hecho.setTitulo(dto.getTitulo());
@@ -130,6 +132,7 @@ public class SolicitudHechoService implements ISolicitudHechoService {
 
                 solicitud.getHecho().setActivo(true);
                 solicitud.getUsuario().incrementarHechosSubidos();
+                hechosRepository.getSnapshotHechos().add(solicitud.getHecho());
                 hechosRepository.update(solicitud.getHecho());
 
                 if (solicitud.getUsuario().getRol().equals(Rol.VISUALIZADOR)){
@@ -145,6 +148,9 @@ public class SolicitudHechoService implements ISolicitudHechoService {
     public RespuestaHttp<Void> evaluarEliminacionHecho(SolicitudHechoEvaluarInputDTO dtoInput) {
 
         SolicitudHecho solicitud = solicitudEliminarHechoRepo.findById(dtoInput.getId_solicitud());
+        if (ChronoUnit.DAYS.between(solicitud.getHecho().getFechaDeCarga(), ZonedDateTime.now()) >= 7){
+            return new RespuestaHttp<>(null, HttpStatus.CONFLICT.value()); // Error 409: cuando la solicitud es válida pero no puede procesarse por estado actual del recurso
+        }
         Usuario usuario = usuariosRepository.findById(dtoInput.getId_usuario());//el que ejecuta la acción
 
         if(!usuario.getRol().equals(Rol.ADMINISTRADOR)){
@@ -179,6 +185,7 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         else {
             if (dtoInput.getRespuesta()) {
                 // El hecho debe modificarse
+                hechosRepository.getSnapshotHechos().add(solicitud.getHecho());
                 hechosRepository.update(solicitud.getHecho());
             }
         }

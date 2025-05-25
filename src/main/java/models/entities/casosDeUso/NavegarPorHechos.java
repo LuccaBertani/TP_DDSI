@@ -9,8 +9,7 @@ import java.util.List;
 
 public class NavegarPorHechos {
     public void navegarPorHechos(List<Filtro> filtros, Coleccion coleccion){
-        Filtrador filtrador = new Filtrador();
-        List<Hecho> lista = filtrador.aplicarFiltros(filtros, coleccion.getHechos());
+        List<Hecho> lista = Filtrador.aplicarFiltros(filtros, coleccion.getHechos());
 
         for (Hecho hecho : lista){
             System.out.println(hecho.getTitulo());

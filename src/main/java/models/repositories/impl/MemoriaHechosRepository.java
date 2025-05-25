@@ -11,9 +11,11 @@ import java.util.List;
 @Repository
 public class MemoriaHechosRepository implements IHechosRepository {
     private List<Hecho> hechos;
+    private List<Hecho> snapshotHechos;
 
     public MemoriaHechosRepository(){
         this.hechos = new ArrayList<>();
+        this.snapshotHechos = new ArrayList<>();
     }
 
     @Override
@@ -57,4 +59,16 @@ public class MemoriaHechosRepository implements IHechosRepository {
         this.hechos.remove(entidad);
         this.save(entidad);
     }
+
+    @Override
+    public List<Hecho> getSnapshotHechos(){
+        return this.snapshotHechos;
+    }
+
+    @Override
+    public void clearSnapshotHechos(){
+        this.snapshotHechos.clear();
+    }
+
+
 }

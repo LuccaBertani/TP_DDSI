@@ -30,7 +30,7 @@ public class SolicitudHechoController {
     @PostMapping("/evaluar/eliminar")
     public ResponseEntity<Void> evaluarSolicitudEliminacion(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
         RespuestaHttp<Void> respuesta = solicitudHechoService.evaluarEliminacionHecho(dtoInput);
-        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
+        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200, 401 o 409
     }
 
     @PostMapping("/solicitud/subir-hecho")

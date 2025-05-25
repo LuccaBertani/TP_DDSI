@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Filtrador {
 
-    public List<Hecho> aplicarFiltros(List<Filtro> filtros, List<Hecho> hechos){
+    public static List<Hecho> aplicarFiltros(List<Filtro> filtros, List<Hecho> hechos){
 
         List<Hecho> hechosFiltrados = new ArrayList<>();
 
@@ -20,6 +20,12 @@ public class Filtrador {
         });
 
         return hechosFiltrados;
+    }
+
+    public static Boolean hechoPasaFiltros(List<Filtro> filtros, Hecho hecho){
+        List<Hecho> hechosFiltrados = new ArrayList<>();
+        return filtros.stream()
+                            .allMatch(criterio -> criterio.aprobarHecho(hecho));
     }
 }
 
