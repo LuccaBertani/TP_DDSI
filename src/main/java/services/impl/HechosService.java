@@ -94,14 +94,15 @@ public class HechosService implements IHechosService {
             List<Hecho> hechos = hechosRepo.findAll();
 
             if(dtoInput.getPais() != null) {
-                Pais pais = BuscadorPais.buscar(hechosRepo.findAll(),dtoInput.getPais());
+                Pais pais = BuscadorPais.buscar(hechos,dtoInput.getPais());
                 hecho.setPais(pais);
             }else{
-                Pais pais = BuscadorPais.buscar(hechosRepo.findAll(),"N/A");
+                Pais pais = BuscadorPais.buscar(hechos,"N/A");
                 hecho.setPais(pais);
             }
 
             hecho.setTitulo(dtoInput.getTitulo());
+
             if(dtoInput.getDescripcion() != null) {
                 hecho.setDescripcion(dtoInput.getDescripcion());
             }else{
@@ -118,11 +119,11 @@ public class HechosService implements IHechosService {
                 hecho.setContenidoMultimedia(TipoContenido.INVALIDO);
             }
             if(dtoInput.getCategoria() != null){
-                Categoria categoria = BuscadorCategoria.buscar(hechosRepo.findAll(),dtoInput.getCategoria());
+                Categoria categoria = BuscadorCategoria.buscar(hechos,dtoInput.getCategoria());
                 hecho.setCategoria(categoria);
             }
             else{
-                Categoria categoria = BuscadorCategoria.buscar(hechosRepo.findAll(),"N/A");
+                Categoria categoria = BuscadorCategoria.buscar(hechos,"N/A");
                 hecho.setCategoria(categoria);
             }
             hecho.setOrigen(Origen.CARGA_MANUAL);

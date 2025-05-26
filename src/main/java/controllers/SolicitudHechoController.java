@@ -5,11 +5,14 @@ import models.dtos.input.SolicitudHechoEliminarInputDTO;
 import models.dtos.input.SolicitudHechoEvaluarInputDTO;
 import models.dtos.input.SolicitudHechoInputDTO;
 import models.dtos.input.SolicitudHechoModificarInputDTO;
+import models.dtos.output.MensajesHechosUsuarioOutputDTO;
 import models.entities.RespuestaHttp;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import services.ISolicitudHechoService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/solicitud-hecho")
@@ -30,7 +33,7 @@ public class SolicitudHechoController {
     @PostMapping("/evaluar/eliminar")
     public ResponseEntity<Void> evaluarSolicitudEliminacion(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
         RespuestaHttp<Void> respuesta = solicitudHechoService.evaluarEliminacionHecho(dtoInput);
-        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200, 401 o 409
+        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200, 401
     }
 
     @PostMapping("/solicitud/subir-hecho")
@@ -53,7 +56,13 @@ public class SolicitudHechoController {
         }
 
         RespuestaHttp<Void> respuesta = solicitudHechoService.solicitarModificacionHecho(dtoInput);
-        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
+        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200, 401 o 409
+    }
+
+    @GetMapping("/mensajes")
+    public ResponseEntity<List<MensajesHechosUsuarioOutputDTO>> enviarMensajesUsuario(@RequestParam Long id_usuario){
+        RespuestaHttp<List<MensajesHechosUsuarioOutputDTO>> respuesta = solicitudHechoService.enviarMensajes(id_usuario);
+        return ResponseEntity.status(respuesta.getCodigo()).body(respuesta.getDatos());
     }
 
 }

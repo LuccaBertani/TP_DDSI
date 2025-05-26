@@ -27,5 +27,9 @@ public class Filtrador {
         return filtros.stream()
                             .allMatch(criterio -> criterio.aprobarHecho(hecho));
     }
+
+    public static List<Mensaje> filtrarMensajes(List<Mensaje> mensajes, Long id_usuario){
+        return mensajes.stream().filter(mensaje->mensaje.getId_receptor().equals(id_usuario));
+    }
 }
 
