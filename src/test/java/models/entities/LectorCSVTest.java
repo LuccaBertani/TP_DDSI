@@ -1,9 +1,10 @@
 package models.entities;
 
-import models.repositories.IHechosRepository;
-import models.repositories.impl.MemoriaHechosRepository;
+import raiz.models.entities.Categoria;
+import raiz.models.entities.Hecho;
+import raiz.models.entities.LectorCSV;
+import raiz.models.entities.Pais;
 import org.junit.jupiter.api.Test;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
