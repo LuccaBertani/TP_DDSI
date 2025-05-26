@@ -13,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/datos-personales")
-@CrossOrigin(origins = "http://localhost:3000")
 public class DatosPersonalesController {
 
     private IDatosPersonalesService datosPersonalesService;

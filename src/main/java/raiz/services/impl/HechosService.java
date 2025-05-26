@@ -87,10 +87,10 @@ public class HechosService implements IHechosService {
             List<Hecho> hechos = hechosRepo.findAll();
 
             if(dtoInput.getPais() != null) {
-                Pais pais = BuscadorPais.buscar(hechos,dtoInput.getPais());
+                Pais pais = BuscadorPais.buscarOCrear(hechos,dtoInput.getPais());
                 hecho.setPais(pais);
             }else{
-                Pais pais = BuscadorPais.buscar(hechos,"N/A");
+                Pais pais = BuscadorPais.buscarOCrear(hechos,"N/A");
                 hecho.setPais(pais);
             }
 
@@ -112,11 +112,11 @@ public class HechosService implements IHechosService {
                 hecho.setContenidoMultimedia(TipoContenido.INVALIDO);
             }
             if(dtoInput.getCategoria() != null){
-                Categoria categoria = BuscadorCategoria.buscar(hechos,dtoInput.getCategoria());
+                Categoria categoria = BuscadorCategoria.buscarOCrear(hechos,dtoInput.getCategoria());
                 hecho.setCategoria(categoria);
             }
             else{
-                Categoria categoria = BuscadorCategoria.buscar(hechos,"N/A");
+                Categoria categoria = BuscadorCategoria.buscarOCrear(hechos,"N/A");
                 hecho.setCategoria(categoria);
             }
             hecho.setOrigen(Origen.CARGA_MANUAL);
@@ -126,7 +126,7 @@ public class HechosService implements IHechosService {
             hechosRepo.getSnapshotHechos().add(hecho);
             hechosRepo.save(hecho);
             this.mapearHechoAColecciones(hecho);
-            return new RespuestaHttp<>(null, HttpStatus.OK.value());
+            return new RespuestaHttp<>(null, HttpStatus.CREATED.value());
         }
         else{
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
@@ -151,14 +151,12 @@ public class HechosService implements IHechosService {
                 hecho.setId(hechosRepo.getProxId());
                 hechosRepo.getSnapshotHechos().add(hecho);
                 hechosRepo.save(hecho);
-                this.mapearHechoAColecciones(hecho);
             }
             for (Hecho hecho : hechosAModificar){
                 hechosRepo.getSnapshotHechos().add(hecho);
                 hechosRepo.update(hecho);
-                this.mapearHechoAColecciones(hecho);
             }
-            return new RespuestaHttp<>(null, HttpStatus.OK.value());
+            return new RespuestaHttp<>(null, HttpStatus.CREATED.value());
         }
 
         return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
@@ -167,11 +165,13 @@ public class HechosService implements IHechosService {
 
     @Override
     public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechos(FiltroHechosDTO inputDTO) {
-
+        List<Hecho> hechosTotales = hechosRepo.findAll();
         List<Filtro> filter = new ArrayList<>();
-
-        if (inputDTO.getCategoria() != null) {
-            filter.add(new FiltroCategoria(BuscadorCategoria.buscar(hechosRepo.findAll(), inputDTO.getCategoria())));
+        String categoriaString = inputDTO.getCategoria();
+        if (categoriaString != null) {
+            Categoria categoria = BuscadorCategoria.buscar(hechosTotales, categoriaString);
+            if (categoria!=null)
+                filter.add(new FiltroCategoria(categoria));
         }
 
         if (inputDTO.getContenidoMultimedia() != null) {
@@ -183,16 +183,16 @@ public class HechosService implements IHechosService {
             filter.add(new FiltroDescripcion(inputDTO.getDescripcion()));
         }
 
-        if (inputDTO.getFechaAcontecimientoInicial() != null && inputDTO.getFechaAcontecimientoFinal() != null) {
-            ZonedDateTime inicio = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoInicial());
-            ZonedDateTime fin = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoFinal());
-            filter.add(new FiltroFechaAcontecimiento(inicio, fin));
+        ZonedDateTime fechaAcontecimientoInicial = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoInicial());
+        ZonedDateTime fechaAcontecimientoFinal = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoFinal());
+        if (fechaAcontecimientoInicial != null && fechaAcontecimientoFinal != null) {
+            filter.add(new FiltroFechaAcontecimiento(fechaAcontecimientoInicial, fechaAcontecimientoFinal));
         }
 
+        ZonedDateTime fechaCargaInicial = FechaParser.parsearFecha(inputDTO.getFechaCargaInicial());
+        ZonedDateTime fechaCargaFinal = FechaParser.parsearFecha(inputDTO.getFechaCargaFinal());
         if (inputDTO.getFechaCargaInicial() != null && inputDTO.getFechaCargaFinal() != null) {
-            ZonedDateTime inicio = FechaParser.parsearFecha(inputDTO.getFechaCargaInicial());
-            ZonedDateTime fin = FechaParser.parsearFecha(inputDTO.getFechaCargaFinal());
-            filter.add(new FiltroFechaCarga(inicio, fin));
+            filter.add(new FiltroFechaCarga(fechaCargaInicial, fechaCargaFinal));
         }
 
         if (inputDTO.getOrigen() != null) {
@@ -200,8 +200,11 @@ public class HechosService implements IHechosService {
             filter.add(new FiltroOrigen(origen));
         }
 
-        if (inputDTO.getPais() != null) {
-            filter.add(new FiltroPais(BuscadorPais.buscar(hechosRepo.findAll(), inputDTO.getPais())));
+        String paisString = inputDTO.getPais();
+        if (paisString != null) {
+            Pais pais = BuscadorPais.buscar(hechosTotales, paisString);
+            if (pais!=null)
+                filter.add(new FiltroPais(pais));
         }
 
         if (inputDTO.getTitulo() != null) {
@@ -209,7 +212,7 @@ public class HechosService implements IHechosService {
         }
 
         List<Hecho> hechosFiltrados = Filtrador
-                .aplicarFiltros(filter, coleccionRepo.findById(inputDTO.getId_coleccion()).getHechos());
+                .aplicarFiltros(filter, hechosRepo.findAll());
 
         List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream().map(hecho -> {
             VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
@@ -226,7 +229,7 @@ public class HechosService implements IHechosService {
     }
 
     @Override
-    public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechos(Long id_coleccion){
+        public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechos(Long id_coleccion){
 
         Coleccion coleccion = coleccionRepo.findById(id_coleccion);
 
@@ -251,7 +254,9 @@ public class HechosService implements IHechosService {
 
     }
 
-
+    public List<Hecho> getAllHechos(){
+        return hechosRepo.findAll();
+    }
 
 
 }

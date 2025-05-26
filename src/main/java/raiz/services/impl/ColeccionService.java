@@ -1,6 +1,7 @@
 package raiz.services.impl;
 
 import raiz.models.dtos.input.ColeccionInputDTO;
+import raiz.models.dtos.output.ColeccionOutputDTO;
 import raiz.models.entities.*;
 import raiz.models.entities.buscadores.BuscadorCategoria;
 import raiz.models.entities.buscadores.BuscadorPais;
@@ -63,7 +64,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
 
         if(dtoInput.getPais() != null) {
-            Pais pais = BuscadorPais.buscar(hechosRepo.findAll(),dtoInput.getPais());
+            Pais pais = BuscadorPais.buscarOCrear(hechosRepo.findAll(),dtoInput.getPais());
             Filtro filtroPais = new FiltroPais(pais);
             criterios.add(filtroPais);
         }
@@ -76,7 +77,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             criterios.add(filtroContenidoMultimedia);
         }
         if(dtoInput.getCategoria() != null){
-            Categoria categoria = BuscadorCategoria.buscar(hechosRepo.findAll(),dtoInput.getCategoria());
+            Categoria categoria = BuscadorCategoria.buscarOCrear(hechosRepo.findAll(),dtoInput.getCategoria());
             Filtro filtroCategoria = new FiltroCategoria(categoria);
             criterios.add(filtroCategoria);
         }
@@ -91,9 +92,25 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
         coleccionesRepo.save(coleccion);
 
-        return new RespuestaHttp<>(null, HttpStatus.OK.value());
+        return new RespuestaHttp<>(null, HttpStatus.CREATED.value());
 
     }
+
+    @Override
+    public RespuestaHttp<List<ColeccionOutputDTO>> obtenerTodasLasColecciones(){
+        List<ColeccionOutputDTO> listaDTO = new ArrayList<>();
+
+        List<Coleccion> colecciones = coleccionesRepo.findAll();
+
+        for (Coleccion coleccion : colecciones){
+            ColeccionOutputDTO dto = new ColeccionOutputDTO();
+            dto.setId(coleccion.getId());
+            dto.setNombre(coleccion.getTitulo());
+            listaDTO.add(dto);
+        }
+        return new RespuestaHttp<>(listaDTO, HttpStatus.OK.value());
+    }
+
 }
 
 //TODO Cada vez que se crea un hecho que se meta el en las colecciones que el hecho cumple su criterio

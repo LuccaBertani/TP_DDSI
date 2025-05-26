@@ -16,7 +16,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/solicitud-hecho")
-@CrossOrigin(origins = "http://localhost:3000")
 public class SolicitudHechoController {
 
     private final ISolicitudHechoService solicitudHechoService;

@@ -16,4 +16,5 @@ public interface IHechosService {
     public void refrescarColecciones();
     public void mapearHechosAColecciones(List<Hecho> hechos);
     public void mapearHechoAColecciones(Hecho hecho);
+    public List<Hecho> getAllHechos();
 }

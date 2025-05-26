@@ -1,5 +1,6 @@
 package raiz.services.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import raiz.models.dtos.input.SolicitudHechoEliminarInputDTO;
 import raiz.models.dtos.input.SolicitudHechoEvaluarInputDTO;
 import raiz.models.dtos.input.SolicitudHechoInputDTO;
@@ -14,6 +15,7 @@ import raiz.models.entities.personas.Usuario;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import raiz.models.repositories.*;
+import raiz.services.IDetectorDeSpam;
 import raiz.services.ISolicitudHechoService;
 
 import java.time.ZonedDateTime;
@@ -25,6 +27,7 @@ import java.util.Optional;
 @Service
 public class SolicitudHechoService implements ISolicitudHechoService {
 
+    private final IDetectorDeSpam detectorDeSpam;
     private final ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo;
     private final ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo;
     private final ISolicitudModificarHechoRepository solicitudModificarHechoRepo;
@@ -34,13 +37,15 @@ public class SolicitudHechoService implements ISolicitudHechoService {
     GestorRoles gestorRoles;
 
     public SolicitudHechoService(ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo, ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo,
-                                 IPersonaRepository personaRepository, IHechosRepository hechosRepository, IPersonaRepository usuariosRepository, ISolicitudModificarHechoRepository solicitudModificarHechoRepo, IMensajeRepository mensajesRepository) {
+                                 IPersonaRepository personaRepository, IHechosRepository hechosRepository, IPersonaRepository usuariosRepository, ISolicitudModificarHechoRepository solicitudModificarHechoRepo, IMensajeRepository mensajesRepository,
+                                 IDetectorDeSpam detectorDeSpam) {
         this.solicitudAgregarHechoRepo = solicitudAgregarHechoRepo;
         this.solicitudEliminarHechoRepo = solicitudEliminarHechoRepo;
         this.hechosRepository = hechosRepository;
         this.usuariosRepository = usuariosRepository;
         this.solicitudModificarHechoRepo = solicitudModificarHechoRepo;
         this.mensajesRepository = mensajesRepository;
+        this.detectorDeSpam = detectorDeSpam;
         gestorRoles = new GestorRoles();
     }
 
@@ -88,7 +93,14 @@ public class SolicitudHechoService implements ISolicitudHechoService {
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
         Hecho hecho = hechosRepository.findById(dto.getId_hecho());
-        SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, solicitudEliminarHechoRepo.getProxId());
+        SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, solicitudEliminarHechoRepo.getProxId(), dto.getJustificacion());
+        if (detectorDeSpam.esSpam(solicitud.getJustificacion())) {
+            // Marcar como rechazada por spam y guardar
+            solicitud.setProcesada(true);
+            solicitud.setRechazadaPorSpam(true);
+            solicitudEliminarHechoRepo.save(solicitud);
+            return new RespuestaHttp<>(null, HttpStatus.BAD_REQUEST.value()); // 400 - solicitud rechazada por spam
+        }
         solicitudEliminarHechoRepo.save(solicitud);
         return new RespuestaHttp<>(null, HttpStatus.OK.value()); // Un admin no deberia solicitar eliminar, los elimina directamente
     }
@@ -110,8 +122,8 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         List<Hecho> listaHechos = hechosRepository.findAll();
 
         hecho.setTitulo(dto.getTitulo());
-        hecho.setPais(BuscadorPais.buscar(listaHechos, dto.getPais()));
-        hecho.setCategoria(BuscadorCategoria.buscar(listaHechos, dto.getPais()));
+        hecho.setPais(BuscadorPais.buscarOCrear(listaHechos, dto.getPais()));
+        hecho.setCategoria(BuscadorCategoria.buscarOCrear(listaHechos, dto.getPais()));
         hecho.setFechaAcontecimiento(FechaParser.parsearFecha(dto.getFechaAcontecimiento()));
         hecho.setFechaDeCarga(ZonedDateTime.now()); // Nueva fecha de modificación
         hecho.setContenidoMultimedia(TipoContenido.fromCodigo(dto.getTipoContenido()));
@@ -126,13 +138,23 @@ public class SolicitudHechoService implements ISolicitudHechoService {
     public RespuestaHttp<Void> evaluarSolicitudSubirHecho(SolicitudHechoEvaluarInputDTO dtoInput) {
 
         SolicitudHecho solicitud = solicitudAgregarHechoRepo.findById(dtoInput.getId_solicitud());
+        if (solicitud == null) {
+            return new RespuestaHttp<>(null, HttpStatus.NOT_FOUND.value());
+        }
+
+        // Verificar que no haya sido procesada ya
+        if (solicitud.isProcesada()) {
+            return new RespuestaHttp<>(null, HttpStatus.CONFLICT.value()); // Ya fue procesada
+        }
+
         Usuario usuario = usuariosRepository.findById(dtoInput.getId_usuario());//el que ejecuta la acción
 
         if(!usuario.getRol().equals(Rol.ADMINISTRADOR)){
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
         else {
-
+            // Marcar como procesada
+            solicitud.setProcesada(true);
             if (dtoInput.getRespuesta()) {
 
                 solicitud.getHecho().setActivo(true);
@@ -161,8 +183,6 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         }
         else {
             if (dtoInput.getRespuesta()) {
-
-
                 solicitud.getUsuario().disminuirHechosSubidos();
                 hechosRepository.update(solicitud.getHecho());
 
@@ -201,7 +221,7 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         List<Mensaje> mensajesTotales = this.mensajesRepository.findAll();
         List<Mensaje> mensajesUsuario = Filtrador.filtrarMensajes(mensajesTotales,id_Usuario);
         List<MensajesHechosUsuarioOutputDTO> outputDTO = new ArrayList<>();
-                //TODO LAS SOLICITUDES SE MANTIENEN EN EL REPO (NO SE BORRAN). HABRÍA QUE AGREGAR UN CAMPO BOOL EVALUADO (para representar si la solicitud ya fue evaluada o no)
+
         for(Mensaje mensaje : mensajesUsuario){
 
             MensajesHechosUsuarioOutputDTO output = new MensajesHechosUsuarioOutputDTO();
@@ -216,6 +236,13 @@ public class SolicitudHechoService implements ISolicitudHechoService {
 
         return new RespuestaHttp<>(outputDTO, HttpStatus.OK.value());
 
+    }
+
+    @Override
+    public List<SolicitudHecho> obtenerSolicitudesPendientes() {
+        return solicitudEliminarHechoRepo.findAll().stream()
+                .filter(s -> !s.isProcesada() && !s.isRechazadaPorSpam())
+                .toList();
     }
 
 }

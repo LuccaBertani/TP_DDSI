@@ -3,12 +3,13 @@ package raiz.models.entities.buscadores;
 import raiz.models.entities.Categoria;
 import raiz.models.entities.Hecho;
 import raiz.models.entities.Normalizador;
+import raiz.models.entities.Pais;
 
 import java.util.List;
 import java.util.Optional;
 
 public class BuscadorCategoria {
-    public static Categoria buscar(List<Hecho> hechos, String elemento){
+    public static Categoria buscarOCrear(List<Hecho> hechos, String elemento){
         Optional<Hecho> hecho1 = hechos.stream().filter(h-> Normalizador.normalizarYComparar(h.getCategoria().getTitulo(), elemento)).findFirst();
         Categoria categoria;
         // Si la categoría no existe, se crea
@@ -22,4 +23,14 @@ public class BuscadorCategoria {
         }
         return categoria;
     }
+
+    public static Categoria buscar(List<Hecho> hechos, String elemento){
+        Optional<Hecho> hecho2 = hechos.stream().filter(h-> Normalizador.normalizarYComparar(h.getCategoria().getTitulo(), elemento)).findFirst();
+
+        if (hecho2.isPresent()){
+            return hecho2.get().getCategoria();
+        }
+        return null;
+    }
+
 }

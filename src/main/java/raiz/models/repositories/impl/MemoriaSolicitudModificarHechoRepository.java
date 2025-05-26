@@ -47,7 +47,7 @@ public class MemoriaSolicitudModificarHechoRepository implements ISolicitudModif
 
     @Override
     public void delete(SolicitudHecho solicitud) {
-        this.solicitudesModificarHecho.remove(solicitud);
+        solicitud.setProcesada(true);
     }
 
     @Override
