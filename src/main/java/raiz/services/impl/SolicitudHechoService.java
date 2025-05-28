@@ -74,6 +74,12 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         FuenteDinamica fuenteDinamica = new FuenteDinamica();
         Hecho hecho = fuenteDinamica.crearHecho(hechosData);
         SolicitudHecho solicitudHecho = new SolicitudHecho(usuario, hecho, solicitudAgregarHechoRepo.getProxId());
+        if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion())) {
+            solicitudHecho.setProcesada(true);
+            solicitudHecho.setRechazadaPorSpam(true);
+            solicitudAgregarHechoRepo.save(solicitudHecho);
+            return new RespuestaHttp<>(null, HttpStatus.BAD_REQUEST.value());
+        }
         solicitudAgregarHechoRepo.save(solicitudHecho);
         if (usuario!=null)
             hecho.setId_usuario(usuario.getId());
@@ -84,6 +90,7 @@ public class SolicitudHechoService implements ISolicitudHechoService {
     }
 
     //El usuario manda una solicitud para eliminar un hecho -> guardar la solicitud en la base de datos
+    // Asumimos que la solicitud de eliminación puede venir de una persona que no haya subido el hecho solicitado
     @Override
     public RespuestaHttp<Void> solicitarEliminacionHecho(SolicitudHechoEliminarInputDTO dto){
         Usuario usuario = usuariosRepository.findById(dto.getId_usuario());
@@ -112,12 +119,15 @@ public class SolicitudHechoService implements ISolicitudHechoService {
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
 
+        Hecho hecho = hechosRepository.findById(dto.getId_hecho());
+        SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, solicitudEliminarHechoRepo.getProxId());
         if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion()))
         {
+            solicitud.setProcesada(true);
+            solicitud.setRechazadaPorSpam(true);
+            solicitudModificarHechoRepo.save(solicitud);
             return new RespuestaHttp<>(null, HttpStatus.BAD_REQUEST.value());
         }
-
-        Hecho hecho = hechosRepository.findById(dto.getId_hecho());
 
         if (ChronoUnit.DAYS.between(hecho.getFechaDeCarga(), ZonedDateTime.now()) >= 7){
             return new RespuestaHttp<>(null, HttpStatus.CONFLICT.value()); // Error 409: cuando la solicitud es válida pero no puede procesarse por estado actual del recurso
@@ -130,8 +140,6 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         hecho.setFechaAcontecimiento(FechaParser.parsearFecha(dto.getFechaAcontecimiento()));
         hecho.setFechaDeCarga(ZonedDateTime.now()); // Nueva fecha de modificación
         hecho.setContenidoMultimedia(TipoContenido.fromCodigo(dto.getTipoContenido()));
-
-        SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, solicitudModificarHechoRepo.getProxId());
         solicitudModificarHechoRepo.save(solicitud);
         return new RespuestaHttp<>(null, HttpStatus.OK.value());
     }
@@ -159,7 +167,6 @@ public class SolicitudHechoService implements ISolicitudHechoService {
             // Marcar como procesada
             solicitud.setProcesada(true);
             if (dtoInput.getRespuesta()) {
-
                 solicitud.getHecho().setActivo(true);
                 solicitud.getUsuario().incrementarHechosSubidos();
                 hechosRepository.getSnapshotHechos().add(solicitud.getHecho());
@@ -185,9 +192,10 @@ public class SolicitudHechoService implements ISolicitudHechoService {
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
         else {
+            solicitud.setProcesada(true);
             if (dtoInput.getRespuesta()) {
                 solicitud.getUsuario().disminuirHechosSubidos();
-                hechosRepository.update(solicitud.getHecho());
+                hechosRepository.delete(solicitud.getHecho());
 
                 if (solicitud.getUsuario().getCantHechosSubidos() == 0){
                     gestorRoles.ContribuyenteAVisualizador(solicitud.getUsuario());
@@ -209,6 +217,7 @@ public class SolicitudHechoService implements ISolicitudHechoService {
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
         else {
+            solicitud.setProcesada(true);
             if (dtoInput.getRespuesta()) {
                 // El hecho debe modificarse
                 hechosRepository.getSnapshotHechos().add(solicitud.getHecho());

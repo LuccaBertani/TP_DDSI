@@ -1,7 +1,7 @@
 package raiz.models.repositories.impl;
 import raiz.models.entities.Hecho;
-import raiz.models.repositories.IHechosRepository;
 import org.springframework.stereotype.Repository;
+import raiz.models.repositories.IHechosRepository;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,8 +1,8 @@
 package raiz.models.repositories.impl;
 
 import raiz.models.entities.personas.Usuario;
-import raiz.models.repositories.IPersonaRepository;
 import org.springframework.stereotype.Repository;
+import raiz.models.repositories.IPersonaRepository;
 
 import java.util.List;
 

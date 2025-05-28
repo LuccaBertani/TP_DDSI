@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class FuenteProxy implements Fuente {
-    // TODO en entrega 2
+public class FuenteProxy {
+
     private String url_base;
     private String access_token;
 
@@ -160,11 +160,6 @@ public class FuenteProxy implements Fuente {
         return null;
     }
 
-
-    @Override
-    public ModificadorHechos leerFuente(List<Hecho> hechos) {
-        return null;
-    }
 }
 
 

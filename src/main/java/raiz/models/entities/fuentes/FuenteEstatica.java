@@ -11,7 +11,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class FuenteEstatica implements Fuente {
+public class FuenteEstatica {
     private String dataSet;
     public ModificadorHechos leerFuente(List<Hecho> hechos){
 
@@ -22,7 +22,7 @@ public class FuenteEstatica implements Fuente {
             return lectorCSV.leerCSV(hechos);
         }
         else if (formato.equals("json")){
-            //TODO el lector del formato JSON en la entrega 2, porque habría que usar mapeo de urls
+            //TODO el lector del formato JSON
             List<Hecho>invento = new ArrayList<>();
             ModificadorHechos modificadorHechos = new ModificadorHechos(new ArrayList<>(), new ArrayList<>());
             return modificadorHechos;

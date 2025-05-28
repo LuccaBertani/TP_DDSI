@@ -1,9 +1,6 @@
 package raiz.models.entities.fuentes;
 
-import raiz.models.entities.FechaParser;
-import raiz.models.entities.Hecho;
-import raiz.models.entities.HechosData;
-import raiz.models.entities.TipoContenido;
+import raiz.models.entities.*;
 
 import java.time.ZonedDateTime;
 
@@ -22,7 +19,7 @@ public class FuenteDinamica {
         hecho.setFechaAcontecimiento(fecha);
         hecho.setFechaDeCarga(ZonedDateTime.now());
         hecho.setPais(data.getPais());
-
+        hecho.setOrigen(Origen.FUENTE_DINAMICA);
         return hecho;
     }
 }

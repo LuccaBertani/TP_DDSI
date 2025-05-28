@@ -3,9 +3,9 @@ package raiz.services.impl;
 import raiz.models.entities.RespuestaHttp;
 import raiz.models.entities.personas.Rol;
 import raiz.models.entities.personas.Usuario;
-import raiz.models.repositories.IPersonaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import raiz.models.repositories.IPersonaRepository;
 import raiz.services.IDatosPersonalesService;
 
 import java.util.List;

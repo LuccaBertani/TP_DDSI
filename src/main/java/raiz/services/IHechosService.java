@@ -17,4 +17,5 @@ public interface IHechosService {
     public void mapearHechosAColecciones(List<Hecho> hechos);
     public void mapearHechoAColecciones(Hecho hecho);
     public List<Hecho> getAllHechos();
+    public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechosProxyMetamapa();
 }

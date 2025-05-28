@@ -1,8 +1,8 @@
 package raiz.models.repositories.impl;
 
 import raiz.models.entities.SolicitudHecho;
-import raiz.models.repositories.ISolicitudModificarHechoRepository;
 import org.springframework.stereotype.Repository;
+import raiz.models.repositories.ISolicitudModificarHechoRepository;
 
 import java.util.ArrayList;
 import java.util.List;

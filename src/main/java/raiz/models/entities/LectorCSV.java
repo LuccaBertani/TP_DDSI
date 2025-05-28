@@ -68,7 +68,7 @@ public class LectorCSV {
 
                 Hecho hecho = new Hecho();
 
-                hecho.setOrigen(Origen.DATASET);
+                hecho.setOrigen(Origen.FUENTE_ESTATICA);
 
                 hecho.setTitulo((indicesColumnas.get(0) != -1) ? registros.get(indicesColumnas.get(0)) : "N/A");
 

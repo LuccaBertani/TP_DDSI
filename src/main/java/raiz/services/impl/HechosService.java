@@ -11,12 +11,12 @@ import raiz.models.entities.filtros.*;
 import raiz.models.entities.fuentes.FuenteEstatica;
 import raiz.models.entities.personas.Rol;
 import raiz.models.entities.personas.Usuario;
-import raiz.models.repositories.IColeccionRepository;
-import raiz.models.repositories.IHechosRepository;
-import raiz.models.repositories.IPersonaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import raiz.models.repositories.IColeccionRepository;
+import raiz.models.repositories.IHechosRepository;
+import raiz.models.repositories.IPersonaRepository;
 import raiz.services.IHechosService;
 
 import java.time.ZoneId;
@@ -123,7 +123,7 @@ public class HechosService implements IHechosService {
             hecho.setId(hechosRepo.getProxId());
             hecho.setActivo(true);
             hecho.setFechaDeCarga(ZonedDateTime.now());
-            hechosRepo.getSnapshotHechos().add(hecho);
+            this.mapearHechoAColecciones(hecho);
             hechosRepo.save(hecho);
             this.mapearHechoAColecciones(hecho);
             return new RespuestaHttp<>(null, HttpStatus.CREATED.value());
@@ -149,11 +149,11 @@ public class HechosService implements IHechosService {
 
             for (Hecho hecho : hechosASubir){
                 hecho.setId(hechosRepo.getProxId());
-                hechosRepo.getSnapshotHechos().add(hecho);
+                this.mapearHechoAColecciones(hecho);
                 hechosRepo.save(hecho);
             }
             for (Hecho hecho : hechosAModificar){
-                hechosRepo.getSnapshotHechos().add(hecho);
+                this.mapearHechoAColecciones(hecho);
                 hechosRepo.update(hecho);
             }
             return new RespuestaHttp<>(null, HttpStatus.CREATED.value());
@@ -248,6 +248,29 @@ public class HechosService implements IHechosService {
 
             outputDTO.add(hechoDTO);
 
+        }
+
+        return new RespuestaHttp<>(outputDTO,HttpStatus.OK.value());
+
+    }
+
+    @Override
+    public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechosProxyMetamapa(){
+
+        List<Hecho> hechos = this.getAllHechos();
+        List<Hecho> hechosProxyMetamapa = hechos.stream().filter(hecho->hecho.getOrigen().equals(Origen.FUENTE_PROXY_METAMAPA)).toList();
+        List<VisualizarHechosOutputDTO> outputDTO = new ArrayList<>();
+        for (Hecho hecho : hechosProxyMetamapa){
+            VisualizarHechosOutputDTO hechoDTO = new VisualizarHechosOutputDTO();
+
+            hechoDTO.setId(hecho.getId());
+            hechoDTO.setPais(hecho.getPais().getPais());
+            hechoDTO.setTitulo(hecho.getTitulo());
+            hechoDTO.setDescripcion(hecho.getDescripcion());
+            hechoDTO.setFechaAcontecimiento(hecho.getFechaAcontecimiento().toString());
+            hechoDTO.setCategoria(hecho.getCategoria().getTitulo());
+
+            outputDTO.add(hechoDTO);
         }
 
         return new RespuestaHttp<>(outputDTO,HttpStatus.OK.value());

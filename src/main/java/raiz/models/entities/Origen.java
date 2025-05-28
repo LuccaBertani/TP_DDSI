@@ -1,9 +1,10 @@
 package raiz.models.entities;
 
 public enum Origen {
-    CARGA_MANUAL(0),
-    DATASET(1),
-    CONTRIBUYENTE(2);
+    FUENTE_DINAMICA(0),
+    FUENTE_ESTATICA(1),
+    CARGA_MANUAL(2),
+    FUENTE_PROXY_METAMAPA(3);
 
     private final int codigo;
 

@@ -55,7 +55,7 @@ public class SolicitudHechoController {
         }
 
         RespuestaHttp<Void> respuesta = solicitudHechoService.solicitarModificacionHecho(dtoInput);
-        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200, 401 o 409
+        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200, 401 o 409 (recurso ya modificado)
     }
 
     @GetMapping("/mensajes")
