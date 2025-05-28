@@ -234,7 +234,7 @@ public class FuenteProxy {
         return null;
     }
 
-    public List<Coleccion> getColeccionesMetaMapa(String url_1, List<Hecho> hechosTotales){
+    public List<Hecho> getColeccionesMetaMapa(String url_1, List<Hecho> hechosTotales){
         try {
 
         String urlStr = this.url_base + "/colecciones";
@@ -312,7 +312,7 @@ public class FuenteProxy {
 
     }
 
-    
+
 
 ///colecciones/{identificador}/hechos
     public List<Hecho> getHechosDeColeccionMetaMapa(String url_1, Long id,List<Hecho> hechosTotales){

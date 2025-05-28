@@ -82,6 +82,10 @@ class FuenteProxy {
     +login(String email, String contraseña): Boolean
     +getHechos(List<Hecho> hechosTotales): List<Hecho>
     +getHechoPorId(int id, List<Hecho> hechosTotales): Hecho
+    +getHechosMetaMapa(String url_1, FiltroHechosDTO filtros, List<Hecho> hechosTotales): List<Hecho>
+    +getColeccionesMetaMapa(String url_1, List<Hecho> hechosTotales): List<Hecho>
+    +getHechosDeColeccionMetaMapa(String url_1, Long id,List<Hecho> hechosTotales): List<Hecho>
+    +enviarSolicitudEliminacionMetaMapa(String url_1, SolicitudHechoEliminarInputDTO data)
 }
 
 '-----------------------------------------------
