@@ -14,8 +14,9 @@ import java.util.List;
 
 
 @Getter
+@Setter
 public class Coleccion {
-    @Setter
+
     private Boolean activo;
 
     private Long id;
@@ -45,6 +46,4 @@ public class Coleccion {
     public void addHechos(List<Hecho> hechos){
         this.hechos.addAll(hechos);
     }
-
-
 }

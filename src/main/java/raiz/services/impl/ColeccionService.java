@@ -1,6 +1,7 @@
 package raiz.services.impl;
 
 import raiz.models.dtos.input.ColeccionInputDTO;
+import raiz.models.dtos.input.FiltroHechosDTO;
 import raiz.models.dtos.output.ColeccionOutputDTO;
 import raiz.models.entities.*;
 import raiz.models.entities.buscadores.BuscadorCategoria;
@@ -97,7 +98,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         return new RespuestaHttp<>(null, HttpStatus.CREATED.value());
 
     }
-
+//TODO El orden fijo global para guardar criterios en la lista de criterios de la coleccion es [filtroCategoria,filtroFechaCarga,filtroFechaAcontecimiento,filtroPais,filtroContenidoMultimedia,FiltroDescripcion,FiltroOrigen,FiltroTitulo]
     @Override
     public RespuestaHttp<List<ColeccionOutputDTO>> obtenerTodasLasColecciones(){
         List<ColeccionOutputDTO> listaDTO = new ArrayList<>();
@@ -108,6 +109,27 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             ColeccionOutputDTO dto = new ColeccionOutputDTO();
             dto.setId(coleccion.getId());
             dto.setNombre(coleccion.getTitulo());
+            dto.setDescripcion(coleccion.getDescripcion());
+            FiltroHechosDTO filtroHechosDTO = new FiltroHechosDTO();
+
+            Object criterio = coleccion.getCriterio().get(0);
+
+
+            FiltroCategoria filtroCategoria = (FiltroCategoria)coleccion.getCriterio().get(0);
+            filtroHechosDTO.setCategoria(filtroCategoria.getCategoria().getTitulo());
+
+            FiltroFechaCarga filtroFechaCarga = (FiltroFechaCarga)coleccion.getCriterio().get(1);
+            filtroHechosDTO.setFechaCargaFinal(filtroFechaCarga.getFechaInicial().toString());
+            filtroHechosDTO.setFechaCargaFinal(filtroFechaCarga.getFechaFinal().toString());
+
+            FiltroFechaAcontecimiento filtroFechaAcontecimiento = (FiltroFechaAcontecimiento)coleccion.getCriterio().get(2);
+            filtroHechosDTO.setFechaAcontecimientoInicial(filtroFechaAcontecimiento.getFechaInicial().toString());
+            filtroHechosDTO.setFechaAcontecimientoFinal(filtroFechaAcontecimiento.getFechaFinal().toString());
+
+            FiltroPais filtroPais = (FiltroPais)coleccion.getCriterio().get(3);
+            filtroHechosDTO.setPais(filtroPais.getPais().getPais());
+
+            dto.setFiltros(filtroHechosDTO);
             listaDTO.add(dto);
         }
         return new RespuestaHttp<>(listaDTO, HttpStatus.OK.value());

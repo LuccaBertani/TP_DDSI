@@ -1,10 +1,12 @@
 package raiz.models.entities.filtros;
 
+import lombok.Data;
 import raiz.models.entities.Hecho;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+@Data
 public class FiltroFechaCarga implements Filtro {
     private ZonedDateTime fechaInicial;
     private ZonedDateTime fechaFinal;

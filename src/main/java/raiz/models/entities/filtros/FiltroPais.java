@@ -1,8 +1,10 @@
 package raiz.models.entities.filtros;
 
+import lombok.Data;
 import raiz.models.entities.Hecho;
 import raiz.models.entities.Pais;
 
+@Data
 public class FiltroPais implements Filtro {
 
 private Pais pais;

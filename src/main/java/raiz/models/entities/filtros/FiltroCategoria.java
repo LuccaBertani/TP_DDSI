@@ -3,12 +3,17 @@ package raiz.models.entities.filtros;
 import raiz.models.entities.Categoria;
 import raiz.models.entities.Hecho;
 
+
 public class FiltroCategoria implements Filtro {
 
-    Categoria categoria;
+    private Categoria categoria;
 
     public FiltroCategoria(Categoria categoria) {
         this.categoria = categoria;
+    }
+
+    public Categoria getCategoria(){
+        return this.categoria;
     }
 
     @Override
