@@ -15,7 +15,7 @@ import raiz.models.entities.personas.Usuario;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import raiz.models.repositories.*;
-import raiz.services.IDetectorDeSpam;
+//import raiz.services.IDetectorDeSpam;
 import raiz.services.ISolicitudHechoService;
 
 import java.time.ZonedDateTime;
@@ -27,7 +27,7 @@ import java.util.Optional;
 @Service
 public class SolicitudHechoService implements ISolicitudHechoService {
 
-    private final IDetectorDeSpam detectorDeSpam;
+    //private final IDetectorDeSpam detectorDeSpam;
     private final ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo;
     private final ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo;
     private final ISolicitudModificarHechoRepository solicitudModificarHechoRepo;
@@ -37,15 +37,13 @@ public class SolicitudHechoService implements ISolicitudHechoService {
     GestorRoles gestorRoles;
 
     public SolicitudHechoService(ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo, ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo,
-                                 IPersonaRepository personaRepository, IHechosRepository hechosRepository, IPersonaRepository usuariosRepository, ISolicitudModificarHechoRepository solicitudModificarHechoRepo, IMensajeRepository mensajesRepository,
-                                 IDetectorDeSpam detectorDeSpam) {
+                                 IPersonaRepository personaRepository, IHechosRepository hechosRepository, IPersonaRepository usuariosRepository, ISolicitudModificarHechoRepository solicitudModificarHechoRepo, IMensajeRepository mensajesRepository) {
         this.solicitudAgregarHechoRepo = solicitudAgregarHechoRepo;
         this.solicitudEliminarHechoRepo = solicitudEliminarHechoRepo;
         this.hechosRepository = hechosRepository;
         this.usuariosRepository = usuariosRepository;
         this.solicitudModificarHechoRepo = solicitudModificarHechoRepo;
         this.mensajesRepository = mensajesRepository;
-        this.detectorDeSpam = detectorDeSpam;
         gestorRoles = new GestorRoles();
     }
 
@@ -94,7 +92,7 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         }
         Hecho hecho = hechosRepository.findById(dto.getId_hecho());
         SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, solicitudEliminarHechoRepo.getProxId(), dto.getJustificacion());
-        if (detectorDeSpam.esSpam(solicitud.getJustificacion())) {
+        if (DetectorDeSpam.esSpam(dto.getJustificacion())) {
             // Marcar como rechazada por spam y guardar
             solicitud.setProcesada(true);
             solicitud.setRechazadaPorSpam(true);
@@ -112,6 +110,11 @@ public class SolicitudHechoService implements ISolicitudHechoService {
 
         if (usuario == null || usuario.getId().equals(hechosRepository.findById(dto.getId_hecho()).getId_usuario()) || usuario.getRol().equals(Rol.ADMINISTRADOR) || usuario.getRol().equals(Rol.VISUALIZADOR)){
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
+        }
+
+        if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion()))
+        {
+            return new RespuestaHttp<>(null, HttpStatus.BAD_REQUEST.value());
         }
 
         Hecho hecho = hechosRepository.findById(dto.getId_hecho());
