@@ -19,6 +19,7 @@ import java.util.List;
 public class SolicitudHechoController {
 
     private final ISolicitudHechoService solicitudHechoService;
+
     public SolicitudHechoController(ISolicitudHechoService solicitudHechoService){
         this.solicitudHechoService = solicitudHechoService;
     }

@@ -12,8 +12,6 @@ public class ColeccionInputDTO {
     private String titulo;
     @NotNull(message = "La descripción es obligatoria")
     private String descripcion;
-    @NotNull(message = "La fuente es obligatoria")
-    private String fuente;
 
     //Criterios (es decir los filtros)
     private String categoria;

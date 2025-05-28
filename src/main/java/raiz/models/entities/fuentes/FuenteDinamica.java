@@ -17,7 +17,6 @@ public class FuenteDinamica {
         hecho.setContenidoMultimedia(TipoContenido.fromCodigo(data.getTipoContenido()));
         ZonedDateTime fecha = FechaParser.parsearFecha(data.getFechaAcontecimiento());
         hecho.setFechaAcontecimiento(fecha);
-        hecho.setFechaDeCarga(ZonedDateTime.now());
         hecho.setPais(data.getPais());
         hecho.setOrigen(Origen.FUENTE_DINAMICA);
         return hecho;

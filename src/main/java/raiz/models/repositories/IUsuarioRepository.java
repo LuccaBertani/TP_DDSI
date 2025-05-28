@@ -4,7 +4,7 @@ import raiz.models.entities.personas.Usuario;
 
 import java.util.List;
 
-public interface IPersonaRepository {
+public interface IUsuarioRepository {
     List<Usuario> findAll();
     void save(Usuario entidad);
     void delete(Usuario entidad);

@@ -126,7 +126,7 @@ public class LectorCSV {
                 hecho.setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))) : ZonedDateTime.of(0, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")));
 
                 hecho.setFechaDeCarga(ZonedDateTime.now());
-
+                hecho.setFechaUltimaActualizacion(hecho.getFechaDeCarga());
                 if (seModificaHecho){
                     hechosAModificar.add(hecho);
                 }

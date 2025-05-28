@@ -1,106 +1,17 @@
 @startuml
 
-'CLASES DENTRO DE ENTITIES'
-class Categoria{
-    -titulo: String
-}
-
-class Coleccion {
-    -activo: Boolean
-    -id: Long
-    -titulo: String
-    -descripcion: String
-    -hechos: List<Hecho>
-    -fuente: Fuente
-    -criterio: List<Filtro>
-    +addCriterios(Filtro ... filtros)
-    +addCriterios(filtros: List<Filtro>)
-    +addHechos(Hecho ... hechos)
-    +addHechos(hechos: List<Hecho>)
-}
-
-class DatosColeccion {
-    -titulo: String
-    -descripcion: String
-    -fuente: Fuente
-}
-
-class Filtrador{
-    +aplicarFiltros(filtros: List<Filtro>, hechos: List<Hecho>)
-}
-
-class Geocodificador {
-    +obtenerPais(latitud: Double, longitud: Double)
-}
-
-class GestorRoles {
-    +VisualizadorAContribuyente(usuario: Usuario): Boolean
-    +ContribuyenteAVisualizador(usuario: Usuario): Boolean
-}
-
-class Hecho {
-    -activo: Boolean
-    -id: Long
-    -titulo: String
-    -descripcion: String
-    -categoria: Categoria
-    -contenidoMultimediaOpcional: TipoContenido
-    -pais: Pais
-    -fechaAcontecimiento: ZonedDateTime
-    -fechaDeCarga: ZonedDateTime
-    -origen: Origen
-}
-
-class LectorCSV {
-    -dataSet: String
-    -campos: List<String>
-    +leerCSV(hechos: List<Hecho>): ModificadorHechos
-    -filtrarColumnas(headers: List<String>): Integer
-    -normalizar(texto: String): String
-    -normalizarYComparar(s1: String, s2: String): Boolean
-}
-
-class LectorJSON{
-}
-
-class ModificadorHechos {
-    -hechosASubir: List<Hecho>
-    -hechosAModificar: List<Hecho>
-}
-
-enum Origen {
-    CARGA_MANUAL
-    DATASET
-    CONTRIBUYENTE
-}
-
-class Pais {
-    -pais: String
-}
-
-enum Permisos {
-    ADMINISTRADOR
-    CONSULTOR
-}
-
-class SolicitudHecho {
-    -usuario: Usuario
-    -hecho: Hecho
-    -id: Long
-}
-
-enum TipoContenido {
-    TEXTO
-    IMAGEN
-    AUDIO
-    VIDEO
-}
-
 '-----------------------------------------------
-'CLASES DENTRO DE cASOSdEuSO'
-class NavegarPorHechos {
-    +navegarPorHechos(filtros: List<Filtro>, coleccion: Coleccion)
-    +navegarPorHechos(coleccion: Coleccion)
+'CLASES DENTRO DE BUSCADORES'
+
+class BuscadorCategoria{
+    +buscarOCrear(List<Hecho> hechos, String elemento): Categoria
+    +buscar(List<Hecho> hechos, String elemento): Categoria
+
+}
+
+class BuscadorPais{
+    +buscarOCrear(List<Hecho> hechos, String elemento): Pais
+    +buscar(List<Hecho> hechos, String elemento): Pais
 }
 
 '-----------------------------------------------
@@ -154,22 +65,23 @@ class FiltroTitulo implements Filtro {
 
 '-----------------------------------------------
 'CLASES DENTRO DE FUENTES'
-interface Fuente {
+
+class FuenteDinamica {
     +leerFuente(): ModificadorHechos
 }
 
-class FuenteDinamica implements Fuente {
-    +leerFuente(): ModificadorHechos
-}
-
-class FuenteEstatica implements Fuente {
+class FuenteEstatica {
     -dataSet: String
     +leerFuente(): ModificadorHechos
 }
 
 ' Para próximas entregas
-class FuenteProxy implements Fuente{
-    +leerFuente(): ModificadorHechos
+class FuenteProxy {
+    -url_base: String
+    -access_token: String
+    +login(String email, String contraseña): Boolean
+    +getHechos(List<Hecho> hechosTotales): List<Hecho>
+    +getHechoPorId(int id, List<Hecho> hechosTotales): Hecho
 }
 
 '-----------------------------------------------
@@ -198,10 +110,115 @@ class Usuario {
     +disminuirHechosSubidos()
 }
 
+'---------------------------------------------
+'CLASES DENTRO DE ENTITIES'
+class Categoria{
+    -titulo: String
+}
 
+class Coleccion {
+    -activo: Boolean
+    -id: Long
+    -titulo: String
+    -descripcion: String
+    -hechos: List<Hecho>
+    -criterio: List<Filtro>
+    +addCriterios(Filtro ... filtros)
+    +addCriterios(filtros: List<Filtro>)
+    +addHechos(Hecho ... hechos)
+    +addHechos(hechos: List<Hecho>)
+}
 
+class FechaParser {
+    -FORMATOS_LOCAL: List<DateTimeFormatter>
+    -FORMATOS_ZONED: List<DateTimeFormatter>
+    +parsearFecha(fechaStr: String): ZonedDateTime
+}
 
+class Filtrador{
+    +aplicarFiltros(filtros: List<Filtro>, hechos: List<Hecho>)
+    +hechoPasaFiltros(filtros: List<Filtro>, hecho: Hecho): Boolean
+    +filtrarMensajes(mensajes: List<Mensaje>, id_usuario: Long): List<Mensaje>
+}
 
+class Geocodificador {
+    +obtenerPais(latitud: Double, longitud: Double)
+}
+
+class GestorRoles {
+    +VisualizadorAContribuyente(usuario: Usuario): Boolean
+    +ContribuyenteAVisualizador(usuario: Usuario): Boolean
+}
+
+class Hecho {
+    -activo: Boolean
+    -id: Long
+    -id_usuario: Long
+    -titulo: String
+    -descripcion: String
+    -categoria: Categoria
+    -contenidoMultimediaOpcional: TipoContenido
+    -pais: Pais
+    -fechaAcontecimiento: ZonedDateTime
+    -fechaDeCarga: ZonedDateTime
+    -origen: Origen
+    -fechaUltimaActualizacion: ZonedDateTime
+}
+
+class LectorCSV {
+    -dataSet: String
+    -campos: List<String>
+    +leerCSV(hechos: List<Hecho>): ModificadorHechos
+    -filtrarColumnas(headers: List<String>): List<Integer>
+}
+
+class Mensaje{
+    -id: Long
+    -id_solicitud_hecho: Long
+    -id_receptor: Long
+    -textoMensaje: String
+}
+
+class ModificadorHechos {
+    -hechosASubir: List<Hecho>
+    -hechosAModificar: List<Hecho>
+}
+
+class Normalizador{
+    +normalizar(texto: String): String
+    +normalizarYComparar(s1: String, s2: String): Boolean
+    +normalizarSeparado(texto: String)
+}
+
+enum Origen {
+     FUENTE_DINAMICA
+     FUENTE_ESTATICA
+     CARGA_MANUAL
+     FUENTE_PROXY_METAMAPA
+}
+
+class Pais {
+    -pais: String
+}
+
+'RespuestaHttp
+
+class SolicitudHecho {
+    -usuario: Usuario
+    -hecho: Hecho
+    -id: Long
+    -justificacion: String
+    -procesada: boolean
+    -rechazadaPorSpam: boolean
+}
+
+enum TipoContenido {
+    INVALIDO
+    TEXTO
+    IMAGEN
+    AUDIO
+    VIDEO
+}
 
 
 ' Relación Hechos
@@ -214,33 +231,50 @@ Hecho --> Origen
 SolicitudHecho --* Hecho
 
 
+
+
 ' Relación entre Usuario y Rol
 Usuario --> Rol
-
-' Relacion entre NagevarPorHechos y Coleccion/Filtros
-NavegarPorHechos --> Coleccion
-NavegarPorHechos --> Filtro: *
-'Creo que son flechas punteadas pero no sé como es la sintaxis
 
 GestorRoles --* Usuario
 
 ' Relacion de Lectores
-LectorCSV --> Hecho: *
+LectorCSV --> Hecho
 LectorCSV --> ModificadorHechos
+LectorCSV --> FuenteEstatica
 
 Filtrador --> Hecho: *
 Filtrador --> Filtro: *
 
-Coleccion *-- DatosColeccion
 Usuario *-- DatosPersonalesPublicador
 
+FuenteDinamica --> Hecho: *
+FuenteEstatica --> Hecho: *
+FuenteProxy --> Hecho: *
 
+Geocodificador --> FuenteProxy
+Geocodificador --> LectorCSV
+
+BuscadorCategoria --> FuenteProxy
+BuscadorCategoria --> FuenteEstatica
+BuscadorCategoria --> FuenteDinamica
+
+BuscadorPais --> FuenteProxy
+BuscadorPais --> FuenteEstatica
+BuscadorPais --> FuenteDinamica
+
+Normalizador --> BuscadorPais
+Normalizador --> BuscadorCategoria
+
+FechaParser --> LectorCSV
+FechaParser --> FuenteProxy
+
+Mensaje --> Filtrador
 
 @enduml
 
-class Persona{
 
-}
+
 
 class Administrador extends Visualizador {
     ' se almacenarán y quedarán a disposición de las personas administradoras.

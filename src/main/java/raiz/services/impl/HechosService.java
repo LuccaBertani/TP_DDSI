@@ -16,7 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import raiz.models.repositories.IColeccionRepository;
 import raiz.models.repositories.IHechosRepository;
-import raiz.models.repositories.IPersonaRepository;
+import raiz.models.repositories.IUsuarioRepository;
 import raiz.services.IHechosService;
 
 import java.time.ZoneId;
@@ -29,10 +29,10 @@ public class HechosService implements IHechosService {
 
 
     private final IHechosRepository hechosRepo;
-    private final IPersonaRepository usuariosRepo;
+    private final IUsuarioRepository usuariosRepo;
     private final IColeccionRepository coleccionRepo;
 
-    public HechosService(IHechosRepository repo, IPersonaRepository usuariosRepo, IColeccionRepository coleccionRepo) {
+    public HechosService(IHechosRepository repo, IUsuarioRepository usuariosRepo, IColeccionRepository coleccionRepo) {
         this.hechosRepo = repo;
         this.usuariosRepo = usuariosRepo;
         this.coleccionRepo = coleccionRepo;
@@ -123,6 +123,7 @@ public class HechosService implements IHechosService {
             hecho.setId(hechosRepo.getProxId());
             hecho.setActivo(true);
             hecho.setFechaDeCarga(ZonedDateTime.now());
+            hecho.setFechaUltimaActualizacion(hecho.getFechaDeCarga());
             this.mapearHechoAColecciones(hecho);
             hechosRepo.save(hecho);
             this.mapearHechoAColecciones(hecho);

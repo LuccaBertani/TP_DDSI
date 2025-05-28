@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import raiz.models.repositories.IColeccionRepository;
 import raiz.models.repositories.IHechosRepository;
-import raiz.models.repositories.IPersonaRepository;
+import raiz.models.repositories.IUsuarioRepository;
 import raiz.services.IColeccionService;
 
 import java.util.ArrayList;
@@ -23,9 +23,9 @@ public class ColeccionService implements IColeccionService {
 
     private final IHechosRepository hechosRepo;
     private final IColeccionRepository coleccionesRepo;
-    private final IPersonaRepository usuariosRepo;
+    private final IUsuarioRepository usuariosRepo;
 
-    public ColeccionService(IHechosRepository hechosRepo, IColeccionRepository coleccionesRepo, IPersonaRepository usuariosRepo) {
+    public ColeccionService(IHechosRepository hechosRepo, IColeccionRepository coleccionesRepo, IUsuarioRepository usuariosRepo) {
         this.hechosRepo = hechosRepo;
         this.coleccionesRepo = coleccionesRepo;
         this.usuariosRepo = usuariosRepo;
@@ -45,6 +45,8 @@ pertenencia configurable, que dictará si un hecho pertenece o no a las mismas. 
 incluir automáticamente todos los hechos de categoría “Incendio forestal” ocurrido en Argentina, acontecido entre el 1 de enero de 2025 a las
 0:00 y el 31 de diciembre de 20205 a las 23:59.
 
+//TODO...  por ahora se desea que nuestras fuentes proxy también sean capaces de consumir este tipo de API.......
+
     */
 
     @Override
@@ -56,7 +58,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
 
-        DatosColeccion datosColeccion = new DatosColeccion(dtoInput.getTitulo(), dtoInput.getDescripcion(), dtoInput.getFuente());
+        DatosColeccion datosColeccion = new DatosColeccion(dtoInput.getTitulo(), dtoInput.getDescripcion());
 
         Coleccion coleccion = new Coleccion(datosColeccion,coleccionesRepo.getProxId());
 
@@ -112,5 +114,3 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     }
 
 }
-
-//TODO Cada vez que se crea un hecho que se meta el en las colecciones que el hecho cumple su criterio

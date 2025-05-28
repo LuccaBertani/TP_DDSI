@@ -19,7 +19,7 @@ public class Hecho {
     private ZonedDateTime fechaAcontecimiento;
     private ZonedDateTime fechaDeCarga;
     private Origen origen;
-
+    private ZonedDateTime fechaUltimaActualizacion;
     public Hecho() {
         this.id_usuario=-1L;
     }

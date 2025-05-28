@@ -6,29 +6,28 @@ import raiz.models.entities.personas.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import raiz.models.repositories.IPersonaRepository;
+import raiz.models.repositories.IUsuarioRepository;
 import raiz.services.IUsuarioService;
 
 @Service
 public class UsuarioService implements IUsuarioService {
 
-    private final IPersonaRepository personasRepo;
+    private final IUsuarioRepository usuarioRepo;
 
-    @Autowired
-    public UsuarioService(IPersonaRepository personaRepo) {
-        this.personasRepo = personaRepo;
+    public UsuarioService(IUsuarioRepository usuarioRepo) {
+        this.usuarioRepo = usuarioRepo;
     }
     //Momento en el que un usuario se registra y guarda datos personales (NO LLAMAR A ESTE METODO SI ES ANONIMO)
     @Override
     public RespuestaHttp<Usuario> crearUsuario(UsuarioInputDTO inputDTO){
 
-        Usuario usuario = new Usuario(personasRepo.getProxId());
+        Usuario usuario = new Usuario(usuarioRepo.getProxId());
 
         usuario.getDatosPersonales().setNombre(inputDTO.getNombre());
         usuario.getDatosPersonales().setApellido(inputDTO.getApellido());
         usuario.getDatosPersonales().setEdad(inputDTO.getEdad());
         usuario.setContrasenia(inputDTO.getContrasenia());
-        personasRepo.save(usuario);
+        usuarioRepo.save(usuario);
         return new RespuestaHttp<>(usuario, HttpStatus.OK.value());
     }
 

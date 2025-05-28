@@ -8,11 +8,9 @@ import lombok.Setter;
 public class DatosColeccion {
     private String titulo;
     private String descripcion;
-    private String fuente;
 
-    public DatosColeccion(String titulo, String descripcion, String fuente) {
+    public DatosColeccion(String titulo, String descripcion) {
         this.titulo = titulo;
         this.descripcion = descripcion;
-        this.fuente = fuente;
     }
 }

@@ -18,11 +18,11 @@ import java.util.Scanner;
 
 public class FuenteProxy {
 
-    private String url_base;
+    private String url_base = "https://api-ddsi.disilab.ar/public/api";
     private String access_token;
 
-    public FuenteProxy(String url_base){
-        this.url_base = url_base;
+    public FuenteProxy(){
+
     }
 
     public Boolean login(String email, String contraseña){
@@ -62,9 +62,9 @@ public class FuenteProxy {
         } catch (Exception e){
             System.out.println("Error en login: " + e.getMessage());
             return false;
-        }
+            }
 
-        }
+    }
 
         public List<Hecho> getHechos(List<Hecho> hechosTotales) {
 
@@ -98,11 +98,12 @@ public class FuenteProxy {
                         hecho.setPais(BuscadorPais.buscarOCrear(hechosTotales,pais));
                         hecho.setFechaAcontecimiento(FechaParser.parsearFecha(obj.getString("fecha_hecho")));
                         hecho.setFechaDeCarga(FechaParser.parsearFecha(obj.getString("created_at")));
+                        hecho.setFechaUltimaActualizacion(FechaParser.parsearFecha(obj.getString("updated_at")));
 
                         hechos.add(hecho);
                     }
 
-                    System.out.println("Login exitoso, token: " + access_token);
+                    System.out.println("Consulta exitosa, token: " + access_token);
 
                 } else {
                     System.out.println("Conexion fallida con código: " + status);
@@ -144,6 +145,7 @@ public class FuenteProxy {
                 hecho.setPais(BuscadorPais.buscarOCrear(hechosTotales,pais));
                 hecho.setFechaAcontecimiento(FechaParser.parsearFecha(obj.getString("fecha_hecho")));
                 hecho.setFechaDeCarga(FechaParser.parsearFecha(obj.getString("created_at")));
+                hecho.setFechaUltimaActualizacion(FechaParser.parsearFecha(obj.getString("updated_at")));
 
                 return hecho;
 
@@ -159,8 +161,5 @@ public class FuenteProxy {
 
         return null;
     }
-
+    
 }
-
-
-

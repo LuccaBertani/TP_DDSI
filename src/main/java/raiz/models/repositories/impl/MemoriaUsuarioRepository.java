@@ -2,12 +2,12 @@ package raiz.models.repositories.impl;
 
 import raiz.models.entities.personas.Usuario;
 import org.springframework.stereotype.Repository;
-import raiz.models.repositories.IPersonaRepository;
+import raiz.models.repositories.IUsuarioRepository;
 
 import java.util.List;
 
 @Repository
-public class MemoriaPersonaRepository implements IPersonaRepository {
+public class MemoriaUsuarioRepository implements IUsuarioRepository {
 
     private List<Usuario> personas;
 

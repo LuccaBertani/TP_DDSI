@@ -22,13 +22,11 @@ public class Coleccion {
     private String titulo;
     private String descripcion;
     private List<Hecho> hechos = new ArrayList<>();
-    private String fuente;
     private List<Filtro> criterio = new ArrayList<>();
 
     public Coleccion(DatosColeccion datosColeccion, long id) {
         this.titulo = datosColeccion.getTitulo();
         this.descripcion = datosColeccion.getDescripcion();
-        this.fuente = datosColeccion.getFuente();
         this.id = id;
     }
 
