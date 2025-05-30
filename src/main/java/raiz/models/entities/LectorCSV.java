@@ -9,6 +9,8 @@ import java.util.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import raiz.models.entities.buscadores.BuscadorCategoria;
+import raiz.models.entities.buscadores.BuscadorPais;
 
 public class LectorCSV {
     private static List<String> campos = new ArrayList<>(Arrays.asList("titulo","descripcion","categoria","latitud","longitud","fechadelhecho","pais"));
@@ -18,7 +20,7 @@ public class LectorCSV {
         this.dataSet=dataSet;
     }
 
-    public ModificadorHechos leerCSV(List<Hecho> hechos) {
+    public ModificadorHechos leerCSV(List<Hecho> hechosFuenteProxy, List<Hecho> hechosFuenteDinamica, List<Hecho> hechosFuenteEstatica) {
 
         List<Hecho> hechosASubir = new ArrayList<>();
         List<Hecho> hechosAModificar = new ArrayList<>();
@@ -71,8 +73,8 @@ public class LectorCSV {
                 hecho.setOrigen(Origen.FUENTE_ESTATICA);
 
                 hecho.setTitulo((indicesColumnas.get(0) != -1) ? registros.get(indicesColumnas.get(0)) : "N/A");
-
-                Optional<Hecho> hecho0 = hechos.stream().filter(h->Normalizador.normalizarYComparar(h.getTitulo(), hecho.getTitulo())).findFirst();
+                //Se leen los de fuente estatica
+                Optional<Hecho> hecho0 = hechosFuenteEstatica.stream().filter(h->Normalizador.normalizarYComparar(h.getTitulo(), hecho.getTitulo())).findFirst();
 
                 if (hecho0.isPresent() && !hecho0.get().getTitulo().equals("N/A")){
                     System.out.println("El hecho está repetido");
@@ -82,20 +84,8 @@ public class LectorCSV {
                 hecho.setDescripcion((indicesColumnas.get(1) != -1) ? registros.get(indicesColumnas.get(1)) : "N/A");
 
                 String categoriaString = indicesColumnas.get(2) != -1 ? registros.get(indicesColumnas.get(2)) : "N/A";
-                Optional<Hecho> hecho1 = hechos.stream().filter(h->Normalizador.normalizarYComparar(h.getCategoria().getTitulo(), categoriaString)).findFirst();
-                Categoria categoria;
-                // Si la categoría no existe, se crea
 
-                if (hecho1.isPresent()){
-                    categoria = hecho1.get().getCategoria();
-                    hecho.setCategoria(categoria);
-                }
-                else{
-                    categoria = new Categoria();
-                    categoria.setTitulo(categoriaString);
-                    hecho.setCategoria(categoria);
-                }
-
+                hecho.setCategoria(BuscadorCategoria.buscarOCrear(hechosFuenteDinamica,categoriaString,hechosFuenteProxy,hechosFuenteEstatica));
 
                 String paisString;
                 if (indicesColumnas.get(3) != -1 && indicesColumnas.get(4) != -1 &&
@@ -108,19 +98,8 @@ public class LectorCSV {
                     paisString = indicesColumnas.get(6) != -1 ? registros.get(indicesColumnas.get(6)) : "N/A";
                 }
 
-                Optional<Hecho> hecho2 = hechos.stream().filter(h->Normalizador.normalizarYComparar(h.getPais().getPais(), paisString)).findFirst();
-                Pais pais;
-                // Si el país no existe, se crea
+                hecho.setPais(BuscadorPais.buscarOCrear(hechosFuenteDinamica,paisString,hechosFuenteProxy,hechosFuenteEstatica));
 
-                if (hecho2.isPresent()){
-                    pais = hecho2.get().getPais();
-                    hecho.setPais(pais);
-
-                } else{
-                    pais = new Pais();
-                    pais.setPais(paisString);
-                    hecho.setPais(pais);
-                }
                 //ZonedDateTime fecha = FechaParser.parsearFecha(registros.get(indicesColumnas.get(5)));
                 //ZonedDateTime fecha = (indicesColumnas.get(5) != -1) ? fecha :ZonedDateTime.parse(registros.get(indicesColumnas.get(5)));
                 hecho.setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))) : ZonedDateTime.of(0, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")));
@@ -165,7 +144,7 @@ public class LectorCSV {
         return new ModificadorHechos(hechosASubir, hechosAModificar);
     }
 
-    // Analizo qué columnas me interesan. Solo leo esas despues.
+    // Analizo qué columnas me interesan. Solo leo esas después.
     private List<Integer> filtrarColumnas(List<String> headers) {
 
 

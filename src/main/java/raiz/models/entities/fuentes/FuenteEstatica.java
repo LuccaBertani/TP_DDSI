@@ -13,13 +13,13 @@ import java.util.List;
 @Setter
 public class FuenteEstatica {
     private String dataSet;
-    public ModificadorHechos leerFuente(List<Hecho> hechos){
+    public ModificadorHechos leerFuente(List<Hecho> hechosFuenteProxy, List<Hecho> hechosFuenteDinamica, List<Hecho> hechosFuenteEstatica){
 
         String[] nombreArchivo = this.dataSet.split("\\.");
         String formato = nombreArchivo[1].toLowerCase();
         if (formato.equals("csv")){
             var lectorCSV = new LectorCSV(this.dataSet);
-            return lectorCSV.leerCSV(hechos);
+            return lectorCSV.leerCSV(hechosFuenteProxy,hechosFuenteDinamica,hechosFuenteEstatica);
         }
         else if (formato.equals("json")){
             //TODO el lector del formato JSON

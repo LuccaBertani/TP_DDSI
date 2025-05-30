@@ -10,7 +10,7 @@ import raiz.models.repositories.IUsuarioRepository;
 import raiz.services.IUsuarioService;
 
 @Service
-public class UsuarioService implements IUsuarioService {
+public class  UsuarioService implements IUsuarioService {
 
     private final IUsuarioRepository usuarioRepo;
 

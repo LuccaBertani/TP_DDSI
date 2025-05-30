@@ -4,8 +4,7 @@ import raiz.models.entities.Hecho;
 
 import java.util.List;
 
-
-public interface IHechosRepository {
+public interface IHechosDinamicaRepository {
     List<Hecho> findAll();
     void save(Hecho entidad);
     void delete(Hecho entidad);

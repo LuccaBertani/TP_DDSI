@@ -1,24 +1,40 @@
 package raiz.models.repositories.impl;
-import raiz.models.entities.Hecho;
+
 import org.springframework.stereotype.Repository;
-import raiz.models.repositories.IHechosRepository;
+import raiz.models.entities.Hecho;
+import raiz.models.repositories.IHechosDinamicaRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//Maneja los datos en memoria
 @Repository
-public class MemoriaHechosRepository implements IHechosRepository {
+public class MemoriaHechosDinamicaRepository implements IHechosDinamicaRepository {
+
     private List<Hecho> hechos;
     private List<Hecho> snapshotHechos;
 
-    public MemoriaHechosRepository(){
+    public MemoriaHechosDinamicaRepository() {
         this.hechos = new ArrayList<>();
         this.snapshotHechos = new ArrayList<>();
     }
 
     @Override
-    public Hecho findById(Long id){
+    public List<Hecho> findAll() {
+        return hechos;
+    }
+
+    @Override
+    public void save(Hecho entidad) {
+        hechos.add(entidad);
+    }
+
+    @Override
+    public void delete(Hecho entidad) {
+        entidad.setActivo(false);
+    }
+
+    @Override
+    public Hecho findById(Long id) {
         return this.hechos.stream()
                 .filter(hecho -> hecho.getId().equals(id))
                 .findFirst().orElse(null);
@@ -38,35 +54,18 @@ public class MemoriaHechosRepository implements IHechosRepository {
     }
 
     @Override
-    public List<Hecho> findAll() {
-        return this.hechos;
-    }
-
-    @Override
-    public void save(Hecho hecho) {
-        hechos.add(hecho);
-    }
-
-    @Override
-    public void delete(Hecho hecho) {
-        hecho.setActivo(false);
-    }
-
-    @Override
-    public void update(Hecho entidad){
+    public void update(Hecho entidad) {
         this.hechos.remove(entidad);
         this.save(entidad);
     }
 
     @Override
-    public List<Hecho> getSnapshotHechos(){
+    public List<Hecho> getSnapshotHechos() {
         return this.snapshotHechos;
     }
 
     @Override
-    public void clearSnapshotHechos(){
+    public void clearSnapshotHechos() {
         this.snapshotHechos.clear();
     }
-
-
 }

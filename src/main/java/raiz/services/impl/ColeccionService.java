@@ -11,9 +11,7 @@ import raiz.models.entities.personas.Rol;
 import raiz.models.entities.personas.Usuario;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import raiz.models.repositories.IColeccionRepository;
-import raiz.models.repositories.IHechosRepository;
-import raiz.models.repositories.IUsuarioRepository;
+import raiz.models.repositories.*;
 import raiz.services.IColeccionService;
 
 import java.util.ArrayList;
@@ -22,12 +20,16 @@ import java.util.List;
 @Service
 public class ColeccionService implements IColeccionService {
 
-    private final IHechosRepository hechosRepo;
+    private final IHechosProxyRepository hechosProxyRepo;
+    private final IHechosEstaticaRepository hechosEstaticaRepo;
+    private final IHechosDinamicaRepository hechosDinamicaRepo;
     private final IColeccionRepository coleccionesRepo;
     private final IUsuarioRepository usuariosRepo;
 
-    public ColeccionService(IHechosRepository hechosRepo, IColeccionRepository coleccionesRepo, IUsuarioRepository usuariosRepo) {
-        this.hechosRepo = hechosRepo;
+    public ColeccionService(IHechosProxyRepository hechosProxyRepo, IHechosEstaticaRepository hechosEstaticaRepo, IHechosDinamicaRepository hechosDinamicaRepo, IColeccionRepository coleccionesRepo, IUsuarioRepository usuariosRepo) {
+        this.hechosProxyRepo = hechosProxyRepo;
+        this.hechosEstaticaRepo = hechosEstaticaRepo;
+        this.hechosDinamicaRepo = hechosDinamicaRepo;
         this.coleccionesRepo = coleccionesRepo;
         this.usuariosRepo = usuariosRepo;
     }
@@ -65,33 +67,62 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
         List<Filtro> criterios = new ArrayList<>();
 
+        Filtro filtroCategoria = null;
+        Filtro filtroFechaCarga = null;
+        Filtro filtroFechaAcontecimiento = null;
+        Filtro filtroPais = null;
+        Filtro filtroContenidoMultimedia = null;
+        Filtro filtroDescripcion = null;
+        Filtro filtroOrigen = null;
+        Filtro filtroTitulo = null;
 
-        if(dtoInput.getPais() != null) {
-            Pais pais = BuscadorPais.buscarOCrear(hechosRepo.findAll(),dtoInput.getPais());
-            Filtro filtroPais = new FiltroPais(pais);
-            criterios.add(filtroPais);
-        }
-        if(dtoInput.getFechaAcontecimientoFinal() != null && dtoInput.getFechaAcontecimientoInicial() != null) {
-            Filtro filtroFechaAcontecimiento = new FiltroFechaAcontecimiento(FechaParser.parsearFecha(dtoInput.getFechaAcontecimientoInicial()),FechaParser.parsearFecha(dtoInput.getFechaAcontecimientoFinal()));
-            criterios.add(filtroFechaAcontecimiento);
-        }
-        if(dtoInput.getContenidoMultimedia() != null) {
-            Filtro filtroContenidoMultimedia = new FiltroContenidoMultimedia(TipoContenido.fromCodigo(dtoInput.getContenidoMultimedia()));
-            criterios.add(filtroContenidoMultimedia);
-        }
+
         if(dtoInput.getCategoria() != null){
-            Categoria categoria = BuscadorCategoria.buscarOCrear(hechosRepo.findAll(),dtoInput.getCategoria());
-            Filtro filtroCategoria = new FiltroCategoria(categoria);
-            criterios.add(filtroCategoria);
+            Categoria categoria = BuscadorCategoria.buscarOCrear(hechosDinamicaRepo.findAll(),dtoInput.getCategoria(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
+            filtroCategoria = new FiltroCategoria(categoria);
         }
+        criterios.add(filtroCategoria);
+
         if (dtoInput.getFechaCargaInicial()!=null && dtoInput.getFechaCargaFinal() !=null){
-            Filtro filtroFechaCarga = new FiltroFechaAcontecimiento(FechaParser.parsearFecha(dtoInput.getFechaCargaInicial()), FechaParser.parsearFecha(dtoInput.getFechaCargaFinal()));
+            filtroFechaCarga = new FiltroFechaAcontecimiento(FechaParser.parsearFecha(dtoInput.getFechaCargaInicial()), FechaParser.parsearFecha(dtoInput.getFechaCargaFinal()));
         }
+        criterios.add(filtroFechaCarga);
+
+        if(dtoInput.getFechaAcontecimientoFinal() != null && dtoInput.getFechaAcontecimientoInicial() != null) {
+            filtroFechaAcontecimiento = new FiltroFechaAcontecimiento(FechaParser.parsearFecha(dtoInput.getFechaAcontecimientoInicial()),FechaParser.parsearFecha(dtoInput.getFechaAcontecimientoFinal()));
+        }
+        criterios.add(filtroFechaAcontecimiento);
+        if(dtoInput.getPais() != null) {
+            Pais pais = BuscadorPais.buscarOCrear(hechosDinamicaRepo.findAll(),dtoInput.getPais(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
+            filtroPais = new FiltroPais(pais);
+        }
+        criterios.add(filtroPais);
+        if(dtoInput.getContenidoMultimedia() != null) {
+            filtroContenidoMultimedia = new FiltroContenidoMultimedia(TipoContenido.fromCodigo(dtoInput.getContenidoMultimedia()));
+        }
+        criterios.add(filtroContenidoMultimedia);
+        if(dtoInput.getDescripcion() != null){
+            filtroDescripcion = new FiltroDescripcion(dtoInput.getDescripcion());
+        }
+        criterios.add(filtroDescripcion);
+        if(dtoInput.getOrigen() != null){
+            filtroOrigen = new FiltroOrigen(Origen.fromCodigo(dtoInput.getOrigen()));
+        }
+        criterios.add(filtroOrigen);
+        if(dtoInput.getTituloFiltro() != null){
+            filtroTitulo = new FiltroTitulo(dtoInput.getTituloFiltro());
+        }
+        criterios.add(filtroTitulo);
+
 
         coleccion.addCriterios(criterios);
-        List<Hecho> hechos = hechosRepo.findAll();
+        List<Hecho> hechosDinamica = hechosDinamicaRepo.findAll();
+        List<Hecho> hechosEstatica = hechosEstaticaRepo.findAll();
+        List<Hecho> hechosProxy = hechosProxyRepo.findAll();
 
-        coleccion.addHechos(Filtrador.aplicarFiltros(criterios, hechos));
+        coleccion.addHechos(Filtrador.aplicarFiltros(criterios, hechosDinamica));
+        coleccion.addHechos(Filtrador.aplicarFiltros(criterios, hechosEstatica));
+        coleccion.addHechos(Filtrador.aplicarFiltros(criterios, hechosProxy));
 
         coleccionesRepo.save(coleccion);
 
@@ -111,9 +142,6 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             dto.setNombre(coleccion.getTitulo());
             dto.setDescripcion(coleccion.getDescripcion());
             FiltroHechosDTO filtroHechosDTO = new FiltroHechosDTO();
-
-            Object criterio = coleccion.getCriterio().get(0);
-
 
             FiltroCategoria filtroCategoria = (FiltroCategoria)coleccion.getCriterio().get(0);
             filtroHechosDTO.setCategoria(filtroCategoria.getCategoria().getTitulo());

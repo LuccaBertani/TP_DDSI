@@ -14,4 +14,6 @@ public class SolicitudHechoEliminarInputDTO {
     @NotNull(message = "La justificación es obligatoria")
     @Size(min = 500, message = "La justificación debe tener al menos 500 caracteres")
     String justificacion;
+    @NotNull(message = "El origen es obligatorio")
+    Integer origen;
 }

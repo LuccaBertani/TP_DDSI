@@ -20,6 +20,8 @@ public class ColeccionInputDTO {
     private String fechaAcontecimientoFinal;
     private String fechaCargaInicial;
     private String fechaCargaFinal;
-    private String origen;
+    private Integer origen;
     private String pais;
+    private String descripcionFiltro;
+    private String tituloFiltro;
 }

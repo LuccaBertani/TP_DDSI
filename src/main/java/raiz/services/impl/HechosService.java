@@ -14,9 +14,7 @@ import raiz.models.entities.personas.Usuario;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import raiz.models.repositories.IColeccionRepository;
-import raiz.models.repositories.IHechosRepository;
-import raiz.models.repositories.IUsuarioRepository;
+import raiz.models.repositories.*;
 import raiz.services.IHechosService;
 
 import java.time.ZoneId;
@@ -28,12 +26,16 @@ import java.util.List;
 public class HechosService implements IHechosService {
 
 
-    private final IHechosRepository hechosRepo;
+    private final IHechosProxyRepository hechosProxyRepo;
+    private final IHechosDinamicaRepository hechosDinamicaRepo;
+    private final IHechosEstaticaRepository hechosEstaticaRepo;
     private final IUsuarioRepository usuariosRepo;
     private final IColeccionRepository coleccionRepo;
 
-    public HechosService(IHechosRepository repo, IUsuarioRepository usuariosRepo, IColeccionRepository coleccionRepo) {
-        this.hechosRepo = repo;
+    public HechosService(IHechosProxyRepository repo, IHechosProxyRepository hechosProxyRepo, IHechosDinamicaRepository hechosDinamicaRepo, IHechosEstaticaRepository hechosEstaticaRepo, IUsuarioRepository usuariosRepo, IColeccionRepository coleccionRepo) {
+        this.hechosProxyRepo = hechosProxyRepo;
+        this.hechosDinamicaRepo = hechosDinamicaRepo;
+        this.hechosEstaticaRepo = hechosEstaticaRepo;
         this.usuariosRepo = usuariosRepo;
         this.coleccionRepo = coleccionRepo;
     }
@@ -43,10 +45,15 @@ public class HechosService implements IHechosService {
     @Override
     @Scheduled(cron = "0 0 * * * *") // cada hora
     public void refrescarColecciones() {
-        List<Hecho> snapshotHechos = hechosRepo.getSnapshotHechos();
-        if (!snapshotHechos.isEmpty()){
-            this.mapearHechosAColecciones(snapshotHechos);
-            hechosRepo.clearSnapshotHechos();
+        List<Hecho> snapshotHechosEstatica = hechosEstaticaRepo.getSnapshotHechos();
+        List<Hecho> snapshotHechosDinamica = hechosDinamicaRepo.getSnapshotHechos();
+        if (!snapshotHechosEstatica.isEmpty()){
+            this.mapearHechosAColecciones(snapshotHechosEstatica);
+            hechosEstaticaRepo.clearSnapshotHechos();
+        }
+        if(!snapshotHechosDinamica.isEmpty()){
+            this.mapearHechosAColecciones(snapshotHechosDinamica);
+            hechosDinamicaRepo.clearSnapshotHechos();
         }
     }
 
@@ -76,7 +83,7 @@ public class HechosService implements IHechosService {
 
         }
     }
-
+    //lo sube un administrador (lo considero carga dinamica)
     @Override
     public RespuestaHttp<Void> subirHecho(SolicitudHechoInputDTO dtoInput) {
         Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario());
@@ -84,13 +91,11 @@ public class HechosService implements IHechosService {
 
             Hecho hecho = new Hecho();
 
-            List<Hecho> hechos = hechosRepo.findAll();
-
             if(dtoInput.getPais() != null) {
-                Pais pais = BuscadorPais.buscarOCrear(hechos,dtoInput.getPais());
+                Pais pais = BuscadorPais.buscarOCrear(hechosDinamicaRepo.findAll(),dtoInput.getPais(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
                 hecho.setPais(pais);
             }else{
-                Pais pais = BuscadorPais.buscarOCrear(hechos,"N/A");
+                Pais pais = BuscadorPais.buscarOCrear(hechosDinamicaRepo.findAll(),"N/A",hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
                 hecho.setPais(pais);
             }
 
@@ -112,21 +117,28 @@ public class HechosService implements IHechosService {
                 hecho.setContenidoMultimedia(TipoContenido.INVALIDO);
             }
             if(dtoInput.getCategoria() != null){
-                Categoria categoria = BuscadorCategoria.buscarOCrear(hechos,dtoInput.getCategoria());
+                Categoria categoria = BuscadorCategoria.buscarOCrear(hechosDinamicaRepo.findAll(),dtoInput.getPais(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
                 hecho.setCategoria(categoria);
             }
             else{
-                Categoria categoria = BuscadorCategoria.buscarOCrear(hechos,"N/A");
+                Categoria categoria = BuscadorCategoria.buscarOCrear(hechosDinamicaRepo.findAll(),"N/A",hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
                 hecho.setCategoria(categoria);
             }
             hecho.setOrigen(Origen.CARGA_MANUAL);
-            hecho.setId(hechosRepo.getProxId());
+            hecho.setId(hechosDinamicaRepo.getProxId());
             hecho.setActivo(true);
             hecho.setFechaDeCarga(ZonedDateTime.now());
             hecho.setFechaUltimaActualizacion(hecho.getFechaDeCarga());
+
+            hechosDinamicaRepo.getSnapshotHechos().add(hecho);
+            hechosDinamicaRepo.save(hecho);
+
+            /*
             this.mapearHechoAColecciones(hecho);
             hechosRepo.save(hecho);
             this.mapearHechoAColecciones(hecho);
+             */
+
             return new RespuestaHttp<>(null, HttpStatus.CREATED.value());
         }
         else{
@@ -139,23 +151,23 @@ public class HechosService implements IHechosService {
         Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario());
         if (usuario.getRol().equals(Rol.ADMINISTRADOR)){
 
-            List<Hecho> hechosActuales = hechosRepo.findAll();
-
             FuenteEstatica fuente = new FuenteEstatica();
             fuente.setDataSet(dtoInput.getFuenteString());
-            ModificadorHechos modificadorHechos = fuente.leerFuente(hechosActuales);
+
+            ModificadorHechos modificadorHechos = fuente.leerFuente(hechosDinamicaRepo.findAll(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
 
             List<Hecho> hechosASubir = modificadorHechos.getHechosASubir();
             List<Hecho> hechosAModificar = modificadorHechos.getHechosAModificar();
 
             for (Hecho hecho : hechosASubir){
-                hecho.setId(hechosRepo.getProxId());
-                this.mapearHechoAColecciones(hecho);
-                hechosRepo.save(hecho);
+                hecho.setId(hechosEstaticaRepo.getProxId());
+                hechosEstaticaRepo.getSnapshotHechos().add(hecho);
+                hechosEstaticaRepo.save(hecho);
             }
+            //TODO agregar a snapshot y que verifique si es repetido y en ese caso actualizar en la base de datos (aparte de la logica de agregarlo a las colecciones)
             for (Hecho hecho : hechosAModificar){
                 this.mapearHechoAColecciones(hecho);
-                hechosRepo.update(hecho);
+                hechosEstaticaRepo.update(hecho);
             }
             return new RespuestaHttp<>(null, HttpStatus.CREATED.value());
         }
@@ -166,11 +178,11 @@ public class HechosService implements IHechosService {
 
     @Override
     public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechos(FiltroHechosDTO inputDTO) {
-        List<Hecho> hechosTotales = hechosRepo.findAll();
+
         List<Filtro> filter = new ArrayList<>();
-        String categoriaString = inputDTO.getCategoria();
-        if (categoriaString != null) {
-            Categoria categoria = BuscadorCategoria.buscar(hechosTotales, categoriaString);
+
+        if (inputDTO.getCategoria() != null) {
+            Categoria categoria = BuscadorCategoria.buscar(hechosDinamicaRepo.findAll(), inputDTO.getCategoria(), hechosProxyRepo.findAll(), hechosEstaticaRepo.findAll());
             if (categoria!=null)
                 filter.add(new FiltroCategoria(categoria));
         }
@@ -203,7 +215,7 @@ public class HechosService implements IHechosService {
 
         String paisString = inputDTO.getPais();
         if (paisString != null) {
-            Pais pais = BuscadorPais.buscar(hechosTotales, paisString);
+            Pais pais = BuscadorPais.buscar(hechosDinamicaRepo.findAll(), paisString, hechosProxyRepo.findAll(), hechosEstaticaRepo.findAll());
             if (pais!=null)
                 filter.add(new FiltroPais(pais));
         }
@@ -212,8 +224,12 @@ public class HechosService implements IHechosService {
             filter.add(new FiltroTitulo(inputDTO.getTitulo()));
         }
 
+
+
+
+
         List<Hecho> hechosFiltrados = Filtrador
-                .aplicarFiltros(filter, hechosRepo.findAll());
+                .aplicarFiltros(filter, this.getAllHechos());
 
         List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream().map(hecho -> {
             VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
@@ -279,7 +295,11 @@ public class HechosService implements IHechosService {
     }
 
     public List<Hecho> getAllHechos(){
-        return hechosRepo.findAll();
+        List<Hecho> hechosTotales = new ArrayList<>();
+        hechosTotales.addAll(hechosDinamicaRepo.findAll());
+        hechosTotales.addAll(hechosProxyRepo.findAll());
+        hechosTotales.addAll(hechosEstaticaRepo.findAll());
+        return hechosTotales;
     }
 
 
