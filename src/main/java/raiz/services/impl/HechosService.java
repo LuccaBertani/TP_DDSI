@@ -70,7 +70,7 @@ public class HechosService implements IHechosService {
 
     public RespuestaHttp<Void> refrescarColecciones(Long idUsuario){
         Usuario usuario = usuariosRepo.findById(idUsuario);
-        if (!usuario.getRol().equals(Rol.ADMINISTRADOR)){
+        if (usuario!= null && !usuario.getRol().equals(Rol.ADMINISTRADOR)){
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
         this.refrescarColeccionesCronjob();
