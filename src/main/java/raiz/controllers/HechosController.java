@@ -2,24 +2,17 @@ package raiz.controllers;
 
 import jakarta.validation.Valid;
 import raiz.models.dtos.input.FiltroHechosDTO;
+import raiz.models.dtos.input.RefrescarColeccionesInputDTO;
 import raiz.models.dtos.input.ImportacionHechosInputDTO;
 import raiz.models.dtos.input.SolicitudHechoInputDTO;
 import raiz.models.dtos.output.VisualizarHechosOutputDTO;
-import raiz.models.entities.Categoria;
-import raiz.models.entities.FechaParser;
-import raiz.models.entities.Hecho;
 import raiz.models.entities.RespuestaHttp;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import raiz.models.entities.buscadores.BuscadorCategoria;
-import raiz.models.entities.buscadores.BuscadorPais;
-import raiz.models.entities.filtros.*;
 import raiz.services.IHechosService;
 
 
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -90,6 +83,12 @@ public class HechosController {
     {
         RespuestaHttp<List<VisualizarHechosOutputDTO>> outputDTO = hechosService.navegarPorHechosProxyMetamapa();
         return ResponseEntity.status(outputDTO.getCodigo()).body(outputDTO.getDatos());
+    }
+
+    @PostMapping("/colecciones/refrescar")
+    public ResponseEntity<Void> refrescarColecciones(@Valid @RequestBody RefrescarColeccionesInputDTO inputDTO){
+        RespuestaHttp<Void> respuesta = hechosService.refrescarColecciones(inputDTO.getIdUsuario());
+        return ResponseEntity.status(respuesta.getCodigo()).build();
     }
 
     @GetMapping("/prueba")

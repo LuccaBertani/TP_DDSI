@@ -1,5 +1,6 @@
 package raiz.services.impl;
 
+import org.springframework.scheduling.annotation.Async;
 import raiz.models.dtos.input.FiltroHechosDTO;
 import raiz.models.dtos.input.ImportacionHechosInputDTO;
 import raiz.models.dtos.input.SolicitudHechoInputDTO;
@@ -21,6 +22,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class HechosService implements IHechosService {
@@ -31,6 +34,8 @@ public class HechosService implements IHechosService {
     private final IHechosEstaticaRepository hechosEstaticaRepo;
     private final IUsuarioRepository usuariosRepo;
     private final IColeccionRepository coleccionRepo;
+
+    private final Lock mutexRefrescarColecciones = new ReentrantLock();
 
     public HechosService(IHechosProxyRepository repo, IHechosProxyRepository hechosProxyRepo, IHechosDinamicaRepository hechosDinamicaRepo, IHechosEstaticaRepository hechosEstaticaRepo, IUsuarioRepository usuariosRepo, IColeccionRepository coleccionRepo) {
         this.hechosProxyRepo = hechosProxyRepo;
@@ -43,22 +48,60 @@ public class HechosService implements IHechosService {
     /* Se pide que, una vez por hora, el servicio de agregación actualice los hechos pertenecientes a las distintas colecciones,
      en caso de que las fuentes hayan incorporado nuevos hechos.*/
     @Override
+    @Async
     @Scheduled(cron = "0 0 * * * *") // cada hora
-    public void refrescarColecciones() {
+    public void refrescarColeccionesCronjob() {
+        mutexRefrescarColecciones.lock();
         List<Hecho> snapshotHechosEstatica = hechosEstaticaRepo.getSnapshotHechos();
         List<Hecho> snapshotHechosDinamica = hechosDinamicaRepo.getSnapshotHechos();
+        List<Coleccion> colecciones = coleccionRepo.findAll();
         if (!snapshotHechosEstatica.isEmpty()){
+            this.eliminarHechosModificadosDeColecciones(colecciones, snapshotHechosEstatica);
             this.mapearHechosAColecciones(snapshotHechosEstatica);
             hechosEstaticaRepo.clearSnapshotHechos();
         }
         if(!snapshotHechosDinamica.isEmpty()){
+            this.eliminarHechosModificadosDeColecciones(colecciones, snapshotHechosDinamica);
             this.mapearHechosAColecciones(snapshotHechosDinamica);
             hechosDinamicaRepo.clearSnapshotHechos();
         }
+        mutexRefrescarColecciones.unlock();
     }
+
+    public RespuestaHttp<Void> refrescarColecciones(Long idUsuario){
+        Usuario usuario = usuariosRepo.findById(idUsuario);
+        if (!usuario.getRol().equals(Rol.ADMINISTRADOR)){
+            return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
+        }
+        this.refrescarColeccionesCronjob();
+        return new RespuestaHttp<>(null, HttpStatus.OK.value());
+    }
+
+    private void eliminarHechosModificadosDeColecciones(List<Coleccion> colecciones, List<Hecho> hechos){
+
+        for (Coleccion coleccion: colecciones){
+            List<Hecho> hechosColeccion = coleccion.getHechos();
+            List<Filtro> criterio = coleccion.getCriterio();
+            for (Hecho hecho: hechos){
+
+                Long hechoId = hecho.getId();
+                Origen hechoOrigen = hecho.getOrigen();
+
+                Hecho hechoEncontrado = hechosColeccion.stream()
+                                        .filter(h -> h.getId().equals(hechoId) && h.getOrigen().equals(hechoOrigen))
+                                        .findFirst().orElse(null);
+                if (hechoEncontrado != null && !Filtrador.hechoPasaFiltros(criterio, hecho)){
+                    hechosColeccion.remove(hecho);
+                }
+            }
+        }
+
+    }
+
 
     @Override
     public void mapearHechosAColecciones(List<Hecho> hechos){
+
         List<Coleccion> colecciones = coleccionRepo.findAll();
 
         for (Coleccion coleccion : colecciones){
@@ -132,12 +175,6 @@ public class HechosService implements IHechosService {
 
             hechosDinamicaRepo.getSnapshotHechos().add(hecho);
             hechosDinamicaRepo.save(hecho);
-
-            /*
-            this.mapearHechoAColecciones(hecho);
-            hechosRepo.save(hecho);
-            this.mapearHechoAColecciones(hecho);
-             */
 
             return new RespuestaHttp<>(null, HttpStatus.CREATED.value());
         }

@@ -13,7 +13,8 @@ public interface IHechosService {
     public RespuestaHttp<Void> importarHechos(ImportacionHechosInputDTO dtoInput);
     public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechos(FiltroHechosDTO inputDTO);
     public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechos(Long id_coleccion);
-    public void refrescarColecciones();
+    public void refrescarColeccionesCronjob();
+    public RespuestaHttp<Void> refrescarColecciones(Long idUsuario);
     public void mapearHechosAColecciones(List<Hecho> hechos);
     public void mapearHechoAColecciones(Hecho hecho);
     public List<Hecho> getAllHechos();
