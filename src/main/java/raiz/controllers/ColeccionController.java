@@ -32,6 +32,18 @@ public class ColeccionController {
         return ResponseEntity.status(respuesta.getCodigo()).body(respuesta.getDatos());
     }
 
+    @GetMapping("/coleccion")
+    public ResponseEntity<ColeccionOutputDTO> getColeccion(@Valid @RequestParam Long id_coleccion){
+        RespuestaHttp<ColeccionOutputDTO> respuesta = coleccionService.getColeccion(id_coleccion);
+        return ResponseEntity.status(respuesta.getCodigo()).body(respuesta.getDatos());
+    }
+
+    @GetMapping("/coleccion/delete")
+    public ResponseEntity<ColeccionOutputDTO> deleteColeccion(@Valid @RequestParam Long id_coleccion){
+        RespuestaHttp<ColeccionOutputDTO> respuesta = coleccionService.deleteColeccion(id_coleccion);
+        return ResponseEntity.status(respuesta.getCodigo()).build();
+    }
+
 
 }
 

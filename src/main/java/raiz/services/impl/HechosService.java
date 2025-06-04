@@ -47,6 +47,7 @@ public class HechosService implements IHechosService {
 
     /* Se pide que, una vez por hora, el servicio de agregación actualice los hechos pertenecientes a las distintas colecciones,
      en caso de que las fuentes hayan incorporado nuevos hechos.*/
+    //TODO Este metodo no debería estar en el service de colecciones?
     @Override
     @Async
     @Scheduled(cron = "0 0 * * * *") // cada hora
@@ -67,7 +68,7 @@ public class HechosService implements IHechosService {
         }
         mutexRefrescarColecciones.unlock();
     }
-
+    //TODO Este metodo no debería estar en el service de colecciones?
     public RespuestaHttp<Void> refrescarColecciones(Long idUsuario){
         Usuario usuario = usuariosRepo.findById(idUsuario);
         if (usuario!= null && !usuario.getRol().equals(Rol.ADMINISTRADOR)){
@@ -76,7 +77,7 @@ public class HechosService implements IHechosService {
         this.refrescarColeccionesCronjob();
         return new RespuestaHttp<>(null, HttpStatus.OK.value());
     }
-
+    //TODO Este metodo no debería estar en el service de colecciones?
     private void eliminarHechosModificadosDeColecciones(List<Coleccion> colecciones, List<Hecho> hechos){
 
         for (Coleccion coleccion: colecciones){
@@ -98,7 +99,7 @@ public class HechosService implements IHechosService {
 
     }
 
-
+    //TODO Este metodo no debería estar en el service de colecciones?
     @Override
     public void mapearHechosAColecciones(List<Hecho> hechos){
 
@@ -110,7 +111,7 @@ public class HechosService implements IHechosService {
             coleccion.addHechos(hechosFiltrados);
         }
     }
-
+    //TODO Este metodo no debería estar en el service de colecciones?
     @Override
     public void mapearHechoAColecciones(Hecho hecho){
         List<Coleccion> colecciones = coleccionRepo.findAll();

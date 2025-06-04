@@ -163,4 +163,50 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         return new RespuestaHttp<>(listaDTO, HttpStatus.OK.value());
     }
 
+    @Override
+    public RespuestaHttp<ColeccionOutputDTO> getColeccion(Long id_coleccion) {
+
+        Coleccion coleccion = coleccionesRepo.findById(id_coleccion);
+
+        if(coleccion == null){
+            return new RespuestaHttp<>(null,HttpStatus.NO_CONTENT.value());
+        }
+
+        ColeccionOutputDTO dto = new ColeccionOutputDTO();
+
+        dto.setId(coleccion.getId());
+        dto.setNombre(coleccion.getTitulo());
+        dto.setDescripcion(coleccion.getDescripcion());
+        FiltroHechosDTO filtroHechosDTO = new FiltroHechosDTO();
+
+        FiltroCategoria filtroCategoria = (FiltroCategoria)coleccion.getCriterio().get(0);
+        filtroHechosDTO.setCategoria(filtroCategoria.getCategoria().getTitulo());
+
+        FiltroFechaCarga filtroFechaCarga = (FiltroFechaCarga)coleccion.getCriterio().get(1);
+        filtroHechosDTO.setFechaCargaFinal(filtroFechaCarga.getFechaInicial().toString());
+        filtroHechosDTO.setFechaCargaFinal(filtroFechaCarga.getFechaFinal().toString());
+
+        FiltroFechaAcontecimiento filtroFechaAcontecimiento = (FiltroFechaAcontecimiento)coleccion.getCriterio().get(2);
+        filtroHechosDTO.setFechaAcontecimientoInicial(filtroFechaAcontecimiento.getFechaInicial().toString());
+        filtroHechosDTO.setFechaAcontecimientoFinal(filtroFechaAcontecimiento.getFechaFinal().toString());
+
+        FiltroPais filtroPais = (FiltroPais)coleccion.getCriterio().get(3);
+        filtroHechosDTO.setPais(filtroPais.getPais().getPais());
+
+        dto.setFiltros(filtroHechosDTO);
+
+        return new RespuestaHttp<>(dto, HttpStatus.OK.value());
+
+    }
+
+    @Override
+    public RespuestaHttp<ColeccionOutputDTO> deleteColeccion(Long id_coleccion) {
+        Coleccion coleccion = coleccionesRepo.findById(id_coleccion);
+        if(coleccion == null){
+            return new RespuestaHttp<>(null,HttpStatus.NO_CONTENT.value());
+        }
+        coleccion.setActivo(false);
+        return new RespuestaHttp<>(null,HttpStatus.OK.value());
+    }
+
 }
