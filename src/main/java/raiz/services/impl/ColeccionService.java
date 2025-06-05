@@ -1,6 +1,7 @@
 package raiz.services.impl;
 
 import raiz.models.dtos.input.ColeccionInputDTO;
+import raiz.models.dtos.input.ColeccionUpdateInputDTO;
 import raiz.models.dtos.input.FiltroHechosDTO;
 import raiz.models.dtos.output.ColeccionOutputDTO;
 import raiz.models.entities.*;
@@ -11,6 +12,7 @@ import raiz.models.entities.algoritmosConsenso.impl.AlgoritmoConsensoMultiplesMe
 import raiz.models.entities.buscadores.BuscadorCategoria;
 import raiz.models.entities.buscadores.BuscadorPais;
 import raiz.models.entities.filtros.*;
+import raiz.models.entities.fuentes.FuenteEstatica;
 import raiz.models.entities.personas.Rol;
 import raiz.models.entities.personas.Usuario;
 import org.springframework.http.HttpStatus;
@@ -218,6 +220,47 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             return new RespuestaHttp<>(null,HttpStatus.NO_CONTENT.value());
         }
         coleccion.setActivo(false);
+        return new RespuestaHttp<>(null,HttpStatus.OK.value());
+    }
+
+    @Override
+    public RespuestaHttp<Void> agregarFuente(Long idColeccion, String dataSet) {
+        Coleccion coleccion = coleccionesRepo.findById(idColeccion);
+        FuenteEstatica fuente = new FuenteEstatica();
+        fuente.setDataSet(dataSet);
+        List<Hecho> hechos = fuente.leerFuente(hechosProxyRepo.findAll(),hechosDinamicaRepo.findAll(), hechosEstaticaRepo.findAll());
+        coleccion.getHechos().addAll(hechos);
+        return new RespuestaHttp<>(null,HttpStatus.OK.value());
+    }
+
+    @Override
+    public RespuestaHttp<Void> eliminarFuente(Long idColeccion, String dataSet) {
+        Coleccion coleccion = coleccionesRepo.findById(idColeccion);
+        coleccion.getHechos().forEach(
+                hecho -> {
+                    if(hecho.getDataSets().contains(dataSet)){
+                        coleccion.getHechos().remove(hecho);
+                    }
+                }
+        );
+        return new RespuestaHttp<>(null,HttpStatus.OK.value());
+    }
+
+    @Override
+    public RespuestaHttp<Void> updateColeccion(ColeccionUpdateInputDTO dto) {
+        Coleccion coleccion = coleccionesRepo.findById(dto.getId_coleccion());
+        if(coleccion == null){
+            return new RespuestaHttp<>(null,HttpStatus.NO_CONTENT.value());
+        }
+        if(dto.getTitulo() != null){
+            coleccion.setTitulo(dto.getTitulo());
+        }
+        if(dto.getDescripcion() != null){
+            coleccion.setDescripcion(dto.getDescripcion());
+        }
+        if(dto.getHechos() != null){
+
+        }
         return new RespuestaHttp<>(null,HttpStatus.OK.value());
     }
 

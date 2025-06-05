@@ -36,19 +36,19 @@ public class SolicitudHechoController {
         return ResponseEntity.status(respuesta.getCodigo()).build(); // 200, 401
     }
 
-    @PostMapping("/solicitud/subir-hecho")
+    @PostMapping("/subir-hecho")
     public ResponseEntity<Void> enviarSolicitudSubirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput){
         RespuestaHttp<Void> respuesta = solicitudHechoService.solicitarSubirHecho(dtoInput);
         return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
     }
 
-    @PostMapping("/solicitud/eliminar-hecho")
+    @PostMapping("/eliminar-hecho")
     public ResponseEntity<Void> enviarSolicitudEliminarHecho(@Valid @RequestBody SolicitudHechoEliminarInputDTO dtoInput){
         RespuestaHttp<Void> respuesta = solicitudHechoService.solicitarEliminacionHecho(dtoInput);
         return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
     }
 
-    @PostMapping("/solicitud/modificar-hecho")
+    @PostMapping("/modificar-hecho")
     public ResponseEntity<Void> enviarSolicitudModificarHecho(@Valid @RequestBody SolicitudHechoModificarInputDTO dtoInput){
 
         if (dtoInput.getTitulo() == null || dtoInput.getTitulo().isBlank()){
@@ -62,6 +62,12 @@ public class SolicitudHechoController {
     @GetMapping("/mensajes")
     public ResponseEntity<List<MensajesHechosUsuarioOutputDTO>> enviarMensajesUsuario(@RequestParam Long id_usuario){
         RespuestaHttp<List<MensajesHechosUsuarioOutputDTO>> respuesta = solicitudHechoService.enviarMensajes(id_usuario);
+        return ResponseEntity.status(respuesta.getCodigo()).body(respuesta.getDatos());
+    }
+
+    @PostMapping("/reportar")
+    public ResponseEntity<Void> reportar(@Valid @RequestParam Long id_hecho, @Valid @RequestParam String motivo){
+        RespuestaHttp<Void> respuesta = solicitudHechoService.reportarHecho(motivo, id_hecho);
         return ResponseEntity.status(respuesta.getCodigo()).body(respuesta.getDatos());
     }
 

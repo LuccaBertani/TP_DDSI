@@ -78,7 +78,7 @@ public class HechosController {
         return ResponseEntity.status(respuesta.getCodigo()).body(respuesta.getDatos());
     }
 
-    @GetMapping("visualizar/hechos-proxy-metamapa")
+    @GetMapping("/visualizar/hechos-proxy-metamapa")
     public ResponseEntity<List<VisualizarHechosOutputDTO>> visualizarHechosProxyMetamapa()
     {
         RespuestaHttp<List<VisualizarHechosOutputDTO>> outputDTO = hechosService.navegarPorHechosProxyMetamapa();

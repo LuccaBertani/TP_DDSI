@@ -2,6 +2,7 @@ package raiz.controllers;
 
 import jakarta.validation.Valid;
 import raiz.models.dtos.input.ColeccionInputDTO;
+import raiz.models.dtos.input.ColeccionUpdateInputDTO;
 import raiz.models.dtos.output.ColeccionOutputDTO;
 import raiz.models.entities.RespuestaHttp;
 import org.springframework.http.ResponseEntity;
@@ -26,23 +27,44 @@ public class ColeccionController {
         return ResponseEntity.status(respuesta.getCodigo()).build(); // 201 o 401
     }
 
-    @GetMapping("/colecciones")
+    @GetMapping("/getAll")
     public ResponseEntity<List<ColeccionOutputDTO>> obtenerTodasLasColecciones() {
         RespuestaHttp<List<ColeccionOutputDTO>> respuesta = coleccionService.obtenerTodasLasColecciones();
         return ResponseEntity.status(respuesta.getCodigo()).body(respuesta.getDatos());
     }
 
-    @GetMapping("/coleccion")
+    @GetMapping("/get")
     public ResponseEntity<ColeccionOutputDTO> getColeccion(@Valid @RequestParam Long id_coleccion){
         RespuestaHttp<ColeccionOutputDTO> respuesta = coleccionService.getColeccion(id_coleccion);
         return ResponseEntity.status(respuesta.getCodigo()).body(respuesta.getDatos());
     }
 
-    @GetMapping("/coleccion/delete")
-    public ResponseEntity<ColeccionOutputDTO> deleteColeccion(@Valid @RequestParam Long id_coleccion){
+    @PostMapping("/delete")
+    public ResponseEntity<Void> deleteColeccion(@Valid @RequestParam Long id_coleccion){
         RespuestaHttp<ColeccionOutputDTO> respuesta = coleccionService.deleteColeccion(id_coleccion);
         return ResponseEntity.status(respuesta.getCodigo()).build();
     }
+
+    @PostMapping("/update")
+    public ResponseEntity<Void> actualizarColeccion(@Valid @RequestBody ColeccionUpdateInputDTO dto){
+        RespuestaHttp<Void> respuesta = coleccionService.updateColeccion(dto);
+        return ResponseEntity.status(respuesta.getCodigo()).build();
+    }
+
+    //Agregar o quitar fuentes de hechos de una colección.
+
+    @PostMapping("/add/fuente")
+    public ResponseEntity<Void> agregarFuente(@Valid @RequestParam Long id_coleccion, @Valid @RequestParam String dataSet){
+        RespuestaHttp<Void> respuesta = coleccionService.agregarFuente(id_coleccion,dataSet);
+        return ResponseEntity.status(respuesta.getCodigo()).build();
+    }
+
+    @PostMapping("/delete/fuente")
+    public ResponseEntity<Void> eliminarFuente(@Valid @RequestParam Long id_coleccion, @Valid @RequestParam String dataSet){
+        RespuestaHttp<Void> respuesta = coleccionService.eliminarFuente(id_coleccion,dataSet);
+        return ResponseEntity.status(respuesta.getCodigo()).build();
+    }
+
 
 
 }

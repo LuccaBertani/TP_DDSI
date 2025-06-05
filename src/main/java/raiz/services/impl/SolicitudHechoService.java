@@ -35,10 +35,12 @@ public class SolicitudHechoService implements ISolicitudHechoService {
     private final IHechosEstaticaRepository hechosEstaticaRepository;
     private final IUsuarioRepository usuariosRepository;
     private final IMensajeRepository mensajesRepository;
+    private final IReporteHechoRepository reportesHechoRepository;
+
     GestorRoles gestorRoles;
 
     public SolicitudHechoService(ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo, ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo,
-                                 IUsuarioRepository usuariosRepository, ISolicitudModificarHechoRepository solicitudModificarHechoRepo, IHechosProxyRepository hechosProxyRepository, IHechosDinamicaRepository hechosDinamicaRepository, IHechosEstaticaRepository hechosEstaticaRepository, IMensajeRepository mensajesRepository) {
+                                 IUsuarioRepository usuariosRepository, ISolicitudModificarHechoRepository solicitudModificarHechoRepo, IHechosProxyRepository hechosProxyRepository, IHechosDinamicaRepository hechosDinamicaRepository, IHechosEstaticaRepository hechosEstaticaRepository, IMensajeRepository mensajesRepository, IReporteHechoRepository reportesHechoRepository) {
         this.solicitudAgregarHechoRepo = solicitudAgregarHechoRepo;
         this.solicitudEliminarHechoRepo = solicitudEliminarHechoRepo;
         this.hechosProxyRepository = hechosProxyRepository;
@@ -47,6 +49,7 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         this.usuariosRepository = usuariosRepository;
         this.solicitudModificarHechoRepo = solicitudModificarHechoRepo;
         this.mensajesRepository = mensajesRepository;
+        this.reportesHechoRepository = reportesHechoRepository;
         gestorRoles = new GestorRoles();
     }
 
@@ -265,6 +268,14 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         return solicitudEliminarHechoRepo.findAll().stream()
                 .filter(s -> !s.isProcesada() && !s.isRechazadaPorSpam())
                 .toList();
+    }
+
+    @Override
+    public RespuestaHttp<Void> reportarHecho(String motivo, Long id_hecho) {
+        Long id_reporte = reportesHechoRepository.getProxId();
+        Reporte reporte = new Reporte(motivo, id_reporte, id_hecho);
+        reportesHechoRepository.save(reporte);
+        return new RespuestaHttp<>(null,HttpStatus.OK.value());
     }
 
 }
