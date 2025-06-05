@@ -23,10 +23,6 @@ public class FuenteProxy {
     private String url_base = "https://api-ddsi.disilab.ar/public/api";
     private String access_token;
 
-    public FuenteProxy(){
-
-    }
-
     public Boolean login(String email, String contraseña){
         try{
             String urlStr = url_base + "/login";
@@ -68,7 +64,7 @@ public class FuenteProxy {
 
     }
 
-        public List<Hecho> getHechos(List<Hecho> hechosTotales) {
+        public List<Hecho> getHechos(List<Hecho> hechosTotalesProxy, List<Hecho> hechosTotalesDinamica, List<Hecho> hechosTotalesEstatica) {
 
             List<Hecho> hechos = new ArrayList<>();
 
@@ -95,9 +91,9 @@ public class FuenteProxy {
                         Hecho hecho = new Hecho();
                         hecho.setTitulo(obj.getString("titulo"));
                         hecho.setDescripcion(obj.getString("descripcion"));
-                        hecho.setCategoria(BuscadorCategoria.buscarOCrear(hechosTotales, obj.getString("categoria")));
+                        hecho.setCategoria(BuscadorCategoria.buscarOCrear(hechosTotalesDinamica, obj.getString("categoria"), hechosTotalesProxy, hechosTotalesEstatica));
                         String pais = Geocodificador.obtenerPais(obj.getDouble("latitud"),obj.getDouble("longitud"));
-                        hecho.setPais(BuscadorPais.buscarOCrear(hechosTotales,pais));
+                        hecho.setPais(BuscadorPais.buscarOCrear(hechosTotalesDinamica, pais, hechosTotalesProxy, hechosTotalesEstatica));
                         hecho.setFechaAcontecimiento(FechaParser.parsearFecha(obj.getString("fecha_hecho")));
                         hecho.setFechaDeCarga(FechaParser.parsearFecha(obj.getString("created_at")));
                         hecho.setFechaUltimaActualizacion(FechaParser.parsearFecha(obj.getString("updated_at")));
@@ -122,7 +118,7 @@ public class FuenteProxy {
             return hechos;
     }
 
-    public Hecho getHechoPorId(int id, List<Hecho> hechosTotales) {
+    public Hecho getHechoPorId(int id, List<Hecho> hechosTotalesProxy, List<Hecho> hechosTotalesDinamica, List<Hecho> hechosTotalesEstatica) {
         try {
             String urlStr = this.url_base + "/desastres-naturales/?id=" + id;
             URL url = new URL(urlStr);
@@ -142,9 +138,9 @@ public class FuenteProxy {
                 Hecho hecho = new Hecho();
                 hecho.setTitulo(obj.getString("titulo"));
                 hecho.setDescripcion(obj.getString("descripcion"));
-                hecho.setCategoria(BuscadorCategoria.buscarOCrear(hechosTotales, obj.getString("categoria")));
+                hecho.setCategoria(BuscadorCategoria.buscarOCrear(hechosTotalesDinamica, obj.getString("categoria"), hechosTotalesProxy, hechosTotalesEstatica));
                 String pais = Geocodificador.obtenerPais(obj.getDouble("latitud"),obj.getDouble("longitud"));
-                hecho.setPais(BuscadorPais.buscarOCrear(hechosTotales,pais));
+                hecho.setPais(BuscadorPais.buscarOCrear(hechosTotalesDinamica, pais, hechosTotalesProxy, hechosTotalesEstatica));
                 hecho.setFechaAcontecimiento(FechaParser.parsearFecha(obj.getString("fecha_hecho")));
                 hecho.setFechaDeCarga(FechaParser.parsearFecha(obj.getString("created_at")));
                 hecho.setFechaUltimaActualizacion(FechaParser.parsearFecha(obj.getString("updated_at")));
@@ -164,7 +160,7 @@ public class FuenteProxy {
         return null;
     }
 
-    public List<Hecho> getHechosMetaMapa(String url_1, FiltroHechosDTO filtros, List<Hecho> hechosTotales){
+    public List<Hecho> getHechosMetaMapa(String url_1, FiltroHechosDTO filtros, List<Hecho> hechosTotalesDinamica, List<Hecho> hechosTotalesProxy, List<Hecho> hechosTotalesEstatica){
 
         try {
             String urlStr = url_1 + "/visualizar/hechos";
@@ -212,8 +208,8 @@ public class FuenteProxy {
                     hecho.setId(obj.getLong("id"));
                     hecho.setTitulo(obj.getString("titulo"));
                     hecho.setDescripcion(obj.getString("descripcion"));
-                    hecho.setCategoria(BuscadorCategoria.buscar(hechosTotales, obj.getString("categoria")));
-                    hecho.setPais(BuscadorPais.buscar(hechosTotales,obj.getString("pais")));
+                    hecho.setCategoria(BuscadorCategoria.buscarOCrear(hechosTotalesDinamica, obj.getString("categoria"), hechosTotalesProxy, hechosTotalesEstatica));
+                    hecho.setPais(BuscadorPais.buscarOCrear(hechosTotalesDinamica, obj.getString("pais"), hechosTotalesProxy, hechosTotalesEstatica));
                     hecho.setFechaAcontecimiento(FechaParser.parsearFecha(obj.getString("fechaAcontecimiento")));
 
                     hechos.add(hecho);
@@ -234,7 +230,7 @@ public class FuenteProxy {
         return null;
     }
 
-    public List<Hecho> getColeccionesMetaMapa(String url_1, List<Hecho> hechosTotales){
+    public List<Coleccion> getColeccionesMetaMapa(String url_1, List<Hecho> hechosTotalesDinamica, List<Hecho> hechosTotalesProxy, List<Hecho> hechosTotalesEstatica){
         try {
 
         String urlStr = this.url_base + "/colecciones";
@@ -257,6 +253,7 @@ public class FuenteProxy {
                 List<Coleccion> colecciones = new ArrayList<>();
 
                 for (int i = 0; i < array.length(); i++) {
+                    List<Filtro> filtrosColeccion = new ArrayList<>();
                     JSONObject obj = array.getJSONObject(i);
                     DatosColeccion datosColeccion = new DatosColeccion(obj.getString("titulo"), obj.getString("descripcion"));
                     Coleccion coleccion = new Coleccion(datosColeccion, obj.getLong("id"));
@@ -266,35 +263,20 @@ public class FuenteProxy {
                     ObjectMapper mapper = new ObjectMapper();
                     FiltroHechosDTO filtros = mapper.readValue(filtrosJson.toString(), FiltroHechosDTO.class);
 
-                    FiltroCategoria filtroCategoria = new FiltroCategoria(BuscadorCategoria.buscar(hechosTotales,filtros.getCategoria()));
-                    FiltroPais filtroPais = new FiltroPais(BuscadorPais.buscar(hechosTotales,filtros.getPais()));
+                    FiltroCategoria filtroCategoria = new FiltroCategoria(BuscadorCategoria.buscar(hechosTotalesDinamica, filtros.getCategoria(), hechosTotalesProxy, hechosTotalesEstatica));
+                    filtrosColeccion.add(filtroCategoria);
+                    FiltroPais filtroPais = new FiltroPais(BuscadorPais.buscar(hechosTotalesDinamica, filtros.getPais(), hechosTotalesProxy, hechosTotalesEstatica));
+                    filtrosColeccion.add(filtroPais);
                     FiltroFechaCarga filtroFechaCarga = new FiltroFechaCarga(FechaParser.parsearFecha(filtros.getFechaCargaInicial()),FechaParser.parsearFecha(filtros.getFechaCargaFinal()));
+                    filtrosColeccion.add(filtroFechaCarga);
                     FiltroFechaAcontecimiento filtroFechaAcontecimiento = new FiltroFechaAcontecimiento(FechaParser.parsearFecha(filtros.getFechaAcontecimientoInicial()),FechaParser.parsearFecha(filtros.getFechaAcontecimientoFinal()));
+                    filtrosColeccion.add(filtroFechaAcontecimiento);
 
-                /*
-                * @Data
-                public class FiltroHechosDTO {
+                    List<Hecho> hechos = this.getHechosDeColeccionMetaMapa(url_1, coleccion.getId(), hechosTotalesDinamica, hechosTotalesProxy, hechosTotalesEstatica);
 
-                    private String categoria;
-                    private String contenidoMultimedia;
-                    private String descripcion;
-                    private String fechaAcontecimientoInicial;
-                    private String fechaAcontecimientoFinal;
-                    private String fechaCargaInicial;
-                    private String fechaCargaFinal;
-                    private String origen;
-                    private String pais;
-                    private String titulo;
-
-                    @NotNull(message = "El id_coleccion es obligatorio")
-                    private Long id_coleccion;
-
-                }
-                *
-                * */
-
-                    List<Hecho> hechos = this.getHechosDeColeccionMetaMapa(url_1, coleccion.getId(),hechosTotales);
-
+                    coleccion.setCriterio(filtrosColeccion);
+                    coleccion.setHechos(hechos);
+                    colecciones.add(coleccion);
                 }
                 return colecciones;
 
@@ -315,7 +297,7 @@ public class FuenteProxy {
 
 
 ///colecciones/{identificador}/hechos
-    public List<Hecho> getHechosDeColeccionMetaMapa(String url_1, Long id,List<Hecho> hechosTotales){
+    public List<Hecho> getHechosDeColeccionMetaMapa(String url_1, Long id, List<Hecho> hechosTotalesDinamica, List<Hecho> hechosTotalesProxy, List<Hecho> hechosTotalesEstatica){
         try {
 
             String urlStr = this.url_base + "/colecciones/?id=" + id + "/hechos";
@@ -342,8 +324,8 @@ public class FuenteProxy {
                     hecho.setId(obj.getLong("id"));
                     hecho.setTitulo(obj.getString("titulo"));
                     hecho.setDescripcion(obj.getString("descripcion"));
-                    hecho.setCategoria(BuscadorCategoria.buscar(hechosTotales, obj.getString("categoria")));
-                    hecho.setPais(BuscadorPais.buscar(hechosTotales,obj.getString("pais")));
+                    hecho.setCategoria(BuscadorCategoria.buscarOCrear(hechosTotalesDinamica, obj.getString("categoria"), hechosTotalesProxy, hechosTotalesEstatica));
+                    hecho.setPais(BuscadorPais.buscarOCrear(hechosTotalesDinamica, obj.getString("pais"), hechosTotalesProxy, hechosTotalesEstatica));
                     hecho.setFechaAcontecimiento(FechaParser.parsearFecha(obj.getString("fechaAcontecimiento")));
 
                     hechos.add(hecho);
@@ -365,6 +347,37 @@ public class FuenteProxy {
 
     }
 
+    public void enviarReporte(String url_1, Long id_hecho, String motivo){
+        try {
+
+            String urlStr = url_1 + "/reportar";
+            URL url = new URL(urlStr);
+            HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
+            conexion.setRequestMethod("POST");
+
+            conexion.setRequestProperty("Content-Type", "application/json");
+
+            JSONObject jsonBody = new JSONObject();
+            jsonBody.put("id_hecho", id_hecho);
+            jsonBody.put("motivo", motivo);
+
+            int status = conexion.getResponseCode();
+
+            if (status == 200) {
+                System.out.println("Solicitud enviada con exito");
+            }
+
+            else {
+                System.out.println("Error al enviar solicitud con código: " + status);
+                String errorMsg = new Scanner(conexion.getErrorStream()).useDelimiter("\\A").next();
+                System.out.println("Mensaje: " + errorMsg);
+            }
+
+        } catch (Exception e) {
+            System.out.println("Excepción al enviar solicitud: " + e.getMessage());
+        }
+
+    }
 
     public void enviarSolicitudEliminacionMetaMapa(String url_1, SolicitudHechoEliminarInputDTO data){
 
@@ -386,7 +399,7 @@ public class FuenteProxy {
 
             if (status == 200) {
                 System.out.println("Solicitud enviada con exito");
-                }
+            }
 
             else {
                 System.out.println("Error al enviar solicitud con código: " + status);
@@ -402,6 +415,9 @@ public class FuenteProxy {
 
 
 }
+
+
+
 
 
 

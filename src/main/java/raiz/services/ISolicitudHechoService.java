@@ -1,5 +1,6 @@
 package raiz.services;
 
+import jakarta.validation.Valid;
 import raiz.models.dtos.input.SolicitudHechoEliminarInputDTO;
 import raiz.models.dtos.input.SolicitudHechoEvaluarInputDTO;
 import raiz.models.dtos.input.SolicitudHechoInputDTO;
@@ -19,4 +20,6 @@ public interface ISolicitudHechoService {
     public RespuestaHttp<Void> evaluarModificacionHecho(SolicitudHechoEvaluarInputDTO dtoInput);
     RespuestaHttp<List<MensajesHechosUsuarioOutputDTO>> enviarMensajes(Long idUsuario);
     public List<SolicitudHecho> obtenerSolicitudesPendientes();
+
+    RespuestaHttp<Void> reportarHecho(@Valid String motivo, @Valid Long id_hecho);
 }
