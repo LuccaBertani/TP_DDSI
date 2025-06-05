@@ -193,7 +193,7 @@ public class HechosService implements IHechosService {
             FuenteEstatica fuente = new FuenteEstatica();
             fuente.setDataSet(dtoInput.getFuenteString());
 
-            List<Hecho> hechosASubir = fuente.leerFuente(hechosDinamicaRepo.findAll(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll(), hechosEstaticaRepo.getFuentesEstaticasXHechos());
+            List<Hecho> hechosASubir = fuente.leerFuente(hechosDinamicaRepo.findAll(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll(), hechosEstaticaRepo.getDatasets());
 
             /*List<Hecho> hechosASubir = modificadorHechos.getHechosASubir();
             List<Hecho> hechosAModificar = modificadorHechos.getHechosAModificar();*/

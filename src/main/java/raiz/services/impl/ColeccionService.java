@@ -228,7 +228,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         Coleccion coleccion = coleccionesRepo.findById(idColeccion);
         FuenteEstatica fuente = new FuenteEstatica();
         fuente.setDataSet(dataSet);
-        List<Hecho> hechos = fuente.leerFuente(hechosProxyRepo.findAll(),hechosDinamicaRepo.findAll(), hechosEstaticaRepo.findAll());
+        List<Hecho> hechos = fuente.leerFuente(hechosProxyRepo.findAll(),hechosDinamicaRepo.findAll(), hechosEstaticaRepo.findAll(), hechosEstaticaRepo.getDatasets());
         coleccion.getHechos().addAll(hechos);
         return new RespuestaHttp<>(null,HttpStatus.OK.value());
     }
