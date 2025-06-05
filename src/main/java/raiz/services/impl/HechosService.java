@@ -48,11 +48,12 @@ public class HechosService implements IHechosService {
     /* Se pide que, una vez por hora, el servicio de agregación actualice los hechos pertenecientes a las distintas colecciones,
      en caso de que las fuentes hayan incorporado nuevos hechos.*/
     //TODO Este metodo no debería estar en el service de colecciones?
+    // TODO sincronizar los metodos?
     @Override
     @Async
     @Scheduled(cron = "0 0 * * * *") // cada hora
     public void refrescarColeccionesCronjob() {
-        mutexRefrescarColecciones.lock();
+
         List<Hecho> snapshotHechosEstatica = hechosEstaticaRepo.getSnapshotHechos();
         List<Hecho> snapshotHechosDinamica = hechosDinamicaRepo.getSnapshotHechos();
         List<Coleccion> colecciones = coleccionRepo.findAll();
@@ -66,7 +67,7 @@ public class HechosService implements IHechosService {
             this.mapearHechosAColecciones(snapshotHechosDinamica);
             hechosDinamicaRepo.clearSnapshotHechos();
         }
-        mutexRefrescarColecciones.unlock();
+
     }
     //TODO Este metodo no debería estar en el service de colecciones?
     public RespuestaHttp<Void> refrescarColecciones(Long idUsuario){
@@ -192,10 +193,10 @@ public class HechosService implements IHechosService {
             FuenteEstatica fuente = new FuenteEstatica();
             fuente.setDataSet(dtoInput.getFuenteString());
 
-            ModificadorHechos modificadorHechos = fuente.leerFuente(hechosDinamicaRepo.findAll(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
+            List<Hecho> hechosASubir = fuente.leerFuente(hechosDinamicaRepo.findAll(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
 
-            List<Hecho> hechosASubir = modificadorHechos.getHechosASubir();
-            List<Hecho> hechosAModificar = modificadorHechos.getHechosAModificar();
+            /*List<Hecho> hechosASubir = modificadorHechos.getHechosASubir();
+            List<Hecho> hechosAModificar = modificadorHechos.getHechosAModificar();*/
 
             for (Hecho hecho : hechosASubir){
                 hecho.setId(hechosEstaticaRepo.getProxId());
@@ -203,10 +204,10 @@ public class HechosService implements IHechosService {
                 hechosEstaticaRepo.save(hecho);
             }
             //TODO agregar a snapshot y que verifique si es repetido y en ese caso actualizar en la base de datos (aparte de la logica de agregarlo a las colecciones)
-            for (Hecho hecho : hechosAModificar){
+            /*for (Hecho hecho : hechosAModificar){
                 this.mapearHechoAColecciones(hecho);
                 hechosEstaticaRepo.update(hecho);
-            }
+            }*/
             return new RespuestaHttp<>(null, HttpStatus.CREATED.value());
         }
 

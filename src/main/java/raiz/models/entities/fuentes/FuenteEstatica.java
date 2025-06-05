@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 public class FuenteEstatica {
     private String dataSet;
-    public ModificadorHechos leerFuente(List<Hecho> hechosFuenteProxy, List<Hecho> hechosFuenteDinamica, List<Hecho> hechosFuenteEstatica){
+    public List<Hecho> leerFuente(List<Hecho> hechosFuenteProxy, List<Hecho> hechosFuenteDinamica, List<Hecho> hechosFuenteEstatica){
 
         String[] nombreArchivo = this.dataSet.split("\\.");
         String formato = nombreArchivo[1].toLowerCase();
@@ -24,13 +24,10 @@ public class FuenteEstatica {
         else if (formato.equals("json")){
             //TODO el lector del formato JSON
             List<Hecho>invento = new ArrayList<>();
-            ModificadorHechos modificadorHechos = new ModificadorHechos(new ArrayList<>(), new ArrayList<>());
-            return modificadorHechos;
+            return invento;
         }
 
-
-        ModificadorHechos modificadorHechos = new ModificadorHechos(new ArrayList<>(), new ArrayList<>());
-        return modificadorHechos;
+        return new ArrayList<>();
 
     }
 }

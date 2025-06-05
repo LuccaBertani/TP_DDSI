@@ -4,6 +4,10 @@ import raiz.models.dtos.input.ColeccionInputDTO;
 import raiz.models.dtos.input.FiltroHechosDTO;
 import raiz.models.dtos.output.ColeccionOutputDTO;
 import raiz.models.entities.*;
+import raiz.models.entities.algoritmosConsenso.IAlgoritmoConsenso;
+import raiz.models.entities.algoritmosConsenso.impl.AlgoritmoConsensoMayoriaAbsoluta;
+import raiz.models.entities.algoritmosConsenso.impl.AlgoritmoConsensoMayoriaSimple;
+import raiz.models.entities.algoritmosConsenso.impl.AlgoritmoConsensoMultiplesMenciones;
 import raiz.models.entities.buscadores.BuscadorCategoria;
 import raiz.models.entities.buscadores.BuscadorPais;
 import raiz.models.entities.filtros.*;
@@ -76,6 +80,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         Filtro filtroOrigen = null;
         Filtro filtroTitulo = null;
 
+        IAlgoritmoConsenso algoritmoConsenso = null;
 
         if(dtoInput.getCategoria() != null){
             Categoria categoria = BuscadorCategoria.buscarOCrear(hechosDinamicaRepo.findAll(),dtoInput.getCategoria(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
@@ -113,7 +118,14 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             filtroTitulo = new FiltroTitulo(dtoInput.getTituloFiltro());
         }
         criterios.add(filtroTitulo);
-
+        if (dtoInput.getAlgoritmoConsenso() != null){
+            if (dtoInput.getAlgoritmoConsenso().equals("mayoria-absoluta"))
+                coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaAbsoluta(coleccion));
+            else if (dtoInput.getAlgoritmoConsenso().equals("mayoria-simple"))
+                coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaSimple(coleccion));
+            else if (dtoInput.getAlgoritmoConsenso().equals("multiples-menciones"))
+                coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMultiplesMenciones(coleccion));
+        }
 
         coleccion.addCriterios(criterios);
         List<Hecho> hechosDinamica = hechosDinamicaRepo.findAll();
@@ -209,4 +221,14 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         return new RespuestaHttp<>(null,HttpStatus.OK.value());
     }
 
+    // TODO Cronjob: es importante que no se ejecute cada vez que ingresa un hecho sino en horarios de baja carga en el sistema.
+    public void setearHechosConsensuados(){
+        List<Coleccion> colecciones = coleccionesRepo.findAll();
+        this.ejecutarAlgoritmoConsenso(colecciones);
+    }
+
+    private void ejecutarAlgoritmoConsenso(List<Coleccion> colecciones){
+        List<Hecho> hechos = hechosEstaticaRepo.findAll();
+        colecciones.forEach(coleccion->coleccion.getAlgoritmoConsenso().ejecutarAlgoritmoConsenso(hechos));
+    }
 }

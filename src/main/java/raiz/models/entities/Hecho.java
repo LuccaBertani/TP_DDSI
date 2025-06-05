@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,7 +22,11 @@ public class Hecho {
     private ZonedDateTime fechaDeCarga;
     private Origen origen;
     private ZonedDateTime fechaUltimaActualizacion;
+
+    private List<String> dataSets;
+
     public Hecho() {
         this.id_usuario=-1L;
+        this.dataSets = new ArrayList<>();
     }
 }

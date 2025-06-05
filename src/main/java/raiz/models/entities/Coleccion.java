@@ -2,6 +2,7 @@ package raiz.models.entities;
 
 import lombok.Getter;
 import lombok.Setter;
+import raiz.models.entities.algoritmosConsenso.IAlgoritmoConsenso;
 import raiz.models.entities.filtros.Filtro;
 
 import java.util.ArrayList;
@@ -24,11 +25,15 @@ public class Coleccion {
     private String descripcion;
     private List<Hecho> hechos = new ArrayList<>();
     private List<Filtro> criterio = new ArrayList<>();
+    private IAlgoritmoConsenso algoritmoConsenso;
+
+    private List<Hecho> hechosConsensuados = new ArrayList<>();
 
     public Coleccion(DatosColeccion datosColeccion, long id) {
         this.titulo = datosColeccion.getTitulo();
         this.descripcion = datosColeccion.getDescripcion();
         this.id = id;
+
     }
 
     public void addCriterios(Filtro ... filtros){

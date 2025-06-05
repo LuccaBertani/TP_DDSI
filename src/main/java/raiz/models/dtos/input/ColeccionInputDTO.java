@@ -24,4 +24,7 @@ public class ColeccionInputDTO {
     private String pais;
     private String descripcionFiltro;
     private String tituloFiltro;
+
+    // Algoritmo de consenso (opcional)
+    private String algoritmoConsenso;
 }
