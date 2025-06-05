@@ -12,10 +12,12 @@ public class MemoriaHechosEstaticaRepository implements IHechosEstaticaRepositor
 
     private List<Hecho> hechos;
     private List<Hecho> snapshotHechos;
+    private List<String> datasets;
 
     public MemoriaHechosEstaticaRepository() {
         this.hechos = new ArrayList<>();
         this.snapshotHechos = new ArrayList<>();
+        this.datasets = new ArrayList<>();
     }
 
     @Override
@@ -67,5 +69,10 @@ public class MemoriaHechosEstaticaRepository implements IHechosEstaticaRepositor
     @Override
     public void clearSnapshotHechos() {
         this.snapshotHechos.clear();
+    }
+
+    @Override
+    public List<String> getDatasets(){
+        return this.datasets;
     }
 }

@@ -13,7 +13,7 @@ public class AlgoritmoConsensoMultiplesMenciones implements IAlgoritmoConsenso {
         this.coleccion = coleccion;
     }
     @Override
-    public void ejecutarAlgoritmoConsenso(List<Hecho> hechos) {
+    public void ejecutarAlgoritmoConsenso(List<String> fuentes) {
 
         //coleccion.getHechosConsensuados().addAll()
 

@@ -224,11 +224,11 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     // TODO Cronjob: es importante que no se ejecute cada vez que ingresa un hecho sino en horarios de baja carga en el sistema.
     public void setearHechosConsensuados(){
         List<Coleccion> colecciones = coleccionesRepo.findAll();
-        this.ejecutarAlgoritmoConsenso(colecciones);
+        List<String> datasets = hechosEstaticaRepo.getDatasets();
+        this.ejecutarAlgoritmoConsenso(colecciones, datasets);
     }
 
-    private void ejecutarAlgoritmoConsenso(List<Coleccion> colecciones){
-        List<Hecho> hechos = hechosEstaticaRepo.findAll();
-        colecciones.forEach(coleccion->coleccion.getAlgoritmoConsenso().ejecutarAlgoritmoConsenso(hechos));
+    private void ejecutarAlgoritmoConsenso(List<Coleccion> colecciones, List<String> datasets){
+        colecciones.forEach(coleccion->coleccion.getAlgoritmoConsenso().ejecutarAlgoritmoConsenso(datasets));
     }
 }

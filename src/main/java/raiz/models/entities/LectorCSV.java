@@ -10,6 +10,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import raiz.models.entities.buscadores.BuscadorCategoria;
+import raiz.models.entities.buscadores.BuscadorHechoIdentico;
 import raiz.models.entities.buscadores.BuscadorPais;
 
 public class LectorCSV {
@@ -144,7 +145,8 @@ public class LectorCSV {
         return new ModificadorHechos(hechosASubir, hechosAModificar);
     }*/
     // Entrega 3: los hechos no se pisan los atributos
-    public List<Hecho> leerCSV(List<Hecho> hechosFuenteProxy, List<Hecho> hechosFuenteDinamica, List<Hecho> hechosFuenteEstatica) {
+
+    public List<Hecho> leerCSV(List<Hecho> hechosFuenteProxy, List<Hecho> hechosFuenteDinamica, List<Hecho> hechosFuenteEstatica, List<String> datasets) {
 
         List<Hecho> hechosASubir = new ArrayList<>();
 
@@ -185,7 +187,6 @@ public class LectorCSV {
             List<CSVRecord> registrosCSV = parser.getRecords();
             for (int f = 0; f < registrosCSV.size(); f++) {
                 CSVRecord fila = registrosCSV.get(f);
-                boolean seModificaHecho = false;
 
                 List<String> registros = new ArrayList<>();
                 fila.forEach(registros::add);
@@ -195,12 +196,15 @@ public class LectorCSV {
 
                 hecho.setOrigen(Origen.FUENTE_ESTATICA);
 
+                boolean tituloRepetido = false;
+
                 hecho.setTitulo((indicesColumnas.get(0) != -1) ? registros.get(indicesColumnas.get(0)) : "N/A");
                 //Se leen los de fuente estatica
                 Optional<Hecho> hecho0 = hechosFuenteEstatica.stream().filter(h->Normalizador.normalizarYComparar(h.getTitulo(), hecho.getTitulo())).findFirst();
 
                 if (hecho0.isPresent() && !hecho0.get().getTitulo().equals("N/A")){
                     System.out.println("El hecho está repetido");
+                    tituloRepetido = true;
                 }
 
                 hecho.setDescripcion((indicesColumnas.get(1) != -1) ? registros.get(indicesColumnas.get(1)) : "N/A");
@@ -229,6 +233,16 @@ public class LectorCSV {
                 hecho.setFechaDeCarga(ZonedDateTime.now());
                 hecho.setFechaUltimaActualizacion(hecho.getFechaDeCarga());
 
+                if (tituloRepetido){
+                    boolean existeHechoIdentico = BuscadorHechoIdentico.existeHechoIdentico(hecho, hechosFuenteEstatica);
+                    if (existeHechoIdentico){
+                        hecho0.get().getDataSets().add(this.dataSet);
+                        continue; // Evito agregar un hecho identico
+                    }
+                    else{
+                        hecho.getDataSets().add(this.dataSet);
+                    }
+                }
 
                 hechosASubir.add(hecho);
 
@@ -242,7 +256,7 @@ public class LectorCSV {
                     System.out.println(hechoASubir.getFechaDeCarga());
                 }
             }
-
+            datasets.add(this.dataSet);
             parser.close();
         }
         catch(IOException e){
