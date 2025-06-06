@@ -21,18 +21,8 @@ public class AlgoritmoConsensoMayoriaSimple implements IAlgoritmoConsenso {
         coleccion.getHechosConsensuados().addAll(hechosConsensudados);
     }
 
-    private boolean mitadDeFuentesContienenHecho(Hecho hecho, List<String> fuentes){
-        int cantFuentes = 0;
-        List<String> fuentesHecho = hecho.getDataSets();
-        for (int i = 0; i < fuentesHecho.size(); i++){
-            if (fuentes.contains(fuentesHecho.get(i))){
-                cantFuentes++;
-                if (cantFuentes >= fuentesHecho.size() / 2){
-                    return true;
-                }
-            }
-        }
-        return false;
+    private boolean mitadDeFuentesContienenHecho(Hecho hecho, List<String> fuentes) {
+        return hecho.getDataSets().size() >= fuentes.size() / 2;
     }
 
 }

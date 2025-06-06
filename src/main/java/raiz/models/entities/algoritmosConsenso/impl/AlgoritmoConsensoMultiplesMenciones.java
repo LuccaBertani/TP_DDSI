@@ -17,34 +17,25 @@ public class AlgoritmoConsensoMultiplesMenciones implements IAlgoritmoConsenso {
 
     // múltiples menciones: si al menos dos fuentes contienen un mismo hecho y ninguna
     // otra fuente contiene otro de igual título pero diferentes atributos, se lo considera consensuado
+
+    // Por la forma en la que tenemos implementadas las fuentes no hay necesidad de usar la lista de fuentes "global"
     @Override
     public void ejecutarAlgoritmoConsenso(List<String> fuentes) {
 
         List<Hecho> hechos = coleccion.getHechos();
         List<Hecho> hechosConsensuados = hechos.stream().filter(hecho->
-                this.dosFuentesContienenHecho(hecho, fuentes) &&
-                !this.existeHechoIgualTitulo(hecho, hechos, fuentes)).toList();
+                this.dosFuentesContienenHecho(hecho) &&
+                !this.existeHechoIgualTitulo(hecho, hechos)).toList();
 
         coleccion.getHechosConsensuados().addAll(hechosConsensuados);
     }
 
-    private boolean dosFuentesContienenHecho(Hecho hecho, List<String> fuentes){
-        int cantFuentes = 0;
-        List<String> fuentesHecho = hecho.getDataSets();
-        for (int i = 0; i < fuentesHecho.size(); i++){
-            if (fuentes.contains(fuentesHecho.get(i))){
-                cantFuentes++;
-                if (cantFuentes == 2){
-                    return true;
-                }
-            }
-        }
-        return false;
+    private boolean dosFuentesContienenHecho(Hecho hecho){
+        return hecho.getDataSets().size() >= 2;
     }
 
     // No hay necesidad de hacer chequeo de fuentes
-    private boolean existeHechoIgualTitulo(Hecho hecho, List<Hecho> hechos, List<String> fuentes){
-
+    private boolean existeHechoIgualTitulo(Hecho hecho, List<Hecho> hechos){
         Hecho hechoRep = hechos.stream().filter
                         (h-> Normalizador.normalizarYComparar(h.getTitulo(), hecho.getTitulo())).findFirst().orElse(null);
 
