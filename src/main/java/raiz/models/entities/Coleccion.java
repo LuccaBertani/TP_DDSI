@@ -6,7 +6,9 @@ import raiz.models.entities.algoritmosConsenso.IAlgoritmoConsenso;
 import raiz.models.entities.filtros.Filtro;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /*
 * Colecciones: conjuntos de hechos organizados bajo un título y descripción, creados y gestionados por administradores.
@@ -27,13 +29,13 @@ public class Coleccion {
     private List<Filtro> criterio = new ArrayList<>();
     private IAlgoritmoConsenso algoritmoConsenso;
 
-    private List<Hecho> hechosConsensuados = new ArrayList<>();
+    // Con un set debido a que no usamos snapshot acá, evitamos repetidos
+    private Set<Hecho> hechosConsensuados = new HashSet<>();
 
     public Coleccion(DatosColeccion datosColeccion, long id) {
         this.titulo = datosColeccion.getTitulo();
         this.descripcion = datosColeccion.getDescripcion();
         this.id = id;
-
     }
 
     public void addCriterios(Filtro ... filtros){
