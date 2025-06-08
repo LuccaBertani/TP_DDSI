@@ -25,21 +25,31 @@ public class AlgoritmoConsensoMultiplesMenciones implements IAlgoritmoConsenso {
         List<Hecho> hechos = coleccion.getHechos();
         List<Hecho> hechosConsensuados = hechos.stream().filter(hecho->
                 this.dosFuentesContienenHecho(hecho) &&
-                !this.existeHechoIgualTitulo(hecho, hechos)).toList();
+                !this.existeHechoIgualTituloDiferentesAtributos(hecho, hechos)).toList();
 
         coleccion.getHechosConsensuados().addAll(hechosConsensuados);
     }
 
     private boolean dosFuentesContienenHecho(Hecho hecho){
-        return hecho.getDataSets().size() >= 2;
+        return hecho.getDatasets().size() >= 2;
     }
 
     // No hay necesidad de hacer chequeo de fuentes
-    private boolean existeHechoIgualTitulo(Hecho hecho, List<Hecho> hechos){
+    private boolean existeHechoIgualTituloDiferentesAtributos(Hecho hecho, List<Hecho> hechos){
         Hecho hechoRep = hechos.stream().filter
-                        (h-> Normalizador.normalizarYComparar(h.getTitulo(), hecho.getTitulo())).findFirst().orElse(null);
+                        (h-> Normalizador.normalizarYComparar(h.getTitulo(), hecho.getTitulo()) &&
+                                !this.tienenAtributosDistintos(hecho, h)).
+                                findFirst().orElse(null);
 
         return hechoRep!=null;
+    }
+
+    private boolean tienenAtributosDistintos(Hecho h1, Hecho h2){
+        return !Normalizador.normalizarYComparar(h1.getDescripcion(),h2.getDescripcion())||
+                !h1.getCategoria().equals(h2.getCategoria()) ||
+                !h1.getPais().equals(h2.getPais()) ||
+                !h1.getFechaAcontecimiento().equals(h2.getFechaAcontecimiento());
+
     }
 
 }
