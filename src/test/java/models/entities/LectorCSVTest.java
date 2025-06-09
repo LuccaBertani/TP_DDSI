@@ -1,9 +1,9 @@
 package models.entities;
 
-import raiz.models.entities.Categoria;
-import raiz.models.entities.Hecho;
-import raiz.models.entities.LectorCSV;
-import raiz.models.entities.Pais;
+import modulos.shared.Categoria;
+import modulos.shared.Hecho;
+import modulos.fuentes.LectorCSV;
+import modulos.shared.Pais;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
