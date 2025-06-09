@@ -1,11 +1,10 @@
-package raiz.models.entities.algoritmosConsenso.impl;
+package raiz.models.entities.algoritmosConsenso;
 
 import raiz.models.entities.Coleccion;
+import raiz.models.entities.Dataset;
 import raiz.models.entities.Hecho;
 import raiz.models.entities.Normalizador;
-import raiz.models.entities.algoritmosConsenso.IAlgoritmoConsenso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AlgoritmoConsensoMultiplesMenciones implements IAlgoritmoConsenso {
@@ -20,7 +19,7 @@ public class AlgoritmoConsensoMultiplesMenciones implements IAlgoritmoConsenso {
 
     // Por la forma en la que tenemos implementadas las fuentes no hay necesidad de usar la lista de fuentes "global"
     @Override
-    public void ejecutarAlgoritmoConsenso(List<String> fuentes) {
+    public void ejecutarAlgoritmoConsenso(List<Dataset> fuentes) {
 
         List<Hecho> hechos = coleccion.getHechos();
         List<Hecho> hechosConsensuados = hechos.stream().filter(hecho->

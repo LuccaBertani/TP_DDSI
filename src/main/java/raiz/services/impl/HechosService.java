@@ -21,7 +21,9 @@ import raiz.services.IHechosService;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -193,21 +195,32 @@ public class HechosService implements IHechosService {
             FuenteEstatica fuente = new FuenteEstatica();
             fuente.setDataSet(dtoInput.getFuenteString());
 
-            List<Hecho> hechosASubir = fuente.leerFuente(hechosDinamicaRepo.findAll(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll(), hechosEstaticaRepo.getDatasets());
+            ModificadorHechos modificadorHechos = fuente.leerFuente(hechosDinamicaRepo.findAll(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
 
-            /*List<Hecho> hechosASubir = modificadorHechos.getHechosASubir();
-            List<Hecho> hechosAModificar = modificadorHechos.getHechosAModificar();*/
+            List<Hecho> hechosASubir = modificadorHechos.getHechosASubir();
+            Set<Hecho> hechosAModificar = modificadorHechos.getHechosAModificar();
+
+
+            if (hechosASubir.isEmpty() && hechosAModificar.isEmpty()){
+                return new RespuestaHttp<>(null, HttpStatus.NO_CONTENT.value());
+            }
+
+            Dataset dataset = new Dataset();
+            dataset.setFuente(dtoInput.getFuenteString());
+            dataset.setId(hechosEstaticaRepo.getProxIdDataset());
+
+            hechosEstaticaRepo.saveDataset(dataset);
 
             for (Hecho hecho : hechosASubir){
                 hecho.setId(hechosEstaticaRepo.getProxId());
+                hecho.getDatasets().add(dataset);
                 hechosEstaticaRepo.getSnapshotHechos().add(hecho);
                 hechosEstaticaRepo.save(hecho);
             }
-            //TODO agregar a snapshot y que verifique si es repetido y en ese caso actualizar en la base de datos (aparte de la logica de agregarlo a las colecciones)
-            /*for (Hecho hecho : hechosAModificar){
-                this.mapearHechoAColecciones(hecho);
-                hechosEstaticaRepo.update(hecho);
-            }*/
+
+            for (Hecho hecho : hechosAModificar){
+                hecho.getDatasets().add(dataset); // Se agregan los datasets de los hechos identicos
+            }
             return new RespuestaHttp<>(null, HttpStatus.CREATED.value());
         }
 

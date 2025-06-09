@@ -6,9 +6,9 @@ import raiz.models.dtos.input.FiltroHechosDTO;
 import raiz.models.dtos.output.ColeccionOutputDTO;
 import raiz.models.entities.*;
 import raiz.models.entities.algoritmosConsenso.IAlgoritmoConsenso;
-import raiz.models.entities.algoritmosConsenso.impl.AlgoritmoConsensoMayoriaAbsoluta;
-import raiz.models.entities.algoritmosConsenso.impl.AlgoritmoConsensoMayoriaSimple;
-import raiz.models.entities.algoritmosConsenso.impl.AlgoritmoConsensoMultiplesMenciones;
+import raiz.models.entities.algoritmosConsenso.AlgoritmoConsensoMayoriaAbsoluta;
+import raiz.models.entities.algoritmosConsenso.AlgoritmoConsensoMayoriaSimple;
+import raiz.models.entities.algoritmosConsenso.AlgoritmoConsensoMultiplesMenciones;
 import raiz.models.entities.buscadores.BuscadorCategoria;
 import raiz.models.entities.buscadores.BuscadorPais;
 import raiz.models.entities.filtros.*;
@@ -223,22 +223,28 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         return new RespuestaHttp<>(null,HttpStatus.OK.value());
     }
 
+
+    // TODO: adaptarlo a ids
     @Override
     public RespuestaHttp<Void> agregarFuente(Long idColeccion, String dataSet) {
         Coleccion coleccion = coleccionesRepo.findById(idColeccion);
         FuenteEstatica fuente = new FuenteEstatica();
         fuente.setDataSet(dataSet);
-        List<Hecho> hechos = fuente.leerFuente(hechosProxyRepo.findAll(),hechosDinamicaRepo.findAll(), hechosEstaticaRepo.findAll(), hechosEstaticaRepo.getDatasets());
-        coleccion.getHechos().addAll(hechos);
+        //List<Hecho> hechos = fuente.leerFuente(hechosProxyRepo.findAll(),hechosDinamicaRepo.findAll(), hechosEstaticaRepo.findAll());
+
+
+
+        //coleccion.getHechos().addAll(hechos);
         return new RespuestaHttp<>(null,HttpStatus.OK.value());
     }
 
+    // TODO: Adaptarlo a ids
     @Override
     public RespuestaHttp<Void> eliminarFuente(Long idColeccion, String dataSet) {
         Coleccion coleccion = coleccionesRepo.findById(idColeccion);
         coleccion.getHechos().forEach(
                 hecho -> {
-                    if(hecho.getDataSets().contains(dataSet)){
+                    if(hecho.getDatasets().contains(dataSet)){
                         coleccion.getHechos().remove(hecho);
                     }
                 }
@@ -267,11 +273,11 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     // TODO Cronjob: es importante que no se ejecute cada vez que ingresa un hecho sino en horarios de baja carga en el sistema.
     public void setearHechosConsensuados(){
         List<Coleccion> colecciones = coleccionesRepo.findAll();
-        List<String> datasets = hechosEstaticaRepo.getDatasets();
+        List<Dataset> datasets = hechosEstaticaRepo.getDatasets();
         this.ejecutarAlgoritmoConsenso(colecciones, datasets);
     }
 
-    private void ejecutarAlgoritmoConsenso(List<Coleccion> colecciones, List<String> datasets){
+    private void ejecutarAlgoritmoConsenso(List<Coleccion> colecciones, List<Dataset> datasets){
         colecciones.forEach(coleccion->coleccion.getAlgoritmoConsenso().ejecutarAlgoritmoConsenso(datasets));
     }
 }

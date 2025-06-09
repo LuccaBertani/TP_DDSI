@@ -146,10 +146,11 @@ public class LectorCSV {
     }*/
     // Entrega 3: los hechos no se pisan los atributos
 
-    public List<Hecho> leerCSV(List<Hecho> hechosFuenteProxy, List<Hecho> hechosFuenteDinamica, List<Hecho> hechosFuenteEstatica, List<String> datasets) {
+
+    public ModificadorHechos leerCSV(List<Hecho> hechosFuenteProxy, List<Hecho> hechosFuenteDinamica, List<Hecho> hechosFuenteEstatica) {
 
         List<Hecho> hechosASubir = new ArrayList<>();
-
+        Set<Hecho> hechosAModificar = new HashSet<>();
         try {
             Reader reader = new InputStreamReader(new FileInputStream(this.dataSet), Charset.forName("ISO-8859-1"));
 
@@ -236,11 +237,8 @@ public class LectorCSV {
                 if (tituloRepetido){
                     boolean existeHechoIdentico = BuscadorHechoIdentico.existeHechoIdentico(hecho, hechosFuenteEstatica);
                     if (existeHechoIdentico){
-                        hecho0.get().getDataSets().add(this.dataSet);
+                        hechosAModificar.add(hecho);
                         continue; // Evito agregar un hecho identico
-                    }
-                    else{
-                        hecho.getDataSets().add(this.dataSet);
                     }
                 }
 
@@ -256,14 +254,13 @@ public class LectorCSV {
                     System.out.println(hechoASubir.getFechaDeCarga());
                 }
             }
-            datasets.add(this.dataSet);
             parser.close();
         }
         catch(IOException e){
             throw new RuntimeException("Error al leer el archivo CSV: " + e.getMessage(), e);
         }
 
-        return hechosASubir;
+        return new ModificadorHechos(hechosASubir, hechosAModificar);
     }
 
 

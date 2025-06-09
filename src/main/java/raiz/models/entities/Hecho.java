@@ -23,10 +23,10 @@ public class Hecho {
     private Origen origen;
     private ZonedDateTime fechaUltimaActualizacion;
 
-    private List<String> dataSets;
+    private List<Dataset> datasets;
 
     public Hecho() {
         this.id_usuario=-1L;
-        this.dataSets = new ArrayList<>();
+        this.datasets = new ArrayList<>();
     }
 }

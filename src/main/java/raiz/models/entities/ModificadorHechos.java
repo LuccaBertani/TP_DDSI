@@ -4,15 +4,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
 public class ModificadorHechos {
 
     private List<Hecho> hechosASubir;
-    private List<Hecho> hechosAModificar;
+    private Set<Hecho> hechosAModificar;
 
-    public ModificadorHechos(List<Hecho> hechosASubir, List<Hecho> hechosAModificar){
+    public ModificadorHechos(List<Hecho> hechosASubir, Set<Hecho> hechosAModificar){
         this.hechosASubir = hechosASubir;
         this.hechosAModificar = hechosAModificar;
     }

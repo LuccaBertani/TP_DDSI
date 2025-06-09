@@ -33,7 +33,7 @@ public class HechosController {
     @PostMapping("/importar")
     public ResponseEntity<Void> importarHechos(@Valid @RequestBody ImportacionHechosInputDTO dtoInput){
         RespuestaHttp<Void> respuesta = hechosService.importarHechos(dtoInput);
-        return ResponseEntity.status(respuesta.getCodigo()).build(); // 201 o 401
+        return ResponseEntity.status(respuesta.getCodigo()).build(); // 201, 204 o 401
     }
 
     @GetMapping("/colecciones/{identificador}/hechos")

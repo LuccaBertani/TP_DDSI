@@ -1,6 +1,7 @@
 package raiz.models.repositories.impl;
 
 import org.springframework.stereotype.Repository;
+import raiz.models.entities.Dataset;
 import raiz.models.entities.Hecho;
 import raiz.models.repositories.IHechosEstaticaRepository;
 
@@ -12,7 +13,7 @@ public class MemoriaHechosEstaticaRepository implements IHechosEstaticaRepositor
 
     private List<Hecho> hechos;
     private List<Hecho> snapshotHechos;
-    private List<String> datasets;
+    private List<Dataset> datasets;
 
     public MemoriaHechosEstaticaRepository() {
         this.hechos = new ArrayList<>();
@@ -72,7 +73,25 @@ public class MemoriaHechosEstaticaRepository implements IHechosEstaticaRepositor
     }
 
     @Override
-    public List<String> getDatasets(){
+    public List<Dataset> getDatasets(){
         return this.datasets;
+    }
+
+    @Override
+    public long getProxIdDataset() {
+        long id_aux = -1;
+        for(Dataset dataset: datasets){
+            if(id_aux == -1){
+                id_aux = dataset.getId();
+            } else if (id_aux < dataset.getId()) {
+                id_aux = dataset.getId();
+            }
+        }
+        return id_aux + 1;
+    }
+
+    @Override
+    public void saveDataset(Dataset dataset) {
+        datasets.add(dataset);
     }
 }

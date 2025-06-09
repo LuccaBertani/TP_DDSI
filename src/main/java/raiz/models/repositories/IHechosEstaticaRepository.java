@@ -1,7 +1,9 @@
 package raiz.models.repositories;
 
+import raiz.models.entities.Dataset;
 import raiz.models.entities.Hecho;
 
+import javax.xml.crypto.Data;
 import java.util.List;
 
 public interface IHechosEstaticaRepository {
@@ -13,5 +15,7 @@ public interface IHechosEstaticaRepository {
     void update(Hecho entidad);
     public List<Hecho> getSnapshotHechos();
     public void clearSnapshotHechos();
-    public List<String> getDatasets();
+    public List<Dataset> getDatasets();
+    long getProxIdDataset();
+    void saveDataset(Dataset dataset);
 }

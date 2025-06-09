@@ -1,12 +1,10 @@
-package raiz.models.entities.algoritmosConsenso.impl;
+package raiz.models.entities.algoritmosConsenso;
 
 import raiz.models.entities.Coleccion;
+import raiz.models.entities.Dataset;
 import raiz.models.entities.Hecho;
-import raiz.models.entities.algoritmosConsenso.IAlgoritmoConsenso;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class AlgoritmoConsensoMayoriaAbsoluta implements IAlgoritmoConsenso {
     private Coleccion coleccion;
@@ -16,10 +14,10 @@ public class AlgoritmoConsensoMayoriaAbsoluta implements IAlgoritmoConsenso {
 
     // Absoluta: si todas las fuentes contienen el mismo hecho, se lo considera consensuado.
     @Override
-    public void ejecutarAlgoritmoConsenso(List<String> fuentes) {
+    public void ejecutarAlgoritmoConsenso(List<Dataset> fuentes) {
         //coleccion.getHechosConsensuados().addAll()
         List<Hecho> hechos = coleccion.getHechos();
-        List<Hecho> hechosConsensudados = hechos.stream().filter(hecho->hecho.getDataSets().equals(fuentes)).toList();
+        List<Hecho> hechosConsensudados = hechos.stream().filter(hecho->hecho.getDatasets().equals(fuentes)).toList();
         coleccion.getHechosConsensuados().addAll(hechosConsensudados);
     }
 }
