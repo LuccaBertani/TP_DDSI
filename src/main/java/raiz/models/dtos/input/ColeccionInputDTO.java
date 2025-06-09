@@ -14,16 +14,7 @@ public class ColeccionInputDTO {
     private String descripcion;
 
     //Criterios (es decir los filtros)
-    private String categoria;
-    private Integer contenidoMultimedia;
-    private String fechaAcontecimientoInicial;
-    private String fechaAcontecimientoFinal;
-    private String fechaCargaInicial;
-    private String fechaCargaFinal;
-    private Integer origen;
-    private String pais;
-    private String descripcionFiltro;
-    private String tituloFiltro;
+    private CriteriosColeccionDTO criterios;
 
     // Algoritmo de consenso (opcional)
     private String algoritmoConsenso;

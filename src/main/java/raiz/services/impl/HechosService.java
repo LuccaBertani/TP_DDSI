@@ -1,6 +1,7 @@
 package raiz.services.impl;
 
 import org.springframework.scheduling.annotation.Async;
+import raiz.models.dtos.AtributosHecho;
 import raiz.models.dtos.input.FiltroHechosDTO;
 import raiz.models.dtos.input.ImportacionHechosInputDTO;
 import raiz.models.dtos.input.SolicitudHechoInputDTO;
@@ -49,8 +50,20 @@ public class HechosService implements IHechosService {
 
     /* Se pide que, una vez por hora, el servicio de agregación actualice los hechos pertenecientes a las distintas colecciones,
      en caso de que las fuentes hayan incorporado nuevos hechos.*/
-    //TODO Este metodo no debería estar en el service de colecciones?
+
     // TODO sincronizar los metodos?
+
+    @Async
+    @Scheduled(cron = "0 0 * * * *")
+    public void actualizarColeccionesCronjob(){
+        List<Coleccion> colecciones = coleccionRepo.findAll();
+        for(Coleccion coleccion: colecciones){
+            List<Hecho> hechosFiltrados = Filtrador.aplicarFiltros(coleccion.getCriterios(),coleccion.getHechos());
+            coleccion.setHechos(hechosFiltrados);
+            coleccionRepo.update(coleccion);
+        }
+    }
+
     @Override
     @Async
     @Scheduled(cron = "0 0 * * * *") // cada hora
@@ -71,7 +84,7 @@ public class HechosService implements IHechosService {
         }
 
     }
-    //TODO Este metodo no debería estar en el service de colecciones?
+
     public RespuestaHttp<Void> refrescarColecciones(Long idUsuario){
         Usuario usuario = usuariosRepo.findById(idUsuario);
         if (usuario!= null && !usuario.getRol().equals(Rol.ADMINISTRADOR)){
@@ -80,12 +93,12 @@ public class HechosService implements IHechosService {
         this.refrescarColeccionesCronjob();
         return new RespuestaHttp<>(null, HttpStatus.OK.value());
     }
-    //TODO Este metodo no debería estar en el service de colecciones?
+
     private void eliminarHechosModificadosDeColecciones(List<Coleccion> colecciones, List<Hecho> hechos){
 
         for (Coleccion coleccion: colecciones){
             List<Hecho> hechosColeccion = coleccion.getHechos();
-            List<Filtro> criterio = coleccion.getCriterio();
+
             for (Hecho hecho: hechos){
 
                 Long hechoId = hecho.getId();
@@ -94,7 +107,7 @@ public class HechosService implements IHechosService {
                 Hecho hechoEncontrado = hechosColeccion.stream()
                                         .filter(h -> h.getId().equals(hechoId) && h.getOrigen().equals(hechoOrigen))
                                         .findFirst().orElse(null);
-                if (hechoEncontrado != null && !Filtrador.hechoPasaFiltros(criterio, hecho)){
+                if (hechoEncontrado != null && !Filtrador.hechoPasaFiltros(coleccion.getCriterios(), hecho)){
                     hechosColeccion.remove(hecho);
                 }
             }
@@ -102,27 +115,25 @@ public class HechosService implements IHechosService {
 
     }
 
-    //TODO Este metodo no debería estar en el service de colecciones?
+
     @Override
     public void mapearHechosAColecciones(List<Hecho> hechos){
 
         List<Coleccion> colecciones = coleccionRepo.findAll();
 
         for (Coleccion coleccion : colecciones){
-            List<Filtro> filtros = coleccion.getCriterio();
-            List<Hecho> hechosFiltrados = Filtrador.aplicarFiltros(filtros, hechos);
+            List<Hecho> hechosFiltrados = Filtrador.aplicarFiltros(coleccion.getCriterios(), hechos);
             coleccion.addHechos(hechosFiltrados);
         }
     }
-    //TODO Este metodo no debería estar en el service de colecciones?
+
     @Override
     public void mapearHechoAColecciones(Hecho hecho){
         List<Coleccion> colecciones = coleccionRepo.findAll();
 
         for (Coleccion coleccion : colecciones){
-            List<Filtro> filtros = coleccion.getCriterio();
 
-            boolean cumpleCriterio = Filtrador.hechoPasaFiltros(filtros, hecho);
+            boolean cumpleCriterio = Filtrador.hechoPasaFiltros(coleccion.getCriterios(), hecho);
 
             if (cumpleCriterio){
                 coleccion.addHechos(hecho);
@@ -133,50 +144,27 @@ public class HechosService implements IHechosService {
     //lo sube un administrador (lo considero carga dinamica)
     @Override
     public RespuestaHttp<Void> subirHecho(SolicitudHechoInputDTO dtoInput) {
+
+        FormateadorHecho formateador = new FormateadorHecho();
+
         Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario());
         if(usuario.getRol().equals(Rol.ADMINISTRADOR)){
 
             Hecho hecho = new Hecho();
 
-            if(dtoInput.getPais() != null) {
-                Pais pais = BuscadorPais.buscarOCrear(hechosDinamicaRepo.findAll(),dtoInput.getPais(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
-                hecho.setPais(pais);
-            }else{
-                Pais pais = BuscadorPais.buscarOCrear(hechosDinamicaRepo.findAll(),"N/A",hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
-                hecho.setPais(pais);
-            }
+            AtributosHecho atributos = formateador.formatearAtributosHecho(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),dtoInput);
 
-            hecho.setTitulo(dtoInput.getTitulo());
+            hecho.setPais(atributos.getPais());
+            hecho.setCategoria(atributos.getCategoria());
+            hecho.setFechaAcontecimiento(atributos.getFechaAcontecimiento());
+            hecho.setDescripcion(atributos.getDescripcion());
+            hecho.setOrigen(atributos.getOrigen());
+            hecho.setContenidoMultimedia(atributos.getContenidoMultimedia());
 
-            if(dtoInput.getDescripcion() != null) {
-                hecho.setDescripcion(dtoInput.getDescripcion());
-            }else{
-                hecho.setDescripcion("N/A");
-            }
-            if(dtoInput.getFechaAcontecimiento() != null) {
-                hecho.setFechaAcontecimiento(FechaParser.parsearFecha(dtoInput.getFechaAcontecimiento()));
-            }else{
-                hecho.setFechaAcontecimiento(ZonedDateTime.of(0, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")));
-            }
-            if(dtoInput.getTipoContenido() != null){
-                hecho.setContenidoMultimedia(TipoContenido.fromCodigo(dtoInput.getTipoContenido()));
-            }else{
-                hecho.setContenidoMultimedia(TipoContenido.INVALIDO);
-            }
-            if(dtoInput.getCategoria() != null){
-                Categoria categoria = BuscadorCategoria.buscarOCrear(hechosDinamicaRepo.findAll(),dtoInput.getPais(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
-                hecho.setCategoria(categoria);
-            }
-            else{
-                Categoria categoria = BuscadorCategoria.buscarOCrear(hechosDinamicaRepo.findAll(),"N/A",hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
-                hecho.setCategoria(categoria);
-            }
-            hecho.setOrigen(Origen.CARGA_MANUAL);
             hecho.setId(hechosDinamicaRepo.getProxId());
             hecho.setActivo(true);
             hecho.setFechaDeCarga(ZonedDateTime.now());
             hecho.setFechaUltimaActualizacion(hecho.getFechaDeCarga());
-
             hechosDinamicaRepo.getSnapshotHechos().add(hecho);
             hechosDinamicaRepo.save(hecho);
 
@@ -231,57 +219,12 @@ public class HechosService implements IHechosService {
     @Override
     public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechos(FiltroHechosDTO inputDTO) {
 
-        List<Filtro> filter = new ArrayList<>();
+        FormateadorHecho formateador = new FormateadorHecho();
 
-        if (inputDTO.getCategoria() != null) {
-            Categoria categoria = BuscadorCategoria.buscar(hechosDinamicaRepo.findAll(), inputDTO.getCategoria(), hechosProxyRepo.findAll(), hechosEstaticaRepo.findAll());
-            if (categoria!=null)
-                filter.add(new FiltroCategoria(categoria));
-        }
-
-        if (inputDTO.getContenidoMultimedia() != null) {
-            TipoContenido contenido = TipoContenido.fromCodigo(Integer.parseInt(inputDTO.getContenidoMultimedia()));
-            filter.add(new FiltroContenidoMultimedia(contenido));
-        }
-
-        if (inputDTO.getDescripcion() != null) {
-            filter.add(new FiltroDescripcion(inputDTO.getDescripcion()));
-        }
-
-        ZonedDateTime fechaAcontecimientoInicial = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoInicial());
-        ZonedDateTime fechaAcontecimientoFinal = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoFinal());
-        if (fechaAcontecimientoInicial != null && fechaAcontecimientoFinal != null) {
-            filter.add(new FiltroFechaAcontecimiento(fechaAcontecimientoInicial, fechaAcontecimientoFinal));
-        }
-
-        ZonedDateTime fechaCargaInicial = FechaParser.parsearFecha(inputDTO.getFechaCargaInicial());
-        ZonedDateTime fechaCargaFinal = FechaParser.parsearFecha(inputDTO.getFechaCargaFinal());
-        if (inputDTO.getFechaCargaInicial() != null && inputDTO.getFechaCargaFinal() != null) {
-            filter.add(new FiltroFechaCarga(fechaCargaInicial, fechaCargaFinal));
-        }
-
-        if (inputDTO.getOrigen() != null) {
-            Origen origen = Origen.fromCodigo(Integer.parseInt(inputDTO.getOrigen()));
-            filter.add(new FiltroOrigen(origen));
-        }
-
-        String paisString = inputDTO.getPais();
-        if (paisString != null) {
-            Pais pais = BuscadorPais.buscar(hechosDinamicaRepo.findAll(), paisString, hechosProxyRepo.findAll(), hechosEstaticaRepo.findAll());
-            if (pais!=null)
-                filter.add(new FiltroPais(pais));
-        }
-
-        if (inputDTO.getTitulo() != null) {
-            filter.add(new FiltroTitulo(inputDTO.getTitulo()));
-        }
-
-
-
-
+        FiltrosColeccion filtros =  formateador.formatearFiltrosColeccion(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),inputDTO.getCriterios());
 
         List<Hecho> hechosFiltrados = Filtrador
-                .aplicarFiltros(filter, this.getAllHechos());
+                .aplicarFiltros(formateador.obtenerMapaDeFiltros(filtros), this.getAllHechos());
 
         List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream().map(hecho -> {
             VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
@@ -353,6 +296,8 @@ public class HechosService implements IHechosService {
         hechosTotales.addAll(hechosEstaticaRepo.findAll());
         return hechosTotales;
     }
+
+
 
 
 }

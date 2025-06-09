@@ -2,6 +2,7 @@ package raiz.services.impl;
 
 import raiz.models.dtos.input.ColeccionInputDTO;
 import raiz.models.dtos.input.ColeccionUpdateInputDTO;
+import raiz.models.dtos.input.CriteriosColeccionDTO;
 import raiz.models.dtos.input.FiltroHechosDTO;
 import raiz.models.dtos.output.ColeccionOutputDTO;
 import raiz.models.entities.*;
@@ -9,8 +10,6 @@ import raiz.models.entities.algoritmosConsenso.IAlgoritmoConsenso;
 import raiz.models.entities.algoritmosConsenso.AlgoritmoConsensoMayoriaAbsoluta;
 import raiz.models.entities.algoritmosConsenso.AlgoritmoConsensoMayoriaSimple;
 import raiz.models.entities.algoritmosConsenso.AlgoritmoConsensoMultiplesMenciones;
-import raiz.models.entities.buscadores.BuscadorCategoria;
-import raiz.models.entities.buscadores.BuscadorPais;
 import raiz.models.entities.filtros.*;
 import raiz.models.entities.fuentes.FuenteEstatica;
 import raiz.models.entities.personas.Rol;
@@ -71,55 +70,12 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
         Coleccion coleccion = new Coleccion(datosColeccion,coleccionesRepo.getProxId());
 
-        List<Filtro> criterios = new ArrayList<>();
 
-        Filtro filtroCategoria = null;
-        Filtro filtroFechaCarga = null;
-        Filtro filtroFechaAcontecimiento = null;
-        Filtro filtroPais = null;
-        Filtro filtroContenidoMultimedia = null;
-        Filtro filtroDescripcion = null;
-        Filtro filtroOrigen = null;
-        Filtro filtroTitulo = null;
+        FormateadorHecho formateador = new FormateadorHecho();
 
-        IAlgoritmoConsenso algoritmoConsenso = null;
+        FiltrosColeccion filtros = formateador.formatearFiltrosColeccion(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),dtoInput.getCriterios());
 
-        if(dtoInput.getCategoria() != null){
-            Categoria categoria = BuscadorCategoria.buscarOCrear(hechosDinamicaRepo.findAll(),dtoInput.getCategoria(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
-            filtroCategoria = new FiltroCategoria(categoria);
-        }
-        criterios.add(filtroCategoria);
 
-        if (dtoInput.getFechaCargaInicial()!=null && dtoInput.getFechaCargaFinal() !=null){
-            filtroFechaCarga = new FiltroFechaAcontecimiento(FechaParser.parsearFecha(dtoInput.getFechaCargaInicial()), FechaParser.parsearFecha(dtoInput.getFechaCargaFinal()));
-        }
-        criterios.add(filtroFechaCarga);
-
-        if(dtoInput.getFechaAcontecimientoFinal() != null && dtoInput.getFechaAcontecimientoInicial() != null) {
-            filtroFechaAcontecimiento = new FiltroFechaAcontecimiento(FechaParser.parsearFecha(dtoInput.getFechaAcontecimientoInicial()),FechaParser.parsearFecha(dtoInput.getFechaAcontecimientoFinal()));
-        }
-        criterios.add(filtroFechaAcontecimiento);
-        if(dtoInput.getPais() != null) {
-            Pais pais = BuscadorPais.buscarOCrear(hechosDinamicaRepo.findAll(),dtoInput.getPais(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
-            filtroPais = new FiltroPais(pais);
-        }
-        criterios.add(filtroPais);
-        if(dtoInput.getContenidoMultimedia() != null) {
-            filtroContenidoMultimedia = new FiltroContenidoMultimedia(TipoContenido.fromCodigo(dtoInput.getContenidoMultimedia()));
-        }
-        criterios.add(filtroContenidoMultimedia);
-        if(dtoInput.getDescripcion() != null){
-            filtroDescripcion = new FiltroDescripcion(dtoInput.getDescripcion());
-        }
-        criterios.add(filtroDescripcion);
-        if(dtoInput.getOrigen() != null){
-            filtroOrigen = new FiltroOrigen(Origen.fromCodigo(dtoInput.getOrigen()));
-        }
-        criterios.add(filtroOrigen);
-        if(dtoInput.getTituloFiltro() != null){
-            filtroTitulo = new FiltroTitulo(dtoInput.getTituloFiltro());
-        }
-        criterios.add(filtroTitulo);
         if (dtoInput.getAlgoritmoConsenso() != null){
             if (dtoInput.getAlgoritmoConsenso().equals("mayoria-absoluta"))
                 coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaAbsoluta(coleccion));
@@ -129,14 +85,15 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
                 coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMultiplesMenciones(coleccion));
         }
 
-        coleccion.addCriterios(criterios);
+        coleccion.setCriterios(formateador.obtenerMapaDeFiltros(filtros));
+
         List<Hecho> hechosDinamica = hechosDinamicaRepo.findAll();
         List<Hecho> hechosEstatica = hechosEstaticaRepo.findAll();
         List<Hecho> hechosProxy = hechosProxyRepo.findAll();
 
-        coleccion.addHechos(Filtrador.aplicarFiltros(criterios, hechosDinamica));
-        coleccion.addHechos(Filtrador.aplicarFiltros(criterios, hechosEstatica));
-        coleccion.addHechos(Filtrador.aplicarFiltros(criterios, hechosProxy));
+        coleccion.addHechos(Filtrador.aplicarFiltros(formateador.obtenerMapaDeFiltros(filtros), hechosDinamica));
+        coleccion.addHechos(Filtrador.aplicarFiltros(formateador.obtenerMapaDeFiltros(filtros), hechosEstatica));
+        coleccion.addHechos(Filtrador.aplicarFiltros(formateador.obtenerMapaDeFiltros(filtros), hechosProxy));
 
         coleccionesRepo.save(coleccion);
 
@@ -146,6 +103,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 //TODO El orden fijo global para guardar criterios en la lista de criterios de la coleccion es [filtroCategoria,filtroFechaCarga,filtroFechaAcontecimiento,filtroPais,filtroContenidoMultimedia,FiltroDescripcion,FiltroOrigen,FiltroTitulo]
     @Override
     public RespuestaHttp<List<ColeccionOutputDTO>> obtenerTodasLasColecciones(){
+
         List<ColeccionOutputDTO> listaDTO = new ArrayList<>();
 
         List<Coleccion> colecciones = coleccionesRepo.findAll();
@@ -155,23 +113,49 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             dto.setId(coleccion.getId());
             dto.setNombre(coleccion.getTitulo());
             dto.setDescripcion(coleccion.getDescripcion());
-            FiltroHechosDTO filtroHechosDTO = new FiltroHechosDTO();
 
-            FiltroCategoria filtroCategoria = (FiltroCategoria)coleccion.getCriterio().get(0);
-            filtroHechosDTO.setCategoria(filtroCategoria.getCategoria().getTitulo());
+            CriteriosColeccionDTO criterios = new CriteriosColeccionDTO();
 
-            FiltroFechaCarga filtroFechaCarga = (FiltroFechaCarga)coleccion.getCriterio().get(1);
-            filtroHechosDTO.setFechaCargaFinal(filtroFechaCarga.getFechaInicial().toString());
-            filtroHechosDTO.setFechaCargaFinal(filtroFechaCarga.getFechaFinal().toString());
 
-            FiltroFechaAcontecimiento filtroFechaAcontecimiento = (FiltroFechaAcontecimiento)coleccion.getCriterio().get(2);
-            filtroHechosDTO.setFechaAcontecimientoInicial(filtroFechaAcontecimiento.getFechaInicial().toString());
-            filtroHechosDTO.setFechaAcontecimientoFinal(filtroFechaAcontecimiento.getFechaFinal().toString());
+            FiltroCategoria categoria = coleccion.obtenerCriterio(FiltroCategoria.class);
 
-            FiltroPais filtroPais = (FiltroPais)coleccion.getCriterio().get(3);
-            filtroHechosDTO.setPais(filtroPais.getPais().getPais());
+            if(categoria != null) {
+                criterios.setCategoria(categoria.getCategoria().getTitulo());
+            }else{
+                criterios.setCategoria("N/A");
+            }
+            FiltroFechaCarga filtroFechaCarga = coleccion.obtenerCriterio(FiltroFechaCarga.class);
 
-            dto.setFiltros(filtroHechosDTO);
+            if(filtroFechaCarga != null) {
+                criterios.setFechaCargaInicial(filtroFechaCarga.getFechaInicial().toString());
+                criterios.setFechaCargaFinal(filtroFechaCarga.getFechaFinal().toString());
+            }else{
+                criterios.setFechaCargaInicial("N/A");
+                criterios.setFechaCargaFinal("N/A");
+            }
+
+            FiltroFechaAcontecimiento filtroFechaAcontecimiento = coleccion.obtenerCriterio(FiltroFechaAcontecimiento.class);
+
+            if(filtroFechaAcontecimiento != null) {
+                criterios.setFechaAcontecimientoInicial(filtroFechaAcontecimiento.getFechaInicial().toString());
+                criterios.setFechaAcontecimientoFinal(filtroFechaAcontecimiento.getFechaFinal().toString());
+            }
+            else{
+                criterios.setFechaAcontecimientoInicial("N/A");
+                criterios.setFechaAcontecimientoFinal("N/A");
+            }
+
+            FiltroPais filtroPais = coleccion.obtenerCriterio(FiltroPais.class);
+
+            if(filtroPais != null) {
+                criterios.setPais(filtroPais.getPais().toString());
+            }
+            else{
+                criterios.setPais("N/A");
+            }
+
+            dto.setCriterios(criterios);
+
             listaDTO.add(dto);
         }
         return new RespuestaHttp<>(listaDTO, HttpStatus.OK.value());
@@ -191,23 +175,48 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         dto.setId(coleccion.getId());
         dto.setNombre(coleccion.getTitulo());
         dto.setDescripcion(coleccion.getDescripcion());
-        FiltroHechosDTO filtroHechosDTO = new FiltroHechosDTO();
 
-        FiltroCategoria filtroCategoria = (FiltroCategoria)coleccion.getCriterio().get(0);
-        filtroHechosDTO.setCategoria(filtroCategoria.getCategoria().getTitulo());
+        CriteriosColeccionDTO criterios = new CriteriosColeccionDTO();
 
-        FiltroFechaCarga filtroFechaCarga = (FiltroFechaCarga)coleccion.getCriterio().get(1);
-        filtroHechosDTO.setFechaCargaFinal(filtroFechaCarga.getFechaInicial().toString());
-        filtroHechosDTO.setFechaCargaFinal(filtroFechaCarga.getFechaFinal().toString());
 
-        FiltroFechaAcontecimiento filtroFechaAcontecimiento = (FiltroFechaAcontecimiento)coleccion.getCriterio().get(2);
-        filtroHechosDTO.setFechaAcontecimientoInicial(filtroFechaAcontecimiento.getFechaInicial().toString());
-        filtroHechosDTO.setFechaAcontecimientoFinal(filtroFechaAcontecimiento.getFechaFinal().toString());
+        FiltroCategoria categoria = coleccion.obtenerCriterio(FiltroCategoria.class);
 
-        FiltroPais filtroPais = (FiltroPais)coleccion.getCriterio().get(3);
-        filtroHechosDTO.setPais(filtroPais.getPais().getPais());
+        if(categoria != null) {
+            criterios.setCategoria(categoria.getCategoria().getTitulo());
+        }else{
+            criterios.setCategoria("N/A");
+        }
+        FiltroFechaCarga filtroFechaCarga = coleccion.obtenerCriterio(FiltroFechaCarga.class);
 
-        dto.setFiltros(filtroHechosDTO);
+        if(filtroFechaCarga != null) {
+            criterios.setFechaCargaInicial(filtroFechaCarga.getFechaInicial().toString());
+            criterios.setFechaCargaFinal(filtroFechaCarga.getFechaFinal().toString());
+        }else{
+            criterios.setFechaCargaInicial("N/A");
+            criterios.setFechaCargaFinal("N/A");
+        }
+
+        FiltroFechaAcontecimiento filtroFechaAcontecimiento = coleccion.obtenerCriterio(FiltroFechaAcontecimiento.class);
+
+        if(filtroFechaAcontecimiento != null) {
+            criterios.setFechaAcontecimientoInicial(filtroFechaAcontecimiento.getFechaInicial().toString());
+            criterios.setFechaAcontecimientoFinal(filtroFechaAcontecimiento.getFechaFinal().toString());
+        }
+        else{
+            criterios.setFechaAcontecimientoInicial("N/A");
+            criterios.setFechaAcontecimientoFinal("N/A");
+        }
+
+        FiltroPais filtroPais = coleccion.obtenerCriterio(FiltroPais.class);
+
+        if(filtroPais != null) {
+            criterios.setPais(filtroPais.getPais().toString());
+        }
+        else{
+            criterios.setPais("N/A");
+        }
+
+        dto.setCriterios(criterios);
 
         return new RespuestaHttp<>(dto, HttpStatus.OK.value());
 

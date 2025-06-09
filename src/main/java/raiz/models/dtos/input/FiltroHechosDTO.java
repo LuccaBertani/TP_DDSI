@@ -6,16 +6,7 @@ import lombok.Data;
 @Data
 public class FiltroHechosDTO {
 
-    private String categoria;
-    private String contenidoMultimedia;
-    private String descripcion;
-    private String fechaAcontecimientoInicial;
-    private String fechaAcontecimientoFinal;
-    private String fechaCargaInicial;
-    private String fechaCargaFinal;
-    private String origen;
-    private String pais;
-    private String titulo;
+    private CriteriosColeccionDTO criterios;
 
     @NotNull(message = "El id_coleccion es obligatorio")
     private Long id_coleccion;

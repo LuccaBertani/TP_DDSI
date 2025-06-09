@@ -5,10 +5,7 @@ import lombok.Setter;
 import raiz.models.entities.algoritmosConsenso.IAlgoritmoConsenso;
 import raiz.models.entities.filtros.Filtro;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /*
 * Colecciones: conjuntos de hechos organizados bajo un título y descripción, creados y gestionados por administradores.
@@ -26,8 +23,13 @@ public class Coleccion {
     private String titulo;
     private String descripcion;
     private List<Hecho> hechos = new ArrayList<>();
-    private List<Filtro> criterio = new ArrayList<>();
     private IAlgoritmoConsenso algoritmoConsenso;
+
+    private Map<Class<? extends Filtro>, Filtro> criterios = new HashMap<>();
+
+    public <T extends Filtro> T obtenerCriterio(Class<T> tipo) {
+        return tipo.cast(this.criterios.get(tipo));
+    }
 
     // Con un set debido a que no usamos snapshot acá, evitamos repetidos
     private Set<Hecho> hechosConsensuados = new HashSet<>();
@@ -38,12 +40,16 @@ public class Coleccion {
         this.id = id;
     }
 
-    public void addCriterios(Filtro ... filtros){
-        this.criterio.addAll(List.of(filtros));
+    public void addCriterios(Filtro... filtros) {
+        for (Filtro filtro : filtros) {
+            this.criterios.put(filtro.getClass(), filtro);  // Sobrescribe si ya había uno del mismo tipo
+        }
     }
 
     public void addCriterios(List<Filtro> filtros){
-        this.criterio.addAll(filtros);
+        for (Filtro filtro : filtros) {
+            this.criterios.put(filtro.getClass(), filtro);  // Sobrescribe si ya había uno del mismo tipo
+        }
     }
 
     public void addHechos(Hecho ... hechos){
