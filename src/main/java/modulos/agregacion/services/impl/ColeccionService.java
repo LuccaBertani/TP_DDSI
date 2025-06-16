@@ -11,6 +11,7 @@ import modulos.shared.*;
 import modulos.shared.dtos.input.ColeccionInputDTO;
 import modulos.shared.dtos.input.ColeccionUpdateInputDTO;
 import modulos.shared.dtos.input.FiltroHechosDTO;
+import modulos.shared.dtos.input.ModificarConsensoInputDTO;
 import modulos.shared.dtos.output.ColeccionOutputDTO;
 import modulos.agregacion.entities.algoritmosConsenso.IAlgoritmoConsenso;
 import modulos.agregacion.entities.algoritmosConsenso.AlgoritmoConsensoMayoriaAbsoluta;
@@ -283,7 +284,35 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         this.ejecutarAlgoritmoConsenso(colecciones, datasets);
     }
 
-    private void ejecutarAlgoritmoConsenso(List<Coleccion> colecciones, List<Dataset> datasets){
-        colecciones.forEach(coleccion->coleccion.getAlgoritmoConsenso().ejecutarAlgoritmoConsenso(datasets));
+    private void ejecutarAlgoritmoConsenso(List<Coleccion> colecciones, List<Dataset> datasets) {
+        colecciones.forEach(coleccion -> coleccion.getAlgoritmoConsenso().ejecutarAlgoritmoConsenso(datasets));
     }
+
+
+    public void modificarAlgoritmoConsenso(ModificarConsensoInputDTO input) {
+    Coleccion coleccion = coleccionesRepo.findById(input.getIdColeccion());
+    Usuario usuario = usuariosRepo.findById(input.getIdUsuario());
+
+    if (coleccion == null || usuario == null) {
+        throw new IllegalArgumentException("Colección o usuario no encontrados");
+    }
+    if (!usuario.getRol().equals(Rol.ADMINISTRADOR)) {
+        throw new SecurityException("No tiene permisos para modificar el algoritmo de consenso");
+    }
+
+    switch (input.getTipoConsenso().toLowerCase()) {
+        case "mayoria-absoluta":
+            coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaAbsoluta());
+            break;
+        case "mayoria-simple":
+            coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaSimple());
+            break;
+        case "multiples-menciones":
+            coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMultiplesMenciones());
+            break;
+        default:
+            coleccion.setAlgoritmoConsenso(null); // O el algoritmo por defecto
+    }
+    coleccionesRepo.update(coleccion);
+}
 }

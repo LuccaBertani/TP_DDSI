@@ -65,7 +65,12 @@ public class ColeccionController {
         return ResponseEntity.status(respuesta.getCodigo()).build();
     }
 
-
+    //
+    @PostMapping("/colecciones/modificar-consenso")
+    public ResponseEntity<Void> modificarAlgoritmoConsenso(@RequestBody ModificarConsensoInputDTO input) {
+    coleccionService.modificarAlgoritmoConsenso(input);
+    return ResponseEntity.ok().build();
+}
 
 }
 
