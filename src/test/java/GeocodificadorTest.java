@@ -1,4 +1,4 @@
-import raiz.models.entities.Geocodificador;
+import modulos.shared.utils.Geocodificador;
 import org.junit.jupiter.api.Test;
 
 class GeocodificadorTest {
