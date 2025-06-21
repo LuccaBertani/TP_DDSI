@@ -12,22 +12,25 @@ import modulos.agregacion.entities.filtros.FiltroFechaAcontecimiento;
 import modulos.agregacion.entities.filtros.FiltroFechaCarga;
 import modulos.agregacion.entities.filtros.FiltroPais;
 import modulos.agregacion.repositories.*;
+import modulos.fuentes.Dataset;
+import modulos.fuentes.FuenteEstatica;
 import modulos.shared.Hecho;
 import modulos.shared.RespuestaHttp;
 import modulos.shared.dtos.input.ColeccionInputDTO;
+import modulos.shared.dtos.input.ColeccionUpdateInputDTO;
 import modulos.shared.dtos.input.CriteriosColeccionDTO;
 import modulos.usuario.Rol;
 import modulos.usuario.Usuario;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import raiz.models.entities.FormateadorHecho;
-import raiz.models.entities.FiltrosColeccion;
-import raiz.models.dtos.output.ColeccionOutputDTO;
+import modulos.agregacion.entities.FormateadorHecho;
+import modulos.agregacion.entities.FiltrosColeccion;
+import modulos.shared.dtos.output.ColeccionOutputDTO;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ColeccionService implements IColeccionService {
+public class ColeccionService  {
 
     private final IHechosProxyRepository hechosProxyRepo;
     private final IHechosEstaticaRepository hechosEstaticaRepo;
@@ -61,7 +64,6 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
     */
 
-    @Override
     public RespuestaHttp<Void> crearColeccion(ColeccionInputDTO dtoInput) {
 
         Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario());
@@ -105,7 +107,6 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
     }
 //TODO El orden fijo global para guardar criterios en la lista de criterios de la coleccion es [filtroCategoria,filtroFechaCarga,filtroFechaAcontecimiento,filtroPais,filtroContenidoMultimedia,FiltroDescripcion,FiltroOrigen,FiltroTitulo]
-    @Override
     public RespuestaHttp<List<ColeccionOutputDTO>> obtenerTodasLasColecciones(){
 
         List<ColeccionOutputDTO> listaDTO = new ArrayList<>();
@@ -165,7 +166,6 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         return new RespuestaHttp<>(listaDTO, HttpStatus.OK.value());
     }
 
-    @Override
     public RespuestaHttp<ColeccionOutputDTO> getColeccion(Long id_coleccion) {
 
         Coleccion coleccion = coleccionesRepo.findById(id_coleccion);
@@ -226,7 +226,6 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
     }
 
-    @Override
     public RespuestaHttp<ColeccionOutputDTO> deleteColeccion(Long id_coleccion) {
         Coleccion coleccion = coleccionesRepo.findById(id_coleccion);
         if(coleccion == null){
@@ -238,7 +237,6 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
 
     // TODO: adaptarlo a ids
-    @Override
     public RespuestaHttp<Void> agregarFuente(Long idColeccion, String dataSet) {
         Coleccion coleccion = coleccionesRepo.findById(idColeccion);
         FuenteEstatica fuente = new FuenteEstatica();
@@ -252,7 +250,6 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     }
 
     // TODO: Adaptarlo a ids
-    @Override
     public RespuestaHttp<Void> eliminarFuente(Long idColeccion, String dataSet) {
         Coleccion coleccion = coleccionesRepo.findById(idColeccion);
         coleccion.getHechos().forEach(
@@ -265,7 +262,6 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         return new RespuestaHttp<>(null,HttpStatus.OK.value());
     }
 
-    @Override
     public RespuestaHttp<Void> updateColeccion(ColeccionUpdateInputDTO dto) {
         Coleccion coleccion = coleccionesRepo.findById(dto.getId_coleccion());
         if(coleccion == null){

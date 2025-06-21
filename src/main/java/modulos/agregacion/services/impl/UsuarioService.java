@@ -6,10 +6,9 @@ import modulos.usuario.Usuario;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import modulos.agregacion.repositories.IUsuarioRepository;
-import modulos.agregacion.services.IUsuarioService;
 
 @Service
-public class  UsuarioService implements IUsuarioService {
+public class  UsuarioService {
 
     private final IUsuarioRepository usuarioRepo;
 
@@ -17,7 +16,6 @@ public class  UsuarioService implements IUsuarioService {
         this.usuarioRepo = usuarioRepo;
     }
     //Momento en el que un usuario se registra y guarda datos personales (NO LLAMAR A ESTE METODO SI ES ANONIMO)
-    @Override
     public RespuestaHttp<Usuario> crearUsuario(UsuarioInputDTO inputDTO){
 
         Usuario usuario = new Usuario(usuarioRepo.getProxId());

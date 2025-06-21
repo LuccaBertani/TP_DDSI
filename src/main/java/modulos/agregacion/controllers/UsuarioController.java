@@ -1,6 +1,7 @@
 package modulos.agregacion.controllers;
 
 import jakarta.validation.Valid;
+import modulos.agregacion.services.impl.UsuarioService;
 import modulos.shared.dtos.input.UsuarioInputDTO;
 import modulos.shared.RespuestaHttp;
 import modulos.usuario.Usuario;
@@ -11,15 +12,14 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import modulos.agregacion.services.IUsuarioService;
 
 @RestController
 @RequestMapping("/api/usuario")
 public class UsuarioController {
 
-    private IUsuarioService usuarioService;
+    private UsuarioService usuarioService;
 
-    public UsuarioController(IUsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 

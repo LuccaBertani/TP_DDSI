@@ -1,13 +1,13 @@
 package modulos.agregacion.controllers;
 
 import jakarta.validation.Valid;
+import modulos.agregacion.services.impl.HechosService;
 import modulos.shared.dtos.input.*;
 import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.shared.RespuestaHttp;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import modulos.agregacion.services.IHechosService;
 
 
 import java.util.List;
@@ -16,8 +16,8 @@ import java.util.List;
 @RequestMapping("/api/hechos")
 public class HechosController {
 
-    private final IHechosService hechosService;
-    public HechosController(IHechosService hechosService){
+    private final HechosService hechosService;
+    public HechosController(HechosService hechosService){
         this.hechosService = hechosService;
     }
 
@@ -74,12 +74,12 @@ public class HechosController {
     {
 
         FiltroHechosDTO filtros = new FiltroHechosDTO();
-        filtros.setCategoria(categoria);
-        filtros.setFechaCargaInicial(fechaReporteDesde);
-        filtros.setFechaCargaFinal(fechaReporteHasta);
-        filtros.setFechaAcontecimientoInicial(fechaAcontecimientoDesde);
-        filtros.setFechaAcontecimientoFinal(fechaAcontecimientoHasta);
-        filtros.setPais(ubicacion);
+        filtros.getCriterios().setCategoria(categoria);
+        filtros.getCriterios().setFechaCargaInicial(fechaReporteDesde);
+        filtros.getCriterios().setFechaCargaFinal(fechaReporteHasta);
+        filtros.getCriterios().setFechaAcontecimientoInicial(fechaAcontecimientoDesde);
+        filtros.getCriterios().setFechaAcontecimientoFinal(fechaAcontecimientoHasta);
+        filtros.getCriterios().setPais(ubicacion);
 
         RespuestaHttp<List<VisualizarHechosOutputDTO>> respuesta = hechosService.navegarPorHechos(filtros);
         return ResponseEntity.status(respuesta.getCodigo()).body(respuesta.getDatos());

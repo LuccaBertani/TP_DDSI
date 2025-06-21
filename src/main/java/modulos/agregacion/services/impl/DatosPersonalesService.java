@@ -6,12 +6,11 @@ import modulos.usuario.Usuario;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import modulos.agregacion.repositories.IUsuarioRepository;
-import modulos.agregacion.services.IDatosPersonalesService;
 
 import java.util.List;
 
 @Service
-public class DatosPersonalesService implements IDatosPersonalesService {
+public class DatosPersonalesService {
 
     private final IUsuarioRepository personasRepo;
 
@@ -19,7 +18,6 @@ public class DatosPersonalesService implements IDatosPersonalesService {
         this.personasRepo = personasRepo;
     }
 
-    @Override
     public RespuestaHttp<List<Usuario>> obtenerListaContribuyentes(Long id_usuario) {
         Usuario usuario = personasRepo.findById(id_usuario);
         if (usuario.getRol().equals(Rol.ADMINISTRADOR)) {

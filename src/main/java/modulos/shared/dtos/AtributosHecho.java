@@ -1,10 +1,11 @@
-package raiz.models.dtos;
+
+package modulos.shared.dtos;
 
 import lombok.Data;
-import raiz.models.entities.Categoria;
-import raiz.models.entities.Origen;
-import raiz.models.entities.Pais;
-import raiz.models.entities.TipoContenido;
+import modulos.shared.Categoria;
+import modulos.fuentes.Origen;
+import modulos.shared.Pais;
+import modulos.shared.TipoContenido;
 
 import java.time.ZonedDateTime;
 

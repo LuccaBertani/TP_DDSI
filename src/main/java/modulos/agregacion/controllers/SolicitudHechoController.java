@@ -1,6 +1,7 @@
 package modulos.agregacion.controllers;
 
 import jakarta.validation.Valid;
+import modulos.agregacion.services.impl.SolicitudHechoService;
 import modulos.shared.dtos.input.SolicitudHechoEliminarInputDTO;
 import modulos.shared.dtos.input.SolicitudHechoEvaluarInputDTO;
 import modulos.shared.dtos.input.SolicitudHechoInputDTO;
@@ -10,7 +11,6 @@ import modulos.shared.RespuestaHttp;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import modulos.agregacion.services.ISolicitudHechoService;
 
 import java.util.List;
 
@@ -18,9 +18,9 @@ import java.util.List;
 @RequestMapping("/api/solicitud-hecho")
 public class SolicitudHechoController {
 
-    private final ISolicitudHechoService solicitudHechoService;
+    private final SolicitudHechoService solicitudHechoService;
 
-    public SolicitudHechoController(ISolicitudHechoService solicitudHechoService){
+    public SolicitudHechoController(SolicitudHechoService solicitudHechoService){
         this.solicitudHechoService = solicitudHechoService;
     }
 

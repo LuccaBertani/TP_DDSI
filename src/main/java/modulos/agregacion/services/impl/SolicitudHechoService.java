@@ -22,7 +22,6 @@ import modulos.solicitudes.Mensaje;
 import modulos.solicitudes.SolicitudHecho;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import modulos.agregacion.services.ISolicitudHechoService;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -30,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class SolicitudHechoService implements ISolicitudHechoService {
+public class SolicitudHechoService {
 
     //private final IDetectorDeSpam detectorDeSpam;
     private final ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo;
@@ -59,7 +58,6 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         gestorRoles = new GestorRoles();
     }
 
-    @Override
     public RespuestaHttp<Void> solicitarSubirHecho(SolicitudHechoInputDTO dto) {
 
         Usuario usuario = usuariosRepository.findById(dto.getId_usuario());
@@ -94,7 +92,6 @@ public class SolicitudHechoService implements ISolicitudHechoService {
 
     //El usuario manda una solicitud para eliminar un hecho -> guardar la solicitud en la base de datos
     // Asumimos que la solicitud de eliminación puede venir de una persona que no haya subido el hecho solicitado
-    @Override
     public RespuestaHttp<Void> solicitarEliminacionHecho(SolicitudHechoEliminarInputDTO dto){
         Usuario usuario = usuariosRepository.findById(dto.getId_usuario());
         if (usuario == null || usuario.getRol().equals(Rol.ADMINISTRADOR) || usuario.getRol().equals(Rol.VISUALIZADOR)){
@@ -159,7 +156,6 @@ public class SolicitudHechoService implements ISolicitudHechoService {
     }
 
 
-    @Override
     public RespuestaHttp<Void> evaluarSolicitudSubirHecho(SolicitudHechoEvaluarInputDTO dtoInput) {
 
         SolicitudHecho solicitud = solicitudAgregarHechoRepo.findById(dtoInput.getId_solicitud());
@@ -198,7 +194,6 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         return new RespuestaHttp<>(null, HttpStatus.OK.value());
     }
 
-    @Override
     public RespuestaHttp<Void> evaluarEliminacionHecho(SolicitudHechoEvaluarInputDTO dtoInput) {
 
         SolicitudHecho solicitud = solicitudEliminarHechoRepo.findById(dtoInput.getId_solicitud());
@@ -224,7 +219,6 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         return new RespuestaHttp<>(null, HttpStatus.OK.value());
     }
 
-    @Override
     public RespuestaHttp<Void> evaluarModificacionHecho(SolicitudHechoEvaluarInputDTO dtoInput) {
 
         SolicitudHecho solicitud = solicitudModificarHechoRepo.findById(dtoInput.getId_solicitud());
@@ -247,7 +241,6 @@ public class SolicitudHechoService implements ISolicitudHechoService {
         return new RespuestaHttp<>(null, HttpStatus.OK.value());
     }
 
-    @Override
     public RespuestaHttp<List<MensajesHechosUsuarioOutputDTO>> enviarMensajes(Long id_Usuario){
         List<Mensaje> mensajesTotales = this.mensajesRepository.findAll();
         List<Mensaje> mensajesUsuario = Filtrador.filtrarMensajes(mensajesTotales,id_Usuario);
@@ -269,14 +262,12 @@ public class SolicitudHechoService implements ISolicitudHechoService {
 
     }
 
-    @Override
     public List<SolicitudHecho> obtenerSolicitudesPendientes() {
         return solicitudEliminarHechoRepo.findAll().stream()
                 .filter(s -> !s.isProcesada() && !s.isRechazadaPorSpam())
                 .toList();
     }
 
-    @Override
     public RespuestaHttp<Void> reportarHecho(String motivo, Long id_hecho) {
         Long id_reporte = reportesHechoRepository.getProxId();
         Reporte reporte = new Reporte(motivo, id_reporte, id_hecho);

@@ -1,12 +1,12 @@
 package modulos.agregacion.controllers;
 
+import modulos.agregacion.services.impl.DatosPersonalesService;
 import modulos.shared.dtos.output.DatosPersonalesOutputDTO;
 import modulos.shared.RespuestaHttp;
 import modulos.usuario.Usuario;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import modulos.agregacion.services.IDatosPersonalesService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +15,9 @@ import java.util.List;
 @RequestMapping("/api/datos-personales")
 public class DatosPersonalesController {
 
-    private IDatosPersonalesService datosPersonalesService;
+    private DatosPersonalesService datosPersonalesService;
 
-    public DatosPersonalesController(IDatosPersonalesService datosPersonalesService){
+    public DatosPersonalesController(DatosPersonalesService datosPersonalesService){
         this.datosPersonalesService = datosPersonalesService;
     }
 

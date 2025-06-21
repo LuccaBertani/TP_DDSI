@@ -1,13 +1,14 @@
 package modulos.agregacion.controllers;
 
 import jakarta.validation.Valid;
+import modulos.agregacion.services.impl.ColeccionService;
 import modulos.shared.dtos.input.ColeccionInputDTO;
 import modulos.shared.dtos.input.ColeccionUpdateInputDTO;
+import modulos.shared.dtos.input.ModificarConsensoInputDTO;
 import modulos.shared.dtos.output.ColeccionOutputDTO;
 import modulos.shared.RespuestaHttp;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import modulos.agregacion.services.IColeccionService;
 
 import java.util.List;
 
@@ -15,9 +16,9 @@ import java.util.List;
 @RequestMapping("/api/coleccion")
 public class ColeccionController {
 
-    private final IColeccionService coleccionService;
+    private final ColeccionService coleccionService;
 
-    public ColeccionController(IColeccionService coleccionService){
+    public ColeccionController(ColeccionService coleccionService){
         this.coleccionService = coleccionService;
     }
 

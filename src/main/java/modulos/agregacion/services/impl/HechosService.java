@@ -20,24 +20,22 @@ import modulos.buscadores.BuscadorPais;
 import modulos.fuentes.FuenteEstatica;
 import modulos.usuario.Rol;
 import modulos.usuario.Usuario;
-import raiz.models.dtos.AtributosHecho;
-import raiz.models.dtos.input.FiltroHechosDTO;
-import raiz.models.dtos.input.ImportacionHechosInputDTO;
-import raiz.models.dtos.input.SolicitudHechoInputDTO;
-import raiz.models.dtos.output.VisualizarHechosOutputDTO;
-import raiz.models.entities.*;
-import raiz.models.entities.buscadores.BuscadorCategoria;
-import raiz.models.entities.buscadores.BuscadorPais;
-import raiz.models.entities.filtros.*;
-import raiz.models.entities.fuentes.FuenteEstatica;
-import raiz.models.entities.personas.Rol;
-import raiz.models.entities.personas.Usuario;
+import modulos.shared.dtos.AtributosHecho;
+import modulos.shared.dtos.input.FiltroHechosDTO;
+import modulos.shared.dtos.input.ImportacionHechosInputDTO;
+import modulos.shared.dtos.input.SolicitudHechoInputDTO;
+import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
+import modulos.agregacion.entities.*;
+import modulos.buscadores.BuscadorCategoria;
+import modulos.buscadores.BuscadorPais;
+import modulos.agregacion.entities.filtros.*;
+import modulos.fuentes.FuenteEstatica;
+import modulos.usuario.Rol;
+import modulos.usuario.Usuario;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import modulos.agregacion.services.IHechosService;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +44,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Service
-public class HechosService implements IHechosService {
+public class HechosService {
 
 
     private final IHechosProxyRepository hechosProxyRepo;
@@ -81,7 +79,7 @@ public class HechosService implements IHechosService {
         }
     }
 
-    @Override
+
     @Async
     @Scheduled(cron = "0 0 * * * *") // cada hora
     public void refrescarColeccionesCronjob() {
@@ -133,7 +131,6 @@ public class HechosService implements IHechosService {
     }
 
 
-    @Override
     public void mapearHechosAColecciones(List<Hecho> hechos){
 
         List<Coleccion> colecciones = coleccionRepo.findAll();
@@ -144,7 +141,6 @@ public class HechosService implements IHechosService {
         }
     }
 
-    @Override
     public void mapearHechoAColecciones(Hecho hecho){
         List<Coleccion> colecciones = coleccionRepo.findAll();
 
@@ -159,7 +155,6 @@ public class HechosService implements IHechosService {
         }
     }
     //lo sube un administrador (lo considero carga dinamica)
-    @Override
     public RespuestaHttp<Void> subirHecho(SolicitudHechoInputDTO dtoInput) {
 
         FormateadorHecho formateador = new FormateadorHecho();
@@ -192,7 +187,6 @@ public class HechosService implements IHechosService {
         }
     }
 
-    @Override
     public RespuestaHttp<Void> importarHechos(ImportacionHechosInputDTO dtoInput){
         Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario());
         if (usuario.getRol().equals(Rol.ADMINISTRADOR)){
@@ -233,7 +227,6 @@ public class HechosService implements IHechosService {
 
     }
 
-    @Override
     public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechos(FiltroHechosDTO inputDTO) {
 
         FormateadorHecho formateador = new FormateadorHecho();
@@ -257,7 +250,6 @@ public class HechosService implements IHechosService {
         return new RespuestaHttp<>(outputDTO, HttpStatus.OK.value());
     }
 
-    @Override
         public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechos(Long id_coleccion){
 
         Coleccion coleccion = coleccionRepo.findById(id_coleccion);
@@ -283,7 +275,6 @@ public class HechosService implements IHechosService {
 
     }
 
-    @Override
     public RespuestaHttp<List<VisualizarHechosOutputDTO>> getHechosColeccion(GetHechosColeccionInputDTO inputDTO){
         List<Filtro> filter = new ArrayList<>();
 
@@ -363,7 +354,6 @@ public class HechosService implements IHechosService {
     }
 
 
-    @Override
     public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechosProxyMetamapa(){
 
         List<Hecho> hechos = this.getAllHechos();

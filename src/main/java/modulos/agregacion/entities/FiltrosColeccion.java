@@ -1,7 +1,8 @@
-package raiz.models.entities;
+package modulos.agregacion.entities;
 
 import lombok.Data;
-import raiz.models.entities.filtros.*;
+import modulos.agregacion.entities.filtros.*;
+
 
 @Data
 public class FiltrosColeccion {

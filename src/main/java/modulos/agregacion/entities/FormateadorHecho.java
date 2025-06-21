@@ -1,11 +1,18 @@
-package raiz.models.entities;
+package modulos.agregacion.entities;
 
-import raiz.models.dtos.AtributosHecho;
-import raiz.models.dtos.input.CriteriosColeccionDTO;
-import raiz.models.dtos.input.SolicitudHechoInputDTO;
-import raiz.models.entities.buscadores.BuscadorCategoria;
-import raiz.models.entities.buscadores.BuscadorPais;
-import raiz.models.entities.filtros.*;
+
+import modulos.fuentes.Origen;
+import modulos.shared.Categoria;
+import modulos.shared.Hecho;
+import modulos.shared.Pais;
+import modulos.shared.TipoContenido;
+import modulos.shared.dtos.AtributosHecho;
+import modulos.shared.dtos.input.CriteriosColeccionDTO;
+import modulos.shared.dtos.input.SolicitudHechoInputDTO;
+import modulos.buscadores.BuscadorCategoria;
+import modulos.buscadores.BuscadorPais;
+import modulos.agregacion.entities.filtros.*;
+import modulos.shared.utils.FechaParser;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

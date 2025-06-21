@@ -174,12 +174,12 @@ public class FuenteProxy {
             conexion.setRequestProperty("Content-Type", "application/json");
 
             JSONObject jsonBody = new JSONObject();
-            jsonBody.put("categoria", filtros.getCategoria());
-            jsonBody.put("fecha_reporte_desde",filtros.getFechaCargaInicial());
-            jsonBody.put("fecha_reporte_hasta", filtros.getFechaCargaFinal());
-            jsonBody.put("fecha_acontecimiento_desde", filtros.getFechaAcontecimientoInicial());
-            jsonBody.put("fecha_acontecimiento_hasta", filtros.getFechaAcontecimientoFinal());
-            jsonBody.put("ubicacion", filtros.getPais());
+            jsonBody.put("categoria", filtros.getCriterios().getCategoria());
+            jsonBody.put("fecha_reporte_desde",filtros.getCriterios().getFechaCargaInicial());
+            jsonBody.put("fecha_reporte_hasta", filtros.getCriterios().getFechaCargaFinal());
+            jsonBody.put("fecha_acontecimiento_desde", filtros.getCriterios().getFechaAcontecimientoInicial());
+            jsonBody.put("fecha_acontecimiento_hasta", filtros.getCriterios().getFechaAcontecimientoFinal());
+            jsonBody.put("ubicacion", filtros.getCriterios().getPais());
             /*
             * @RequestParam(required = false) String categoria,
             @RequestParam(required = false, name = "fecha_reporte_desde") String fechaReporteDesde,
@@ -266,18 +266,18 @@ public class FuenteProxy {
                     ObjectMapper mapper = new ObjectMapper();
                     FiltroHechosDTO filtros = mapper.readValue(filtrosJson.toString(), FiltroHechosDTO.class);
 
-                    FiltroCategoria filtroCategoria = new FiltroCategoria(BuscadorCategoria.buscar(hechosTotalesDinamica, filtros.getCategoria(), hechosTotalesProxy, hechosTotalesEstatica));
+                    FiltroCategoria filtroCategoria = new FiltroCategoria(BuscadorCategoria.buscar(hechosTotalesDinamica, filtros.getCriterios().getCategoria(), hechosTotalesProxy, hechosTotalesEstatica));
                     filtrosColeccion.add(filtroCategoria);
-                    FiltroPais filtroPais = new FiltroPais(BuscadorPais.buscar(hechosTotalesDinamica, filtros.getPais(), hechosTotalesProxy, hechosTotalesEstatica));
+                    FiltroPais filtroPais = new FiltroPais(BuscadorPais.buscar(hechosTotalesDinamica, filtros.getCriterios().getPais(), hechosTotalesProxy, hechosTotalesEstatica));
                     filtrosColeccion.add(filtroPais);
-                    FiltroFechaCarga filtroFechaCarga = new FiltroFechaCarga(FechaParser.parsearFecha(filtros.getFechaCargaInicial()),FechaParser.parsearFecha(filtros.getFechaCargaFinal()));
+                    FiltroFechaCarga filtroFechaCarga = new FiltroFechaCarga(FechaParser.parsearFecha(filtros.getCriterios().getFechaCargaInicial()),FechaParser.parsearFecha(filtros.getCriterios().getFechaCargaFinal()));
                     filtrosColeccion.add(filtroFechaCarga);
-                    FiltroFechaAcontecimiento filtroFechaAcontecimiento = new FiltroFechaAcontecimiento(FechaParser.parsearFecha(filtros.getFechaAcontecimientoInicial()),FechaParser.parsearFecha(filtros.getFechaAcontecimientoFinal()));
+                    FiltroFechaAcontecimiento filtroFechaAcontecimiento = new FiltroFechaAcontecimiento(FechaParser.parsearFecha(filtros.getCriterios().getFechaAcontecimientoInicial()),FechaParser.parsearFecha(filtros.getCriterios().getFechaAcontecimientoFinal()));
                     filtrosColeccion.add(filtroFechaAcontecimiento);
 
                     List<Hecho> hechos = this.getHechosDeColeccionMetaMapa(url_1, coleccion.getId(), hechosTotalesDinamica, hechosTotalesProxy, hechosTotalesEstatica);
 
-                    coleccion.setCriterio(filtrosColeccion);
+                    coleccion.setCriterios(filtrosColeccion);
                     coleccion.setHechos(hechos);
                     colecciones.add(coleccion);
                 }
