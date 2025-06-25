@@ -1,4 +1,4 @@
-package modulos.agregacion.services.impl;
+package modulos.agregacion.services;
 
 
 import modulos.agregacion.entities.Coleccion;
@@ -19,9 +19,11 @@ import modulos.shared.RespuestaHttp;
 import modulos.shared.dtos.input.ColeccionInputDTO;
 import modulos.shared.dtos.input.ColeccionUpdateInputDTO;
 import modulos.shared.dtos.input.CriteriosColeccionDTO;
+import modulos.shared.dtos.input.ModificarConsensoInputDTO;
 import modulos.usuario.Rol;
 import modulos.usuario.Usuario;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import modulos.agregacion.entities.FormateadorHecho;
 import modulos.agregacion.entities.FiltrosColeccion;
@@ -279,7 +281,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         return new RespuestaHttp<>(null,HttpStatus.OK.value());
     }
 
-    // TODO Cronjob: es importante que no se ejecute cada vez que ingresa un hecho sino en horarios de baja carga en el sistema.
+    @Scheduled(cron = "0 0 3 * * *")
     public void setearHechosConsensuados(){
         List<Coleccion> colecciones = coleccionesRepo.findAll();
         List<Dataset> datasets = hechosEstaticaRepo.getDatasets();
@@ -288,5 +290,33 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
     private void ejecutarAlgoritmoConsenso(List<Coleccion> colecciones, List<Dataset> datasets){
         colecciones.forEach(coleccion->coleccion.getAlgoritmoConsenso().ejecutarAlgoritmoConsenso(datasets));
+    }
+
+    public RespuestaHttp<Void> modificarAlgoritmoConsenso(ModificarConsensoInputDTO input) {
+        Coleccion coleccion = coleccionesRepo.findById(input.getIdColeccion());
+        Usuario usuario = usuariosRepo.findById(input.getIdUsuario());
+
+        if (coleccion == null || usuario == null) {
+            return new RespuestaHttp<>(null, HttpStatus.BAD_REQUEST.value()); // Datos inválidos en la solicitud
+        }
+        if (!usuario.getRol().equals(Rol.ADMINISTRADOR)) {
+            return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
+        }
+
+        switch (input.getTipoConsenso()) {
+            case "mayoria-absoluta":
+                coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaAbsoluta(coleccion));
+                break;
+            case "mayoria-simple":
+                coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaSimple(coleccion));
+                break;
+            case "multiples-menciones":
+                coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMultiplesMenciones(coleccion));
+                break;
+            default:
+                return new RespuestaHttp<>(null, HttpStatus.BAD_REQUEST.value());
+        }
+        coleccionesRepo.update(coleccion);
+        return new RespuestaHttp<>(null, HttpStatus.OK.value());
     }
 }

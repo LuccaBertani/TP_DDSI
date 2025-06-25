@@ -1,7 +1,7 @@
 package modulos.agregacion.controllers;
 
 import jakarta.validation.Valid;
-import modulos.agregacion.services.impl.SolicitudHechoService;
+import modulos.agregacion.services.SolicitudHechoService;
 import modulos.shared.dtos.input.SolicitudHechoEliminarInputDTO;
 import modulos.shared.dtos.input.SolicitudHechoEvaluarInputDTO;
 import modulos.shared.dtos.input.SolicitudHechoInputDTO;

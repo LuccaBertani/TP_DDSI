@@ -1,7 +1,7 @@
 package modulos.agregacion.controllers;
 
 import jakarta.validation.Valid;
-import modulos.agregacion.services.impl.HechosService;
+import modulos.agregacion.services.HechosService;
 import modulos.shared.dtos.input.*;
 import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.shared.RespuestaHttp;

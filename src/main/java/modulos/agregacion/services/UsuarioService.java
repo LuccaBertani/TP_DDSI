@@ -1,4 +1,4 @@
-package modulos.agregacion.services.impl;
+package modulos.agregacion.services;
 
 import modulos.shared.dtos.input.UsuarioInputDTO;
 import modulos.shared.RespuestaHttp;

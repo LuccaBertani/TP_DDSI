@@ -1,6 +1,6 @@
 package modulos.agregacion.controllers;
 
-import modulos.agregacion.services.impl.DatosPersonalesService;
+import modulos.agregacion.services.DatosPersonalesService;
 import modulos.shared.dtos.output.DatosPersonalesOutputDTO;
 import modulos.shared.RespuestaHttp;
 import modulos.usuario.Usuario;

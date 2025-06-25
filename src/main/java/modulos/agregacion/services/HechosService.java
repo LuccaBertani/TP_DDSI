@@ -1,4 +1,4 @@
-package modulos.agregacion.services.impl;
+package modulos.agregacion.services;
 
 import modulos.agregacion.entities.Coleccion;
 import modulos.agregacion.entities.Filtrador;
@@ -37,9 +37,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -53,7 +51,6 @@ public class HechosService {
     private final IUsuarioRepository usuariosRepo;
     private final IColeccionRepository coleccionRepo;
 
-    private final Lock mutexRefrescarColecciones = new ReentrantLock();
 
     public HechosService(IHechosProxyRepository repo, IHechosProxyRepository hechosProxyRepo, IHechosDinamicaRepository hechosDinamicaRepo, IHechosEstaticaRepository hechosEstaticaRepo, IUsuarioRepository usuariosRepo, IColeccionRepository coleccionRepo) {
         this.hechosProxyRepo = hechosProxyRepo;
@@ -65,9 +62,6 @@ public class HechosService {
 
     /* Se pide que, una vez por hora, el servicio de agregación actualice los hechos pertenecientes a las distintas colecciones,
      en caso de que las fuentes hayan incorporado nuevos hechos.*/
-
-    // TODO sincronizar los metodos?
-
     @Async
     @Scheduled(cron = "0 0 * * * *")
     public void actualizarColeccionesCronjob(){
@@ -278,10 +272,12 @@ public class HechosService {
     public RespuestaHttp<List<VisualizarHechosOutputDTO>> getHechosColeccion(GetHechosColeccionInputDTO inputDTO){
         List<Filtro> filter = new ArrayList<>();
 
+        Map<Class<? extends Filtro>, Filtro> filtros = new HashMap<>();
+
         if (inputDTO.getCategoria() != null) {
             Categoria categoria = BuscadorCategoria.buscar(hechosDinamicaRepo.findAll(), inputDTO.getCategoria(), hechosProxyRepo.findAll(), hechosEstaticaRepo.findAll());
             if (categoria!=null)
-                filter.add(new FiltroCategoria(categoria));
+                filtros.put(FiltroCategoria.class, new FiltroCategoria(categoria));
         }
 
         if (inputDTO.getContenidoMultimedia() != null) {

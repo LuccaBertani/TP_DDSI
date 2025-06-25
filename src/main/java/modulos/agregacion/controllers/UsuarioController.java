@@ -1,7 +1,7 @@
 package modulos.agregacion.controllers;
 
 import jakarta.validation.Valid;
-import modulos.agregacion.services.impl.UsuarioService;
+import modulos.agregacion.services.UsuarioService;
 import modulos.shared.dtos.input.UsuarioInputDTO;
 import modulos.shared.RespuestaHttp;
 import modulos.usuario.Usuario;

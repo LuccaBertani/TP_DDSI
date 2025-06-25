@@ -1,7 +1,7 @@
 package modulos.agregacion.controllers;
 
 import jakarta.validation.Valid;
-import modulos.agregacion.services.impl.ColeccionService;
+import modulos.agregacion.services.ColeccionService;
 import modulos.shared.dtos.input.ColeccionInputDTO;
 import modulos.shared.dtos.input.ColeccionUpdateInputDTO;
 import modulos.shared.dtos.input.ModificarConsensoInputDTO;
@@ -66,12 +66,11 @@ public class ColeccionController {
         return ResponseEntity.status(respuesta.getCodigo()).build();
     }
 
-    //
     @PostMapping("/colecciones/modificar-consenso")
     public ResponseEntity<Void> modificarAlgoritmoConsenso(@RequestBody ModificarConsensoInputDTO input) {
-    coleccionService.modificarAlgoritmoConsenso(input);
-    return ResponseEntity.ok().build();
-}
+        RespuestaHttp<Void> respuesta = coleccionService.modificarAlgoritmoConsenso(input);
+        return ResponseEntity.status(respuesta.getCodigo()).build();
+    }
 
 }
 

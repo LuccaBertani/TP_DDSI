@@ -1,4 +1,4 @@
-package modulos.agregacion.services.impl;
+package modulos.agregacion.services;
 
 import modulos.agregacion.entities.Filtrador;
 import modulos.agregacion.repositories.*;
