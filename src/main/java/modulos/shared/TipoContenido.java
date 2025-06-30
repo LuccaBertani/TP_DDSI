@@ -17,6 +17,10 @@ public enum TipoContenido {
         return codigo;
     }
 
+    public String codigoEnString() {
+        return this.name();
+    }
+
     public static TipoContenido fromCodigo(int codigo) {
         for (TipoContenido tipoContenido : TipoContenido.values()) {
             if (tipoContenido.getCodigo() == codigo) {

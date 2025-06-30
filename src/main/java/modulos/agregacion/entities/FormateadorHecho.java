@@ -118,6 +118,45 @@ public FiltrosColeccion formatearFiltrosColeccion(List<Hecho> hechosDinamica, Li
 
 }
 
+public CriteriosColeccionDTO filtrosColeccionToString(List<Hecho> hechosDinamica, List<Hecho> hechosEstatica, List<Hecho> hechosProxy, Map<Class<? extends Filtro>, Filtro> filtros){
+
+    CriteriosColeccionDTO criterios = new CriteriosColeccionDTO();
+    for (Map.Entry<Class<? extends Filtro>, Filtro> entry : filtros.entrySet()) {
+        Filtro filtro = entry.getValue();
+
+        if (filtro instanceof FiltroCategoria) {
+            Categoria categoriaObj = ((FiltroCategoria) filtro).getCategoria();
+            String nombreCategoria = categoriaObj.getTitulo();
+            criterios.setCategoria(nombreCategoria);
+        } else if (filtro instanceof FiltroContenidoMultimedia) {
+            TipoContenido contenido = ((FiltroContenidoMultimedia) filtro).getTipoContenido();
+            criterios.setContenidoMultimedia(contenido.codigoEnString());
+        } else if (filtro instanceof FiltroDescripcion) {
+            String descripcion = ((FiltroDescripcion) filtro).getDescripcion();
+            criterios.setDescripcion(descripcion);
+        } else if (filtro instanceof FiltroFechaAcontecimiento) {
+            criterios.setFechaAcontecimientoInicial(((FiltroFechaAcontecimiento) filtro).getFechaInicial().toString());
+            criterios.setFechaAcontecimientoFinal(((FiltroFechaAcontecimiento) filtro).getFechaFinal().toString());
+        } else if (filtro instanceof FiltroFechaCarga) {
+            criterios.setFechaCargaInicial(((FiltroFechaCarga) filtro).getFechaInicial().toString());
+            criterios.setFechaCargaFinal(((FiltroFechaCarga) filtro).getFechaFinal().toString());
+        } else if (filtro instanceof FiltroOrigen) {
+            Origen origen = ((FiltroOrigen) filtro).getOrigenDeseado();
+            criterios.setContenidoMultimedia(origen.codigoEnString());
+        } else if (filtro instanceof FiltroPais) {
+            Pais pais = ((FiltroPais) filtro).getPais();
+            criterios.setPais(pais.getPais());
+        } else if (filtro instanceof FiltroTitulo) {
+            criterios.setTitulo(((FiltroTitulo) filtro).getTitulo());
+        }
+    }
+
+   return criterios;
+}
+
+
+
+
     public Map<Class<? extends Filtro>, Filtro> obtenerMapaDeFiltros(FiltrosColeccion filtrosColeccion) {
         Map<Class<? extends Filtro>, Filtro> mapa = new HashMap<>();
 

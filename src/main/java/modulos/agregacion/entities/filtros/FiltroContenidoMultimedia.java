@@ -1,8 +1,9 @@
 package modulos.agregacion.entities.filtros;
 
+import lombok.Getter;
 import modulos.shared.Hecho;
 import modulos.shared.TipoContenido;
-
+@Getter
 public class FiltroContenidoMultimedia implements Filtro {
 
     TipoContenido tipoContenido;

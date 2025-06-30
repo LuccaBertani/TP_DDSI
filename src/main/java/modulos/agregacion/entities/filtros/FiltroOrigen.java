@@ -1,8 +1,9 @@
 package modulos.agregacion.entities.filtros;
 
+import lombok.Getter;
 import modulos.shared.Hecho;
 import modulos.fuentes.Origen;
-
+@Getter
 public class FiltroOrigen implements Filtro {
     private Origen origenDeseado;
 

@@ -8,12 +8,9 @@ import modulos.agregacion.repositories.*;
 import modulos.fuentes.Dataset;
 import modulos.fuentes.Origen;
 import modulos.shared.*;
-import modulos.shared.dtos.input.GetHechosColeccionInputDTO;
+import modulos.shared.dtos.input.*;
 import modulos.shared.utils.FechaParser;
 import org.springframework.scheduling.annotation.Async;
-import modulos.shared.dtos.input.FiltroHechosDTO;
-import modulos.shared.dtos.input.ImportacionHechosInputDTO;
-import modulos.shared.dtos.input.SolicitudHechoInputDTO;
 import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.buscadores.BuscadorCategoria;
 import modulos.buscadores.BuscadorPais;
@@ -272,50 +269,22 @@ public class HechosService {
     public RespuestaHttp<List<VisualizarHechosOutputDTO>> getHechosColeccion(GetHechosColeccionInputDTO inputDTO){
         List<Filtro> filter = new ArrayList<>();
 
-        Map<Class<? extends Filtro>, Filtro> filtros = new HashMap<>();
+        Map<Class<? extends Filtro>, Filtro> filtros;
 
-        if (inputDTO.getCategoria() != null) {
-            Categoria categoria = BuscadorCategoria.buscar(hechosDinamicaRepo.findAll(), inputDTO.getCategoria(), hechosProxyRepo.findAll(), hechosEstaticaRepo.findAll());
-            if (categoria!=null)
-                filtros.put(FiltroCategoria.class, new FiltroCategoria(categoria));
-        }
+        FormateadorHecho formateador = new FormateadorHecho();
+        filtros = formateador.obtenerMapaDeFiltros(formateador.formatearFiltrosColeccion(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),new CriteriosColeccionDTO(
+                inputDTO.getCategoria(),
+                inputDTO.getContenidoMultimedia(),
+                inputDTO.getDescripcion(),
+                inputDTO.getFechaAcontecimientoInicial(),
+                inputDTO.getFechaAcontecimientoFinal(),
+                inputDTO.getFechaCargaInicial(),
+                inputDTO.getFechaCargaFinal(),
+                inputDTO.getOrigen(),
+                inputDTO.getPais(),
+                inputDTO.getTitulo()
+        )));
 
-        if (inputDTO.getContenidoMultimedia() != null) {
-            TipoContenido contenido = TipoContenido.fromCodigo(Integer.parseInt(inputDTO.getContenidoMultimedia()));
-            filter.add(new FiltroContenidoMultimedia(contenido));
-        }
-
-        if (inputDTO.getDescripcion() != null) {
-            filter.add(new FiltroDescripcion(inputDTO.getDescripcion()));
-        }
-
-        ZonedDateTime fechaAcontecimientoInicial = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoInicial());
-        ZonedDateTime fechaAcontecimientoFinal = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoFinal());
-        if (fechaAcontecimientoInicial != null && fechaAcontecimientoFinal != null) {
-            filter.add(new FiltroFechaAcontecimiento(fechaAcontecimientoInicial, fechaAcontecimientoFinal));
-        }
-
-        ZonedDateTime fechaCargaInicial = FechaParser.parsearFecha(inputDTO.getFechaCargaInicial());
-        ZonedDateTime fechaCargaFinal = FechaParser.parsearFecha(inputDTO.getFechaCargaFinal());
-        if (inputDTO.getFechaCargaInicial() != null && inputDTO.getFechaCargaFinal() != null) {
-            filter.add(new FiltroFechaCarga(fechaCargaInicial, fechaCargaFinal));
-        }
-
-        if (inputDTO.getOrigen() != null) {
-            Origen origen = Origen.fromCodigo(Integer.parseInt(inputDTO.getOrigen()));
-            filter.add(new FiltroOrigen(origen));
-        }
-
-        String paisString = inputDTO.getPais();
-        if (paisString != null) {
-            Pais pais = BuscadorPais.buscar(hechosDinamicaRepo.findAll(), paisString, hechosProxyRepo.findAll(), hechosEstaticaRepo.findAll());
-            if (pais!=null)
-                filter.add(new FiltroPais(pais));
-        }
-
-        if (inputDTO.getTitulo() != null) {
-            filter.add(new FiltroTitulo(inputDTO.getTitulo()));
-        }
 
         Coleccion coleccion = coleccionRepo.findById(inputDTO.getId_coleccion());
 
@@ -333,7 +302,7 @@ public class HechosService {
         }
 
         List<Hecho> hechosFiltrados = Filtrador
-                .aplicarFiltros(filter, hechosColeccion);
+                .aplicarFiltros(filtros, hechosColeccion);
 
         List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream().map(hecho -> {
             VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();

@@ -16,6 +16,10 @@ public enum Origen {
         return codigo;
     }
 
+    public String codigoEnString() {
+        return this.name();
+    }
+
     public static Origen fromCodigo(int codigo) {
         for (Origen origen : Origen.values()) {
             if (origen.getCodigo() == codigo) {

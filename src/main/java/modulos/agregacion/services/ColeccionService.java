@@ -108,7 +108,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         return new RespuestaHttp<>(null, HttpStatus.CREATED.value());
 
     }
-//TODO El orden fijo global para guardar criterios en la lista de criterios de la coleccion es [filtroCategoria,filtroFechaCarga,filtroFechaAcontecimiento,filtroPais,filtroContenidoMultimedia,FiltroDescripcion,FiltroOrigen,FiltroTitulo]
+
     public RespuestaHttp<List<ColeccionOutputDTO>> obtenerTodasLasColecciones(){
 
         List<ColeccionOutputDTO> listaDTO = new ArrayList<>();
@@ -121,45 +121,9 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             dto.setNombre(coleccion.getTitulo());
             dto.setDescripcion(coleccion.getDescripcion());
 
-            CriteriosColeccionDTO criterios = new CriteriosColeccionDTO();
+            FormateadorHecho formateadorHecho = new FormateadorHecho();
 
-
-            FiltroCategoria categoria = coleccion.obtenerCriterio(FiltroCategoria.class);
-
-            if(categoria != null) {
-                criterios.setCategoria(categoria.getCategoria().getTitulo());
-            }else{
-                criterios.setCategoria("N/A");
-            }
-            FiltroFechaCarga filtroFechaCarga = coleccion.obtenerCriterio(FiltroFechaCarga.class);
-
-            if(filtroFechaCarga != null) {
-                criterios.setFechaCargaInicial(filtroFechaCarga.getFechaInicial().toString());
-                criterios.setFechaCargaFinal(filtroFechaCarga.getFechaFinal().toString());
-            }else{
-                criterios.setFechaCargaInicial("N/A");
-                criterios.setFechaCargaFinal("N/A");
-            }
-
-            FiltroFechaAcontecimiento filtroFechaAcontecimiento = coleccion.obtenerCriterio(FiltroFechaAcontecimiento.class);
-
-            if(filtroFechaAcontecimiento != null) {
-                criterios.setFechaAcontecimientoInicial(filtroFechaAcontecimiento.getFechaInicial().toString());
-                criterios.setFechaAcontecimientoFinal(filtroFechaAcontecimiento.getFechaFinal().toString());
-            }
-            else{
-                criterios.setFechaAcontecimientoInicial("N/A");
-                criterios.setFechaAcontecimientoFinal("N/A");
-            }
-
-            FiltroPais filtroPais = coleccion.obtenerCriterio(FiltroPais.class);
-
-            if(filtroPais != null) {
-                criterios.setPais(filtroPais.getPais().toString());
-            }
-            else{
-                criterios.setPais("N/A");
-            }
+            CriteriosColeccionDTO criterios = formateadorHecho.filtrosColeccionToString(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),coleccion.getCriterios());
 
             dto.setCriterios(criterios);
 

@@ -16,6 +16,7 @@ public class GetHechosColeccionInputDTO {
     private String pais;
     private String titulo;
 
+
     @NotNull(message = "La forma de navegación debe ser especificada")
     private Boolean navegacionCurada;
 
