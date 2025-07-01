@@ -20,9 +20,9 @@ import modulos.buscadores.BuscadorPais;
 
 public class LectorCSV {
     private static List<String> campos = new ArrayList<>(Arrays.asList("titulo","descripcion","categoria","latitud","longitud","fechadelhecho","pais"));
-    private String dataSet;
+    private Dataset dataSet;
 
-    public LectorCSV(String dataSet){
+    public LectorCSV(Dataset dataSet){
         this.dataSet=dataSet;
     }
 
@@ -152,13 +152,13 @@ public class LectorCSV {
     // Entrega 3: los hechos no se pisan los atributos
 
 
-    public ModificadorHechos leerCSV(List<Hecho> hechosFuenteProxy, List<Hecho> hechosFuenteDinamica, List<Hecho> hechosFuenteEstatica) {
+    public List<Hecho> leerCSV(List<Hecho> hechosFuenteProxy, List<Hecho> hechosFuenteDinamica, List<Hecho> hechosFuenteEstatica) {
 
         List<Hecho> hechosASubir = new ArrayList<>();
-        Set<Hecho> hechosAModificar = new HashSet<>();
-        try {
-            Reader reader = new InputStreamReader(new FileInputStream(this.dataSet), Charset.forName("ISO-8859-1"));
 
+        try {
+            Reader reader = new InputStreamReader(new FileInputStream(this.dataSet.getFuente()), Charset.forName("ISO-8859-1"));
+            //Reader reader = new InputStreamReader(new FileInputStream(this.dataSet), Charset.forName("ISO-8859-1"));
             CSVFormat formato = CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
                     .withDelimiter(';')
@@ -172,7 +172,7 @@ public class LectorCSV {
             if(headers.size() == 1){
                 parser.close();
 
-                reader = new FileReader(this.dataSet);
+                reader = new FileReader(this.dataSet.getFuente());
 
                 formato = CSVFormat.DEFAULT
                         .withFirstRecordAsHeader()
@@ -238,16 +238,16 @@ public class LectorCSV {
 
                 hecho.setFechaDeCarga(ZonedDateTime.now());
                 hecho.setFechaUltimaActualizacion(hecho.getFechaDeCarga());
-
+                hecho.getDatasets().add(this.dataSet);
                 if (tituloRepetido){
                     boolean existeHechoIdentico = BuscadorHechoIdentico.existeHechoIdentico(hecho, hechosFuenteEstatica);
                     if (existeHechoIdentico){
-                        hechosAModificar.add(hecho);
                         continue; // Evito agregar un hecho identico
                     }
                 }
 
                 hechosASubir.add(hecho);
+
 
                 System.out.println("Hechos a subir: ");
                 for (Hecho hechoASubir : hechosASubir){
@@ -265,7 +265,7 @@ public class LectorCSV {
             throw new RuntimeException("Error al leer el archivo CSV: " + e.getMessage(), e);
         }
 
-        return new ModificadorHechos(hechosASubir, hechosAModificar);
+        return hechosASubir;
     }
 
 

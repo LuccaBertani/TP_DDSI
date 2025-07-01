@@ -10,10 +10,12 @@ import java.util.List;
 public class ColeccionUpdateInputDTO {
     @NotNull(message = "el id_coleccion es obligatorio")
     private Long id_coleccion;
+    @NotNull(message = "el usuario es dawn")
+    private Long id_usuario;
 
     private String titulo;
     private String descripcion;
-
+    private Boolean reemplazarHechos;
     //Criterios (es decir los filtros)
     private String categoria;
     private Integer contenidoMultimedia;

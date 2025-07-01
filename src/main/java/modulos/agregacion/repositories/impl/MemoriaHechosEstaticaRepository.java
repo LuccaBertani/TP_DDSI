@@ -8,12 +8,19 @@ import modulos.agregacion.repositories.IHechosEstaticaRepository;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO Pasar dataset a un repo individual
 @Repository
 public class MemoriaHechosEstaticaRepository implements IHechosEstaticaRepository {
 
     private List<Hecho> hechos;
     private List<Hecho> snapshotHechos;
     private List<Dataset> datasets;
+
+    /*
+    dataset_id | string_dataset
+
+     */
+
 
     public MemoriaHechosEstaticaRepository() {
         this.hechos = new ArrayList<>();

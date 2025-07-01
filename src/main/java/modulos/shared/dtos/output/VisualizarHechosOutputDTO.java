@@ -4,7 +4,7 @@ package modulos.shared.dtos.output;
 import lombok.Data;
 import lombok.Setter;
 
-@Setter
+@Data
 public class VisualizarHechosOutputDTO {
     private Long id;
     private String titulo;
@@ -12,4 +12,5 @@ public class VisualizarHechosOutputDTO {
     private String categoria;
     private String pais;
     private String fechaAcontecimiento;
+    private int contenidoMultimedia;
 }

@@ -108,10 +108,10 @@ public class HechosService {
             for (Hecho hecho: hechos){
 
                 Long hechoId = hecho.getId();
-                Origen hechoOrigen = hecho.getOrigen();
+                Origen hechoOrigen = hecho.getAtributosHecho().getOrigen();
 
                 Hecho hechoEncontrado = hechosColeccion.stream()
-                                        .filter(h -> h.getId().equals(hechoId) && h.getOrigen().equals(hechoOrigen))
+                                        .filter(h -> h.getId().equals(hechoId) && h.getAtributosHecho().getOrigen().equals(hechoOrigen))
                                         .findFirst().orElse(null);
                 if (hechoEncontrado != null && !Filtrador.hechoPasaFiltros(coleccion.getCriterios(), hecho)){
                     hechosColeccion.remove(hecho);
@@ -183,34 +183,23 @@ public class HechosService {
         if (usuario.getRol().equals(Rol.ADMINISTRADOR)){
 
             FuenteEstatica fuente = new FuenteEstatica();
-            fuente.setDataSet(dtoInput.getFuenteString());
+            Dataset dataset = new Dataset(dtoInput.getFuenteString(), hechosEstaticaRepo.getProxIdDataset());
+            hechosEstaticaRepo.saveDataset(dataset);
+            fuente.setDataSet(dataset);
 
-            ModificadorHechos modificadorHechos = fuente.leerFuente(hechosDinamicaRepo.findAll(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
-
-            List<Hecho> hechosASubir = modificadorHechos.getHechosASubir();
-            Set<Hecho> hechosAModificar = modificadorHechos.getHechosAModificar();
+            List<Hecho> hechos = fuente.leerFuente(hechosDinamicaRepo.findAll(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
 
 
-            if (hechosASubir.isEmpty() && hechosAModificar.isEmpty()){
+            if (hechos.isEmpty()){
                 return new RespuestaHttp<>(null, HttpStatus.NO_CONTENT.value());
             }
 
-            Dataset dataset = new Dataset();
-            dataset.setFuente(dtoInput.getFuenteString());
-            dataset.setId(hechosEstaticaRepo.getProxIdDataset());
-
-            hechosEstaticaRepo.saveDataset(dataset);
-
-            for (Hecho hecho : hechosASubir){
+            for (Hecho hecho : hechos){
                 hecho.setId(hechosEstaticaRepo.getProxId());
-                hecho.getDatasets().add(dataset);
                 hechosEstaticaRepo.getSnapshotHechos().add(hecho);
                 hechosEstaticaRepo.save(hecho);
             }
 
-            for (Hecho hecho : hechosAModificar){
-                hecho.getDatasets().add(dataset); // Se agregan los datasets de los hechos identicos
-            }
             return new RespuestaHttp<>(null, HttpStatus.CREATED.value());
         }
 

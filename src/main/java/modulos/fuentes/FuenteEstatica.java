@@ -12,10 +12,10 @@ import java.util.List;
 @Getter
 @Setter
 public class FuenteEstatica {
-    private String dataSet;
-    public ModificadorHechos leerFuente(List<Hecho> hechosFuenteProxy, List<Hecho> hechosFuenteDinamica, List<Hecho> hechosFuenteEstatica){
+    private Dataset dataSet;
+    public List<Hecho> leerFuente(List<Hecho> hechosFuenteProxy, List<Hecho> hechosFuenteDinamica, List<Hecho> hechosFuenteEstatica){
 
-        String[] nombreArchivo = this.dataSet.split("\\.");
+        String[] nombreArchivo = this.dataSet.getFuente().split("\\.");
         String formato = nombreArchivo[1].toLowerCase();
         if (formato.equals("csv")){
             var lectorCSV = new LectorCSV(this.dataSet);
@@ -23,9 +23,11 @@ public class FuenteEstatica {
         }
         else if (formato.equals("json")){
             //TODO el lector del formato JSON
-            return new ModificadorHechos(new ArrayList<>(), new HashSet<>());
+            List<Hecho> lista = new ArrayList<>();
+            return lista;
         }
 
-        return new ModificadorHechos(new ArrayList<>(), new HashSet<>());
+        List<Hecho> lista = new ArrayList<>();
+        return lista;
     }
 }

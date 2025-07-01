@@ -262,9 +262,11 @@ public class FuenteProxy {
                     Coleccion coleccion = new Coleccion(datosColeccion, obj.getLong("id"));
                     coleccion.setTitulo(obj.getString("titulo"));
                     coleccion.setDescripcion(obj.getString("descripcion"));
-                    JSONObject filtrosJson = obj.getJSONObject("filtros");
+                    JSONObject filtrosJson = obj.getJSONObject("criterios");
                     ObjectMapper mapper = new ObjectMapper();
                     FiltroHechosDTO filtros = mapper.readValue(filtrosJson.toString(), FiltroHechosDTO.class);
+
+
 
                     FiltroCategoria filtroCategoria = new FiltroCategoria(BuscadorCategoria.buscar(hechosTotalesDinamica, filtros.getCriterios().getCategoria(), hechosTotalesProxy, hechosTotalesEstatica));
                     filtrosColeccion.add(filtroCategoria);
@@ -276,6 +278,7 @@ public class FuenteProxy {
                     filtrosColeccion.add(filtroFechaAcontecimiento);
 
                     List<Hecho> hechos = this.getHechosDeColeccionMetaMapa(url_1, coleccion.getId(), hechosTotalesDinamica, hechosTotalesProxy, hechosTotalesEstatica);
+                    Formateador formateador = new Formateador();
 
                     coleccion.setCriterios(filtrosColeccion);
                     coleccion.setHechos(hechos);

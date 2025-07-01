@@ -5,6 +5,10 @@ import lombok.Setter;
 import modulos.shared.Hecho;
 import modulos.agregacion.entities.algoritmosConsenso.IAlgoritmoConsenso;
 import modulos.agregacion.entities.filtros.Filtro;
+import modulos.shared.RespuestaHttp;
+import modulos.shared.dtos.input.ColeccionUpdateInputDTO;
+import modulos.shared.dtos.input.CriteriosColeccionDTO;
+import org.springframework.http.HttpStatus;
 
 import java.util.*;
 
@@ -50,6 +54,27 @@ public class Coleccion {
     public void addCriterios(List<Filtro> filtros){
         for (Filtro filtro : filtros) {
             this.criterios.put(filtro.getClass(), filtro);  // Sobrescribe si ya había uno del mismo tipo
+        }
+    }
+    //TODO agregar boolean para remplazo de hechos o agregacion
+    public void actualizar(ColeccionUpdateInputDTO dto, Map<Class<? extends Filtro>, Filtro> criteriosColeccion, List<Hecho> hechos){
+
+        if(dto.getTitulo() != null){
+            this.setTitulo(dto.getTitulo());
+        }
+        if(dto.getDescripcion() != null){
+            this.setDescripcion(dto.getDescripcion());
+        }
+        if(criteriosColeccion != null){
+            this.criterios = criteriosColeccion;
+        }
+        if(dto.getHechos() != null){
+            if(dto.getReemplazarHechos()){
+                this.hechos = hechos;
+            }
+            else{
+                this.hechos.addAll(hechos);
+            }
         }
     }
 
