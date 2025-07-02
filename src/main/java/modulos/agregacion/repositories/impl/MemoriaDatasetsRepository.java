@@ -3,10 +3,12 @@ package modulos.agregacion.repositories.impl;
 import modulos.agregacion.entities.Coleccion;
 import modulos.agregacion.repositories.IDatasetsRepository;
 import modulos.fuentes.Dataset;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class MemoriaDatasetsRepository implements IDatasetsRepository {
     List<Dataset> datasets;
 
