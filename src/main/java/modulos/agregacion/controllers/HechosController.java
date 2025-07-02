@@ -32,37 +32,24 @@ public class HechosController {
         RespuestaHttp<Void> respuesta = hechosService.importarHechos(dtoInput);
         return ResponseEntity.status(respuesta.getCodigo()).build(); // 201, 204 o 401
     }
-
-    @GetMapping("/colecciones/{identificador}/hechos")
-    public ResponseEntity<List<VisualizarHechosOutputDTO>> visualizarHechos( @PathVariable("identificador") Long id_coleccion){
-
-        RespuestaHttp<List<VisualizarHechosOutputDTO>> outputDTO = hechosService.navegarPorHechos(id_coleccion);
-
+// todos los hechos del sistema
+    @GetMapping("/get-all")
+    public ResponseEntity<List<VisualizarHechosOutputDTO>> visualizarHechos(){
+        RespuestaHttp<List<VisualizarHechosOutputDTO>> outputDTO = hechosService.getAllHechos();
         return ResponseEntity.status(outputDTO.getCodigo()).body(outputDTO.getDatos());
     }
-
-    @PostMapping("/visualizar/filtrar")
-    public ResponseEntity<List<VisualizarHechosOutputDTO>> visualizarHechosFiltrados(
-            @RequestBody FiltroHechosDTO inputDTO)
-    {
-
-        RespuestaHttp<List<VisualizarHechosOutputDTO>> outputDTO = hechosService.navegarPorHechos(inputDTO);
-
-        return ResponseEntity.status(outputDTO.getCodigo()).body(outputDTO.getDatos());
-    }
-
-    @PostMapping("/ver/filtrar")
+//hechos filtrados de una coleccion
+    @PostMapping("/get/filtrar")
     public ResponseEntity<List<VisualizarHechosOutputDTO>> visualizarHechosFiltrados(
             @RequestBody GetHechosColeccionInputDTO inputDTO)
     {
-
         RespuestaHttp<List<VisualizarHechosOutputDTO>> outputDTO = hechosService.getHechosColeccion(inputDTO);
         return ResponseEntity.status(outputDTO.getCodigo()).body(outputDTO.getDatos());
     }
 
 
-
-    @GetMapping("/visualizar/hechos")
+//hechos filtrados de all el sistema
+    @GetMapping("/get")
     public ResponseEntity<List<VisualizarHechosOutputDTO>> listarHechos(
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false, name = "fecha_reporte_desde") String fechaReporteDesde,
@@ -73,29 +60,16 @@ public class HechosController {
     )
     {
 
-        FiltroHechosDTO filtros = new FiltroHechosDTO();
-        filtros.getCriterios().setCategoria(categoria);
-        filtros.getCriterios().setFechaCargaInicial(fechaReporteDesde);
-        filtros.getCriterios().setFechaCargaFinal(fechaReporteHasta);
-        filtros.getCriterios().setFechaAcontecimientoInicial(fechaAcontecimientoDesde);
-        filtros.getCriterios().setFechaAcontecimientoFinal(fechaAcontecimientoHasta);
-        filtros.getCriterios().setPais(ubicacion);
+        GetHechosColeccionInputDTO dto = new GetHechosColeccionInputDTO();
+        dto.setCategoria(categoria);
+        dto.setFechaCargaInicial(fechaReporteDesde);
+        dto.setFechaCargaFinal(fechaReporteHasta);
+        dto.setFechaAcontecimientoInicial(fechaAcontecimientoDesde);
+        dto.setFechaAcontecimientoFinal(fechaAcontecimientoHasta);
+        dto.setPais(ubicacion);
 
-        RespuestaHttp<List<VisualizarHechosOutputDTO>> respuesta = hechosService.navegarPorHechos(filtros);
+        RespuestaHttp<List<VisualizarHechosOutputDTO>> respuesta = hechosService.getHechosColeccion(dto);
         return ResponseEntity.status(respuesta.getCodigo()).body(respuesta.getDatos());
-    }
-
-    @GetMapping("/visualizar/hechos-proxy-metamapa")
-    public ResponseEntity<List<VisualizarHechosOutputDTO>> visualizarHechosProxyMetamapa()
-    {
-        RespuestaHttp<List<VisualizarHechosOutputDTO>> outputDTO = hechosService.navegarPorHechosProxyMetamapa();
-        return ResponseEntity.status(outputDTO.getCodigo()).body(outputDTO.getDatos());
-    }
-
-    @PostMapping("/colecciones/refrescar")
-    public ResponseEntity<Void> refrescarColecciones(@Valid @RequestBody RefrescarColeccionesInputDTO inputDTO){
-        RespuestaHttp<Void> respuesta = hechosService.refrescarColecciones(inputDTO.getIdUsuario());
-        return ResponseEntity.status(respuesta.getCodigo()).build();
     }
 
     @GetMapping("/prueba")

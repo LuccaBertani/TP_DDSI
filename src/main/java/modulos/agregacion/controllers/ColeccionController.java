@@ -2,9 +2,11 @@ package modulos.agregacion.controllers;
 
 import jakarta.validation.Valid;
 import modulos.agregacion.services.ColeccionService;
+import modulos.agregacion.services.HechosService;
 import modulos.shared.dtos.input.ColeccionInputDTO;
 import modulos.shared.dtos.input.ColeccionUpdateInputDTO;
 import modulos.shared.dtos.input.ModificarConsensoInputDTO;
+import modulos.shared.dtos.input.RefrescarColeccionesInputDTO;
 import modulos.shared.dtos.output.ColeccionOutputDTO;
 import modulos.shared.RespuestaHttp;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,11 @@ import java.util.List;
 public class ColeccionController {
 
     private final ColeccionService coleccionService;
+    private final HechosService hechosService;
 
-    public ColeccionController(ColeccionService coleccionService){
+    public ColeccionController(ColeccionService coleccionService, HechosService hechosService){
         this.coleccionService = coleccionService;
+        this.hechosService = hechosService;
     }
 
     @PostMapping("/crear")
@@ -28,7 +32,7 @@ public class ColeccionController {
         return ResponseEntity.status(respuesta.getCodigo()).build(); // 201 o 401
     }
 
-    @GetMapping("/getAll")
+    @GetMapping("/get-all")
     public ResponseEntity<List<ColeccionOutputDTO>> obtenerTodasLasColecciones() {
         RespuestaHttp<List<ColeccionOutputDTO>> respuesta = coleccionService.obtenerTodasLasColecciones();
         return ResponseEntity.status(respuesta.getCodigo()).body(respuesta.getDatos());
@@ -69,6 +73,12 @@ public class ColeccionController {
     @PostMapping("/colecciones/modificar-consenso")
     public ResponseEntity<Void> modificarAlgoritmoConsenso(@RequestBody ModificarConsensoInputDTO input) {
         RespuestaHttp<Void> respuesta = coleccionService.modificarAlgoritmoConsenso(input);
+        return ResponseEntity.status(respuesta.getCodigo()).build();
+    }
+
+    @PostMapping("/colecciones/refrescar")
+    public ResponseEntity<Void> refrescarColecciones(@Valid @RequestBody RefrescarColeccionesInputDTO inputDTO){
+        RespuestaHttp<Void> respuesta = hechosService.refrescarColecciones(inputDTO.getIdUsuario());
         return ResponseEntity.status(respuesta.getCodigo()).build();
     }
 

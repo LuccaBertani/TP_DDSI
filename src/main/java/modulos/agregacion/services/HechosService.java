@@ -47,14 +47,15 @@ public class HechosService {
     private final IHechosEstaticaRepository hechosEstaticaRepo;
     private final IUsuarioRepository usuariosRepo;
     private final IColeccionRepository coleccionRepo;
+    private final IDatasetsRepository datasetsRepo;
 
-
-    public HechosService(IHechosProxyRepository repo, IHechosProxyRepository hechosProxyRepo, IHechosDinamicaRepository hechosDinamicaRepo, IHechosEstaticaRepository hechosEstaticaRepo, IUsuarioRepository usuariosRepo, IColeccionRepository coleccionRepo) {
+    public HechosService(IHechosProxyRepository repo, IHechosProxyRepository hechosProxyRepo, IHechosDinamicaRepository hechosDinamicaRepo, IHechosEstaticaRepository hechosEstaticaRepo, IUsuarioRepository usuariosRepo, IColeccionRepository coleccionRepo, IDatasetsRepository datasetsRepo) {
         this.hechosProxyRepo = hechosProxyRepo;
         this.hechosDinamicaRepo = hechosDinamicaRepo;
         this.hechosEstaticaRepo = hechosEstaticaRepo;
         this.usuariosRepo = usuariosRepo;
         this.coleccionRepo = coleccionRepo;
+        this.datasetsRepo = datasetsRepo;
     }
 
     /* Se pide que, una vez por hora, el servicio de agregación actualice los hechos pertenecientes a las distintas colecciones,
@@ -183,8 +184,8 @@ public class HechosService {
         if (usuario.getRol().equals(Rol.ADMINISTRADOR)){
 
             FuenteEstatica fuente = new FuenteEstatica();
-            Dataset dataset = new Dataset(dtoInput.getFuenteString(), hechosEstaticaRepo.getProxIdDataset());
-            hechosEstaticaRepo.saveDataset(dataset);
+            Dataset dataset = new Dataset(dtoInput.getFuenteString(), datasetsRepo.getProxId());
+            datasetsRepo.save(dataset);
             fuente.setDataSet(dataset);
 
             List<Hecho> hechos = fuente.leerFuente(hechosDinamicaRepo.findAll(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
@@ -207,56 +208,7 @@ public class HechosService {
 
     }
 
-    public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechos(FiltroHechosDTO inputDTO) {
-
-        FormateadorHecho formateador = new FormateadorHecho();
-
-        FiltrosColeccion filtros =  formateador.formatearFiltrosColeccion(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),inputDTO.getCriterios());
-
-        List<Hecho> hechosFiltrados = Filtrador
-                .aplicarFiltros(formateador.obtenerMapaDeFiltros(filtros), this.getAllHechos());
-
-        List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream().map(hecho -> {
-            VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
-            dto.setId(hecho.getId());
-            dto.setPais(hecho.getPais().getPais());
-            dto.setTitulo(hecho.getTitulo());
-            dto.setDescripcion(hecho.getDescripcion());
-            dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento().toString());
-            dto.setCategoria(hecho.getCategoria().getTitulo());
-            return dto;
-        }).toList();
-
-        return new RespuestaHttp<>(outputDTO, HttpStatus.OK.value());
-    }
-
-        public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechos(Long id_coleccion){
-
-        Coleccion coleccion = coleccionRepo.findById(id_coleccion);
-
-        List<VisualizarHechosOutputDTO> outputDTO = new ArrayList<>();
-
-        for(Hecho hecho : coleccion.getHechos()){
-
-            VisualizarHechosOutputDTO hechoDTO = new VisualizarHechosOutputDTO();
-
-            hechoDTO.setId(hecho.getId());
-            hechoDTO.setPais(hecho.getPais().getPais());
-            hechoDTO.setTitulo(hecho.getTitulo());
-            hechoDTO.setDescripcion(hecho.getDescripcion());
-            hechoDTO.setFechaAcontecimiento(hecho.getFechaAcontecimiento().toString());
-            hechoDTO.setCategoria(hecho.getCategoria().getTitulo());
-
-            outputDTO.add(hechoDTO);
-
-        }
-
-        return new RespuestaHttp<>(outputDTO,HttpStatus.OK.value());
-
-    }
-
     public RespuestaHttp<List<VisualizarHechosOutputDTO>> getHechosColeccion(GetHechosColeccionInputDTO inputDTO){
-        List<Filtro> filter = new ArrayList<>();
 
         Map<Class<? extends Filtro>, Filtro> filtros;
 
@@ -273,7 +225,6 @@ public class HechosService {
                 inputDTO.getPais(),
                 inputDTO.getTitulo()
         )));
-
 
         Coleccion coleccion = coleccionRepo.findById(inputDTO.getId_coleccion());
 
@@ -307,38 +258,24 @@ public class HechosService {
         return new RespuestaHttp<>(outputDTO, HttpStatus.OK.value());
     }
 
-
-    public RespuestaHttp<List<VisualizarHechosOutputDTO>> navegarPorHechosProxyMetamapa(){
-
-        List<Hecho> hechos = this.getAllHechos();
-        List<Hecho> hechosProxyMetamapa = hechos.stream().filter(hecho->hecho.getOrigen().equals(Origen.FUENTE_PROXY_METAMAPA)).toList();
-        List<VisualizarHechosOutputDTO> outputDTO = new ArrayList<>();
-        for (Hecho hecho : hechosProxyMetamapa){
-            VisualizarHechosOutputDTO hechoDTO = new VisualizarHechosOutputDTO();
-
-            hechoDTO.setId(hecho.getId());
-            hechoDTO.setPais(hecho.getPais().getPais());
-            hechoDTO.setTitulo(hecho.getTitulo());
-            hechoDTO.setDescripcion(hecho.getDescripcion());
-            hechoDTO.setFechaAcontecimiento(hecho.getFechaAcontecimiento().toString());
-            hechoDTO.setCategoria(hecho.getCategoria().getTitulo());
-
-            outputDTO.add(hechoDTO);
-        }
-
-        return new RespuestaHttp<>(outputDTO,HttpStatus.OK.value());
-
-    }
-
-    public List<Hecho> getAllHechos(){
+    public RespuestaHttp<List<VisualizarHechosOutputDTO>> getAllHechos() {
         List<Hecho> hechosTotales = new ArrayList<>();
         hechosTotales.addAll(hechosDinamicaRepo.findAll());
         hechosTotales.addAll(hechosProxyRepo.findAll());
         hechosTotales.addAll(hechosEstaticaRepo.findAll());
-        return hechosTotales;
+
+        List<VisualizarHechosOutputDTO> outputDTO = hechosTotales.stream().map(hecho -> {
+            VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
+            dto.setId(hecho.getId());
+            dto.setPais(hecho.getPais().getPais());
+            dto.setTitulo(hecho.getTitulo());
+            dto.setDescripcion(hecho.getDescripcion());
+            dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento().toString());
+            dto.setCategoria(hecho.getCategoria().getTitulo());
+            return dto;
+        }).toList();
+
+        return new RespuestaHttp<>(outputDTO,HttpStatus.OK.value());
     }
-
-
-
 
 }

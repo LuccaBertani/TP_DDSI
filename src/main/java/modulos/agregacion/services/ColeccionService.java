@@ -30,13 +30,15 @@ public class ColeccionService  {
     private final IHechosDinamicaRepository hechosDinamicaRepo;
     private final IColeccionRepository coleccionesRepo;
     private final IUsuarioRepository usuariosRepo;
+    private final IDatasetsRepository datasetsRepo;
 
-    public ColeccionService(IHechosProxyRepository hechosProxyRepo, IHechosEstaticaRepository hechosEstaticaRepo, IHechosDinamicaRepository hechosDinamicaRepo, IColeccionRepository coleccionesRepo, IUsuarioRepository usuariosRepo) {
+    public ColeccionService(IHechosProxyRepository hechosProxyRepo, IHechosEstaticaRepository hechosEstaticaRepo, IHechosDinamicaRepository hechosDinamicaRepo, IColeccionRepository coleccionesRepo, IUsuarioRepository usuariosRepo, IDatasetsRepository datasetsRepo) {
         this.hechosProxyRepo = hechosProxyRepo;
         this.hechosEstaticaRepo = hechosEstaticaRepo;
         this.hechosDinamicaRepo = hechosDinamicaRepo;
         this.coleccionesRepo = coleccionesRepo;
         this.usuariosRepo = usuariosRepo;
+        this.datasetsRepo = datasetsRepo;
     }
 
 
@@ -115,7 +117,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
             FormateadorHecho formateadorHecho = new FormateadorHecho();
 
-            CriteriosColeccionDTO criterios = formateadorHecho.filtrosColeccionToString(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),coleccion.getCriterios());
+            CriteriosColeccionDTO criterios = formateadorHecho.filtrosColeccionToString(coleccion.getCriterios());
 
             dto.setCriterios(criterios);
 
@@ -140,7 +142,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
         FormateadorHecho formateadorHecho = new FormateadorHecho();
 
-        CriteriosColeccionDTO criterios = formateadorHecho.filtrosColeccionToString(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),coleccion.getCriterios());
+        CriteriosColeccionDTO criterios = formateadorHecho.filtrosColeccionToString(coleccion.getCriterios());
 
         dto.setCriterios(criterios);
 
@@ -160,7 +162,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     public RespuestaHttp<Void> agregarFuente(Long idColeccion, String dataSet) {
         Coleccion coleccion = coleccionesRepo.findById(idColeccion);
         FuenteEstatica fuente = new FuenteEstatica();
-        Dataset dataset = new Dataset(dataSet, hechosEstaticaRepo.getProxIdDataset());
+        Dataset dataset = new Dataset(dataSet, datasetsRepo.getProxId());
         fuente.setDataSet(dataset);
 
         List<Hecho> hechosFuente = fuente.leerFuente(hechosProxyRepo.findAll(),hechosDinamicaRepo.findAll(), hechosEstaticaRepo.findAll());
@@ -171,7 +173,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
     public RespuestaHttp<Void> eliminarFuente(Long idColeccion, String datasetString) {
         Coleccion coleccion = coleccionesRepo.findById(idColeccion);
-        Dataset dataset = new Dataset(datasetString, hechosEstaticaRepo.getProxIdDataset());
+        Dataset dataset = new Dataset(datasetString, datasetsRepo.getProxId());
         coleccion.getHechos().forEach(
                 hecho -> {
                     if(hecho.getDatasets().contains(dataset)){
@@ -217,7 +219,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     @Scheduled(cron = "0 0 3 * * *")
     public void setearHechosConsensuados(){
         List<Coleccion> colecciones = coleccionesRepo.findAll();
-        List<Dataset> datasets = hechosEstaticaRepo.getDatasets();
+        List<Dataset> datasets = datasetsRepo.findAll();
         this.ejecutarAlgoritmoConsenso(colecciones, datasets);
     }
 

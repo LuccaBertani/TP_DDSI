@@ -118,7 +118,7 @@ public FiltrosColeccion formatearFiltrosColeccion(List<Hecho> hechosDinamica, Li
 
 }
 
-public CriteriosColeccionDTO filtrosColeccionToString(List<Hecho> hechosDinamica, List<Hecho> hechosEstatica, List<Hecho> hechosProxy, Map<Class<? extends Filtro>, Filtro> filtros){
+public CriteriosColeccionDTO filtrosColeccionToString(Map<Class<? extends Filtro>, Filtro> filtros){
 
     CriteriosColeccionDTO criterios = new CriteriosColeccionDTO();
     for (Map.Entry<Class<? extends Filtro>, Filtro> entry : filtros.entrySet()) {

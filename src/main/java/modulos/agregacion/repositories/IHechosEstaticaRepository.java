@@ -14,7 +14,4 @@ public interface IHechosEstaticaRepository {
     void update(Hecho entidad);
     public List<Hecho> getSnapshotHechos();
     public void clearSnapshotHechos();
-    public List<Dataset> getDatasets();
-    long getProxIdDataset();
-    void saveDataset(Dataset dataset);
 }

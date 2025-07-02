@@ -7,6 +7,7 @@ import modulos.agregacion.entities.filtros.*;
 import modulos.shared.Hecho;
 import modulos.agregacion.entities.DatosColeccion;
 import modulos.shared.dtos.input.CriteriosColeccionDTO;
+import modulos.shared.dtos.input.GetHechosColeccionInputDTO;
 import modulos.shared.utils.FechaParser;
 import modulos.shared.utils.Geocodificador;
 import org.json.JSONArray;
@@ -16,9 +17,11 @@ import modulos.shared.dtos.input.SolicitudHechoEliminarInputDTO;
 import modulos.buscadores.BuscadorCategoria;
 import modulos.buscadores.BuscadorPais;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,10 +30,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class FuenteProxy {
 
-    private String url_base = "https://api-ddsi.disilab.ar/public/api";
+    private final String url_base = "https://api-ddsi.disilab.ar/public/api";
     private String access_token;
 
-    public Boolean login(String email, String contraseña){
+    public Boolean login(String email, String contrasenia){
         try{
             String urlStr = url_base + "/login";
             URL url = new URL(urlStr);
@@ -41,10 +44,10 @@ public class FuenteProxy {
 
             JSONObject jsonBody = new JSONObject();
             jsonBody.put("email", email);
-            jsonBody.put("password", contraseña);
+            jsonBody.put("password", contrasenia);
 
             try(OutputStream os = conexion.getOutputStream()){
-                byte[] input = jsonBody.toString().getBytes("utf-8");
+                byte[] input = jsonBody.toString().getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
             }
 
@@ -170,7 +173,7 @@ public class FuenteProxy {
     public List<Hecho> getHechosMetaMapa(String url_1, FiltroHechosDTO filtros, List<Hecho> hechosTotalesDinamica, List<Hecho> hechosTotalesProxy, List<Hecho> hechosTotalesEstatica){
 
         try {
-            String urlStr = url_1 + "/visualizar/hechos";
+            String urlStr = url_1 + "/get";
             URL url = new URL(urlStr);
             HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
             conexion.setRequestMethod("GET");
@@ -184,17 +187,9 @@ public class FuenteProxy {
             jsonBody.put("fecha_acontecimiento_desde", filtros.getCriterios().getFechaAcontecimientoInicial());
             jsonBody.put("fecha_acontecimiento_hasta", filtros.getCriterios().getFechaAcontecimientoFinal());
             jsonBody.put("ubicacion", filtros.getCriterios().getPais());
-            /*
-            * @RequestParam(required = false) String categoria,
-            @RequestParam(required = false, name = "fecha_reporte_desde") String fechaReporteDesde,
-            @RequestParam(required = false, name = "fecha_reporte_hasta") String fechaReporteHasta,
-            @RequestParam(required = false, name = "fecha_acontecimiento_desde") String fechaAcontecimientoDesde,
-            @RequestParam(required = false, name = "fecha_acontecimiento_hasta") String fechaAcontecimientoHasta,
-            @RequestParam(required = false) String ubicacion
-            * */
 
             try(OutputStream os = conexion.getOutputStream()){
-                byte[] input = jsonBody.toString().getBytes("utf-8");
+                byte[] input = jsonBody.toString().getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
             }
 
@@ -220,15 +215,15 @@ public class FuenteProxy {
                     hecho.setFechaAcontecimiento(FechaParser.parsearFecha(obj.getString("fechaAcontecimiento")));
 
                     hechos.add(hecho);
-
-                    return hechos;
                 }
-
+                return hechos;
             } else {
                 System.out.println("Error al consultar con código: " + status);
                 String errorMsg = new Scanner(conexion.getErrorStream()).useDelimiter("\\A").next();
                 System.out.println("Mensaje: " + errorMsg);
             }
+
+
 
         } catch (Exception e) {
             System.out.println("Excepción al consultar hecho por ID: " + e.getMessage());
@@ -240,7 +235,7 @@ public class FuenteProxy {
     public List<Coleccion> getColeccionesMetaMapa(String url_1, List<Hecho> hechosTotalesDinamica, List<Hecho> hechosTotalesProxy, List<Hecho> hechosTotalesEstatica){
         try {
 
-        String urlStr = this.url_base + "/getAll";
+        String urlStr = this.url_base + "/get-all";
         URL url = new URL(urlStr);
         HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
         conexion.setRequestMethod("GET");
@@ -273,8 +268,19 @@ public class FuenteProxy {
                     Map<Class<? extends Filtro>, Filtro> filtrosMap = formateador.obtenerMapaDeFiltros(filtros);
 
                     coleccion.setCriterios(filtrosMap);
+                    GetHechosColeccionInputDTO atributos = new GetHechosColeccionInputDTO();
+                    atributos.setId_coleccion(coleccion.getId());
+                    atributos.setOrigen(filtrosEnString.getOrigen());
+                    atributos.setDescripcion(filtrosEnString.getDescripcion());
+                    atributos.setPais(filtrosEnString.getPais());
+                    atributos.setCategoria(filtrosEnString.getCategoria());
+                    atributos.setContenidoMultimedia(filtrosEnString.getContenidoMultimedia());
+                    atributos.setFechaAcontecimientoInicial(filtrosEnString.getFechaAcontecimientoInicial());
+                    atributos.setFechaAcontecimientoFinal(filtrosEnString.getFechaAcontecimientoFinal());
+                    atributos.setFechaCargaInicial(filtrosEnString.getFechaCargaInicial());
+                    atributos.setFechaCargaFinal(filtrosEnString.getFechaCargaFinal());
 
-                    List<Hecho> hechos = this.getHechosDeColeccionMetaMapa(url_1, coleccion.getId(), hechosTotalesDinamica, hechosTotalesProxy, hechosTotalesEstatica);
+                    List<Hecho> hechos = this.getHechosDeColeccionMetaMapa(url_1, atributos, hechosTotalesDinamica, hechosTotalesProxy, hechosTotalesEstatica);
 
                     coleccion.setHechos(hechos);
                     colecciones.add(coleccion);
@@ -295,18 +301,26 @@ public class FuenteProxy {
 
     }
 
-
-
-///colecciones/{identificador}/hechos
-    public List<Hecho> getHechosDeColeccionMetaMapa(String url_1, Long id, List<Hecho> hechosTotalesDinamica, List<Hecho> hechosTotalesProxy, List<Hecho> hechosTotalesEstatica){
+    public List<Hecho> getHechosDeColeccionMetaMapa(String url_1, GetHechosColeccionInputDTO atributos, List<Hecho> hechosTotalesDinamica, List<Hecho> hechosTotalesProxy, List<Hecho> hechosTotalesEstatica){
         try {
 
-            String urlStr = this.url_base + "/colecciones/?id=" + id + "/hechos";
-            URL url = new URL(urlStr);
+            String url_concatenada = url_1 + "get/filtrar";
+            URL url = new URL(url_concatenada);
             HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
-            conexion.setRequestMethod("GET");
+            conexion.setRequestMethod("POST");
+            conexion.setDoOutput(true); // Muy importante para POST
 
             conexion.setRequestProperty("Content-Type", "application/json");
+
+// Serializa el DTO a JSON
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonInputString = mapper.writeValueAsString(atributos);
+
+// Escribe el JSON en el body
+            try (OutputStream os = conexion.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
 
             int status = conexion.getResponseCode();
 
@@ -314,8 +328,6 @@ public class FuenteProxy {
                 String responseBody = new Scanner(conexion.getInputStream()).useDelimiter("\\A").next();
 
                 JSONArray array = new JSONArray(responseBody);
-
-                List<Coleccion> coleccion = new ArrayList<>();
 
                 List<Hecho> hechos = new ArrayList<>();
                 for (int i = 0; i < array.length(); i++) {
@@ -331,13 +343,17 @@ public class FuenteProxy {
 
                     hechos.add(hecho);
 
-                    return hechos;
                 }
-
-            } else {
+                return hechos;
+            } if (status != 200) {
                 System.out.println("Error al consultar con código: " + status);
-                String errorMsg = new Scanner(conexion.getErrorStream()).useDelimiter("\\A").next();
-                System.out.println("Mensaje: " + errorMsg);
+                InputStream errorStream = conexion.getErrorStream();
+                if (errorStream != null) {
+                    String errorMsg = new Scanner(errorStream).useDelimiter("\\A").next();
+                    System.out.println("Mensaje: " + errorMsg);
+                } else {
+                    System.out.println("No hay mensaje de error disponible.");
+                }
             }
 
         } catch (Exception e) {

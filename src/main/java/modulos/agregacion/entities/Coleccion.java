@@ -56,7 +56,7 @@ public class Coleccion {
             this.criterios.put(filtro.getClass(), filtro);  // Sobrescribe si ya había uno del mismo tipo
         }
     }
-    //TODO agregar boolean para remplazo de hechos o agregacion
+
     public void actualizar(ColeccionUpdateInputDTO dto, Map<Class<? extends Filtro>, Filtro> criteriosColeccion, List<Hecho> hechos){
 
         if(dto.getTitulo() != null){
