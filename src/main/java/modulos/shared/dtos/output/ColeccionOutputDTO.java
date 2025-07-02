@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class ColeccionOutputDTO {
     private Long id;
-    private String nombre;
+    private String titulo;
     private String descripcion;
     private CriteriosColeccionDTO criterios;
     private List<VisualizarHechosOutputDTO> hechos;

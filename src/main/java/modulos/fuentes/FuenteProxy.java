@@ -1,9 +1,12 @@
 package modulos.fuentes;
 
 import modulos.agregacion.entities.Coleccion;
+import modulos.agregacion.entities.FiltrosColeccion;
+import modulos.agregacion.entities.FormateadorHecho;
 import modulos.agregacion.entities.filtros.*;
 import modulos.shared.Hecho;
 import modulos.agregacion.entities.DatosColeccion;
+import modulos.shared.dtos.input.CriteriosColeccionDTO;
 import modulos.shared.utils.FechaParser;
 import modulos.shared.utils.Geocodificador;
 import org.json.JSONArray;
@@ -18,6 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -236,7 +240,7 @@ public class FuenteProxy {
     public List<Coleccion> getColeccionesMetaMapa(String url_1, List<Hecho> hechosTotalesDinamica, List<Hecho> hechosTotalesProxy, List<Hecho> hechosTotalesEstatica){
         try {
 
-        String urlStr = this.url_base + "/colecciones";
+        String urlStr = this.url_base + "/getAll";
         URL url = new URL(urlStr);
         HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
         conexion.setRequestMethod("GET");
@@ -256,31 +260,22 @@ public class FuenteProxy {
                 List<Coleccion> colecciones = new ArrayList<>();
 
                 for (int i = 0; i < array.length(); i++) {
-                    List<Filtro> filtrosColeccion = new ArrayList<>();
                     JSONObject obj = array.getJSONObject(i);
                     DatosColeccion datosColeccion = new DatosColeccion(obj.getString("titulo"), obj.getString("descripcion"));
-                    Coleccion coleccion = new Coleccion(datosColeccion, obj.getLong("id"));
-                    coleccion.setTitulo(obj.getString("titulo"));
-                    coleccion.setDescripcion(obj.getString("descripcion"));
+                    Coleccion coleccion = new Coleccion(datosColeccion, obj.getLong("id"));//TODO ojo con repetir el id de la otra instancia con algun id de una coleccion de esta instancia
                     JSONObject filtrosJson = obj.getJSONObject("criterios");
                     ObjectMapper mapper = new ObjectMapper();
-                    FiltroHechosDTO filtros = mapper.readValue(filtrosJson.toString(), FiltroHechosDTO.class);
+                    CriteriosColeccionDTO filtrosEnString = mapper.readValue(filtrosJson.toString(), CriteriosColeccionDTO.class);
 
+                    FormateadorHecho formateador = new FormateadorHecho();
 
+                    FiltrosColeccion filtros = formateador.formatearFiltrosColeccion(hechosTotalesDinamica,hechosTotalesEstatica,hechosTotalesProxy,filtrosEnString);
+                    Map<Class<? extends Filtro>, Filtro> filtrosMap = formateador.obtenerMapaDeFiltros(filtros);
 
-                    FiltroCategoria filtroCategoria = new FiltroCategoria(BuscadorCategoria.buscar(hechosTotalesDinamica, filtros.getCriterios().getCategoria(), hechosTotalesProxy, hechosTotalesEstatica));
-                    filtrosColeccion.add(filtroCategoria);
-                    FiltroPais filtroPais = new FiltroPais(BuscadorPais.buscar(hechosTotalesDinamica, filtros.getCriterios().getPais(), hechosTotalesProxy, hechosTotalesEstatica));
-                    filtrosColeccion.add(filtroPais);
-                    FiltroFechaCarga filtroFechaCarga = new FiltroFechaCarga(FechaParser.parsearFecha(filtros.getCriterios().getFechaCargaInicial()),FechaParser.parsearFecha(filtros.getCriterios().getFechaCargaFinal()));
-                    filtrosColeccion.add(filtroFechaCarga);
-                    FiltroFechaAcontecimiento filtroFechaAcontecimiento = new FiltroFechaAcontecimiento(FechaParser.parsearFecha(filtros.getCriterios().getFechaAcontecimientoInicial()),FechaParser.parsearFecha(filtros.getCriterios().getFechaAcontecimientoFinal()));
-                    filtrosColeccion.add(filtroFechaAcontecimiento);
+                    coleccion.setCriterios(filtrosMap);
 
                     List<Hecho> hechos = this.getHechosDeColeccionMetaMapa(url_1, coleccion.getId(), hechosTotalesDinamica, hechosTotalesProxy, hechosTotalesEstatica);
-                    Formateador formateador = new Formateador();
 
-                    coleccion.setCriterios(filtrosColeccion);
                     coleccion.setHechos(hechos);
                     colecciones.add(coleccion);
                 }

@@ -5,10 +5,6 @@ import modulos.agregacion.entities.*;
 import modulos.agregacion.entities.algoritmosConsenso.AlgoritmoConsensoMayoriaAbsoluta;
 import modulos.agregacion.entities.algoritmosConsenso.AlgoritmoConsensoMayoriaSimple;
 import modulos.agregacion.entities.algoritmosConsenso.AlgoritmoConsensoMultiplesMenciones;
-import modulos.agregacion.entities.filtros.FiltroCategoria;
-import modulos.agregacion.entities.filtros.FiltroFechaAcontecimiento;
-import modulos.agregacion.entities.filtros.FiltroFechaCarga;
-import modulos.agregacion.entities.filtros.FiltroPais;
 import modulos.agregacion.repositories.*;
 import modulos.fuentes.Dataset;
 import modulos.fuentes.FuenteEstatica;
@@ -80,12 +76,13 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
 
         if (dtoInput.getAlgoritmoConsenso() != null){
-            if (dtoInput.getAlgoritmoConsenso().equals("mayoria-absoluta"))
-                coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaAbsoluta(coleccion));
-            else if (dtoInput.getAlgoritmoConsenso().equals("mayoria-simple"))
-                coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaSimple(coleccion));
-            else if (dtoInput.getAlgoritmoConsenso().equals("multiples-menciones"))
-                coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMultiplesMenciones(coleccion));
+            switch (dtoInput.getAlgoritmoConsenso()) {
+                case "mayoria-absoluta" ->
+                        coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaAbsoluta(coleccion));
+                case "mayoria-simple" -> coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaSimple(coleccion));
+                case "multiples-menciones" ->
+                        coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMultiplesMenciones(coleccion));
+            }
         }
 
         coleccion.setCriterios(formateador.obtenerMapaDeFiltros(filtros));
@@ -113,7 +110,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         for (Coleccion coleccion : colecciones){
             ColeccionOutputDTO dto = new ColeccionOutputDTO();
             dto.setId(coleccion.getId());
-            dto.setNombre(coleccion.getTitulo());
+            dto.setTitulo(coleccion.getTitulo());
             dto.setDescripcion(coleccion.getDescripcion());
 
             FormateadorHecho formateadorHecho = new FormateadorHecho();
@@ -138,10 +135,8 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         ColeccionOutputDTO dto = new ColeccionOutputDTO();
 
         dto.setId(coleccion.getId());
-        dto.setNombre(coleccion.getTitulo());
+        dto.setTitulo(coleccion.getTitulo());
         dto.setDescripcion(coleccion.getDescripcion());
-
-        FiltroCategoria categoria = coleccion.obtenerCriterio(FiltroCategoria.class);
 
         FormateadorHecho formateadorHecho = new FormateadorHecho();
 
