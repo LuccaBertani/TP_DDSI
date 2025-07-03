@@ -4,15 +4,44 @@
 'CLASES DENTRO DE BUSCADORES'
 
 class BuscadorCategoria{
-    +buscarOCrear(List<Hecho> hechos, String elemento): Categoria
-    +buscar(List<Hecho> hechos, String elemento): Categoria
+    +buscarOCrear(hechos: List<Hecho>, elemento: String): Categoria
+    +buscar(hechos: List<Hecho>, elemento: String): Categoria
 
 }
 
 class BuscadorPais{
-    +buscarOCrear(List<Hecho> hechos, String elemento): Pais
-    +buscar(List<Hecho> hechos, String elemento): Pais
+    +buscarOCrear(hechos: List<Hecho>, elemento: String): Pais
+    +buscar(hechos: List<Hecho>, elemento: String): Pais
 }
+
+'-----------------------------------------------
+'CLASES DENTRO DE ALGORITMOS DE CONSENSO'
+
+Interface AlgoritmoConsenso {
+    +ejecutarAlgoritmoConsenso(fuentes: List<Dataset>)
+}
+
+class AlgoritmoConsensoMayoriaAbsoluta implements AlgoritmoConsenso{
+    -coleccion: Coleccion
+    +ejecutarAlgoritmoConsenso(fuentes: List<Dataset>)
+    +mapearIdsDatasets(fuentes: List<Dataset>): List<Long>
+}
+
+class AlgoritmoConsensoMayoriaSimple implements AlgoritmoConsenso{
+    -coleccion: Coleccion
+    +ejecutarAlgoritmoConsenso(fuentes: List<Dataset>)
+    +mitadDeFuentesContienenHecho(hecho: Hecho, fuentes: List<Dataset>): List<Long>
+}
+
+class AlgoritmoConsensoMultiplesMenciones implements AlgoritmoConsenso{
+    -coleccion: Coleccion
+    +ejecutarAlgoritmoConsenso(fuentes: List<Dataset>)
+    -dosFuentesContienenHecho(hecho: Hecho): Boolean
+    -existeHechoIgualTituloDiferentesAtributos(hecho: Hecho, hechos: List<Hecho>)
+    -tienenAtributosDistintos(h1: Hecho, h2: Hecho): Boolean
+    }
+
+
 
 '-----------------------------------------------
 'CLASES DENTRO DE FILTROS'
@@ -23,7 +52,7 @@ Interface Filtro {
 
 class FiltroCategoria implements Filtro {
     -categoria: Categoria
-    +aprobarHecho(hecho:Hecho): Boolean
+    +aprobarHecho(hecho: Hecho): Boolean
 }
 
 class FiltroContenidoMultimedia implements Filtro {
@@ -45,12 +74,12 @@ class FiltroFechaAcontecimiento implements Filtro {
 class FiltroFechaCarga implements Filtro {
     -fechaInicial: ZonedDateTime
     -fechaFinal: ZonedDateTime
-    +aprobarHecho(Hecho: hecho): Boolean
+    +aprobarHecho(hecho: Hecho): Boolean
 }
 
 class FiltroOrigen implements Filtro {
     -origenDeseado: Origen
-    +aprobarHecho(Hecho: hecho): Boolean
+    +aprobarHecho(hecho: Hecho): Boolean
 }
 
 class FiltroPais implements Filtro {
@@ -79,13 +108,13 @@ class FuenteEstatica {
 class FuenteProxy {
     -url_base: String
     -access_token: String
-    +login(String email, String contraseña): Boolean
-    +getHechos(List<Hecho> hechosTotales): List<Hecho>
-    +getHechoPorId(int id, List<Hecho> hechosTotales): Hecho
-    +getHechosMetaMapa(String url_1, FiltroHechosDTO filtros, List<Hecho> hechosTotales): List<Hecho>
-    +getColeccionesMetaMapa(String url_1, List<Hecho> hechosTotales): List<Hecho>
-    +getHechosDeColeccionMetaMapa(String url_1, Long id,List<Hecho> hechosTotales): List<Hecho>
-    +enviarSolicitudEliminacionMetaMapa(String url_1, SolicitudHechoEliminarInputDTO data)
+    +login(email: String, contraseña: String): Boolean
+    +getHechos(hechosTotales: List<Hecho>): List<Hecho>
+    +getHechoPorId(id: Integer, hechosTotales: List<Hecho>): Hecho
+    +getHechosMetaMapa(url_1: String, filtros: FiltroHechosDTO, hechosTotales: List<Hecho>): List<Hecho>
+    +getColeccionesMetaMapa(url_1: String, hechosTotales: List<Hecho>): List<Hecho>
+    +getHechosDeColeccionMetaMapa(url_1: String, id: Long, hechosTotales: List<Hecho>): List<Hecho>
+    +enviarSolicitudEliminacionMetaMapa(url_1: String, data: SolicitudHechoEliminarInputDTO)
 }
 
 '-----------------------------------------------
@@ -127,9 +156,9 @@ class Coleccion {
     -descripcion: String
     -hechos: List<Hecho>
     -criterio: List<Filtro>
-    +addCriterios(Filtro ... filtros)
+    +addCriterios(filtros ... Filtro)
     +addCriterios(filtros: List<Filtro>)
-    +addHechos(Hecho ... hechos)
+    +addHechos(hechos ... Hecho)
     +addHechos(hechos: List<Hecho>)
 }
 
@@ -143,6 +172,24 @@ class Filtrador{
     +aplicarFiltros(filtros: List<Filtro>, hechos: List<Hecho>)
     +hechoPasaFiltros(filtros: List<Filtro>, hecho: Hecho): Boolean
     +filtrarMensajes(mensajes: List<Mensaje>, id_usuario: Long): List<Mensaje>
+}
+
+class FiltrosColeccion {
+    - filtroCategoria : FiltroCategoria
+    - filtroPais : FiltroPais
+    - filtroDescripcion : FiltroDescripcion
+    - filtroContenidoMultimedia : FiltroContenidoMultimedia
+    - filtroFechaAcontecimiento : FiltroFechaAcontecimiento
+    - filtroFechaCarga : FiltroFechaCarga
+    - filtroOrigen : FiltroOrigen
+    - filtroTitulo : FiltroTitulo
+}
+
+class FormateadorHecho{
+    +formatearAtributosHecho(hechosDinamica: List<Hecho>,hechosEstatica: List<Hecho>,hechosProxy: List<Hecho> , dtoInput: SolicitudHechoInputDTO ): AtributosHecho
+    +formatearFiltrosColeccion(hechosDinamica: List<Hecho>, hechosEstatica: List<Hecho>, hechosProxy: List<Hecho>  , inputDTO: CriteriosColeccionDTO ): FiltrosColeccion
+    +filtrosColeccionToString(filtros: Map<Class<? extends Filtro>, Filtro>): CriteriosColeccionDTO
+    +obtenerMapaDeFiltros(filtrosColeccion: FiltrosColeccion): Map<Class<? extends Filtro>, Filtro>
 }
 
 class Geocodificador {
@@ -250,11 +297,25 @@ LectorCSV --> FuenteEstatica
 Filtrador --> Hecho: *
 Filtrador --> Filtro: *
 
+FiltrosColeccion *-- Filtro
+
 Usuario *-- DatosPersonalesPublicador
 
 FuenteDinamica --> Hecho: *
 FuenteEstatica --> Hecho: *
 FuenteProxy --> Hecho: *
+
+
+'FormateadorHecho --> Filtro
+'FormateadorHecho --> Hecho
+'FormateadorHecho --> FiltrosColeccion
+'FormateadorHecho --> BuscadorPais
+'FormateadorHecho --> BuscadorCategoria
+'FormateadorHecho --> FechaParser
+'FormateadorHecho --> Pais
+'FormateadorHecho --> Categoria
+'FormateadorHecho --> TipoContenido
+'FormateadorHecho --> Origen'
 
 Geocodificador --> FuenteProxy
 Geocodificador --> LectorCSV
@@ -275,7 +336,15 @@ FechaParser --> FuenteProxy
 
 Mensaje --> Filtrador
 
+Coleccion *-- AlgoritmoConsenso
+Coleccion *-- Filtro
+
 @enduml
+
+
+
+
+
 
 
 
@@ -284,7 +353,7 @@ class Administrador extends Visualizador {
     ' se almacenarán y quedarán a disposición de las personas administradoras.
     -listaContribuyentes: List<Contribuyente>
     'Subida manual del hecho
-'    +subirHecho(Hecho: hecho)
+'    +subirHecho(hecho: Hecho)
 '   +crearColeccion(datosColeccion: DatosColeccion, criterios: List<Filtro>, hechosTotales: List<Hecho>)
 '   +importarHechos(fuente: Fuente)
 '   +evaluarSolicitudEliminacion(solicitud: SolicitudHecho, respuesta: Boolean)

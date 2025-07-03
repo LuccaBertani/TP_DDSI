@@ -48,7 +48,5 @@ public class AlgoritmoConsensoMultiplesMenciones implements IAlgoritmoConsenso {
                 !h1.getCategoria().equals(h2.getCategoria()) ||
                 !h1.getPais().equals(h2.getPais()) ||
                 !h1.getFechaAcontecimiento().equals(h2.getFechaAcontecimiento());
-
     }
-
 }
