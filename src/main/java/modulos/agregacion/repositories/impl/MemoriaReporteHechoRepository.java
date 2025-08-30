@@ -1,7 +1,7 @@
 package modulos.agregacion.repositories.impl;
 
+import modulos.agregacion.repositories.IRepository;
 import modulos.solicitudes.Reporte;
-import modulos.agregacion.repositories.IReporteHechoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.List;
 
 //TODO hay un tema con la sincronizacion del id obtenido, puede que obtengan el mismo id dos hilos que llaman al mismo tiempo a getProxId()
 @Repository
-public class MemoriaReporteHechoRepository implements IReporteHechoRepository {
+public class MemoriaReporteHechoRepository implements IRepository<Reporte> {
     List<Reporte> reportes;
 
     public MemoriaReporteHechoRepository(){

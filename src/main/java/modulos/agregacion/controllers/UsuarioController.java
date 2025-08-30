@@ -28,10 +28,10 @@ public class UsuarioController {
         RespuestaHttp<Usuario> respuesta = usuarioService.crearUsuario(dtoInput);
         Integer codigo = respuesta.getCodigo();
         if (codigo.equals(HttpStatus.BAD_REQUEST.value())){
-            return ResponseEntity.status(codigo).build();
+            return ResponseEntity.status(codigo).body("No tenes permiso!");
         }
 
-        return ResponseEntity.status(codigo).body("El usuario se creó correctamente"); // Asumo 200 OK
+        return ResponseEntity.status(codigo).body("El usuario se creó correctamente");
     }
 
 }

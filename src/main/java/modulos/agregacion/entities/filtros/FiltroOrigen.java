@@ -13,6 +13,6 @@ public class FiltroOrigen implements Filtro {
 
     @Override
     public Boolean aprobarHecho(Hecho hecho){
-        return hecho.getOrigen().equals(origenDeseado);
+        return hecho.getAtributosHecho().getOrigen().equals(origenDeseado);
     }
 }

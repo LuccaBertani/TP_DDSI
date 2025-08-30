@@ -29,15 +29,14 @@ public class Coleccion {
     private String descripcion;
     private List<Hecho> hechos = new ArrayList<>();
     private IAlgoritmoConsenso algoritmoConsenso;
-
+    private Boolean modificado;
     private Map<Class<? extends Filtro>, Filtro> criterios = new HashMap<>();
 
     public <T extends Filtro> T obtenerCriterio(Class<T> tipo) {
         return tipo.cast(this.criterios.get(tipo));
     }
 
-    // Con un set debido a que no usamos snapshot acá, evitamos repetidos
-    private Set<Hecho> hechosConsensuados = new HashSet<>();
+    private List<Hecho> hechosConsensuados = new ArrayList<>();
 
     public Coleccion(DatosColeccion datosColeccion, long id) {
         this.titulo = datosColeccion.getTitulo();

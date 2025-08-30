@@ -20,6 +20,7 @@ import modulos.usuario.Rol;
 import modulos.usuario.Usuario;
 import modulos.solicitudes.Mensaje;
 import modulos.solicitudes.SolicitudHecho;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -32,20 +33,27 @@ import java.util.List;
 public class SolicitudHechoService {
 
     //private final IDetectorDeSpam detectorDeSpam;
-    private final ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo;
-    private final ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo;
-    private final ISolicitudModificarHechoRepository solicitudModificarHechoRepo;
-    private final IHechosProxyRepository hechosProxyRepository;
-    private final IHechosDinamicaRepository hechosDinamicaRepository;
-    private final IHechosEstaticaRepository hechosEstaticaRepository;
-    private final IUsuarioRepository usuariosRepository;
-    private final IMensajeRepository mensajesRepository;
-    private final IReporteHechoRepository reportesHechoRepository;
+    private final IRepository<SolicitudHecho> solicitudAgregarHechoRepo;
+    private final IRepository<SolicitudHecho> solicitudEliminarHechoRepo;
+    private final IRepository<SolicitudHecho> solicitudModificarHechoRepo;
+    private final IRepository<Hecho> hechosProxyRepository;
+    private final IRepository<Hecho> hechosDinamicaRepository;
+    private final IRepository<Hecho> hechosEstaticaRepository;
+    private final IRepository<Usuario> usuariosRepository;
+    private final IRepository<Mensaje> mensajesRepository;
+    private final IRepository<Reporte> reportesHechoRepository;
 
     GestorRoles gestorRoles;
 
-    public SolicitudHechoService(ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo, ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo,
-                                 IUsuarioRepository usuariosRepository, ISolicitudModificarHechoRepository solicitudModificarHechoRepo, IHechosProxyRepository hechosProxyRepository, IHechosDinamicaRepository hechosDinamicaRepository, IHechosEstaticaRepository hechosEstaticaRepository, IMensajeRepository mensajesRepository, IReporteHechoRepository reportesHechoRepository) {
+    public SolicitudHechoService(@Qualifier("SolicitudAgregarHechoRepository") IRepository<SolicitudHecho> solicitudAgregarHechoRepo,
+                                 @Qualifier("SolicitudEliminarHechoRepository") IRepository<SolicitudHecho> solicitudEliminarHechoRepo,
+                                 @Qualifier("SolicitudModificarHechoRepository") IRepository<SolicitudHecho> solicitudModificarHechoRepo,
+                                 IRepository<Usuario> usuariosRepository,
+                                 @Qualifier("hechosProxyRepo")IRepository<Hecho> hechosProxyRepository,
+                                 @Qualifier("hechosDinamicaRepo") IRepository<Hecho> hechosDinamicaRepository,
+                                 @Qualifier("hechosEstaticaRepo") IRepository<Hecho> hechosEstaticaRepository,
+                                 IRepository<Mensaje> mensajesRepository,
+                                 IRepository<Reporte> reportesHechoRepository) {
         this.solicitudAgregarHechoRepo = solicitudAgregarHechoRepo;
         this.solicitudEliminarHechoRepo = solicitudEliminarHechoRepo;
         this.hechosProxyRepository = hechosProxyRepository;
@@ -84,7 +92,6 @@ public class SolicitudHechoService {
         if (usuario!=null)
             hecho.setId_usuario(usuario.getId());
 
-        hechosDinamicaRepository.getSnapshotHechos().add(hecho);
         hechosDinamicaRepository.save(hecho);
 
         return new RespuestaHttp<>(null, HttpStatus.OK.value());
@@ -142,15 +149,15 @@ public class SolicitudHechoService {
             return new RespuestaHttp<>(null, HttpStatus.BAD_REQUEST.value());
         }
 
-        if (ChronoUnit.DAYS.between(hecho.getFechaDeCarga(), ZonedDateTime.now()) >= 7){
+        if (ChronoUnit.DAYS.between(hecho.getAtributosHecho().getFechaCarga(), ZonedDateTime.now()) >= 7){
             return new RespuestaHttp<>(null, HttpStatus.CONFLICT.value()); // Error 409: cuando la solicitud es válida, pero no puede procesarse por estado actual del recurso
         }
 
-        hecho.setTitulo(dto.getTitulo());
-        hecho.setPais(BuscadorPais.buscarOCrear(hechosDinamicaRepository.findAll(), dto.getPais(), hechosProxyRepository.findAll(), hechosEstaticaRepository.findAll()));
-        hecho.setCategoria(BuscadorCategoria.buscarOCrear(hechosDinamicaRepository.findAll(), dto.getPais(), hechosProxyRepository.findAll(), hechosEstaticaRepository.findAll()));
-        hecho.setFechaAcontecimiento(FechaParser.parsearFecha(dto.getFechaAcontecimiento()));
-        hecho.setContenidoMultimedia(TipoContenido.fromCodigo(dto.getTipoContenido()));
+        hecho.getAtributosHecho().setTitulo(dto.getTitulo());
+        hecho.getAtributosHecho().setPais(BuscadorPais.buscarOCrear(hechosDinamicaRepository.findAll(), dto.getPais(), hechosProxyRepository.findAll(), hechosEstaticaRepository.findAll()));
+        hecho.getAtributosHecho().setCategoria(BuscadorCategoria.buscarOCrear(hechosDinamicaRepository.findAll(), dto.getPais(), hechosProxyRepository.findAll(), hechosEstaticaRepository.findAll()));
+        hecho.getAtributosHecho().setFechaAcontecimiento(FechaParser.parsearFecha(dto.getFechaAcontecimiento()));
+        hecho.getAtributosHecho().setContenidoMultimedia(TipoContenido.fromCodigo(dto.getTipoContenido()));
         solicitudModificarHechoRepo.save(solicitud);
         return new RespuestaHttp<>(null, HttpStatus.OK.value());
     }
@@ -178,11 +185,10 @@ public class SolicitudHechoService {
             solicitud.setProcesada(true);
             if (dtoInput.getRespuesta()) {
                 solicitud.getHecho().setActivo(true);
-                solicitud.getHecho().setFechaDeCarga(ZonedDateTime.now());
-                solicitud.getHecho().setFechaUltimaActualizacion(solicitud.getHecho().getFechaDeCarga()); // Nueva fecha de modificación
+                solicitud.getHecho().getAtributosHecho().setFechaCarga(ZonedDateTime.now());
+                solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(solicitud.getHecho().getAtributosHecho().getFechaCarga()); // Nueva fecha de modificación
                 solicitud.getUsuario().incrementarHechosSubidos();
 
-                hechosDinamicaRepository.getSnapshotHechos().add(solicitud.getHecho());
                 hechosDinamicaRepository.update(solicitud.getHecho());
 
                 if (solicitud.getUsuario().getRol().equals(Rol.VISUALIZADOR)){
@@ -231,9 +237,9 @@ public class SolicitudHechoService {
             solicitud.setProcesada(true);
             if (dtoInput.getRespuesta()) {
                 // El hecho debe modificarse
-                solicitud.getHecho().setFechaUltimaActualizacion(ZonedDateTime.now());
+                solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(ZonedDateTime.now());
 
-                hechosDinamicaRepository.getSnapshotHechos().add(solicitud.getHecho());
+                solicitud.getHecho().getAtributosHecho().setModificado(true);
                 hechosDinamicaRepository.update(solicitud.getHecho());
             }
         }

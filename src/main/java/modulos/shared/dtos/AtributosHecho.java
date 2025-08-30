@@ -11,13 +11,14 @@ import java.time.ZonedDateTime;
 
 @Data
 public class AtributosHecho {
-    Pais pais;
-    String titulo;
-    String descripcion;
-    ZonedDateTime fechaAcontecimiento;
-    TipoContenido contenidoMultimedia;
-    Categoria categoria;
-    Origen origen;
-    ZonedDateTime fechaCarga;
-    ZonedDateTime fechaUltimaActualizacion;
+    private Pais pais;
+    private String titulo;
+    private String descripcion;
+    private ZonedDateTime fechaAcontecimiento;
+    private TipoContenido contenidoMultimedia;
+    private Categoria categoria;
+    private Origen origen;
+    private ZonedDateTime fechaCarga;
+    private ZonedDateTime fechaUltimaActualizacion;
+    private Boolean modificado;
 }

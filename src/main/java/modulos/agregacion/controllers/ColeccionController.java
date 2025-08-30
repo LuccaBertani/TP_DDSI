@@ -51,7 +51,7 @@ public class ColeccionController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<Void> actualizarColeccion(@Valid @RequestBody ColeccionUpdateInputDTO dto){
+    public ResponseEntity<Void> updateColeccion(@Valid @RequestBody ColeccionUpdateInputDTO dto){
         RespuestaHttp<Void> respuesta = coleccionService.updateColeccion(dto);
         return ResponseEntity.status(respuesta.getCodigo()).build();
     }

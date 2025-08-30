@@ -1,14 +1,16 @@
 package modulos.agregacion.repositories.impl;
 
+import modulos.agregacion.repositories.IRepository;
 import modulos.solicitudes.SolicitudHecho;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import modulos.agregacion.repositories.ISolicitudEliminarHechoRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class MemoriaSolicitudEliminarHechoRepository implements ISolicitudEliminarHechoRepository {
+@Qualifier("SolicitudEliminarHechoRepository")
+public class MemoriaSolicitudEliminarHechoRepository implements IRepository<SolicitudHecho> {
     List<SolicitudHecho> solicitudesEliminarHecho;
 
     public MemoriaSolicitudEliminarHechoRepository(){

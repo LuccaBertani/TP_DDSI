@@ -20,7 +20,7 @@ public class FiltroFechaAcontecimiento implements Filtro {
     @Override
     public Boolean aprobarHecho(Hecho hecho){
 
-        ZonedDateTime fechaHecho = hecho.getFechaAcontecimiento();
+        ZonedDateTime fechaHecho = hecho.getAtributosHecho().getFechaAcontecimiento();
 
         fechaHecho = fechaHecho.withZoneSameInstant(ZoneId.systemDefault());
 

@@ -15,6 +15,6 @@ private Pais pais;
 
     @Override
     public Boolean aprobarHecho(Hecho hecho){
-        return hecho.getPais() == pais;
+        return hecho.getAtributosHecho().getPais() == pais;
     }
 }

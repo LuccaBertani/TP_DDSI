@@ -1,14 +1,14 @@
 package modulos.agregacion.repositories.impl;
 
+import modulos.agregacion.repositories.IRepository;
 import org.springframework.stereotype.Repository;
 import modulos.solicitudes.Mensaje;
-import modulos.agregacion.repositories.IMensajeRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class MemoriaMensajeRepository implements IMensajeRepository {
+public class MemoriaMensajeRepository implements IRepository<Mensaje> {
     List<Mensaje> mensajes;
 
     public MemoriaMensajeRepository(){

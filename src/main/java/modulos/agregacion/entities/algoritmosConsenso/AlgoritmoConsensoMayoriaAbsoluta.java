@@ -7,19 +7,20 @@ import modulos.shared.Hecho;
 import java.util.List;
 
 public class AlgoritmoConsensoMayoriaAbsoluta implements IAlgoritmoConsenso {
-    private Coleccion coleccion;
-    public AlgoritmoConsensoMayoriaAbsoluta(Coleccion coleccion){
-        this.coleccion = coleccion;
-    }
+
 
     // Absoluta: si todas las fuentes contienen el mismo hecho, se lo considera consensuado.
 
     @Override
-    public void ejecutarAlgoritmoConsenso(List<Dataset> fuentes) {
+    public void ejecutarAlgoritmoConsenso(List<Dataset> fuentes, Coleccion coleccion) {
         //coleccion.getHechosConsensuados().addAll()
         List<Hecho> hechos = coleccion.getHechos();
         List<Long> idsDatasets = this.mapearIdsDatasets(fuentes);
-        List<Hecho> hechosConsensudados = hechos.stream().filter(hecho->this.mapearIdsDatasets(hecho.getDatasets()).equals(idsDatasets)).toList();
+        List<Hecho> hechosConsensudados = hechos.stream().filter(
+                hecho->!coleccion.getHechosConsensuados().contains(hecho) &&
+                        this.mapearIdsDatasets(hecho.getDatasets()).equals(idsDatasets)
+                )
+                .toList();
         coleccion.getHechosConsensuados().addAll(hechosConsensudados);
     }
 

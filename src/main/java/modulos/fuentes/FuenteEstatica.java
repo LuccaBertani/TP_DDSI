@@ -3,10 +3,8 @@ package modulos.fuentes;
 import lombok.Getter;
 import lombok.Setter;
 import modulos.shared.Hecho;
-import modulos.agregacion.entities.ModificadorHechos;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 @Getter

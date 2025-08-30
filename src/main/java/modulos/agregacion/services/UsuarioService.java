@@ -1,18 +1,18 @@
 package modulos.agregacion.services;
 
+import modulos.agregacion.repositories.IRepository;
 import modulos.shared.dtos.input.UsuarioInputDTO;
 import modulos.shared.RespuestaHttp;
 import modulos.usuario.Usuario;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import modulos.agregacion.repositories.IUsuarioRepository;
 
 @Service
-public class  UsuarioService {
+public class UsuarioService {
 
-    private final IUsuarioRepository usuarioRepo;
+    private final IRepository<Usuario> usuarioRepo;
 
-    public UsuarioService(IUsuarioRepository usuarioRepo) {
+    public UsuarioService(IRepository<Usuario> usuarioRepo) {
         this.usuarioRepo = usuarioRepo;
     }
     //Momento en el que un usuario se registra y guarda datos personales (NO LLAMAR A ESTE METODO SI ES ANONIMO)

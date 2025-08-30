@@ -10,19 +10,19 @@ import java.util.List;
 public class BuscadorHechoIdentico {
     // Vienen los hechos de origen estatico
     public static boolean existeHechoIdentico(Hecho hecho, List<Hecho> hechos){
-        String tituloHechoNormalizado = Normalizador.normalizar(hecho.getTitulo());
-        Categoria categoria= hecho.getCategoria();
-        Pais pais = hecho.getPais();
-        String descripcionNormalizada = Normalizador.normalizar(hecho.getDescripcion());
-        ZonedDateTime fechaAcontecimiento = hecho.getFechaAcontecimiento();
+        String tituloHechoNormalizado = Normalizador.normalizar(hecho.getAtributosHecho().getTitulo());
+        Categoria categoria= hecho.getAtributosHecho().getCategoria();
+        Pais pais = hecho.getAtributosHecho().getPais();
+        String descripcionNormalizada = Normalizador.normalizar(hecho.getAtributosHecho().getDescripcion());
+        ZonedDateTime fechaAcontecimiento = hecho.getAtributosHecho().getFechaAcontecimiento();
 
-        List<Hecho> hechosConTituloIgual = hechos.stream().filter(h-> Normalizador.normalizar(h.getTitulo()).equals(tituloHechoNormalizado)).toList();
+        List<Hecho> hechosConTituloIgual = hechos.stream().filter(h-> Normalizador.normalizar(h.getAtributosHecho().getTitulo()).equals(tituloHechoNormalizado)).toList();
 
         for (Hecho h: hechosConTituloIgual){
-            if (h.getCategoria().equals(categoria) &&
-                    h.getPais().equals(pais) &&
-                    Normalizador.normalizar(h.getDescripcion()).equals(descripcionNormalizada) &&
-                    h.getFechaAcontecimiento().equals(fechaAcontecimiento)){
+            if (h.getAtributosHecho().getCategoria().equals(categoria) &&
+                    h.getAtributosHecho().getPais().equals(pais) &&
+                    Normalizador.normalizar(h.getAtributosHecho().getDescripcion()).equals(descripcionNormalizada) &&
+                    h.getAtributosHecho().getFechaAcontecimiento().equals(fechaAcontecimiento)){
 
                 return true;
             }

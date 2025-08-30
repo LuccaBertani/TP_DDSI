@@ -1,13 +1,13 @@
 package modulos.agregacion.repositories.impl;
 
+import modulos.agregacion.repositories.IRepository;
 import modulos.usuario.Usuario;
 import org.springframework.stereotype.Repository;
-import modulos.agregacion.repositories.IUsuarioRepository;
 
 import java.util.List;
 
 @Repository
-public class MemoriaUsuarioRepository implements IUsuarioRepository {
+public class MemoriaUsuarioRepository implements IRepository<Usuario> {
 
     private List<Usuario> personas;
 

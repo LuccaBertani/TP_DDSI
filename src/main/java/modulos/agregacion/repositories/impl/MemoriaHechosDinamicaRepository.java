@@ -1,21 +1,22 @@
 package modulos.agregacion.repositories.impl;
 
+import modulos.agregacion.repositories.IRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import modulos.shared.Hecho;
-import modulos.agregacion.repositories.IHechosDinamicaRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Repository
-public class MemoriaHechosDinamicaRepository implements IHechosDinamicaRepository {
+@Qualifier("hechosDinamicaRepo")
+public class MemoriaHechosDinamicaRepository implements IRepository<Hecho> {
 
     private List<Hecho> hechos;
-    private List<Hecho> snapshotHechos;
 
     public MemoriaHechosDinamicaRepository() {
         this.hechos = new ArrayList<>();
-        this.snapshotHechos = new ArrayList<>();
     }
 
     @Override
@@ -59,13 +60,4 @@ public class MemoriaHechosDinamicaRepository implements IHechosDinamicaRepositor
         this.save(entidad);
     }
 
-    @Override
-    public List<Hecho> getSnapshotHechos() {
-        return this.snapshotHechos;
-    }
-
-    @Override
-    public void clearSnapshotHechos() {
-        this.snapshotHechos.clear();
-    }
 }

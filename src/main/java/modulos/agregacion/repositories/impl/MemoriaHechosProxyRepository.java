@@ -1,20 +1,20 @@
 package modulos.agregacion.repositories.impl;
+import modulos.agregacion.repositories.IRepository;
 import modulos.shared.Hecho;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import modulos.agregacion.repositories.IHechosProxyRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 //Maneja los datos en memoria
 @Repository
-public class MemoriaHechosProxyRepository implements IHechosProxyRepository {
+@Qualifier("hechosProxyRepo")
+public class MemoriaHechosProxyRepository implements IRepository<Hecho> {
     private List<Hecho> hechos;
-    private List<Hecho> snapshotHechos;
 
     public MemoriaHechosProxyRepository(){
         this.hechos = new ArrayList<>();
-        this.snapshotHechos = new ArrayList<>();
     }
 
     @Override
@@ -57,16 +57,5 @@ public class MemoriaHechosProxyRepository implements IHechosProxyRepository {
         this.hechos.remove(entidad);
         this.save(entidad);
     }
-
-    @Override
-    public List<Hecho> getSnapshotHechos(){
-        return this.snapshotHechos;
-    }
-
-    @Override
-    public void clearSnapshotHechos(){
-        this.snapshotHechos.clear();
-    }
-
 
 }

@@ -47,7 +47,6 @@ public class HechosController {
         return ResponseEntity.status(outputDTO.getCodigo()).body(outputDTO.getDatos());
     }
 
-
 //hechos filtrados de all el sistema
     @GetMapping("/get")
     public ResponseEntity<List<VisualizarHechosOutputDTO>> listarHechos(

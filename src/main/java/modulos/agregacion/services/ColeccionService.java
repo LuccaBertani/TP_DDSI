@@ -15,6 +15,7 @@ import modulos.shared.dtos.input.*;
 import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.usuario.Rol;
 import modulos.usuario.Usuario;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -25,14 +26,19 @@ import java.util.List;
 @Service
 public class ColeccionService  {
 
-    private final IHechosProxyRepository hechosProxyRepo;
-    private final IHechosEstaticaRepository hechosEstaticaRepo;
-    private final IHechosDinamicaRepository hechosDinamicaRepo;
-    private final IColeccionRepository coleccionesRepo;
-    private final IUsuarioRepository usuariosRepo;
-    private final IDatasetsRepository datasetsRepo;
+    private final IRepository<Hecho> hechosProxyRepo;
+    private final IRepository<Hecho> hechosEstaticaRepo;
+    private final IRepository<Hecho> hechosDinamicaRepo;
+    private final IRepository<Coleccion> coleccionesRepo;
+    private final IRepository<Usuario> usuariosRepo;
+    private final IRepository<Dataset> datasetsRepo;
 
-    public ColeccionService(IHechosProxyRepository hechosProxyRepo, IHechosEstaticaRepository hechosEstaticaRepo, IHechosDinamicaRepository hechosDinamicaRepo, IColeccionRepository coleccionesRepo, IUsuarioRepository usuariosRepo, IDatasetsRepository datasetsRepo) {
+    public ColeccionService(@Qualifier("hechosProxyRepo") IRepository<Hecho> hechosProxyRepo,
+                            @Qualifier("hechosEstaticaRepo") IRepository<Hecho> hechosEstaticaRepo,
+                            @Qualifier("hechosDinamicaRepo") IRepository<Hecho> hechosDinamicaRepo,
+                            IRepository<Coleccion> coleccionesRepo,
+                            IRepository<Usuario> usuariosRepo,
+                            IRepository<Dataset> datasetsRepo) {
         this.hechosProxyRepo = hechosProxyRepo;
         this.hechosEstaticaRepo = hechosEstaticaRepo;
         this.hechosDinamicaRepo = hechosDinamicaRepo;
@@ -80,10 +86,10 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         if (dtoInput.getAlgoritmoConsenso() != null){
             switch (dtoInput.getAlgoritmoConsenso()) {
                 case "mayoria-absoluta" ->
-                        coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaAbsoluta(coleccion));
-                case "mayoria-simple" -> coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaSimple(coleccion));
+                        coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaAbsoluta());
+                case "mayoria-simple" -> coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaSimple());
                 case "multiples-menciones" ->
-                        coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMultiplesMenciones(coleccion));
+                        coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMultiplesMenciones());
             }
         }
 
@@ -96,7 +102,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         coleccion.addHechos(Filtrador.aplicarFiltros(formateador.obtenerMapaDeFiltros(filtros), hechosDinamica));
         coleccion.addHechos(Filtrador.aplicarFiltros(formateador.obtenerMapaDeFiltros(filtros), hechosEstatica));
         coleccion.addHechos(Filtrador.aplicarFiltros(formateador.obtenerMapaDeFiltros(filtros), hechosProxy));
-
+        coleccion.setModificado(true);
         coleccionesRepo.save(coleccion);
 
         return new RespuestaHttp<>(null, HttpStatus.CREATED.value());
@@ -211,7 +217,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             hecho1.setAtributosHecho(atributos);
             hechosColeccion.add(hecho1);
         }
-
+        coleccion.setModificado(true);
         coleccion.actualizar(dto,formateador.obtenerMapaDeFiltros(filtrosColeccion),hechosColeccion);
         return new RespuestaHttp<>(null,HttpStatus.OK.value());
     }
@@ -224,7 +230,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     }
 
     private void ejecutarAlgoritmoConsenso(List<Coleccion> colecciones, List<Dataset> datasets){
-        colecciones.forEach(coleccion->coleccion.getAlgoritmoConsenso().ejecutarAlgoritmoConsenso(datasets));
+        colecciones.forEach(coleccion->coleccion.getAlgoritmoConsenso().ejecutarAlgoritmoConsenso(datasets, coleccion));
     }
 
     public RespuestaHttp<Void> modificarAlgoritmoConsenso(ModificarConsensoInputDTO input) {
@@ -240,13 +246,13 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
         switch (input.getTipoConsenso()) {
             case "mayoria-absoluta":
-                coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaAbsoluta(coleccion));
+                coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaAbsoluta());
                 break;
             case "mayoria-simple":
-                coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaSimple(coleccion));
+                coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaSimple());
                 break;
             case "multiples-menciones":
-                coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMultiplesMenciones(coleccion));
+                coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMultiplesMenciones());
                 break;
             default:
                 return new RespuestaHttp<>(null, HttpStatus.BAD_REQUEST.value());

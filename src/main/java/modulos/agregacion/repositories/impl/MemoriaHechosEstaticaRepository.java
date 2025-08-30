@@ -1,22 +1,21 @@
 package modulos.agregacion.repositories.impl;
 
+import modulos.agregacion.repositories.IRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import modulos.fuentes.Dataset;
 import modulos.shared.Hecho;
-import modulos.agregacion.repositories.IHechosEstaticaRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class MemoriaHechosEstaticaRepository implements IHechosEstaticaRepository {
+@Qualifier("hechosEstaticaRepo")
+public class MemoriaHechosEstaticaRepository implements IRepository<Hecho> {
 
     private List<Hecho> hechos;
-    private List<Hecho> snapshotHechos;
 
     public MemoriaHechosEstaticaRepository() {
         this.hechos = new ArrayList<>();
-        this.snapshotHechos = new ArrayList<>();
     }
 
     @Override
@@ -58,16 +57,6 @@ public class MemoriaHechosEstaticaRepository implements IHechosEstaticaRepositor
     public void update(Hecho entidad) {
         this.hechos.remove(entidad);
         this.save(entidad);
-    }
-
-    @Override
-    public List<Hecho> getSnapshotHechos() {
-        return this.snapshotHechos;
-    }
-
-    @Override
-    public void clearSnapshotHechos() {
-        this.snapshotHechos.clear();
     }
 
 }

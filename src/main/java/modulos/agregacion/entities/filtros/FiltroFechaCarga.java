@@ -19,7 +19,7 @@ public class FiltroFechaCarga implements Filtro {
     @Override
     public Boolean aprobarHecho(Hecho hecho) {
 
-        ZonedDateTime fechaCarga = hecho.getFechaDeCarga();
+        ZonedDateTime fechaCarga = hecho.getAtributosHecho().getFechaCarga();
 
         fechaCarga = fechaCarga.withZoneSameInstant(ZoneId.systemDefault());
 

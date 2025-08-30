@@ -19,7 +19,7 @@ public class FiltroDescripcion implements Filtro {
 
     @Override
     public Boolean aprobarHecho(Hecho hecho){
-        List<String> palabrasHecho = Normalizador.normalizarSeparado(hecho.getDescripcion());
+        List<String> palabrasHecho = Normalizador.normalizarSeparado(hecho.getAtributosHecho().getDescripcion());
         List<String> palabrasFiltro = Normalizador.normalizarSeparado(this.descripcion);
 
         // Si la descripcion del hecho enviado por parametro tiene todas sus palabras contenidas en el filtro de la descripcion

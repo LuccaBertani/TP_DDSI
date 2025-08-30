@@ -1,7 +1,6 @@
 package modulos.agregacion.repositories.impl;
 
-import modulos.agregacion.entities.Coleccion;
-import modulos.agregacion.repositories.IDatasetsRepository;
+import modulos.agregacion.repositories.IRepository;
 import modulos.fuentes.Dataset;
 import org.springframework.stereotype.Repository;
 
@@ -9,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class MemoriaDatasetsRepository implements IDatasetsRepository {
+public class MemoriaDatasetsRepository implements IRepository<Dataset> {
     List<Dataset> datasets;
 
     public MemoriaDatasetsRepository(){
@@ -37,6 +36,11 @@ public class MemoriaDatasetsRepository implements IDatasetsRepository {
     }
 
     @Override
+    public void update(Dataset entidad) {
+
+    }
+
+    @Override
     public List<Dataset> findAll() {
         return this.datasets;
     }
@@ -44,6 +48,11 @@ public class MemoriaDatasetsRepository implements IDatasetsRepository {
     @Override
     public void save(Dataset dataset) {
         datasets.add(dataset);
+    }
+
+    @Override
+    public void delete(Dataset entidad) {
+
     }
 
 

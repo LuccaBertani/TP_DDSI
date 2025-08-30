@@ -1,14 +1,14 @@
 package modulos.agregacion.repositories.impl;
 
 import modulos.agregacion.entities.Coleccion;
+import modulos.agregacion.repositories.IRepository;
 import org.springframework.stereotype.Repository;
-import modulos.agregacion.repositories.IColeccionRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class MemoriaColeccionRepository implements IColeccionRepository {
+public class MemoriaColeccionRepository implements IRepository<Coleccion> {
     List <Coleccion> colecciones;
 
     public MemoriaColeccionRepository(){
