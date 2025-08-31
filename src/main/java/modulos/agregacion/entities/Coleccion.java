@@ -1,5 +1,6 @@
 package modulos.agregacion.entities;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import modulos.shared.Hecho;
@@ -20,28 +21,62 @@ import java.util.*;
 
 @Getter
 @Setter
+@Entity
+@Table(name = "coleccion")
 public class Coleccion {
 
+    @Column (name = "activo", nullable = false)
     private Boolean activo;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column (name = "titulo", nullable = false)
     private String titulo;
+
+    @Column (name = "descripcion")
     private String descripcion;
+
+    //relacion muchos a muchos
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "coleccion_hecho",
+            joinColumns = @JoinColumn(name = "coleccion_id"),
+            inverseJoinColumns = @JoinColumn(name = "hecho_id"),
+            uniqueConstraints = @UniqueConstraint(name = "uk_coleccion_hecho", columnNames = {"coleccion_id","hecho_id"})
+    )
     private List<Hecho> hechos = new ArrayList<>();
+
+    //relacion 1 a 1
     private IAlgoritmoConsenso algoritmoConsenso;
+
+    @Column(name = "modificado", nullable = false)
     private Boolean modificado;
+
+    @OneToMany(mappedBy = "filtro") //TODO
     private Map<Class<? extends Filtro>, Filtro> criterios = new HashMap<>();
+
+    public Coleccion() {
+    }
 
     public <T extends Filtro> T obtenerCriterio(Class<T> tipo) {
         return tipo.cast(this.criterios.get(tipo));
     }
 
+    //relacion muchos a muchos
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "coleccion_hechoConsensuado",
+            joinColumns = @JoinColumn(name = "coleccion_id"),
+            inverseJoinColumns = @JoinColumn(name = "hechoConsensuado_id"),
+            uniqueConstraints = @UniqueConstraint(name = "uk_coleccion_hechoConsensuado", columnNames = {"coleccion_id","hechoConsensuado_id"})
+    )
     private List<Hecho> hechosConsensuados = new ArrayList<>();
 
-    public Coleccion(DatosColeccion datosColeccion, long id) {
+    public Coleccion(DatosColeccion datosColeccion) {
         this.titulo = datosColeccion.getTitulo();
         this.descripcion = datosColeccion.getDescripcion();
-        this.id = id;
     }
 
     public void addCriterios(Filtro... filtros) {

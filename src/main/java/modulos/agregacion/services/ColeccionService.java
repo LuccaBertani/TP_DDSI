@@ -75,7 +75,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
         DatosColeccion datosColeccion = new DatosColeccion(dtoInput.getTitulo(), dtoInput.getDescripcion());
 
-        Coleccion coleccion = new Coleccion(datosColeccion,coleccionesRepo.getProxId());
+        Coleccion coleccion = new Coleccion(datosColeccion);
 
 
         FormateadorHecho formateador = new FormateadorHecho();
