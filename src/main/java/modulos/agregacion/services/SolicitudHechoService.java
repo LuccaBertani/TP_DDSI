@@ -33,27 +33,27 @@ import java.util.List;
 public class SolicitudHechoService {
 
     //private final IDetectorDeSpam detectorDeSpam;
-    private final IRepository<SolicitudHecho> solicitudAgregarHechoRepo;
-    private final IRepository<SolicitudHecho> solicitudEliminarHechoRepo;
-    private final IRepository<SolicitudHecho> solicitudModificarHechoRepo;
-    private final IRepository<Hecho> hechosProxyRepository;
-    private final IRepository<Hecho> hechosDinamicaRepository;
-    private final IRepository<Hecho> hechosEstaticaRepository;
-    private final IRepository<Usuario> usuariosRepository;
-    private final IRepository<Mensaje> mensajesRepository;
-    private final IRepository<Reporte> reportesHechoRepository;
+    private final ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo;
+    private final ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo;
+    private final ISolicitudModificarHechoRepository solicitudModificarHechoRepo;
+    private final IHechosProxyRepository hechosProxyRepository;
+    private final IHechosEstaticaRepository hechosEstaticaRepository;
+    private final IHechosDinamicaRepository hechosDinamicaRepository;
+    private final IUsuarioRepository usuariosRepository;
+    private final IMensajeRepository mensajesRepository;
+    private final IReporteHechoRepository reportesHechoRepository;
 
     GestorRoles gestorRoles;
 
-    public SolicitudHechoService(@Qualifier("SolicitudAgregarHechoRepository") IRepository<SolicitudHecho> solicitudAgregarHechoRepo,
-                                 @Qualifier("SolicitudEliminarHechoRepository") IRepository<SolicitudHecho> solicitudEliminarHechoRepo,
-                                 @Qualifier("SolicitudModificarHechoRepository") IRepository<SolicitudHecho> solicitudModificarHechoRepo,
-                                 IRepository<Usuario> usuariosRepository,
-                                 @Qualifier("hechosProxyRepo")IRepository<Hecho> hechosProxyRepository,
-                                 @Qualifier("hechosDinamicaRepo") IRepository<Hecho> hechosDinamicaRepository,
-                                 @Qualifier("hechosEstaticaRepo") IRepository<Hecho> hechosEstaticaRepository,
-                                 IRepository<Mensaje> mensajesRepository,
-                                 IRepository<Reporte> reportesHechoRepository) {
+    public SolicitudHechoService(ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo,
+                                 ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo,
+                                 ISolicitudModificarHechoRepository solicitudModificarHechoRepo,
+                                 IUsuarioRepository usuariosRepository,
+                                 IHechosProxyRepository hechosProxyRepository,
+                                 IHechosEstaticaRepository hechosEstaticaRepository,
+                                 IHechosDinamicaRepository hechosDinamicaRepository,
+                                 IMensajeRepository mensajesRepository,
+                                 IReporteHechoRepository reportesHechoRepository) {
         this.solicitudAgregarHechoRepo = solicitudAgregarHechoRepo;
         this.solicitudEliminarHechoRepo = solicitudEliminarHechoRepo;
         this.hechosProxyRepository = hechosProxyRepository;
@@ -68,7 +68,7 @@ public class SolicitudHechoService {
 
     public RespuestaHttp<Void> solicitarSubirHecho(SolicitudHechoInputDTO dto) {
 
-        Usuario usuario = usuariosRepository.findById(dto.getId_usuario());
+        Usuario usuario = usuariosRepository.findById(dto.getId_usuario()).orElse(null);
 
         if (usuario!=null && usuario.getRol().equals(Rol.ADMINISTRADOR)){
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
@@ -77,11 +77,11 @@ public class SolicitudHechoService {
         Pais pais = BuscadorPais.buscarOCrear(hechosProxyRepository.findAll(),dto.getPais(),hechosDinamicaRepository.findAll(),hechosEstaticaRepository.findAll());
 
         HechosData hechosData = new HechosData(dto.getTitulo(), dto.getDescripcion(), dto.getTipoContenido(),
-                pais, dto.getFechaAcontecimiento(), hechosDinamicaRepository.getProxId());
+                pais, dto.getFechaAcontecimiento());
 
         FuenteDinamica fuenteDinamica = new FuenteDinamica();
         Hecho hecho = fuenteDinamica.crearHecho(hechosData);
-        SolicitudHecho solicitudHecho = new SolicitudHecho(usuario, hecho, solicitudAgregarHechoRepo.getProxId());
+        SolicitudHecho solicitudHecho = new SolicitudHecho(usuario, hecho);
         if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion())) {
             solicitudHecho.setProcesada(true);
             solicitudHecho.setRechazadaPorSpam(true);
@@ -100,19 +100,19 @@ public class SolicitudHechoService {
     //El usuario manda una solicitud para eliminar un hecho -> guardar la solicitud en la base de datos
     // Asumimos que la solicitud de eliminación puede venir de una persona que no haya subido el hecho solicitado
     public RespuestaHttp<Void> solicitarEliminacionHecho(SolicitudHechoEliminarInputDTO dto){
-        Usuario usuario = usuariosRepository.findById(dto.getId_usuario());
+        Usuario usuario = usuariosRepository.findById(dto.getId_usuario()).orElse(null);
         if (usuario == null || usuario.getRol().equals(Rol.ADMINISTRADOR) || usuario.getRol().equals(Rol.VISUALIZADOR)){
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
         Hecho hecho;
         switch (Origen.fromCodigo(dto.getOrigen())){
-            case FUENTE_DINAMICA -> hecho = hechosDinamicaRepository.findById(dto.getId_hecho());
-            case FUENTE_ESTATICA -> hecho = hechosEstaticaRepository.findById(dto.getId_hecho());
-            case FUENTE_PROXY_METAMAPA -> hecho = hechosProxyRepository.findById(dto.getId_hecho());
+            case FUENTE_DINAMICA -> hecho = hechosDinamicaRepository.findById(dto.getId_hecho()).orElse(null);
+            case FUENTE_ESTATICA -> hecho = hechosEstaticaRepository.findById(dto.getId_hecho()).orElse(null);
+            case FUENTE_PROXY_METAMAPA -> hecho = hechosProxyRepository.findById(dto.getId_hecho()).orElse(null);
             default -> hecho = null;
         }
 
-        SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, solicitudEliminarHechoRepo.getProxId(), dto.getJustificacion());
+        SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, dto.getJustificacion());
         if (DetectorDeSpam.esSpam(dto.getJustificacion())) {
             // Marcar como rechazada por spam y guardar
             solicitud.setProcesada(true);
@@ -126,13 +126,13 @@ public class SolicitudHechoService {
 
     public RespuestaHttp<Void> solicitarModificacionHecho(SolicitudHechoModificarInputDTO dto){
 
-        Usuario usuario = usuariosRepository.findById(dto.getId_usuario());
+        Usuario usuario = usuariosRepository.findById(dto.getId_usuario()).orElse(null);
 
         Hecho hecho;
         switch (Origen.fromCodigo(dto.getOrigen())){
-            case FUENTE_DINAMICA -> hecho = hechosDinamicaRepository.findById(dto.getId_hecho());
-            case FUENTE_ESTATICA -> hecho = hechosEstaticaRepository.findById(dto.getId_hecho());
-            case FUENTE_PROXY_METAMAPA -> hecho = hechosProxyRepository.findById(dto.getId_hecho());
+            case FUENTE_DINAMICA -> hecho = hechosDinamicaRepository.findById(dto.getId_hecho()).orElse(null);
+            case FUENTE_ESTATICA -> hecho = hechosEstaticaRepository.findById(dto.getId_hecho()).orElse(null);
+            case FUENTE_PROXY_METAMAPA -> hecho = hechosProxyRepository.findById(dto.getId_hecho()).orElse(null);
             default -> hecho = null;
         }
 
@@ -140,7 +140,7 @@ public class SolicitudHechoService {
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
 
-        SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, solicitudEliminarHechoRepo.getProxId());
+        SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho);
         if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion()))
         {
             solicitud.setProcesada(true);
@@ -165,7 +165,7 @@ public class SolicitudHechoService {
 
     public RespuestaHttp<Void> evaluarSolicitudSubirHecho(SolicitudHechoEvaluarInputDTO dtoInput) {
 
-        SolicitudHecho solicitud = solicitudAgregarHechoRepo.findById(dtoInput.getId_solicitud());
+        SolicitudHecho solicitud = solicitudAgregarHechoRepo.findById(dtoInput.getId_solicitud()).orElse(null);
         if (solicitud == null) {
             return new RespuestaHttp<>(null, HttpStatus.NOT_FOUND.value());
         }
@@ -175,7 +175,7 @@ public class SolicitudHechoService {
             return new RespuestaHttp<>(null, HttpStatus.CONFLICT.value()); // Ya fue procesada
         }
 
-        Usuario usuario = usuariosRepository.findById(dtoInput.getId_usuario());//el que ejecuta la acción
+        Usuario usuario = usuariosRepository.findById(dtoInput.getId_usuario()).orElse(null);//el que ejecuta la acción
 
         if(!usuario.getRol().equals(Rol.ADMINISTRADOR)){
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
@@ -189,7 +189,7 @@ public class SolicitudHechoService {
                 solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(solicitud.getHecho().getAtributosHecho().getFechaCarga()); // Nueva fecha de modificación
                 solicitud.getUsuario().incrementarHechosSubidos();
 
-                hechosDinamicaRepository.update(solicitud.getHecho());
+                hechosDinamicaRepository.save(solicitud.getHecho());
 
                 if (solicitud.getUsuario().getRol().equals(Rol.VISUALIZADOR)){
                     gestorRoles.VisualizadorAContribuyente(solicitud.getUsuario());
@@ -202,9 +202,9 @@ public class SolicitudHechoService {
 
     public RespuestaHttp<Void> evaluarEliminacionHecho(SolicitudHechoEvaluarInputDTO dtoInput) {
 
-        SolicitudHecho solicitud = solicitudEliminarHechoRepo.findById(dtoInput.getId_solicitud());
+        SolicitudHecho solicitud = solicitudEliminarHechoRepo.findById(dtoInput.getId_solicitud()).orElse(null);
 
-        Usuario usuario = usuariosRepository.findById(dtoInput.getId_usuario());//el que ejecuta la acción
+        Usuario usuario = usuariosRepository.findById(dtoInput.getId_usuario()).orElse(null);//el que ejecuta la acción
 
         if(!usuario.getRol().equals(Rol.ADMINISTRADOR)){
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
@@ -227,8 +227,8 @@ public class SolicitudHechoService {
 
     public RespuestaHttp<Void> evaluarModificacionHecho(SolicitudHechoEvaluarInputDTO dtoInput) {
 
-        SolicitudHecho solicitud = solicitudModificarHechoRepo.findById(dtoInput.getId_solicitud());
-        Usuario usuario = usuariosRepository.findById(dtoInput.getId_usuario());//el que ejecuta la acción
+        SolicitudHecho solicitud = solicitudModificarHechoRepo.findById(dtoInput.getId_solicitud()).orElse(null);
+        Usuario usuario = usuariosRepository.findById(dtoInput.getId_usuario()).orElse(null);//el que ejecuta la acción
 
         if(!usuario.getRol().equals(Rol.ADMINISTRADOR)){
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
@@ -240,7 +240,7 @@ public class SolicitudHechoService {
                 solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(ZonedDateTime.now());
 
                 solicitud.getHecho().getAtributosHecho().setModificado(true);
-                hechosDinamicaRepository.update(solicitud.getHecho());
+                hechosDinamicaRepository.save(solicitud.getHecho());
             }
         }
         solicitudModificarHechoRepo.delete(solicitud);
@@ -275,8 +275,7 @@ public class SolicitudHechoService {
     }
 
     public RespuestaHttp<Void> reportarHecho(String motivo, Long id_hecho) {
-        Long id_reporte = reportesHechoRepository.getProxId();
-        Reporte reporte = new Reporte(motivo, id_reporte, id_hecho);
+        Reporte reporte = new Reporte(motivo, id_hecho);
         reportesHechoRepository.save(reporte);
         return new RespuestaHttp<>(null,HttpStatus.OK.value());
     }

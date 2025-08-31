@@ -13,6 +13,7 @@ import modulos.shared.RespuestaHttp;
 import modulos.shared.dtos.AtributosHecho;
 import modulos.shared.dtos.input.*;
 import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
+import modulos.shared.utils.ParserOptional;
 import modulos.usuario.Rol;
 import modulos.usuario.Usuario;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,19 +27,19 @@ import java.util.List;
 @Service
 public class ColeccionService  {
 
-    private final IRepository<Hecho> hechosProxyRepo;
-    private final IRepository<Hecho> hechosEstaticaRepo;
-    private final IRepository<Hecho> hechosDinamicaRepo;
-    private final IRepository<Coleccion> coleccionesRepo;
-    private final IRepository<Usuario> usuariosRepo;
-    private final IRepository<Dataset> datasetsRepo;
+    private final IHechosProxyRepository hechosProxyRepo;
+    private final IHechosEstaticaRepository hechosEstaticaRepo;
+    private final IHechosDinamicaRepository hechosDinamicaRepo;
+    private final IColeccionRepository coleccionesRepo;
+    private final IUsuarioRepository usuariosRepo;
+    private final IDatasetsRepository datasetsRepo;
 
-    public ColeccionService(@Qualifier("hechosProxyRepo") IRepository<Hecho> hechosProxyRepo,
-                            @Qualifier("hechosEstaticaRepo") IRepository<Hecho> hechosEstaticaRepo,
-                            @Qualifier("hechosDinamicaRepo") IRepository<Hecho> hechosDinamicaRepo,
-                            IRepository<Coleccion> coleccionesRepo,
-                            IRepository<Usuario> usuariosRepo,
-                            IRepository<Dataset> datasetsRepo) {
+    public ColeccionService(IHechosProxyRepository hechosProxyRepo,
+                            IHechosEstaticaRepository hechosEstaticaRepo,
+                            IHechosDinamicaRepository hechosDinamicaRepo,
+                            IColeccionRepository coleccionesRepo,
+                            IUsuarioRepository usuariosRepo,
+                            IDatasetsRepository datasetsRepo) {
         this.hechosProxyRepo = hechosProxyRepo;
         this.hechosEstaticaRepo = hechosEstaticaRepo;
         this.hechosDinamicaRepo = hechosDinamicaRepo;
@@ -67,7 +68,8 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
     public RespuestaHttp<Void> crearColeccion(ColeccionInputDTO dtoInput) {
 
-        Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario());
+        Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario()).orElse(null);
+
 
         if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
@@ -134,7 +136,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
     public RespuestaHttp<ColeccionOutputDTO> getColeccion(Long id_coleccion) {
 
-        Coleccion coleccion = coleccionesRepo.findById(id_coleccion);
+        Coleccion coleccion = coleccionesRepo.findById(id_coleccion).orElse(null);
 
         if(coleccion == null){
             return new RespuestaHttp<>(null,HttpStatus.NO_CONTENT.value());
@@ -156,7 +158,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     }
 
     public RespuestaHttp<ColeccionOutputDTO> deleteColeccion(Long id_coleccion) {
-        Coleccion coleccion = coleccionesRepo.findById(id_coleccion);
+        Coleccion coleccion = coleccionesRepo.findById(id_coleccion).orElse(null);
         if(coleccion == null){
             return new RespuestaHttp<>(null,HttpStatus.NO_CONTENT.value());
         }
@@ -166,9 +168,9 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
 
     public RespuestaHttp<Void> agregarFuente(Long idColeccion, String dataSet) {
-        Coleccion coleccion = coleccionesRepo.findById(idColeccion);
+        Coleccion coleccion = coleccionesRepo.findById(idColeccion).orElse(null);
         FuenteEstatica fuente = new FuenteEstatica();
-        Dataset dataset = new Dataset(dataSet, datasetsRepo.getProxId());
+        Dataset dataset = new Dataset(dataSet);
         fuente.setDataSet(dataset);
 
         List<Hecho> hechosFuente = fuente.leerFuente(hechosProxyRepo.findAll(),hechosDinamicaRepo.findAll(), hechosEstaticaRepo.findAll());
@@ -178,8 +180,8 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     }
 
     public RespuestaHttp<Void> eliminarFuente(Long idColeccion, String datasetString) {
-        Coleccion coleccion = coleccionesRepo.findById(idColeccion);
-        Dataset dataset = new Dataset(datasetString, datasetsRepo.getProxId());
+        Coleccion coleccion = coleccionesRepo.findById(idColeccion).orElse(null);
+        Dataset dataset = new Dataset(datasetString);
         coleccion.getHechos().forEach(
                 hecho -> {
                     if(hecho.getDatasets().contains(dataset)){
@@ -191,8 +193,8 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     }
 
     public RespuestaHttp<Void> updateColeccion(ColeccionUpdateInputDTO dto) {
-        Coleccion coleccion = coleccionesRepo.findById(dto.getId_coleccion());
-        Usuario usuario = usuariosRepo.findById(dto.getId_usuario());
+        Coleccion coleccion = coleccionesRepo.findById(dto.getId_coleccion()).orElse(null);
+        Usuario usuario = usuariosRepo.findById(dto.getId_usuario()).orElse(null);
         if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
@@ -234,8 +236,8 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     }
 
     public RespuestaHttp<Void> modificarAlgoritmoConsenso(ModificarConsensoInputDTO input) {
-        Coleccion coleccion = coleccionesRepo.findById(input.getIdColeccion());
-        Usuario usuario = usuariosRepo.findById(input.getIdUsuario());
+        Coleccion coleccion = coleccionesRepo.findById(input.getIdColeccion()).orElse(null);
+        Usuario usuario = usuariosRepo.findById(input.getIdUsuario()).orElse(null);
 
         if (coleccion == null || usuario == null) {
             return new RespuestaHttp<>(null, HttpStatus.BAD_REQUEST.value()); // Datos inválidos en la solicitud
@@ -257,7 +259,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             default:
                 return new RespuestaHttp<>(null, HttpStatus.BAD_REQUEST.value());
         }
-        coleccionesRepo.update(coleccion);
+        coleccionesRepo.save(coleccion);
         return new RespuestaHttp<>(null, HttpStatus.OK.value());
     }
 }

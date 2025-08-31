@@ -3,6 +3,7 @@ package modulos.agregacion.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import modulos.agregacion.converters.AlgoritmoConsensoConverter;
 import modulos.shared.Hecho;
 import modulos.agregacion.entities.algoritmosConsenso.IAlgoritmoConsenso;
 import modulos.agregacion.entities.filtros.Filtro;
@@ -16,7 +17,7 @@ import java.util.*;
 /*
 * Colecciones: conjuntos de hechos organizados bajo un título y descripción, creados y gestionados por administradores.
 * Son públicas y no pueden ser editadas ni eliminadas manualmente.
-* */
+*/
 
 
 @Getter
@@ -24,6 +25,16 @@ import java.util.*;
 @Entity
 @Table(name = "coleccion")
 public class Coleccion {
+
+    public Coleccion() {
+    }
+
+    public Coleccion(DatosColeccion datosColeccion) {
+        this.titulo = datosColeccion.getTitulo();
+        this.descripcion = datosColeccion.getDescripcion();
+        hechos = new ArrayList<>();
+        criterios = new HashMap<>();
+    }
 
     @Column (name = "activo", nullable = false)
     private Boolean activo;
@@ -46,19 +57,19 @@ public class Coleccion {
             inverseJoinColumns = @JoinColumn(name = "hecho_id"),
             uniqueConstraints = @UniqueConstraint(name = "uk_coleccion_hecho", columnNames = {"coleccion_id","hecho_id"})
     )
-    private List<Hecho> hechos = new ArrayList<>();
+    private List<Hecho> hechos;
 
     //relacion 1 a 1
+    @Convert(converter = AlgoritmoConsensoConverter.class)
+    @Column(name = "algoritmoConsenso", length = 50)
     private IAlgoritmoConsenso algoritmoConsenso;
 
     @Column(name = "modificado", nullable = false)
     private Boolean modificado;
 
-    @OneToMany(mappedBy = "filtro") //TODO
-    private Map<Class<? extends Filtro>, Filtro> criterios = new HashMap<>();
 
-    public Coleccion() {
-    }
+    private Map<Class<? extends Filtro>, Filtro> criterios;
+
 
     public <T extends Filtro> T obtenerCriterio(Class<T> tipo) {
         return tipo.cast(this.criterios.get(tipo));
@@ -72,12 +83,9 @@ public class Coleccion {
             inverseJoinColumns = @JoinColumn(name = "hechoConsensuado_id"),
             uniqueConstraints = @UniqueConstraint(name = "uk_coleccion_hechoConsensuado", columnNames = {"coleccion_id","hechoConsensuado_id"})
     )
+
     private List<Hecho> hechosConsensuados = new ArrayList<>();
 
-    public Coleccion(DatosColeccion datosColeccion) {
-        this.titulo = datosColeccion.getTitulo();
-        this.descripcion = datosColeccion.getDescripcion();
-    }
 
     public void addCriterios(Filtro... filtros) {
         for (Filtro filtro : filtros) {
@@ -120,3 +128,6 @@ public class Coleccion {
         this.hechos.addAll(hechos);
     }
 }
+
+
+

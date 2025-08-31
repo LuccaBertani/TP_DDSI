@@ -1,31 +1,40 @@
 package modulos.usuario;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-
+@Entity
+@Table(name="usuario")
 public class Usuario {
 
     @Setter
     private String contrasenia;
 
     @Getter
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    public Usuario(Long id) {
-        this.id = id;
+    public Usuario() {
+        cantHechosSubidos = 0;
+        rol = Rol.VISUALIZADOR;
     }
 
     @Setter
     @Getter
-    private Integer cantHechosSubidos = 0;
+    @Column(name = "cantHechosSubidos")
+    private Integer cantHechosSubidos;
 
     @Getter
     @Setter
-    private Rol rol = Rol.VISUALIZADOR; // 0 visualizador, 1 contribuyente, 2 admin
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "rol", nullable = false, length = 20)
+    private Rol rol; // 0 visualizador, 1 contribuyente, 2 admin
 
     @Getter
     @Setter
+    @Embedded
     private DatosPersonalesPublicador datosPersonales;
 
     public void incrementarHechosSubidos(){

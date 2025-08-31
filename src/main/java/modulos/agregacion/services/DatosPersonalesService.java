@@ -1,6 +1,6 @@
 package modulos.agregacion.services;
 
-import modulos.agregacion.repositories.IRepository;
+import modulos.agregacion.repositories.IUsuarioRepository;
 import modulos.shared.RespuestaHttp;
 import modulos.usuario.Rol;
 import modulos.usuario.Usuario;
@@ -12,14 +12,14 @@ import java.util.List;
 @Service
 public class DatosPersonalesService {
 
-    private final IRepository<Usuario> usuariosRepo;
+    private final IUsuarioRepository usuariosRepo;
 
-    public DatosPersonalesService(IRepository<Usuario> usuariosRepo) {
+    public DatosPersonalesService(IUsuarioRepository usuariosRepo) {
         this.usuariosRepo = usuariosRepo;
     }
 
     public RespuestaHttp<List<Usuario>> obtenerListaContribuyentes(Long id_usuario) {
-        Usuario usuario = usuariosRepo.findById(id_usuario);
+        Usuario usuario = usuariosRepo.findById(id_usuario).orElse(null);
         if (usuario.getRol().equals(Rol.ADMINISTRADOR)) {
             List<Usuario> usuarios = usuariosRepo.findAll();
             return new RespuestaHttp<>(usuarios, HttpStatus.OK.value());

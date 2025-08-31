@@ -34,19 +34,19 @@ import static java.util.stream.Collectors.toList;
 public class HechosService {
 
 
-    private final IRepository<Hecho> hechosProxyRepo;
-    private final IRepository<Hecho> hechosEstaticaRepo;
-    private final IRepository<Hecho> hechosDinamicaRepo;
-    private final IRepository<Usuario> usuariosRepo;
-    private final IRepository<Coleccion> coleccionRepo;
-    private final IRepository<Dataset> datasetsRepo;
+    private final IHechosProxyRepository hechosProxyRepo;
+    private final IHechosEstaticaRepository hechosEstaticaRepo;
+    private final IHechosDinamicaRepository hechosDinamicaRepo;
+    private final IUsuarioRepository usuariosRepo;
+    private final IColeccionRepository coleccionRepo;
+    private final IDatasetsRepository datasetsRepo;
 
-    public HechosService(@Qualifier("hechosProxyRepo") IRepository<Hecho> hechosProxyRepo,
-                         @Qualifier("hechosEstaticaRepo") IRepository<Hecho> hechosEstaticaRepo,
-                         @Qualifier("hechosDinamicaRepo") IRepository<Hecho> hechosDinamicaRepo,
-                         IRepository<Usuario> usuariosRepo,
-                         IRepository<Coleccion> coleccionRepo,
-                         IRepository<Dataset> datasetsRepo) {
+    public HechosService(IHechosProxyRepository hechosProxyRepo,
+                         IHechosEstaticaRepository hechosEstaticaRepo,
+                         IHechosDinamicaRepository hechosDinamicaRepo,
+                         IUsuarioRepository usuariosRepo,
+                         IColeccionRepository coleccionRepo,
+                         IDatasetsRepository datasetsRepo) {
         this.hechosProxyRepo = hechosProxyRepo;
         this.hechosDinamicaRepo = hechosDinamicaRepo;
         this.hechosEstaticaRepo = hechosEstaticaRepo;
@@ -64,7 +64,7 @@ public class HechosService {
         for(Coleccion coleccion: colecciones){
             List<Hecho> hechosFiltrados = Filtrador.aplicarFiltros(coleccion.getCriterios(),coleccion.getHechos());
             coleccion.setHechos(hechosFiltrados);
-            coleccionRepo.update(coleccion);
+            coleccionRepo.save(coleccion);
         }
     }
 
@@ -121,7 +121,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     }
 
     public RespuestaHttp<Void> refrescarColecciones(Long idUsuario){
-        Usuario usuario = usuariosRepo.findById(idUsuario);
+        Usuario usuario = usuariosRepo.findById(idUsuario).orElse(null);
         if (usuario!= null && !usuario.getRol().equals(Rol.ADMINISTRADOR)){
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
@@ -191,7 +191,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
         FormateadorHecho formateador = new FormateadorHecho();
 
-        Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario());
+        Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario()).orElse(null);
         if(usuario.getRol().equals(Rol.ADMINISTRADOR)){
 
             Hecho hecho = new Hecho();
@@ -204,8 +204,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             hecho.getAtributosHecho().setDescripcion(atributos.getDescripcion());
             hecho.getAtributosHecho().setOrigen(atributos.getOrigen());
             hecho.getAtributosHecho().setContenidoMultimedia(atributos.getContenidoMultimedia());
-
-            hecho.setId(hechosDinamicaRepo.getProxId());
             hecho.setActivo(true);
             hecho.getAtributosHecho().setFechaCarga(ZonedDateTime.now());
             hecho.getAtributosHecho().setFechaUltimaActualizacion(hecho.getAtributosHecho().getFechaCarga());
@@ -219,11 +217,11 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     }
 
     public RespuestaHttp<Void> importarHechos(ImportacionHechosInputDTO dtoInput){
-        Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario());
+        Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario()).orElse(null);
         if (usuario.getRol().equals(Rol.ADMINISTRADOR)){
 
             FuenteEstatica fuente = new FuenteEstatica();
-            Dataset dataset = new Dataset(dtoInput.getFuenteString(), datasetsRepo.getProxId());
+            Dataset dataset = new Dataset(dtoInput.getFuenteString());
             datasetsRepo.save(dataset);
             fuente.setDataSet(dataset);
 
@@ -235,7 +233,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             }
 
             for (Hecho hecho : hechos){
-                hecho.setId(hechosEstaticaRepo.getProxId());
                 hechosEstaticaRepo.save(hecho);
             }
 
@@ -264,7 +261,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 inputDTO.getTitulo()
         )));
 
-        Coleccion coleccion = coleccionRepo.findById(inputDTO.getId_coleccion());
+        Coleccion coleccion = coleccionRepo.findById(inputDTO.getId_coleccion()).orElse(null);
 
         if (coleccion == null){
             return new RespuestaHttp<>(null, HttpStatus.NO_CONTENT.value());

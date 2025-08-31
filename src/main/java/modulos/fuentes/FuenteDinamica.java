@@ -13,7 +13,6 @@ public class FuenteDinamica {
     public Hecho crearHecho(HechosData data){
 
         Hecho hecho = new Hecho();
-        hecho.setId(data.getId());
         hecho.getAtributosHecho().setTitulo(data.getTitulo());
         hecho.setActivo(false);
         hecho.getAtributosHecho().setDescripcion(data.getDescripcion());
