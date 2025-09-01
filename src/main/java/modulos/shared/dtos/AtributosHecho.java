@@ -3,6 +3,7 @@ package modulos.shared.dtos;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import modulos.agregacion.entities.Ubicacion;
 import modulos.shared.Categoria;
 import modulos.fuentes.Origen;
 import modulos.shared.Pais;
@@ -14,13 +15,12 @@ import java.time.ZonedDateTime;
 @Embeddable
 public class AtributosHecho {
 
-    //FK a la tabla Pais relacion n a 1
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "pais_id") // FK va en la tabla de HECHO
-    private Pais pais;
-
     @Column(name = "titulo", nullable = false)
     private String titulo;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "ubicacion_id", referencedColumnName = "id",foreignKey = @ForeignKey(name = "fk_usuario_hecho"))
+    private Ubicacion ubicacion;
 
     @Column(name = "descripcion")
     private String descripcion;

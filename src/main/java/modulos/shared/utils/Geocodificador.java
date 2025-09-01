@@ -1,15 +1,19 @@
 package modulos.shared.utils;
 
+import modulos.agregacion.entities.Ubicacion;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Geocodificador {
 
-    public static Ubicacion obtenerPais(Double latitud, Double longitud) {
+    public static UbicacionString obtenerUbicacion(Double latitud, Double longitud) {
         try {
             String urlStr = String.format(
                     java.util.Locale.US,
@@ -33,13 +37,14 @@ public class Geocodificador {
             in.close();
 
             JSONObject json = new JSONObject(response.toString());
-            Ubicacion ubicacion = new Ubicacion();
-            ubicacion.setPais()
-            return json.getJSONObject("address").getString("country");
+            UbicacionString ubicacion = new UbicacionString();
+            ubicacion.setPais(json.getJSONObject("address").getString("country"));
+            ubicacion.setProvincia(json.getJSONObject("address").getString("state"));
+            return ubicacion;
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "País no encontrado";
+            return null;
         }
     }
 

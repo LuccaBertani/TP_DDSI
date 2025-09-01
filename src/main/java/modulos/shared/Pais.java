@@ -3,6 +3,10 @@ package modulos.shared;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import modulos.agregacion.entities.Provincia;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,6 +17,24 @@ public class Pais {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nombre", nullable = false)
+    @Column(name = "nombre")
     private String pais;
+
+    public Pais(){
+
+    }
 }
+
+/*
+* TABLA PAIS:
+* ARGENTINA CORDOBA
+* ARGENTINA CABA
+* ARGENTINA SANTA FE
+*
+* TABLA PROVINCIA
+* CORDOBA ARGENTINA
+* WASHINGTON USA
+* SAN LUIS ARGENTINA
+* */
+
+

@@ -3,6 +3,7 @@ package modulos.shared;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import modulos.agregacion.entities.Ubicacion;
 import modulos.fuentes.Dataset;
 import modulos.shared.dtos.AtributosHecho;
 import modulos.usuario.Usuario;
@@ -44,4 +45,20 @@ public class Hecho {
         this.datasets = new ArrayList<>();
         //this.atributosHecho = atributosHecho;
     }
+
 }
+
+/*
+* HECHO
+* FK A UBICACION: 1
+*
+* UBICACION:
+* ID: 1
+* FK A PAIS: 1
+* FK A PROVINCIA: 1
+*
+* ID 2
+* FK A PAIS: 1
+* FK A PROVINCIA: 2
+*
+* */
