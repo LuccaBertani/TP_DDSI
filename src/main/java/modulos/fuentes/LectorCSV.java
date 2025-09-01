@@ -5,8 +5,6 @@ import java.nio.charset.Charset;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
-
-import modulos.agregacion.entities.Ubicacion;
 import modulos.buscadores.*;
 import modulos.shared.utils.FechaParser;
 import modulos.shared.utils.Geocodificador;
@@ -17,7 +15,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 public class LectorCSV {
-    private static List<String> campos = new ArrayList<>(Arrays.asList("titulo","descripcion","categoria","latitud","longitud","fechadelhecho","pais"));
+    private static List<String> campos = new ArrayList<>(Arrays.asList("titulo","descripcion","categoria","latitud","longitud","fechadelhecho","pais","provincia"));
     private Dataset dataSet;
 
     public LectorCSV(Dataset dataSet){
@@ -70,7 +68,6 @@ public class LectorCSV {
                 List<String> registros = new ArrayList<>();
                 fila.forEach(registros::add);
 
-
                 Hecho hecho = new Hecho();
 
                 hecho.getAtributosHecho().setOrigen(Origen.FUENTE_ESTATICA);
@@ -94,17 +91,19 @@ public class LectorCSV {
 
                 UbicacionString ubicacion;
                 if (indicesColumnas.get(3) != -1 && indicesColumnas.get(4) != -1 &&
-                        (!registros.get(indicesColumnas.get(3)).equals("") && !registros.get(indicesColumnas.get(4)).equals(""))) {
+                        (!registros.get(indicesColumnas.get(3)).isEmpty() && !registros.get(indicesColumnas.get(4)).isEmpty())) {
                     Double latitud = Double.parseDouble(registros.get(indicesColumnas.get(3)));
                     Double longitud = Double.parseDouble(registros.get(indicesColumnas.get(4)));
                     ubicacion = Geocodificador.obtenerUbicacion(latitud, longitud);
                 }
                 else {
+                    ubicacion = new UbicacionString();
                     ubicacion.setPais(indicesColumnas.get(6) != -1 ? registros.get(indicesColumnas.get(6)) : "N/A");
+                    ubicacion.setProvincia(indicesColumnas.get(7) != -1 ? registros.get(indicesColumnas.get(7)) : "N/A");
                 }
 
-                hecho.getAtributosHecho().getUbicacion().setPais(BuscadorPais.buscarOCrear(hechosFuenteDinamica, ubicacion.get(0), hechosFuenteProxy, hechosFuenteEstatica));
-                hecho.getAtributosHecho().getUbicacion().setProvincia(BuscadorProvincia.buscarOCrear(hechosFuenteDinamica, ubicacion.get(1), hechosFuenteProxy, hechosFuenteEstatica));
+                hecho.getAtributosHecho().getUbicacion().setPais(BuscadorPais.buscarOCrear(hechosFuenteDinamica, ubicacion.getPais(), hechosFuenteProxy, hechosFuenteEstatica));
+                hecho.getAtributosHecho().getUbicacion().setProvincia(BuscadorProvincia.buscarOCrear(hechosFuenteDinamica, ubicacion.getProvincia(), hechosFuenteProxy, hechosFuenteEstatica));
 
                 //ZonedDateTime fecha = FechaParser.parsearFecha(registros.get(indicesColumnas.get(5)));
                 //ZonedDateTime fecha = (indicesColumnas.get(5) != -1) ? fecha :ZonedDateTime.parse(registros.get(indicesColumnas.get(5)));
@@ -128,6 +127,8 @@ public class LectorCSV {
                     System.out.println(hechoASubir.getAtributosHecho().getTitulo());
                     System.out.println(hechoASubir.getAtributosHecho().getDescripcion());
                     System.out.println(hechoASubir.getAtributosHecho().getCategoria().getTitulo());
+                    System.out.println(hechoASubir.getAtributosHecho().getUbicacion().getPais());
+                    System.out.println(hechoASubir.getAtributosHecho().getUbicacion().getProvincia());
                     System.out.println(hechoASubir.getAtributosHecho().getFechaAcontecimiento());
                     System.out.println(hechoASubir.getAtributosHecho().getFechaCarga());
                 }

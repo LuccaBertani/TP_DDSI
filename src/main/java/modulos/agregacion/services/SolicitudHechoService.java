@@ -1,7 +1,9 @@
 package modulos.agregacion.services;
 
 import modulos.agregacion.entities.Filtrador;
+import modulos.agregacion.entities.Provincia;
 import modulos.agregacion.repositories.*;
+import modulos.buscadores.BuscadorProvincia;
 import modulos.fuentes.Origen;
 import modulos.shared.*;
 import modulos.shared.dtos.input.SolicitudHechoEliminarInputDTO;
@@ -75,9 +77,9 @@ public class SolicitudHechoService {
         }
 
         Pais pais = BuscadorPais.buscarOCrear(hechosProxyRepository.findAll(),dto.getPais(),hechosDinamicaRepository.findAll(),hechosEstaticaRepository.findAll());
-
+        Provincia provincia = BuscadorProvincia.buscarOCrear(hechosProxyRepository.findAll(),dto.getProvincia(),hechosDinamicaRepository.findAll(),hechosEstaticaRepository.findAll());
         HechosData hechosData = new HechosData(dto.getTitulo(), dto.getDescripcion(), dto.getTipoContenido(),
-                pais, dto.getFechaAcontecimiento());
+                pais, dto.getFechaAcontecimiento(), provincia);
 
         FuenteDinamica fuenteDinamica = new FuenteDinamica();
         Hecho hecho = fuenteDinamica.crearHecho(hechosData);
@@ -154,7 +156,8 @@ public class SolicitudHechoService {
         }
 
         hecho.getAtributosHecho().setTitulo(dto.getTitulo());
-        hecho.getAtributosHecho().setPais(BuscadorPais.buscarOCrear(hechosDinamicaRepository.findAll(), dto.getPais(), hechosProxyRepository.findAll(), hechosEstaticaRepository.findAll()));
+        hecho.getAtributosHecho().getUbicacion().setPais(BuscadorPais.buscarOCrear(hechosDinamicaRepository.findAll(), dto.getPais(), hechosProxyRepository.findAll(), hechosEstaticaRepository.findAll()));
+        hecho.getAtributosHecho().getUbicacion().setProvincia(BuscadorProvincia.buscarOCrear(hechosDinamicaRepository.findAll(), dto.getProvincia(), hechosProxyRepository.findAll(), hechosEstaticaRepository.findAll()));
         hecho.getAtributosHecho().setCategoria(BuscadorCategoria.buscarOCrear(hechosDinamicaRepository.findAll(), dto.getPais(), hechosProxyRepository.findAll(), hechosEstaticaRepository.findAll()));
         hecho.getAtributosHecho().setFechaAcontecimiento(FechaParser.parsearFecha(dto.getFechaAcontecimiento()));
         hecho.getAtributosHecho().setContenidoMultimedia(TipoContenido.fromCodigo(dto.getTipoContenido()));

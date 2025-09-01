@@ -198,12 +198,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
             AtributosHecho atributos = formateador.formatearAtributosHecho(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),dtoInput);
 
-            hecho.getAtributosHecho().setPais(atributos.getPais());
-            hecho.getAtributosHecho().setCategoria(atributos.getCategoria());
-            hecho.getAtributosHecho().setFechaAcontecimiento(atributos.getFechaAcontecimiento());
-            hecho.getAtributosHecho().setDescripcion(atributos.getDescripcion());
-            hecho.getAtributosHecho().setOrigen(atributos.getOrigen());
-            hecho.getAtributosHecho().setContenidoMultimedia(atributos.getContenidoMultimedia());
+            hecho.setAtributosHecho(atributos);
             hecho.setActivo(true);
             hecho.getAtributosHecho().setFechaCarga(ZonedDateTime.now());
             hecho.getAtributosHecho().setFechaUltimaActualizacion(hecho.getAtributosHecho().getFechaCarga());
@@ -282,7 +277,8 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream().map(hecho -> {
             VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
             dto.setId(hecho.getId());
-            dto.setPais(hecho.getAtributosHecho().getPais().getPais());
+            dto.setPais(hecho.getAtributosHecho().getUbicacion().getPais().getPais());
+            dto.setProvincia(hecho.getAtributosHecho().getUbicacion().getProvincia().getProvincia());
             dto.setTitulo(hecho.getAtributosHecho().getTitulo());
             dto.setDescripcion(hecho.getAtributosHecho().getDescripcion());
             dto.setFechaAcontecimiento(hecho.getAtributosHecho().getFechaAcontecimiento().toString());
@@ -302,7 +298,8 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         List<VisualizarHechosOutputDTO> outputDTO = hechosTotales.stream().map(hecho -> {
             VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
             dto.setId(hecho.getId());
-            dto.setPais(hecho.getAtributosHecho().getPais().getPais());
+            dto.setPais(hecho.getAtributosHecho().getUbicacion().getPais().getPais());
+            dto.setProvincia(hecho.getAtributosHecho().getUbicacion().getProvincia().getProvincia());
             dto.setTitulo(hecho.getAtributosHecho().getTitulo());
             dto.setDescripcion(hecho.getAtributosHecho().getDescripcion());
             dto.setFechaAcontecimiento(hecho.getAtributosHecho().getFechaAcontecimiento().toString());

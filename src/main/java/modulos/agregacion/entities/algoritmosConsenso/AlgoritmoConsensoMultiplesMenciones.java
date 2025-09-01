@@ -42,7 +42,8 @@ public class AlgoritmoConsensoMultiplesMenciones implements IAlgoritmoConsenso {
     private boolean tienenAtributosDistintos(Hecho h1, Hecho h2){
         return !Normalizador.normalizarYComparar(h1.getAtributosHecho().getDescripcion(),h2.getAtributosHecho().getDescripcion())||
                 !h1.getAtributosHecho().getCategoria().equals(h2.getAtributosHecho().getCategoria()) ||
-                !h1.getAtributosHecho().getPais().equals(h2.getAtributosHecho().getPais()) ||
-                !h1.getAtributosHecho().getFechaAcontecimiento().equals(h2.getAtributosHecho().getFechaAcontecimiento());
+                !h1.getAtributosHecho().getUbicacion().getPais().equals(h2.getAtributosHecho().getUbicacion().getPais()) ||
+                !h1.getAtributosHecho().getFechaAcontecimiento().equals(h2.getAtributosHecho().getFechaAcontecimiento()) ||
+                !h1.getAtributosHecho().getUbicacion().getProvincia().equals(h2.getAtributosHecho().getUbicacion().getProvincia());
     }
 }

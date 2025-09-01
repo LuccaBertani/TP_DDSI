@@ -1,6 +1,7 @@
 package modulos.agregacion.entities;
 
 
+import modulos.buscadores.BuscadorProvincia;
 import modulos.fuentes.Origen;
 import modulos.shared.Categoria;
 import modulos.shared.Hecho;
@@ -28,10 +29,18 @@ public AtributosHecho formatearAtributosHecho(List<Hecho> hechosDinamica, List<H
 
     if(dtoInput.getPais() != null) {
         Pais pais = BuscadorPais.buscarOCrear(hechosDinamica,dtoInput.getPais(),hechosProxy,hechosEstatica);
-        atributos.setPais(pais);
+        atributos.getUbicacion().setPais(pais);
     }else{
         Pais pais = BuscadorPais.buscarOCrear(hechosDinamica,"N/A",hechosProxy,hechosEstatica);
-        atributos.setPais(pais);
+        atributos.getUbicacion().setPais(pais);
+    }
+
+    if(dtoInput.getProvincia() != null) {
+        Provincia provincia = BuscadorProvincia.buscarOCrear(hechosDinamica,dtoInput.getProvincia(),hechosProxy,hechosEstatica);
+        atributos.getUbicacion().setProvincia(provincia);
+    }else{
+        Pais pais = BuscadorPais.buscarOCrear(hechosDinamica,"N/A",hechosProxy,hechosEstatica);
+        atributos.getUbicacion().setPais(pais);
     }
 
     atributos.setTitulo(dtoInput.getTitulo());

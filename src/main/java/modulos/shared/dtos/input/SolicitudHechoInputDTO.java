@@ -8,13 +8,14 @@ import lombok.Data;
 @Data
 public class SolicitudHechoInputDTO { //datos del hecho y el id del usuario
     @NotNull(message = "El id del usuario es obligatorio")
-    Long id_usuario;
+    private Long id_usuario;
     @NotNull(message = "El titulo del hecho es obligatorio")
-    String titulo;
+    private String titulo;
 
-    String descripcion;
-    Integer tipoContenido;
-    String pais;
-    String fechaAcontecimiento;
-    String categoria;
+    private String descripcion;
+    private Integer tipoContenido;
+    private String pais;
+    private String fechaAcontecimiento;
+    private String categoria;
+    private String provincia;
 }

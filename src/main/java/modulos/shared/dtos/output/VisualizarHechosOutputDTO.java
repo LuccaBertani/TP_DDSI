@@ -13,4 +13,5 @@ public class VisualizarHechosOutputDTO {
     private String pais;
     private String fechaAcontecimiento;
     private int contenidoMultimedia;
+    private String provincia;
 }

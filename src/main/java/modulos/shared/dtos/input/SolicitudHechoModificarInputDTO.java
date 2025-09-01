@@ -11,12 +11,13 @@ public class SolicitudHechoModificarInputDTO { //datos del hecho y el id del usu
     @NotNull(message = "El id_hecho es obligatorio")
     private Long id_hecho; // Id del hecho que se quiere modificar
     @NotNull(message = "El titulo es obligatorio")
-    String titulo;
+    private String titulo;
     @NotNull(message = "El origen es obligatorio")
-    Integer origen;
+    private Integer origen;
 
-    String descripcion;
-    Integer tipoContenido;
-    String pais;
-    String fechaAcontecimiento;
+    private String descripcion;
+    private Integer tipoContenido;
+    private String pais;
+    private String fechaAcontecimiento;
+    private String provincia;
 }

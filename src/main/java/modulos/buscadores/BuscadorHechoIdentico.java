@@ -12,7 +12,7 @@ public class BuscadorHechoIdentico {
     public static boolean existeHechoIdentico(Hecho hecho, List<Hecho> hechos){
         String tituloHechoNormalizado = Normalizador.normalizar(hecho.getAtributosHecho().getTitulo());
         Categoria categoria= hecho.getAtributosHecho().getCategoria();
-        Pais pais = hecho.getAtributosHecho().getPais();
+        Pais pais = hecho.getAtributosHecho().getUbicacion().getPais();
         String descripcionNormalizada = Normalizador.normalizar(hecho.getAtributosHecho().getDescripcion());
         ZonedDateTime fechaAcontecimiento = hecho.getAtributosHecho().getFechaAcontecimiento();
 
@@ -20,7 +20,7 @@ public class BuscadorHechoIdentico {
 
         for (Hecho h: hechosConTituloIgual){
             if (h.getAtributosHecho().getCategoria().equals(categoria) &&
-                    h.getAtributosHecho().getPais().equals(pais) &&
+                    h.getAtributosHecho().getUbicacion().getPais().equals(pais) &&
                     Normalizador.normalizar(h.getAtributosHecho().getDescripcion()).equals(descripcionNormalizada) &&
                     h.getAtributosHecho().getFechaAcontecimiento().equals(fechaAcontecimiento)){
 
