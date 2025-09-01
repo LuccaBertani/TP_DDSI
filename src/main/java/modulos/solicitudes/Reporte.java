@@ -3,6 +3,7 @@ package modulos.solicitudes;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import modulos.shared.Hecho;
 
 @Getter
 @Setter
@@ -14,15 +15,14 @@ public class Reporte {
     Long id;
     @Column(name = "motivo")
     String motivo;
-    @Column(name = "id_hecho")
 
-    @OneToOne
-    @JoinColumn(name = "id_hecho", referencedColumnName = "id")
-    Long id_hecho;
+    @ManyToOne
+    @JoinColumn(name = "hecho_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "fk_reporte_hecho"))
+    Hecho hecho_asociado;
 
-    public Reporte(String motivo, Long id_hecho){
+    public Reporte(String motivo, Hecho hecho){
         this.motivo = motivo;
-        this.id_hecho = id_hecho;
+        this.hecho_asociado = hecho;
     }
 
     public Reporte() {

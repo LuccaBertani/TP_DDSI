@@ -90,7 +90,7 @@ public class SolicitudHechoService {
         }
         solicitudAgregarHechoRepo.save(solicitudHecho);
         if (usuario!=null)
-            hecho.setId_usuario(usuario.getId());
+            hecho.setUsuario(usuario);
 
         hechosDinamicaRepository.save(hecho);
 
@@ -136,7 +136,7 @@ public class SolicitudHechoService {
             default -> hecho = null;
         }
 
-        if (usuario == null || hecho == null || usuario.getId().equals(hecho.getId_usuario()) || usuario.getRol().equals(Rol.ADMINISTRADOR) || usuario.getRol().equals(Rol.VISUALIZADOR)){
+        if (usuario == null || hecho == null || usuario.getId().equals(hecho.getUsuario().getId()) || usuario.getRol().equals(Rol.ADMINISTRADOR) || usuario.getRol().equals(Rol.VISUALIZADOR)){
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
 
@@ -256,9 +256,9 @@ public class SolicitudHechoService {
 
             MensajesHechosUsuarioOutputDTO output = new MensajesHechosUsuarioOutputDTO();
 
-            output.setId_hecho(mensaje.getId_solicitud_hecho());
+            output.setId_hecho(mensaje.getSolicitud_hecho().getHecho().getId());
             output.setId_mensaje(mensaje.getId());
-            output.setId_usuario(mensaje.getId_receptor());
+            output.setId_usuario(mensaje.getReceptor().getId());
             output.setMensaje(mensaje.getTextoMensaje());
 
             outputDTO.add(output);
@@ -275,7 +275,15 @@ public class SolicitudHechoService {
     }
 
     public RespuestaHttp<Void> reportarHecho(String motivo, Long id_hecho) {
-        Reporte reporte = new Reporte(motivo, id_hecho);
+        Hecho hecho = hechosDinamicaRepository.findById(id_hecho).orElse(null);
+        if(hecho == null){
+            hecho = hechosEstaticaRepository.findById(id_hecho).orElse(null);
+        } else if(hecho == null){
+            hecho = hechosProxyRepository.findById(id_hecho).orElse(null);
+        } else if(hecho == null){
+            return new RespuestaHttp<>(null, HttpStatus.NO_CONTENT.value());
+        }
+        Reporte reporte = new Reporte(motivo, hecho);
         reportesHechoRepository.save(reporte);
         return new RespuestaHttp<>(null,HttpStatus.OK.value());
     }

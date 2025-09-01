@@ -67,7 +67,7 @@ public class Coleccion {
     @Column(name = "modificado", nullable = false)
     private Boolean modificado;
 
-
+    @Transient
     private Map<Class<? extends Filtro>, Filtro> criterios;
 
 

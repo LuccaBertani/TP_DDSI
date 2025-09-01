@@ -3,28 +3,32 @@ package modulos.solicitudes;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import modulos.usuario.Usuario;
 
 @Getter
 @Setter
 @Entity
 @Table (name = "mensaje")
 public class Mensaje {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column (name = "id_solicitud")
-    Long id_solicitud_hecho;
+    @ManyToOne
+    @JoinColumn(name = "solicitud_hecho_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "fk_solicitud_hecho"))
+    SolicitudHecho solicitud_hecho;
 
-    @Column (name = "id_usuario")
-    Long id_receptor;
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "fk_usuario_id"))
+    Usuario receptor;
 
     @Column (name = "texto")
     String textoMensaje;
 
-    public Mensaje(Long solicitudHecho, Long receptor, String textoMensaje){
-        this.id_solicitud_hecho=solicitudHecho;
-        this.id_receptor=receptor;
+    public Mensaje(SolicitudHecho solicitudHecho, Usuario receptor, String textoMensaje){
+        this.solicitud_hecho=solicitudHecho;
+        this.receptor=receptor;
         this.textoMensaje=textoMensaje;
     }
 

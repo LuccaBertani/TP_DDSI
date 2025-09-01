@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import modulos.fuentes.Dataset;
 import modulos.shared.dtos.AtributosHecho;
+import modulos.usuario.Usuario;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +23,10 @@ public class Hecho {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //FK a la tabla de usuarios
-    private Long id_usuario;
+    @ManyToOne
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_usuario_hecho"))
+    private Usuario usuario;
 
     @Embedded
     private AtributosHecho atributosHecho;
@@ -37,7 +41,6 @@ public class Hecho {
     private List<Dataset> datasets;
 
     public Hecho() {
-        this.id_usuario=-1L;
         this.datasets = new ArrayList<>();
         //this.atributosHecho = atributosHecho;
     }
