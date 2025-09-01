@@ -9,7 +9,7 @@ import java.net.URL;
 
 public class Geocodificador {
 
-    public static String obtenerPais(Double latitud, Double longitud) {
+    public static Ubicacion obtenerPais(Double latitud, Double longitud) {
         try {
             String urlStr = String.format(
                     java.util.Locale.US,
@@ -33,6 +33,8 @@ public class Geocodificador {
             in.close();
 
             JSONObject json = new JSONObject(response.toString());
+            Ubicacion ubicacion = new Ubicacion();
+            ubicacion.setPais()
             return json.getJSONObject("address").getString("country");
 
         } catch (Exception e) {
