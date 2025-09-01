@@ -1,17 +1,17 @@
-package modulos.fuentes;
+package modulos.agregacion.entities.fuentes;
 
 import modulos.agregacion.entities.Coleccion;
 import modulos.agregacion.entities.FiltrosColeccion;
 import modulos.agregacion.entities.FormateadorHecho;
 import modulos.agregacion.entities.filtros.*;
 import modulos.buscadores.BuscadorProvincia;
-import modulos.shared.Hecho;
+import modulos.agregacion.entities.Hecho;
 import modulos.agregacion.entities.DatosColeccion;
 import modulos.shared.dtos.input.CriteriosColeccionDTO;
 import modulos.shared.dtos.input.GetHechosColeccionInputDTO;
 import modulos.shared.utils.FechaParser;
 import modulos.shared.utils.Geocodificador;
-import modulos.shared.utils.UbicacionString;
+import modulos.agregacion.entities.UbicacionString;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import modulos.shared.dtos.input.FiltroHechosDTO;

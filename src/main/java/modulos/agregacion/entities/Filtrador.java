@@ -1,8 +1,7 @@
 package modulos.agregacion.entities;
 
-import modulos.shared.Hecho;
 import modulos.agregacion.entities.filtros.Filtro;
-import modulos.solicitudes.Mensaje;
+import modulos.agregacion.entities.solicitudes.Mensaje;
 
 import java.util.ArrayList;
 import java.util.List;

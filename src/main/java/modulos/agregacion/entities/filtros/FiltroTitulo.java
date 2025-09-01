@@ -2,7 +2,7 @@ package modulos.agregacion.entities.filtros;
 
 import lombok.Getter;
 import lombok.Setter;
-import modulos.shared.Hecho;
+import modulos.agregacion.entities.Hecho;
 import modulos.buscadores.Normalizador;
 
 import java.util.List;

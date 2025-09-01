@@ -1,8 +1,8 @@
 package modulos.agregacion.entities.filtros;
 
 import lombok.Data;
-import modulos.shared.Hecho;
-import modulos.shared.Pais;
+import modulos.agregacion.entities.Hecho;
+import modulos.agregacion.entities.Pais;
 
 @Data
 public class FiltroPais implements Filtro {

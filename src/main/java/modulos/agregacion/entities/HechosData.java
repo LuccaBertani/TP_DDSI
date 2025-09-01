@@ -1,7 +1,6 @@
-package modulos.shared;
+package modulos.agregacion.entities;
 
 import lombok.Getter;
-import modulos.agregacion.entities.Provincia;
 
 @Getter
 public class HechosData {

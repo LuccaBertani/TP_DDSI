@@ -1,4 +1,4 @@
-package modulos.shared;
+package modulos.agregacion.entities;
 
 public enum TipoContenido {
     INVALIDO(-1),

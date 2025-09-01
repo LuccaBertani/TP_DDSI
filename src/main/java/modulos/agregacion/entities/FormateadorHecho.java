@@ -2,12 +2,7 @@ package modulos.agregacion.entities;
 
 
 import modulos.buscadores.BuscadorProvincia;
-import modulos.fuentes.Origen;
-import modulos.shared.Categoria;
-import modulos.shared.Hecho;
-import modulos.shared.Pais;
-import modulos.shared.TipoContenido;
-import modulos.shared.dtos.AtributosHecho;
+import modulos.agregacion.entities.fuentes.Origen;
 import modulos.shared.dtos.input.CriteriosColeccionDTO;
 import modulos.shared.dtos.input.SolicitudHechoInputDTO;
 import modulos.buscadores.BuscadorCategoria;

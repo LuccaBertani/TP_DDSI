@@ -1,11 +1,9 @@
 package modulos.agregacion.services;
 
-import modulos.agregacion.entities.Filtrador;
-import modulos.agregacion.entities.Provincia;
+import modulos.agregacion.entities.*;
 import modulos.agregacion.repositories.*;
 import modulos.buscadores.BuscadorProvincia;
-import modulos.fuentes.Origen;
-import modulos.shared.*;
+import modulos.agregacion.entities.fuentes.Origen;
 import modulos.shared.dtos.input.SolicitudHechoEliminarInputDTO;
 import modulos.shared.dtos.input.SolicitudHechoEvaluarInputDTO;
 import modulos.shared.dtos.input.SolicitudHechoInputDTO;
@@ -15,14 +13,14 @@ import modulos.buscadores.BuscadorCategoria;
 import modulos.buscadores.BuscadorPais;
 import modulos.shared.utils.DetectorDeSpam;
 import modulos.shared.utils.FechaParser;
-import modulos.fuentes.FuenteDinamica;
-import modulos.solicitudes.Reporte;
-import modulos.usuario.GestorRoles;
-import modulos.usuario.Rol;
-import modulos.usuario.Usuario;
-import modulos.solicitudes.Mensaje;
-import modulos.solicitudes.SolicitudHecho;
-import org.springframework.beans.factory.annotation.Qualifier;
+import modulos.agregacion.entities.fuentes.FuenteDinamica;
+import modulos.agregacion.entities.RespuestaHttp;
+import modulos.agregacion.entities.solicitudes.Reporte;
+import modulos.shared.utils.GestorRoles;
+import modulos.agregacion.entities.usuario.Rol;
+import modulos.agregacion.entities.usuario.Usuario;
+import modulos.agregacion.entities.solicitudes.Mensaje;
+import modulos.agregacion.entities.solicitudes.SolicitudHecho;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 

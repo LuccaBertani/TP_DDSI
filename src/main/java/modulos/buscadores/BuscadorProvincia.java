@@ -1,7 +1,7 @@
 package modulos.buscadores;
 
 import modulos.agregacion.entities.Provincia;
-import modulos.shared.Hecho;
+import modulos.agregacion.entities.Hecho;
 
 import java.util.List;
 

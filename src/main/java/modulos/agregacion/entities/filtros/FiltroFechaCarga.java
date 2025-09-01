@@ -1,7 +1,7 @@
 package modulos.agregacion.entities.filtros;
 
 import lombok.Data;
-import modulos.shared.Hecho;
+import modulos.agregacion.entities.Hecho;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

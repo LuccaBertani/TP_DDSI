@@ -1,4 +1,4 @@
-package modulos.shared;
+package modulos.agregacion.entities;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,9 +1,9 @@
-package modulos.solicitudes;
+package modulos.agregacion.entities.solicitudes;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import modulos.shared.Hecho;
+import modulos.agregacion.entities.Hecho;
 
 @Getter
 @Setter

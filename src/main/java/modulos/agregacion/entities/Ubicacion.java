@@ -2,7 +2,6 @@ package modulos.agregacion.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import modulos.shared.Pais;
 
 @Data
 @Entity

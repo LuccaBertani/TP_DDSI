@@ -1,4 +1,4 @@
-package modulos.fuentes;
+package modulos.agregacion.entities.fuentes;
 
 import jakarta.persistence.*;
 import lombok.Data;

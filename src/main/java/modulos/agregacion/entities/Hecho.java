@@ -1,12 +1,10 @@
-package modulos.shared;
+package modulos.agregacion.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import modulos.agregacion.entities.Ubicacion;
-import modulos.fuentes.Dataset;
-import modulos.shared.dtos.AtributosHecho;
-import modulos.usuario.Usuario;
+import modulos.agregacion.entities.fuentes.Dataset;
+import modulos.agregacion.entities.usuario.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;

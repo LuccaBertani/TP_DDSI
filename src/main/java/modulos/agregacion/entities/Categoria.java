@@ -1,4 +1,4 @@
-package modulos.shared;
+package modulos.agregacion.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;

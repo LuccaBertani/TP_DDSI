@@ -1,4 +1,4 @@
-package modulos.usuario;
+package modulos.agregacion.entities.usuario;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

@@ -1,4 +1,4 @@
-package modulos.fuentes;
+package modulos.agregacion.entities.fuentes;
 
 public enum Origen {
     FUENTE_DINAMICA(0),

@@ -1,7 +1,7 @@
 package modulos.agregacion.entities.algoritmosConsenso;
 
 import modulos.agregacion.entities.Coleccion;
-import modulos.fuentes.Dataset;
+import modulos.agregacion.entities.fuentes.Dataset;
 
 import java.util.List;
 

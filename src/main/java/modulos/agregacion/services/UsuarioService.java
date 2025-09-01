@@ -2,8 +2,8 @@ package modulos.agregacion.services;
 
 import modulos.agregacion.repositories.IUsuarioRepository;
 import modulos.shared.dtos.input.UsuarioInputDTO;
-import modulos.shared.RespuestaHttp;
-import modulos.usuario.Usuario;
+import modulos.agregacion.entities.RespuestaHttp;
+import modulos.agregacion.entities.usuario.Usuario;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 

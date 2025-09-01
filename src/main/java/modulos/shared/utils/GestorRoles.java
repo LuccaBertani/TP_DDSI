@@ -1,4 +1,7 @@
-package modulos.usuario;
+package modulos.shared.utils;
+
+import modulos.agregacion.entities.usuario.Rol;
+import modulos.agregacion.entities.usuario.Usuario;
 
 import java.util.Objects;
 

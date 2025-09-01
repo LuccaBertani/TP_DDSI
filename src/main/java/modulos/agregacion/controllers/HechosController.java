@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import modulos.agregacion.services.HechosService;
 import modulos.shared.dtos.input.*;
 import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
-import modulos.shared.RespuestaHttp;
+import modulos.agregacion.entities.RespuestaHttp;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package modulos.usuario;
+package modulos.agregacion.entities.usuario;
 
 public enum Rol {
     VISUALIZADOR(0),

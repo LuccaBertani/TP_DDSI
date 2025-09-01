@@ -1,7 +1,7 @@
 package modulos.buscadores;
 
-import modulos.shared.Hecho;
-import modulos.shared.Pais;
+import modulos.agregacion.entities.Hecho;
+import modulos.agregacion.entities.Pais;
 
 import java.util.List;
 import java.util.Optional;

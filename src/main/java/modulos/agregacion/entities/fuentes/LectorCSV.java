@@ -1,4 +1,4 @@
-package modulos.fuentes;
+package modulos.agregacion.entities.fuentes;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -8,8 +8,8 @@ import java.util.*;
 import modulos.buscadores.*;
 import modulos.shared.utils.FechaParser;
 import modulos.shared.utils.Geocodificador;
-import modulos.shared.Hecho;
-import modulos.shared.utils.UbicacionString;
+import modulos.agregacion.entities.Hecho;
+import modulos.agregacion.entities.UbicacionString;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;

@@ -2,8 +2,8 @@ package modulos.agregacion.controllers;
 
 import modulos.agregacion.services.DatosPersonalesService;
 import modulos.shared.dtos.output.DatosPersonalesOutputDTO;
-import modulos.shared.RespuestaHttp;
-import modulos.usuario.Usuario;
+import modulos.agregacion.entities.RespuestaHttp;
+import modulos.agregacion.entities.usuario.Usuario;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,13 +1,9 @@
 
-package modulos.shared.dtos;
+package modulos.agregacion.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import modulos.agregacion.entities.Ubicacion;
-import modulos.shared.Categoria;
-import modulos.fuentes.Origen;
-import modulos.shared.Pais;
-import modulos.shared.TipoContenido;
+import modulos.agregacion.entities.fuentes.Origen;
 
 import java.time.ZonedDateTime;
 

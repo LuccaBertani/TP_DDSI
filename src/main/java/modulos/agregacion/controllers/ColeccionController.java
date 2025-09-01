@@ -8,7 +8,7 @@ import modulos.shared.dtos.input.ColeccionUpdateInputDTO;
 import modulos.shared.dtos.input.ModificarConsensoInputDTO;
 import modulos.shared.dtos.input.RefrescarColeccionesInputDTO;
 import modulos.shared.dtos.output.ColeccionOutputDTO;
-import modulos.shared.RespuestaHttp;
+import modulos.agregacion.entities.RespuestaHttp;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

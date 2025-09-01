@@ -1,8 +1,8 @@
 package modulos.buscadores;
 
-import modulos.shared.Categoria;
-import modulos.shared.Hecho;
-import modulos.shared.Pais;
+import modulos.agregacion.entities.Categoria;
+import modulos.agregacion.entities.Hecho;
+import modulos.agregacion.entities.Pais;
 
 import java.time.ZonedDateTime;
 import java.util.List;

@@ -4,17 +4,16 @@ import modulos.agregacion.entities.Coleccion;
 import modulos.agregacion.entities.Filtrador;
 import modulos.agregacion.entities.filtros.*;
 import modulos.agregacion.repositories.*;
-import modulos.fuentes.Dataset;
-import modulos.fuentes.Origen;
-import modulos.shared.*;
+import modulos.agregacion.entities.fuentes.Dataset;
+import modulos.agregacion.entities.fuentes.Origen;
 import modulos.shared.dtos.input.*;
-import org.springframework.beans.factory.annotation.Qualifier;
+import modulos.agregacion.entities.RespuestaHttp;
 import org.springframework.scheduling.annotation.Async;
 import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
-import modulos.fuentes.FuenteEstatica;
-import modulos.usuario.Rol;
-import modulos.usuario.Usuario;
-import modulos.shared.dtos.AtributosHecho;
+import modulos.agregacion.entities.fuentes.FuenteEstatica;
+import modulos.agregacion.entities.usuario.Rol;
+import modulos.agregacion.entities.usuario.Usuario;
+import modulos.agregacion.entities.AtributosHecho;
 import modulos.shared.dtos.input.ImportacionHechosInputDTO;
 import modulos.shared.dtos.input.SolicitudHechoInputDTO;
 import modulos.agregacion.entities.*;
@@ -22,13 +21,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.xml.crypto.Data;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 public class HechosService {

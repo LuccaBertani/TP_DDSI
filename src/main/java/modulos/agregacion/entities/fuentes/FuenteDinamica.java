@@ -1,9 +1,9 @@
-package modulos.fuentes;
+package modulos.agregacion.entities.fuentes;
 
-import modulos.shared.Hecho;
+import modulos.agregacion.entities.Hecho;
 import modulos.shared.utils.FechaParser;
-import modulos.shared.HechosData;
-import modulos.shared.TipoContenido;
+import modulos.agregacion.entities.HechosData;
+import modulos.agregacion.entities.TipoContenido;
 
 import java.time.ZonedDateTime;
 

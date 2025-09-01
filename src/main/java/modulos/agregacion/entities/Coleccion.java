@@ -4,13 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import modulos.agregacion.converters.AlgoritmoConsensoConverter;
-import modulos.shared.Hecho;
 import modulos.agregacion.entities.algoritmosConsenso.IAlgoritmoConsenso;
 import modulos.agregacion.entities.filtros.Filtro;
-import modulos.shared.RespuestaHttp;
 import modulos.shared.dtos.input.ColeccionUpdateInputDTO;
-import modulos.shared.dtos.input.CriteriosColeccionDTO;
-import org.springframework.http.HttpStatus;
 
 import java.util.*;
 

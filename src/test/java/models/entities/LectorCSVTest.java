@@ -1,15 +1,6 @@
 package models.entities;
 
-import modulos.shared.Categoria;
-import modulos.shared.Hecho;
-import modulos.fuentes.LectorCSV;
-import modulos.shared.Pais;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class LectorCSVTest {
     @Test
