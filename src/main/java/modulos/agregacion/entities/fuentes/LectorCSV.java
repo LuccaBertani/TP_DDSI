@@ -1,7 +1,9 @@
 package modulos.agregacion.entities.fuentes;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -140,6 +142,27 @@ public class LectorCSV {
         }
 
         return hechosASubir;
+    }
+
+    public static Path generarCsvDesdeObjeto(Object obj, String nombreArchivo) {
+        Path path = Path.of(nombreArchivo);
+
+        try (FileWriter writer = new FileWriter(path.toFile())) {
+            Class<?> clazz = obj.getClass();
+
+            for (Field field : clazz.getDeclaredFields()) {
+                field.setAccessible(true); // permite acceder a privados
+                Object valor = field.get(obj);
+                writer.write(field.getName() + ": " + valor + "\n");
+            }
+
+            System.out.println("Archivo generado: " + path.toAbsolutePath());
+            return path;
+
+        } catch (IOException | IllegalAccessException e) {
+            e.printStackTrace();
+            return null; // o podés relanzar una RuntimeException si preferís
+        }
     }
 
 

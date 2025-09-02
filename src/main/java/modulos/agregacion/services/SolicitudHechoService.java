@@ -82,6 +82,8 @@ public class SolicitudHechoService {
         FuenteDinamica fuenteDinamica = new FuenteDinamica();
         Hecho hecho = fuenteDinamica.crearHecho(hechosData);
         SolicitudHecho solicitudHecho = new SolicitudHecho(usuario, hecho);
+        TipoSolicitud tipoSolicitud = TipoSolicitud.SOLICITUD_AGREGAR;
+        solicitudHecho.setTipoSolicitud(tipoSolicitud);
         if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion())) {
             solicitudHecho.setProcesada(true);
             solicitudHecho.setRechazadaPorSpam(true);
@@ -113,6 +115,9 @@ public class SolicitudHechoService {
         }
 
         SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, dto.getJustificacion());
+        TipoSolicitud tipoSolicitud = TipoSolicitud.SOLICITUD_ELIMINAR;
+        solicitud.setTipoSolicitud(tipoSolicitud);
+
         if (DetectorDeSpam.esSpam(dto.getJustificacion())) {
             // Marcar como rechazada por spam y guardar
             solicitud.setProcesada(true);
@@ -141,6 +146,9 @@ public class SolicitudHechoService {
         }
 
         SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho);
+        TipoSolicitud tipoSolicitud = TipoSolicitud.SOLICITUD_MODIFICAR;
+        solicitud.setTipoSolicitud(tipoSolicitud);
+
         if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion()))
         {
             solicitud.setProcesada(true);

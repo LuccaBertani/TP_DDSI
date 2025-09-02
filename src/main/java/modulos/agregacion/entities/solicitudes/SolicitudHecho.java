@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import modulos.agregacion.entities.Hecho;
+import modulos.agregacion.entities.TipoSolicitud;
+import modulos.agregacion.entities.fuentes.Origen;
 import modulos.agregacion.entities.usuario.Usuario;
 
 @Getter
@@ -27,6 +29,10 @@ public class SolicitudHecho {
     private boolean procesada;
     @Column (name = "rechazadaPorSpam")
     private boolean rechazadaPorSpam;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "TipoSolicitud",nullable = false, length = 20)
+    private TipoSolicitud tipoSolicitud;
 
     public SolicitudHecho(Usuario usuario, Hecho hecho) {
         this.usuario = usuario;
