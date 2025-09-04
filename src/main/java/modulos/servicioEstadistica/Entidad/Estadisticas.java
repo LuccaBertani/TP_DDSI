@@ -1,11 +1,9 @@
 package modulos.servicioEstadistica.Entidad;
 import jakarta.persistence.*;
 import lombok.Data;
-import modulos.agregacion.entities.CategoriaCantidad;
-import modulos.agregacion.entities.CategoriaHora;
-import modulos.agregacion.entities.CategoriaProvincia;
-import modulos.agregacion.entities.ColeccionProvincia;
+import modulos.agregacion.entities.*;
 
+import java.util.ArrayList;
 import java.util.List;
 @Data
 @Entity
@@ -16,8 +14,8 @@ public class Estadisticas {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "cantidadDeSpam")
-    private Integer cantidadDeSpam;
+    @Embedded
+    private CantSolicitudesEliminacionSpam cantidadDeSpam;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "categoriaCantidad_id", referencedColumnName = "id")
@@ -35,7 +33,7 @@ public class Estadisticas {
     @JoinColumn(name = "coleccionProvincias_id")
     List<ColeccionProvincia> coleccionProvincias;
 
-    public Estadisticas(Integer cantidadDeSpam, CategoriaCantidad categoriaCantidad, List<CategoriaHora> categoriaHoras, List<CategoriaProvincia> categoriaProvincias, List<ColeccionProvincia> coleccionProvincias) {
+    public Estadisticas(CantSolicitudesEliminacionSpam cantidadDeSpam, CategoriaCantidad categoriaCantidad, List<CategoriaHora> categoriaHoras, List<CategoriaProvincia> categoriaProvincias, List<ColeccionProvincia> coleccionProvincias) {
         this.cantidadDeSpam = cantidadDeSpam;
         this.categoriaCantidad = categoriaCantidad;
         this.categoriaHoras = categoriaHoras;
@@ -44,7 +42,9 @@ public class Estadisticas {
     }
 
     public Estadisticas() {
-
+        this.categoriaProvincias = new ArrayList<>();
+        this.categoriaHoras = new ArrayList<>();
+        this.coleccionProvincias = new ArrayList<>();
     }
 }
 

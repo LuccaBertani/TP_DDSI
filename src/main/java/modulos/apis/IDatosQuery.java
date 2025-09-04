@@ -14,6 +14,6 @@ public interface IDatosQuery {
     //¿A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría?
     List<CategoriaHora> horaMayorCantHechos();
     //¿Cuántas solicitudes de eliminación son spam?
-    Integer cantSolicitudesEliminacionSpam();
+    CantSolicitudesEliminacionSpam cantSolicitudesEliminacionSpam();
 }
 

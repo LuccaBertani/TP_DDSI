@@ -74,9 +74,9 @@ public class DatosQuery implements IDatosQuery{
     }
 
     @Override
-    public Integer cantSolicitudesEliminacionSpam() {
+    public CantSolicitudesEliminacionSpam cantSolicitudesEliminacionSpam() {
         CantSolicitudesSpamProjection info = repoSoliElimHecho.obtenerCantSolicitudesEliminacionSpam();
-        return info.getCant();
+        return new CantSolicitudesEliminacionSpam(info.getCant());
     }
 }
 

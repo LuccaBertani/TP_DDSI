@@ -1,5 +1,6 @@
 package modulos.servicioEstadistica.controller;
 
+import jdk.swing.interop.SwingInterOpUtils;
 import modulos.servicioEstadistica.ServicioDeEstadistica;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -39,5 +40,12 @@ public class EstadisticasController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .body(body);
+    }
+
+    @GetMapping(value = "/reporte/minga")
+    public ResponseEntity<Integer> minga() {
+        System.out.println("MINGA");
+        return ResponseEntity.status(200).body(2);
+
     }
 }

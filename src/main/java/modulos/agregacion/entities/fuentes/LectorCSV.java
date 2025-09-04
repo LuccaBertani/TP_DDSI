@@ -1,12 +1,20 @@
 package modulos.agregacion.entities.fuentes;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.RecordComponent;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.Temporal;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import modulos.buscadores.*;
 import modulos.shared.utils.FechaParser;
 import modulos.shared.utils.Geocodificador;
@@ -144,25 +152,165 @@ public class LectorCSV {
         return hechosASubir;
     }
 
-    public static Path generarCsvDesdeObjeto(Object obj, String nombreArchivo) {
+    /**
+     * Variante con header opcional.
+     * - Si 'header' != null y no está vacío, se escribe como primera fila.
+     * - Luego se parte valoresLineales en filas de 'columnasPorFila' (con padding si falta).
+     */
+    public static Path generarCsvDesdeListaLineal(
+            List<?> valoresLineales,
+            String nombreArchivo,
+            List<String> header
+    ) {
+        int columnasPorFila = header.size();
+        if (columnasPorFila <= 0) {
+            throw new IllegalArgumentException("columnasPorFila debe ser >= 1");
+        }
+        if (valoresLineales == null) {
+            throw new IllegalArgumentException("valoresLineales no puede ser null");
+        }
+
         Path path = Path.of(nombreArchivo);
-
         try (FileWriter writer = new FileWriter(path.toFile())) {
-            Class<?> clazz = obj.getClass();
 
-            for (Field field : clazz.getDeclaredFields()) {
-                field.setAccessible(true); // permite acceder a privados
-                Object valor = field.get(obj);
-                writer.write(field.getName() + ": " + valor + "\n");
+            // Header opcional
+            if (header != null && !header.isEmpty()) {
+                // Si el header tiene menos/más columnas, lo ajustamos (padding/truncate)
+                List<String> h = new ArrayList<>(columnasPorFila);
+                for (int i = 0; i < columnasPorFila; i++) {
+                    String col = (i < header.size()) ? header.get(i) : "col" + (i + 1);
+                    h.add(escape(col));
+                }
+                writer.write(String.join(",", h) + "\n");
             }
 
-            System.out.println("Archivo generado: " + path.toAbsolutePath());
-            return path;
+            // Partimos la lista en bloques de 'columnasPorFila'
+            for (int i = 0; i < valoresLineales.size(); i += columnasPorFila) {
+                List<String> fila = new ArrayList<>(columnasPorFila);
+                for (int j = 0; j < columnasPorFila; j++) {
+                    int idx = i + j;
+                    Object v = (idx < valoresLineales.size()) ? valoresLineales.get(idx) : ""; // padding
+                    fila.add(escape(csvString(v)));
+                }
+                writer.write(String.join(",", fila) + "\n");
+            }
 
-        } catch (IOException | IllegalAccessException e) {
-            e.printStackTrace();
-            return null; // o podés relanzar una RuntimeException si preferís
+            return path;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
+    }
+
+
+
+    public static Path generarCsvDesdeObjeto(Object obj, String nombreArchivo) {
+        if (obj == null) throw new IllegalArgumentException("obj no puede ser null");
+
+        Path path = Path.of(nombreArchivo);
+        try (var writer = new FileWriter(path.toFile())) {
+            escribirComoCsv(obj, writer);
+            return path;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        } catch (IntrospectionException | ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /* ===== Helpers ===== */
+
+    private static void escribirComoCsv(Object obj, Writer writer)
+            throws IOException, IntrospectionException, ReflectiveOperationException {
+
+        if (esSimple(obj)) {
+            // Objeto simple: una sola línea sin encabezado
+            writer.write(obj.toString() + "\n");
+            return;
+        }
+
+        if (obj instanceof Collection<?> col) {
+            escribirColeccion(col, writer);
+            return;
+        }
+
+        // POJO: usamos getters
+        escribirPojo(obj, writer);
+    }
+
+    private static void escribirColeccion(Collection<?> col, Writer writer)
+            throws IOException, IntrospectionException, ReflectiveOperationException {
+
+        if (col.isEmpty()) return;
+
+        Object first = col.iterator().next();
+        if (esSimple(first)) {
+            for (Object o : col) {
+                writer.write(o.toString() + "\n");
+            }
+            return;
+        }
+
+        // Colección de POJOs
+        var props = propsDe(first.getClass());
+        escribirHeader(props, writer);
+        for (Object o : col) {
+            escribirFilaPojo(o, props, writer);
+        }
+    }
+
+    private static void escribirPojo(Object pojo, Writer writer)
+            throws IOException, IntrospectionException, ReflectiveOperationException {
+
+        var props = propsDe(pojo.getClass());
+        escribirHeader(props, writer);
+        escribirFilaPojo(pojo, props, writer);
+    }
+
+    private static List<PropertyDescriptor> propsDe(Class<?> clazz) throws IntrospectionException {
+        var info = Introspector.getBeanInfo(clazz, Object.class);
+        return Arrays.stream(info.getPropertyDescriptors())
+                .filter(pd -> pd.getReadMethod() != null)
+                .sorted(Comparator.comparing(PropertyDescriptor::getName))
+                .toList();
+    }
+
+    private static void escribirHeader(List<PropertyDescriptor> props, Writer writer) throws IOException {
+        writer.write(props.stream()
+                .map(PropertyDescriptor::getName)
+                .collect(Collectors.joining(",")) + "\n");
+    }
+
+    private static void escribirFilaPojo(Object pojo, List<PropertyDescriptor> props, Writer writer)
+            throws IOException, ReflectiveOperationException {
+
+        var valores = new ArrayList<String>();
+        for (var pd : props) {
+            Object v = pd.getReadMethod().invoke(pojo);
+            valores.add(v == null ? "" : v.toString());
+        }
+        writer.write(String.join(",", valores) + "\n");
+    }
+
+    private static boolean esSimple(Object o) {
+        if (o == null) return true;
+        Class<?> c = o.getClass();
+        return c.isPrimitive()
+                || Number.class.isAssignableFrom(c)
+                || CharSequence.class.isAssignableFrom(c)
+                || Boolean.class.isAssignableFrom(c)
+                || Enum.class.isAssignableFrom(c);
+    }
+
+    private static String csvString(Object o) {
+        return (o == null) ? "" : o.toString();
+    }
+
+    // Escapa comas, comillas y saltos de línea (estilo RFC 4180 básico)
+    private static String escape(String s) {
+        if (s == null) return "";
+        boolean necesita = s.contains(",") || s.contains("\"") || s.contains("\n") || s.contains("\r");
+        if (!necesita) return s;
+        return "\"" + s.replace("\"", "\"\"") + "\"";
     }
 
 
