@@ -14,26 +14,24 @@ import modulos.agregacion.entities.usuario.Usuario;
 @Setter
 @Entity
 @Table(name = "solicitudHecho")
-public class SolicitudHecho {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tipo_solicitud", discriminatorType = DiscriminatorType.STRING, length = 20)
+public abstract class SolicitudHecho {
     @OneToOne
     @JoinColumn(name = "id_usuario", referencedColumnName = "id")
-    private Usuario usuario;
+    protected Usuario usuario;
     @OneToOne
     @JoinColumn(name = "id_hecho", referencedColumnName = "id")
-    private HechoDinamica hecho;
+    protected HechoDinamica hecho;
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private long id;
+    protected long id;
     @Column (name = "justificacion")
-    private String justificacion;
+    protected String justificacion;
     @Column (name = "procesada")
-    private boolean procesada;
+    protected boolean procesada;
     @Column (name = "rechazadaPorSpam")
-    private boolean rechazadaPorSpam;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "TipoSolicitud",nullable = false, length = 20)
-    private TipoSolicitud tipoSolicitud;
+    protected boolean rechazadaPorSpam;
 
     public SolicitudHecho(Usuario usuario, HechoDinamica hecho) {
         this.usuario = usuario;

@@ -150,6 +150,8 @@ public class Coleccion {
     public void addHechos(List<Hecho> hechos){
         this.hechos.addAll(hechos);
     }
+
+
 }
 
 

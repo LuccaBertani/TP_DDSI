@@ -189,7 +189,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario()).orElse(null);
         if(usuario.getRol().equals(Rol.ADMINISTRADOR)){
 
-            Hecho hecho = new HechoDinamica();
+            HechoDinamica hecho = new HechoDinamica();
 
             AtributosHecho atributos = formateador.formatearAtributosHecho(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),dtoInput);
 
@@ -215,16 +215,14 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             datasetsRepo.save(dataset);
             fuente.setDataSet(dataset);
 
-            List<Hecho> hechos = fuente.leerFuente(hechosDinamicaRepo.findAll(),hechosProxyRepo.findAll(),hechosEstaticaRepo.findAll());
+            List<HechoEstatica> hechos = fuente.leerFuente(hechosProxyRepo.findAll(), hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll());
 
 
             if (hechos.isEmpty()){
                 return new RespuestaHttp<>(null, HttpStatus.NO_CONTENT.value());
             }
 
-            for (Hecho hecho : hechos){
-                hechosEstaticaRepo.save(hecho);
-            }
+            hechosEstaticaRepo.saveAll(hechos);
 
             return new RespuestaHttp<>(null, HttpStatus.CREATED.value());
         }

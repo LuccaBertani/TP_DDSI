@@ -32,9 +32,9 @@ public class LectorCSV {
     }
 
     // Entrega 3: los hechos no se pisan los atributos
-    public List<Hecho> leerCSV(List<HechoProxy> hechosFuenteProxy, List<HechoDinamica> hechosFuenteDinamica, List<HechoEstatica> hechosFuenteEstatica) {
+    public List<HechoEstatica> leerCSV(List<HechoProxy> hechosFuenteProxy, List<HechoDinamica> hechosFuenteDinamica, List<HechoEstatica> hechosFuenteEstatica) {
 
-        List<Hecho> hechosASubir = new ArrayList<>();
+        List<HechoEstatica> hechosASubir = new ArrayList<>();
 
         try {
             Reader reader = new InputStreamReader(new FileInputStream(this.dataSet.getFuente()), Charset.forName("ISO-8859-1"));
@@ -77,7 +77,7 @@ public class LectorCSV {
                 List<String> registros = new ArrayList<>();
                 fila.forEach(registros::add);
 
-                Hecho hecho = new HechoEstatica();
+                HechoEstatica hecho = new HechoEstatica();
 
                 hecho.getAtributosHecho().setOrigen(Origen.FUENTE_ESTATICA);
 

@@ -170,9 +170,9 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         Dataset dataset = new Dataset(dataSet);
         fuente.setDataSet(dataset);
 
-        List<Hecho> hechosFuente = fuente.leerFuente(hechosProxyRepo.findAll(),hechosDinamicaRepo.findAll(), hechosEstaticaRepo.findAll());
-        coleccion.addHechos(hechosFuente);
-
+        List<HechoEstatica> hechosFuente = fuente.leerFuente(hechosProxyRepo.findAll(),hechosDinamicaRepo.findAll(), hechosEstaticaRepo.findAll());
+        List<Hecho> hechos = new ArrayList<>(hechosFuente);
+        coleccion.addHechos(hechos);
         return new RespuestaHttp<>(null,HttpStatus.OK.value());
     }
 
@@ -212,9 +212,9 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             dto1.setCategoria(hecho.getCategoria());
 
             AtributosHecho atributos = formateador.formatearAtributosHecho(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),dto1);
-            Hecho hecho1 = new HechoDinamica();
+            HechoDinamica hecho1 = new HechoDinamica();
             hecho1.setAtributosHecho(atributos);
-            hechosColeccion.add(hecho1);
+            hechosColeccion.add((Hecho)hecho1);
         }
         coleccion.setModificado(true);
         coleccion.actualizar(dto,formateador.obtenerListaDeFiltros(filtrosColeccion),hechosColeccion);

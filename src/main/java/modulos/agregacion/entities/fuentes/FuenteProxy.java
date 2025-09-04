@@ -95,7 +95,7 @@ public class FuenteProxy {
                         JSONObject obj = array.getJSONObject(i);
 
                         // Asignar datos a un nuevo objeto Hecho
-                        Hecho hecho = new HechoProxy();
+                        HechoProxy hecho = new HechoProxy();
                         hecho.getAtributosHecho().setTitulo(obj.getString("titulo"));
                         hecho.getAtributosHecho().setDescripcion(obj.getString("descripcion"));
                         hecho.getAtributosHecho().setCategoria(BuscadorCategoria.buscarOCrear(hechosTotalesDinamica, obj.getString("categoria"), hechosTotalesProxy, hechosTotalesEstatica));
@@ -145,7 +145,7 @@ public class FuenteProxy {
                 String responseBody = new Scanner(conexion.getInputStream()).useDelimiter("\\A").next();
                 JSONObject obj = new JSONObject(responseBody);
 
-                Hecho hecho = new HechoProxy();
+                HechoProxy hecho = new HechoProxy();
                 hecho.getAtributosHecho().setTitulo(obj.getString("titulo"));
                 hecho.getAtributosHecho().setDescripcion(obj.getString("descripcion"));
                 hecho.getAtributosHecho().setCategoria(BuscadorCategoria.buscarOCrear(hechosTotalesDinamica, obj.getString("categoria"), hechosTotalesProxy, hechosTotalesEstatica));
@@ -208,7 +208,7 @@ public class FuenteProxy {
                     JSONObject obj = array.getJSONObject(i);
 
                     // Asignar datos a un nuevo objeto Hecho
-                    Hecho hecho = new HechoProxy();
+                    HechoProxy hecho = new HechoProxy();
                     hecho.setId(obj.getLong("id"));
                     hecho.getAtributosHecho().setTitulo(obj.getString("titulo"));
                     hecho.getAtributosHecho().setDescripcion(obj.getString("descripcion"));
@@ -339,7 +339,7 @@ public class FuenteProxy {
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject obj = array.getJSONObject(i);
 
-                    Hecho hecho = new HechoProxy();
+                    HechoProxy hecho = new HechoProxy();
                     hecho.setId(obj.getLong("id"));
                     hecho.getAtributosHecho().setTitulo(obj.getString("titulo"));
                     hecho.getAtributosHecho().setDescripcion(obj.getString("descripcion"));

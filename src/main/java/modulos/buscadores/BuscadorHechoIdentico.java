@@ -2,6 +2,7 @@ package modulos.buscadores;
 
 import modulos.agregacion.entities.Categoria;
 import modulos.agregacion.entities.Hecho;
+import modulos.agregacion.entities.HechoEstatica;
 import modulos.agregacion.entities.Pais;
 
 import java.time.ZonedDateTime;
@@ -9,14 +10,14 @@ import java.util.List;
 
 public class BuscadorHechoIdentico {
     // Vienen los hechos de origen estatico
-    public static boolean existeHechoIdentico(Hecho hecho, List<Hecho> hechos){
+    public static boolean existeHechoIdentico(Hecho hecho, List<HechoEstatica> hechos){
         String tituloHechoNormalizado = Normalizador.normalizar(hecho.getAtributosHecho().getTitulo());
         Categoria categoria= hecho.getAtributosHecho().getCategoria();
         Pais pais = hecho.getAtributosHecho().getUbicacion().getPais();
         String descripcionNormalizada = Normalizador.normalizar(hecho.getAtributosHecho().getDescripcion());
         ZonedDateTime fechaAcontecimiento = hecho.getAtributosHecho().getFechaAcontecimiento();
 
-        List<Hecho> hechosConTituloIgual = hechos.stream().filter(h-> Normalizador.normalizar(h.getAtributosHecho().getTitulo()).equals(tituloHechoNormalizado)).toList();
+        List<HechoEstatica> hechosConTituloIgual = hechos.stream().filter(h-> Normalizador.normalizar(h.getAtributosHecho().getTitulo()).equals(tituloHechoNormalizado)).toList();
 
         for (Hecho h: hechosConTituloIgual){
             if (h.getAtributosHecho().getCategoria().equals(categoria) &&
@@ -30,4 +31,5 @@ public class BuscadorHechoIdentico {
 
         return false;
     }
+
 }

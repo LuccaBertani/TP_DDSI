@@ -1,6 +1,7 @@
 package modulos.agregacion.services;
 
 import modulos.agregacion.entities.*;
+import modulos.agregacion.entities.solicitudes.*;
 import modulos.agregacion.repositories.*;
 import modulos.buscadores.BuscadorProvincia;
 import modulos.agregacion.entities.fuentes.Origen;
@@ -15,12 +16,9 @@ import modulos.shared.utils.DetectorDeSpam;
 import modulos.shared.utils.FechaParser;
 import modulos.agregacion.entities.fuentes.FuenteDinamica;
 import modulos.agregacion.entities.RespuestaHttp;
-import modulos.agregacion.entities.solicitudes.Reporte;
 import modulos.shared.utils.GestorRoles;
 import modulos.agregacion.entities.usuario.Rol;
 import modulos.agregacion.entities.usuario.Usuario;
-import modulos.agregacion.entities.solicitudes.Mensaje;
-import modulos.agregacion.entities.solicitudes.SolicitudHecho;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -81,9 +79,8 @@ public class SolicitudHechoService {
 
         FuenteDinamica fuenteDinamica = new FuenteDinamica();
         HechoDinamica hecho = fuenteDinamica.crearHecho(hechosData);
-        SolicitudHecho solicitudHecho = new SolicitudHecho(usuario, hecho);
-        TipoSolicitud tipoSolicitud = TipoSolicitud.SOLICITUD_AGREGAR;
-        solicitudHecho.setTipoSolicitud(tipoSolicitud);
+        SolicitudSubirHecho solicitudHecho = new SolicitudSubirHecho(usuario, hecho);
+
         if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion())) {
             solicitudHecho.setProcesada(true);
             solicitudHecho.setRechazadaPorSpam(true);
@@ -106,13 +103,13 @@ public class SolicitudHechoService {
         if (usuario == null || usuario.getRol().equals(Rol.ADMINISTRADOR) || usuario.getRol().equals(Rol.VISUALIZADOR)){
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
-        HechoDinamica hecho;
-        hechosDinamicaRepository.findById(dto.getId_hecho()).orElse(null);
+        HechoDinamica hecho = hechosDinamicaRepository.findById(dto.getId_hecho()).orElse(null);
 
+        if (hecho == null){
+            return new RespuestaHttp<>(null, HttpStatus.NO_CONTENT.value());
+        }
 
-        SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, dto.getJustificacion());
-        TipoSolicitud tipoSolicitud = TipoSolicitud.SOLICITUD_ELIMINAR;
-        solicitud.setTipoSolicitud(tipoSolicitud);
+        SolicitudEliminarHecho solicitud = new SolicitudEliminarHecho(usuario, hecho, dto.getJustificacion());
 
         if (DetectorDeSpam.esSpam(dto.getJustificacion())) {
             // Marcar como rechazada por spam y guardar
@@ -135,9 +132,7 @@ public class SolicitudHechoService {
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
 
-        SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho);
-        TipoSolicitud tipoSolicitud = TipoSolicitud.SOLICITUD_MODIFICAR;
-        solicitud.setTipoSolicitud(tipoSolicitud);
+        SolicitudModificarHecho solicitud = new SolicitudModificarHecho(usuario, hecho);
 
         if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion()))
         {
