@@ -3,6 +3,9 @@ package modulos.agregacion.entities.fuentes;
 import lombok.Getter;
 import lombok.Setter;
 import modulos.agregacion.entities.Hecho;
+import modulos.agregacion.entities.HechoDinamica;
+import modulos.agregacion.entities.HechoEstatica;
+import modulos.agregacion.entities.HechoProxy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +14,7 @@ import java.util.List;
 @Setter
 public class FuenteEstatica {
     private Dataset dataSet;
-    public List<Hecho> leerFuente(List<Hecho> hechosFuenteProxy, List<Hecho> hechosFuenteDinamica, List<Hecho> hechosFuenteEstatica){
+    public List<Hecho> leerFuente(List<HechoProxy> hechosFuenteProxy, List<HechoDinamica> hechosFuenteDinamica, List<HechoEstatica> hechosFuenteEstatica){
 
         String[] nombreArchivo = this.dataSet.getFuente().split("\\.");
         String formato = nombreArchivo[1].toLowerCase();

@@ -1,8 +1,7 @@
 package modulos.agregacion.repositories;
 
 import modulos.agregacion.entities.Hecho;
-import modulos.agregacion.entities.HechoProxy;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface IHechosProxyRepository extends JpaRepository<HechoProxy, Long> {
+public interface IHechoRepository extends JpaRepository<Hecho, Long> {
 }

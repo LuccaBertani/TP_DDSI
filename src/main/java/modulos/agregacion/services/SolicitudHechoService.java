@@ -74,13 +74,13 @@ public class SolicitudHechoService {
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
 
-        Pais pais = BuscadorPais.buscarOCrear(hechosProxyRepository.findAll(),dto.getPais(),hechosDinamicaRepository.findAll(),hechosEstaticaRepository.findAll());
-        Provincia provincia = BuscadorProvincia.buscarOCrear(hechosProxyRepository.findAll(),dto.getProvincia(),hechosDinamicaRepository.findAll(),hechosEstaticaRepository.findAll());
+        Pais pais = BuscadorPais.buscarOCrear(hechosDinamicaRepository.findAll(),dto.getPais(),hechosProxyRepository.findAll(),hechosEstaticaRepository.findAll());
+        Provincia provincia = BuscadorProvincia.buscarOCrear(hechosDinamicaRepository.findAll(),dto.getProvincia(),hechosProxyRepository.findAll(),hechosEstaticaRepository.findAll());
         HechosData hechosData = new HechosData(dto.getTitulo(), dto.getDescripcion(), dto.getTipoContenido(),
                 pais, dto.getFechaAcontecimiento(), provincia);
 
         FuenteDinamica fuenteDinamica = new FuenteDinamica();
-        Hecho hecho = fuenteDinamica.crearHecho(hechosData);
+        HechoDinamica hecho = fuenteDinamica.crearHecho(hechosData);
         SolicitudHecho solicitudHecho = new SolicitudHecho(usuario, hecho);
         TipoSolicitud tipoSolicitud = TipoSolicitud.SOLICITUD_AGREGAR;
         solicitudHecho.setTipoSolicitud(tipoSolicitud);
@@ -106,13 +106,9 @@ public class SolicitudHechoService {
         if (usuario == null || usuario.getRol().equals(Rol.ADMINISTRADOR) || usuario.getRol().equals(Rol.VISUALIZADOR)){
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
-        Hecho hecho;
-        switch (Origen.fromCodigo(dto.getOrigen())){
-            case FUENTE_DINAMICA -> hecho = hechosDinamicaRepository.findById(dto.getId_hecho()).orElse(null);
-            case FUENTE_ESTATICA -> hecho = hechosEstaticaRepository.findById(dto.getId_hecho()).orElse(null);
-            case FUENTE_PROXY_METAMAPA -> hecho = hechosProxyRepository.findById(dto.getId_hecho()).orElse(null);
-            default -> hecho = null;
-        }
+        HechoDinamica hecho;
+        hechosDinamicaRepository.findById(dto.getId_hecho()).orElse(null);
+
 
         SolicitudHecho solicitud = new SolicitudHecho(usuario, hecho, dto.getJustificacion());
         TipoSolicitud tipoSolicitud = TipoSolicitud.SOLICITUD_ELIMINAR;
@@ -133,13 +129,7 @@ public class SolicitudHechoService {
 
         Usuario usuario = usuariosRepository.findById(dto.getId_usuario()).orElse(null);
 
-        Hecho hecho;
-        switch (Origen.fromCodigo(dto.getOrigen())){
-            case FUENTE_DINAMICA -> hecho = hechosDinamicaRepository.findById(dto.getId_hecho()).orElse(null);
-            case FUENTE_ESTATICA -> hecho = hechosEstaticaRepository.findById(dto.getId_hecho()).orElse(null);
-            case FUENTE_PROXY_METAMAPA -> hecho = hechosProxyRepository.findById(dto.getId_hecho()).orElse(null);
-            default -> hecho = null;
-        }
+        HechoDinamica hecho = hechosDinamicaRepository.findById(dto.getId_hecho()).orElse(null);
 
         if (usuario == null || hecho == null || usuario.getId().equals(hecho.getUsuario().getId()) || usuario.getRol().equals(Rol.ADMINISTRADOR) || usuario.getRol().equals(Rol.VISUALIZADOR)){
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());

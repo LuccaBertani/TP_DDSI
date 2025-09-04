@@ -15,11 +15,10 @@ import java.time.temporal.Temporal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import modulos.agregacion.entities.*;
 import modulos.buscadores.*;
 import modulos.shared.utils.FechaParser;
 import modulos.shared.utils.Geocodificador;
-import modulos.agregacion.entities.Hecho;
-import modulos.agregacion.entities.UbicacionString;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -33,7 +32,7 @@ public class LectorCSV {
     }
 
     // Entrega 3: los hechos no se pisan los atributos
-    public List<Hecho> leerCSV(List<Hecho> hechosFuenteProxy, List<Hecho> hechosFuenteDinamica, List<Hecho> hechosFuenteEstatica) {
+    public List<Hecho> leerCSV(List<HechoProxy> hechosFuenteProxy, List<HechoDinamica> hechosFuenteDinamica, List<HechoEstatica> hechosFuenteEstatica) {
 
         List<Hecho> hechosASubir = new ArrayList<>();
 
@@ -78,7 +77,7 @@ public class LectorCSV {
                 List<String> registros = new ArrayList<>();
                 fila.forEach(registros::add);
 
-                Hecho hecho = new Hecho();
+                Hecho hecho = new HechoEstatica();
 
                 hecho.getAtributosHecho().setOrigen(Origen.FUENTE_ESTATICA);
 
@@ -86,7 +85,7 @@ public class LectorCSV {
 
                 hecho.getAtributosHecho().setTitulo((indicesColumnas.get(0) != -1) ? registros.get(indicesColumnas.get(0)) : "N/A");
                 //Se leen los de fuente estatica
-                Optional<Hecho> hecho0 = hechosFuenteEstatica.stream().filter(h-> Normalizador.normalizarYComparar(h.getAtributosHecho().getTitulo(), hecho.getAtributosHecho().getTitulo())).findFirst();
+                Optional<HechoEstatica> hecho0 = hechosFuenteEstatica.stream().filter(h-> Normalizador.normalizarYComparar(h.getAtributosHecho().getTitulo(), hecho.getAtributosHecho().getTitulo())).findFirst();
 
                 if (hecho0.isPresent() && !hecho0.get().getAtributosHecho().getTitulo().equals("N/A")){
                     System.out.println("El hecho está repetido");

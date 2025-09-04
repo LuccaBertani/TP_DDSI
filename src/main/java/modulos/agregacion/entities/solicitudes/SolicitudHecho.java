@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import modulos.agregacion.entities.Hecho;
+import modulos.agregacion.entities.HechoDinamica;
 import modulos.agregacion.entities.TipoSolicitud;
 import modulos.agregacion.entities.fuentes.Origen;
 import modulos.agregacion.entities.usuario.Usuario;
@@ -19,7 +20,7 @@ public class SolicitudHecho {
     private Usuario usuario;
     @OneToOne
     @JoinColumn(name = "id_hecho", referencedColumnName = "id")
-    private Hecho hecho;
+    private HechoDinamica hecho;
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private long id;
@@ -34,14 +35,14 @@ public class SolicitudHecho {
     @Column(name = "TipoSolicitud",nullable = false, length = 20)
     private TipoSolicitud tipoSolicitud;
 
-    public SolicitudHecho(Usuario usuario, Hecho hecho) {
+    public SolicitudHecho(Usuario usuario, HechoDinamica hecho) {
         this.usuario = usuario;
         this.hecho = hecho;
         this.procesada = false;
         this.rechazadaPorSpam = false;
     }
 
-    public SolicitudHecho(Usuario usuario, Hecho hecho, String justificacion) {
+    public SolicitudHecho(Usuario usuario, HechoDinamica hecho, String justificacion) {
         this(usuario, hecho);
         this.justificacion = justificacion;
     }

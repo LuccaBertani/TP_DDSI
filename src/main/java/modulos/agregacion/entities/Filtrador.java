@@ -9,11 +9,11 @@ import java.util.Map;
 
 public class Filtrador {
 
-    public static List<Hecho> aplicarFiltros(Map<Class<? extends Filtro>, Filtro> filtros, List<Hecho> hechos) {
+    public static List<Hecho> aplicarFiltros(List<Filtro> filtros, List<Hecho> hechos) {
         List<Hecho> hechosFiltrados = new ArrayList<>();
 
         hechos.forEach(hecho -> {
-            boolean pasaTodos = filtros.values().stream()
+            boolean pasaTodos = filtros.stream()
                     .allMatch(filtro -> filtro.aprobarHecho(hecho));
             if (pasaTodos) {
                 hechosFiltrados.add(hecho);
@@ -23,8 +23,8 @@ public class Filtrador {
         return hechosFiltrados;
     }
 
-    public static boolean hechoPasaFiltros(Map<Class<? extends Filtro>, Filtro> filtros, Hecho hecho) {
-        return filtros.values().stream()
+    public static boolean hechoPasaFiltros(List<Filtro> filtros, Hecho hecho) {
+        return filtros.stream()
                 .allMatch(filtro -> filtro.aprobarHecho(hecho));
     }
 

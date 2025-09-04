@@ -13,7 +13,9 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "hecho")
-public class Hecho {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "fuente", discriminatorType = DiscriminatorType.STRING, length = 20)
+public abstract class Hecho {
 
     @Column(name = "activo", nullable = false)
     private Boolean activo;

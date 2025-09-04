@@ -87,8 +87,8 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     @Scheduled(cron = "0 0 * * * *") // cada hora
     public void refrescarColeccionesCronjob() {
 
-        List<Hecho> hechosEstatica = hechosEstaticaRepo.findAll();
-        List<Hecho> hechosDinamica = hechosDinamicaRepo.findAll();
+        List<HechoEstatica> hechosEstatica = hechosEstaticaRepo.findAll();
+        List<HechoDinamica> hechosDinamica = hechosDinamicaRepo.findAll();
 
         List<Hecho> hechos = Stream.concat(hechosEstatica.stream(), hechosDinamica.stream())
                 .toList();
@@ -189,7 +189,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario()).orElse(null);
         if(usuario.getRol().equals(Rol.ADMINISTRADOR)){
 
-            Hecho hecho = new Hecho();
+            Hecho hecho = new HechoDinamica();
 
             AtributosHecho atributos = formateador.formatearAtributosHecho(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),dtoInput);
 
@@ -235,10 +235,10 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
     public RespuestaHttp<List<VisualizarHechosOutputDTO>> getHechosColeccion(GetHechosColeccionInputDTO inputDTO){
 
-        Map<Class<? extends Filtro>, Filtro> filtros;
+        List<Filtro> filtros;
 
         FormateadorHecho formateador = new FormateadorHecho();
-        filtros = formateador.obtenerMapaDeFiltros(formateador.formatearFiltrosColeccion(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),new CriteriosColeccionDTO(
+        filtros = formateador.obtenerListaDeFiltros(formateador.formatearFiltrosColeccion(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),new CriteriosColeccionDTO(
                 inputDTO.getCategoria(),
                 inputDTO.getContenidoMultimedia(),
                 inputDTO.getDescripcion(),

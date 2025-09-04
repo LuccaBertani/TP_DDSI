@@ -11,20 +11,20 @@ import modulos.agregacion.entities.algoritmosConsenso.IAlgoritmoConsenso;
 public class AlgoritmoConsensoConverter implements AttributeConverter<IAlgoritmoConsenso, String>{
 
 
-        @Override
-        public String convertToDatabaseColumn(IAlgoritmoConsenso atributo) {
-            if (atributo == null) return null;
-            return atributo.getClass().getSimpleName(); // guarda "AlgoritmoConsensoMayoriaSimple" etc.
-        }
+    @Override
+    public String convertToDatabaseColumn(IAlgoritmoConsenso atributo) {
+        if (atributo == null) return null;
+        return atributo.getClass().getSimpleName(); // guarda "AlgoritmoConsensoMayoriaSimple" etc.
+    }
 
-        @Override
-        public IAlgoritmoConsenso convertToEntityAttribute(String dbData) {
-            switch (dbData) {
-                case "AlgoritmoConsensoMayoriaAbsoluta": return new AlgoritmoConsensoMayoriaAbsoluta();
-                case "AlgoritmoConsensoMayoriaSimple": return new AlgoritmoConsensoMayoriaSimple();
-                case "AlgoritmoConsensoMultiplesMenciones": return new AlgoritmoConsensoMultiplesMenciones();
-                default: return null;
-            }
+    @Override
+    public IAlgoritmoConsenso convertToEntityAttribute(String dbData) {
+        switch (dbData) {
+            case "AlgoritmoConsensoMayoriaAbsoluta": return new AlgoritmoConsensoMayoriaAbsoluta();
+            case "AlgoritmoConsensoMayoriaSimple": return new AlgoritmoConsensoMayoriaSimple();
+            case "AlgoritmoConsensoMultiplesMenciones": return new AlgoritmoConsensoMultiplesMenciones();
+            default: return null;
         }
+    }
 }
 

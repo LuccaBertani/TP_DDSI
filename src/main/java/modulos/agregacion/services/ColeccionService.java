@@ -28,6 +28,7 @@ public class ColeccionService  {
     private final IHechosProxyRepository hechosProxyRepo;
     private final IHechosEstaticaRepository hechosEstaticaRepo;
     private final IHechosDinamicaRepository hechosDinamicaRepo;
+    private final IHechoRepository hechoRepository;
     private final IColeccionRepository coleccionesRepo;
     private final IUsuarioRepository usuariosRepo;
     private final IDatasetsRepository datasetsRepo;
@@ -37,13 +38,15 @@ public class ColeccionService  {
                             IHechosDinamicaRepository hechosDinamicaRepo,
                             IColeccionRepository coleccionesRepo,
                             IUsuarioRepository usuariosRepo,
-                            IDatasetsRepository datasetsRepo) {
+                            IDatasetsRepository datasetsRepo,
+                            IHechoRepository hechoRepository) {
         this.hechosProxyRepo = hechosProxyRepo;
         this.hechosEstaticaRepo = hechosEstaticaRepo;
         this.hechosDinamicaRepo = hechosDinamicaRepo;
         this.coleccionesRepo = coleccionesRepo;
         this.usuariosRepo = usuariosRepo;
         this.datasetsRepo = datasetsRepo;
+        this.hechoRepository = hechoRepository;
     }
 
 
@@ -93,15 +96,11 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             }
         }
 
-        coleccion.setCriterios(formateador.obtenerMapaDeFiltros(filtros));
+        coleccion.setCriterios(formateador.obtenerListaDeFiltros(filtros));
 
-        List<Hecho> hechosDinamica = hechosDinamicaRepo.findAll();
-        List<Hecho> hechosEstatica = hechosEstaticaRepo.findAll();
-        List<Hecho> hechosProxy = hechosProxyRepo.findAll();
+        List<Hecho> hechos = hechoRepository.findAll();
 
-        coleccion.addHechos(Filtrador.aplicarFiltros(formateador.obtenerMapaDeFiltros(filtros), hechosDinamica));
-        coleccion.addHechos(Filtrador.aplicarFiltros(formateador.obtenerMapaDeFiltros(filtros), hechosEstatica));
-        coleccion.addHechos(Filtrador.aplicarFiltros(formateador.obtenerMapaDeFiltros(filtros), hechosProxy));
+        coleccion.addHechos(Filtrador.aplicarFiltros(coleccion.getCriterios(), hechos));
         coleccion.setModificado(true);
         coleccionesRepo.save(coleccion);
 
@@ -213,12 +212,12 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             dto1.setCategoria(hecho.getCategoria());
 
             AtributosHecho atributos = formateador.formatearAtributosHecho(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),dto1);
-            Hecho hecho1 = new Hecho();
+            Hecho hecho1 = new HechoDinamica();
             hecho1.setAtributosHecho(atributos);
             hechosColeccion.add(hecho1);
         }
         coleccion.setModificado(true);
-        coleccion.actualizar(dto,formateador.obtenerMapaDeFiltros(filtrosColeccion),hechosColeccion);
+        coleccion.actualizar(dto,formateador.obtenerListaDeFiltros(filtrosColeccion),hechosColeccion);
         return new RespuestaHttp<>(null,HttpStatus.OK.value());
     }
 

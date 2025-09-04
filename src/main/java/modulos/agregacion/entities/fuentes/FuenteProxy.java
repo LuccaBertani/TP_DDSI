@@ -1,17 +1,12 @@
 package modulos.agregacion.entities.fuentes;
 
-import modulos.agregacion.entities.Coleccion;
-import modulos.agregacion.entities.FiltrosColeccion;
-import modulos.agregacion.entities.FormateadorHecho;
+import modulos.agregacion.entities.*;
 import modulos.agregacion.entities.filtros.*;
 import modulos.buscadores.BuscadorProvincia;
-import modulos.agregacion.entities.Hecho;
-import modulos.agregacion.entities.DatosColeccion;
 import modulos.shared.dtos.input.CriteriosColeccionDTO;
 import modulos.shared.dtos.input.GetHechosColeccionInputDTO;
 import modulos.shared.utils.FechaParser;
 import modulos.shared.utils.Geocodificador;
-import modulos.agregacion.entities.UbicacionString;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import modulos.shared.dtos.input.FiltroHechosDTO;
@@ -76,7 +71,7 @@ public class FuenteProxy {
 
     }
 
-        public List<Hecho> getHechos(List<Hecho> hechosTotalesProxy, List<Hecho> hechosTotalesDinamica, List<Hecho> hechosTotalesEstatica) {
+        public List<Hecho> getHechos(List<HechoProxy> hechosTotalesProxy, List<HechoDinamica> hechosTotalesDinamica, List<HechoEstatica> hechosTotalesEstatica) {
 
             List<Hecho> hechos = new ArrayList<>();
 
@@ -100,7 +95,7 @@ public class FuenteProxy {
                         JSONObject obj = array.getJSONObject(i);
 
                         // Asignar datos a un nuevo objeto Hecho
-                        Hecho hecho = new Hecho();
+                        Hecho hecho = new HechoProxy();
                         hecho.getAtributosHecho().setTitulo(obj.getString("titulo"));
                         hecho.getAtributosHecho().setDescripcion(obj.getString("descripcion"));
                         hecho.getAtributosHecho().setCategoria(BuscadorCategoria.buscarOCrear(hechosTotalesDinamica, obj.getString("categoria"), hechosTotalesProxy, hechosTotalesEstatica));
@@ -133,7 +128,7 @@ public class FuenteProxy {
             return hechos;
     }
 
-    public Hecho getHechoPorId(int id, List<Hecho> hechosTotalesProxy, List<Hecho> hechosTotalesDinamica, List<Hecho> hechosTotalesEstatica) {
+    public Hecho getHechoPorId(int id, List<HechoProxy> hechosTotalesProxy, List<HechoDinamica> hechosTotalesDinamica, List<HechoEstatica> hechosTotalesEstatica) {
         try {
             String urlStr = this.url_base + "/desastres-naturales/?id=" + id;
             URL url = new URL(urlStr);
@@ -150,7 +145,7 @@ public class FuenteProxy {
                 String responseBody = new Scanner(conexion.getInputStream()).useDelimiter("\\A").next();
                 JSONObject obj = new JSONObject(responseBody);
 
-                Hecho hecho = new Hecho();
+                Hecho hecho = new HechoProxy();
                 hecho.getAtributosHecho().setTitulo(obj.getString("titulo"));
                 hecho.getAtributosHecho().setDescripcion(obj.getString("descripcion"));
                 hecho.getAtributosHecho().setCategoria(BuscadorCategoria.buscarOCrear(hechosTotalesDinamica, obj.getString("categoria"), hechosTotalesProxy, hechosTotalesEstatica));
@@ -177,7 +172,7 @@ public class FuenteProxy {
         return null;
     }
 
-    public List<Hecho> getHechosMetaMapa(String url_1, FiltroHechosDTO filtros, List<Hecho> hechosTotalesDinamica, List<Hecho> hechosTotalesProxy, List<Hecho> hechosTotalesEstatica){
+    public List<Hecho> getHechosMetaMapa(String url_1, FiltroHechosDTO filtros, List<HechoDinamica> hechosTotalesDinamica, List<HechoProxy> hechosTotalesProxy, List<HechoEstatica> hechosTotalesEstatica){
 
         try {
             String urlStr = url_1 + "/get";
@@ -213,7 +208,7 @@ public class FuenteProxy {
                     JSONObject obj = array.getJSONObject(i);
 
                     // Asignar datos a un nuevo objeto Hecho
-                    Hecho hecho = new Hecho();
+                    Hecho hecho = new HechoProxy();
                     hecho.setId(obj.getLong("id"));
                     hecho.getAtributosHecho().setTitulo(obj.getString("titulo"));
                     hecho.getAtributosHecho().setDescripcion(obj.getString("descripcion"));
@@ -243,7 +238,7 @@ public class FuenteProxy {
         return null;
     }
 
-    public List<Coleccion> getColeccionesMetaMapa(String url_1, List<Hecho> hechosTotalesDinamica, List<Hecho> hechosTotalesProxy, List<Hecho> hechosTotalesEstatica){
+    public List<Coleccion> getColeccionesMetaMapa(String url_1, List<HechoDinamica> hechosTotalesDinamica, List<HechoProxy> hechosTotalesProxy, List<HechoEstatica> hechosTotalesEstatica){
         try {
 
         String urlStr = this.url_base + "/get-all";
@@ -276,9 +271,9 @@ public class FuenteProxy {
                     FormateadorHecho formateador = new FormateadorHecho();
 
                     FiltrosColeccion filtros = formateador.formatearFiltrosColeccion(hechosTotalesDinamica,hechosTotalesEstatica,hechosTotalesProxy,filtrosEnString);
-                    Map<Class<? extends Filtro>, Filtro> filtrosMap = formateador.obtenerMapaDeFiltros(filtros);
+                    List<Filtro> filtrosLista = formateador.obtenerListaDeFiltros(filtros);
 
-                    coleccion.setCriterios(filtrosMap);
+                    coleccion.setCriterios(filtrosLista);
                     GetHechosColeccionInputDTO atributos = new GetHechosColeccionInputDTO();
                     atributos.setId_coleccion(coleccion.getId());
                     atributos.setOrigen(filtrosEnString.getOrigen());
@@ -312,7 +307,7 @@ public class FuenteProxy {
 
     }
 
-    public List<Hecho> getHechosDeColeccionMetaMapa(String url_1, GetHechosColeccionInputDTO atributos, List<Hecho> hechosTotalesDinamica, List<Hecho> hechosTotalesProxy, List<Hecho> hechosTotalesEstatica){
+    public List<Hecho> getHechosDeColeccionMetaMapa(String url_1, GetHechosColeccionInputDTO atributos, List<HechoDinamica> hechosTotalesDinamica, List<HechoProxy> hechosTotalesProxy, List<HechoEstatica> hechosTotalesEstatica){
         try {
 
             String url_concatenada = url_1 + "get/filtrar";
@@ -344,7 +339,7 @@ public class FuenteProxy {
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject obj = array.getJSONObject(i);
 
-                    Hecho hecho = new Hecho();
+                    Hecho hecho = new HechoProxy();
                     hecho.setId(obj.getLong("id"));
                     hecho.getAtributosHecho().setTitulo(obj.getString("titulo"));
                     hecho.getAtributosHecho().setDescripcion(obj.getString("descripcion"));

@@ -1,6 +1,7 @@
 package modulos.agregacion.entities.fuentes;
 
 import modulos.agregacion.entities.Hecho;
+import modulos.agregacion.entities.HechoDinamica;
 import modulos.shared.utils.FechaParser;
 import modulos.agregacion.entities.HechosData;
 import modulos.agregacion.entities.TipoContenido;
@@ -10,9 +11,9 @@ import java.time.ZonedDateTime;
 
 public class FuenteDinamica {
 
-    public Hecho crearHecho(HechosData data){
+    public HechoDinamica crearHecho(HechosData data){
 
-        Hecho hecho = new Hecho();
+        Hecho hecho = new HechoDinamica();
         hecho.getAtributosHecho().setTitulo(data.getTitulo());
         hecho.setActivo(false);
         hecho.getAtributosHecho().setDescripcion(data.getDescripcion());

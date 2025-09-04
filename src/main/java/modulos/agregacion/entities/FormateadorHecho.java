@@ -12,13 +12,14 @@ import modulos.shared.utils.FechaParser;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class FormateadorHecho {
 
-public AtributosHecho formatearAtributosHecho(List<Hecho> hechosDinamica, List<Hecho> hechosEstatica, List<Hecho> hechosProxy, SolicitudHechoInputDTO dtoInput){
+public AtributosHecho formatearAtributosHecho(List<HechoDinamica> hechosDinamica, List<HechoEstatica> hechosEstatica, List<HechoProxy> hechosProxy, SolicitudHechoInputDTO dtoInput){
 
     AtributosHecho atributos = new AtributosHecho();
 
@@ -70,7 +71,7 @@ public AtributosHecho formatearAtributosHecho(List<Hecho> hechosDinamica, List<H
 
 }
 
-public FiltrosColeccion formatearFiltrosColeccion(List<Hecho> hechosDinamica, List<Hecho> hechosEstatica, List<Hecho> hechosProxy , CriteriosColeccionDTO inputDTO){
+public FiltrosColeccion formatearFiltrosColeccion(List<HechoDinamica> hechosDinamica, List<HechoEstatica> hechosEstatica, List<HechoProxy> hechosProxy , CriteriosColeccionDTO inputDTO){
 
     FiltrosColeccion filtros = new FiltrosColeccion();
 
@@ -122,73 +123,69 @@ public FiltrosColeccion formatearFiltrosColeccion(List<Hecho> hechosDinamica, Li
 
 }
 
-public CriteriosColeccionDTO filtrosColeccionToString(Map<Class<? extends Filtro>, Filtro> filtros){
+    public CriteriosColeccionDTO filtrosColeccionToString(List<Filtro> filtros) {
+        CriteriosColeccionDTO criterios = new CriteriosColeccionDTO();
 
-    CriteriosColeccionDTO criterios = new CriteriosColeccionDTO();
-    for (Map.Entry<Class<? extends Filtro>, Filtro> entry : filtros.entrySet()) {
-        Filtro filtro = entry.getValue();
-
-        if (filtro instanceof FiltroCategoria) {
-            Categoria categoriaObj = ((FiltroCategoria) filtro).getCategoria();
-            String nombreCategoria = categoriaObj.getTitulo();
-            criterios.setCategoria(nombreCategoria);
-        } else if (filtro instanceof FiltroContenidoMultimedia) {
-            TipoContenido contenido = ((FiltroContenidoMultimedia) filtro).getTipoContenido();
-            criterios.setContenidoMultimedia(contenido.codigoEnString());
-        } else if (filtro instanceof FiltroDescripcion) {
-            String descripcion = ((FiltroDescripcion) filtro).getDescripcion();
-            criterios.setDescripcion(descripcion);
-        } else if (filtro instanceof FiltroFechaAcontecimiento) {
-            criterios.setFechaAcontecimientoInicial(((FiltroFechaAcontecimiento) filtro).getFechaInicial().toString());
-            criterios.setFechaAcontecimientoFinal(((FiltroFechaAcontecimiento) filtro).getFechaFinal().toString());
-        } else if (filtro instanceof FiltroFechaCarga) {
-            criterios.setFechaCargaInicial(((FiltroFechaCarga) filtro).getFechaInicial().toString());
-            criterios.setFechaCargaFinal(((FiltroFechaCarga) filtro).getFechaFinal().toString());
-        } else if (filtro instanceof FiltroOrigen) {
-            Origen origen = ((FiltroOrigen) filtro).getOrigenDeseado();
-            criterios.setContenidoMultimedia(origen.codigoEnString());
-        } else if (filtro instanceof FiltroPais) {
-            Pais pais = ((FiltroPais) filtro).getPais();
-            criterios.setPais(pais.getPais());
-        } else if (filtro instanceof FiltroTitulo) {
-            criterios.setTitulo(((FiltroTitulo) filtro).getTitulo());
+        for (Filtro filtro : filtros) {
+            if (filtro instanceof FiltroCategoria) {
+                Categoria categoriaObj = ((FiltroCategoria) filtro).getCategoria();
+                criterios.setCategoria(categoriaObj.getTitulo());
+            } else if (filtro instanceof FiltroContenidoMultimedia) {
+                TipoContenido contenido = ((FiltroContenidoMultimedia) filtro).getTipoContenido();
+                criterios.setContenidoMultimedia(contenido.codigoEnString());
+            } else if (filtro instanceof FiltroDescripcion) {
+                criterios.setDescripcion(((FiltroDescripcion) filtro).getDescripcion());
+            } else if (filtro instanceof FiltroFechaAcontecimiento) {
+                criterios.setFechaAcontecimientoInicial(((FiltroFechaAcontecimiento) filtro).getFechaInicial().toString());
+                criterios.setFechaAcontecimientoFinal(((FiltroFechaAcontecimiento) filtro).getFechaFinal().toString());
+            } else if (filtro instanceof FiltroFechaCarga) {
+                criterios.setFechaCargaInicial(((FiltroFechaCarga) filtro).getFechaInicial().toString());
+                criterios.setFechaCargaFinal(((FiltroFechaCarga) filtro).getFechaFinal().toString());
+            } else if (filtro instanceof FiltroOrigen) {
+                Origen origen = ((FiltroOrigen) filtro).getOrigenDeseado();
+                criterios.setContenidoMultimedia(origen.codigoEnString());
+            } else if (filtro instanceof FiltroPais) {
+                Pais pais = ((FiltroPais) filtro).getPais();
+                criterios.setPais(pais.getPais());
+            } else if (filtro instanceof FiltroTitulo) {
+                criterios.setTitulo(((FiltroTitulo) filtro).getTitulo());
+            }
         }
+
+        return criterios;
     }
 
-   return criterios;
-}
 
 
 
-
-    public Map<Class<? extends Filtro>, Filtro> obtenerMapaDeFiltros(FiltrosColeccion filtrosColeccion) {
-        Map<Class<? extends Filtro>, Filtro> mapa = new HashMap<>();
+    public List<Filtro> obtenerListaDeFiltros(FiltrosColeccion filtrosColeccion) {
+       List<Filtro> filtros = new ArrayList<>();
 
         if (filtrosColeccion.getFiltroCategoria() != null)
-            mapa.put(FiltroCategoria.class, filtrosColeccion.getFiltroCategoria());
+            filtros.add(filtrosColeccion.getFiltroCategoria());
 
         if (filtrosColeccion.getFiltroPais() != null)
-            mapa.put(FiltroPais.class, filtrosColeccion.getFiltroPais());
+            filtros.add(filtrosColeccion.getFiltroPais());
 
         if (filtrosColeccion.getFiltroDescripcion() != null)
-            mapa.put(FiltroDescripcion.class, filtrosColeccion.getFiltroDescripcion());
+            filtros.add(filtrosColeccion.getFiltroDescripcion());
 
         if (filtrosColeccion.getFiltroContenidoMultimedia() != null)
-            mapa.put(FiltroContenidoMultimedia.class, filtrosColeccion.getFiltroContenidoMultimedia());
+            filtros.add(filtrosColeccion.getFiltroContenidoMultimedia());
 
         if (filtrosColeccion.getFiltroFechaAcontecimiento() != null)
-            mapa.put(FiltroFechaAcontecimiento.class, filtrosColeccion.getFiltroFechaAcontecimiento());
+            filtros.add(filtrosColeccion.getFiltroFechaAcontecimiento());
 
         if (filtrosColeccion.getFiltroFechaCarga() != null)
-            mapa.put(FiltroFechaCarga.class, filtrosColeccion.getFiltroFechaCarga());
+            filtros.add(filtrosColeccion.getFiltroFechaCarga());
 
         if (filtrosColeccion.getFiltroOrigen() != null)
-            mapa.put(FiltroOrigen.class, filtrosColeccion.getFiltroOrigen());
+            filtros.add(filtrosColeccion.getFiltroOrigen());
 
         if (filtrosColeccion.getFiltroTitulo() != null)
-            mapa.put(FiltroTitulo.class, filtrosColeccion.getFiltroTitulo());
+            filtros.add(filtrosColeccion.getFiltroTitulo());
 
-        return mapa;
+        return filtros;
     }
 
 }

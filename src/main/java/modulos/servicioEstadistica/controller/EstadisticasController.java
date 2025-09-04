@@ -1,6 +1,5 @@
 package modulos.servicioEstadistica.controller;
 
-import jdk.swing.interop.SwingInterOpUtils;
 import modulos.servicioEstadistica.ServicioDeEstadistica;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

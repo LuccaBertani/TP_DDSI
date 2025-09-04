@@ -1,24 +1,35 @@
 package modulos.agregacion.entities.filtros;
 
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import modulos.agregacion.entities.Categoria;
 import modulos.agregacion.entities.Hecho;
+import modulos.buscadores.Normalizador;
 
+@Getter
+@Setter
+@Entity
+@Table(name = "filtro_categoria")
+public class FiltroCategoria extends Filtro {
 
-public class FiltroCategoria implements Filtro {
-
+    @OneToOne
+    @JoinColumn(name = "id_categoria", referencedColumnName = "id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_filtro_categoria_categoria"))
     private Categoria categoria;
 
     public FiltroCategoria(Categoria categoria) {
         this.categoria = categoria;
     }
 
-    public Categoria getCategoria(){
-        return this.categoria;
+    public FiltroCategoria() {
+
     }
 
     @Override
     public Boolean aprobarHecho(Hecho hecho){
-        return hecho.getAtributosHecho().getCategoria() == this.categoria; // Busca si las dos variables apuntan al mismo objeto
+        return hecho.getAtributosHecho().getCategoria().getId().equals(this.categoria.getId());
     }
 
 }
