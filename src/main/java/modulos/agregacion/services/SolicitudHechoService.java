@@ -272,10 +272,12 @@ public class SolicitudHechoService {
         Hecho hecho = hechosDinamicaRepository.findById(id_hecho).orElse(null);
         if(hecho == null){
             hecho = hechosEstaticaRepository.findById(id_hecho).orElse(null);
-        } else if(hecho == null){
-            hecho = hechosProxyRepository.findById(id_hecho).orElse(null);
-        } else if(hecho == null){
-            return new RespuestaHttp<>(null, HttpStatus.NO_CONTENT.value());
+            if(hecho == null){
+                hecho = hechosProxyRepository.findById(id_hecho).orElse(null);
+                if(hecho == null){
+                    return new RespuestaHttp<>(null, HttpStatus.NO_CONTENT.value());
+                }
+            }
         }
         Reporte reporte = new Reporte(motivo, hecho);
         reportesHechoRepository.save(reporte);
