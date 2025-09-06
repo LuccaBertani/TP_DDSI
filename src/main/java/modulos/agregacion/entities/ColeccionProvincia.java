@@ -11,11 +11,11 @@ public class ColeccionProvincia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_coleccion", referencedColumnName = "id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_coleccion_coleccionProvincia"))
     private Coleccion coleccion;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_provincia", referencedColumnName = "id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_provincia_coleccionProvincia"))
     private Provincia provincia;

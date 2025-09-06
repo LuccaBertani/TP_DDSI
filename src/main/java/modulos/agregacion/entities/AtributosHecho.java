@@ -14,7 +14,7 @@ public class AtributosHecho {
     @Column(name = "titulo", nullable = false)
     private String titulo;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ubicacion_id", referencedColumnName = "id",foreignKey = @ForeignKey(name = "fk_usuario_hecho"))
     private Ubicacion ubicacion;
 
@@ -28,7 +28,6 @@ public class AtributosHecho {
     @Column(name = "tipoContenidoMultimedia", nullable = false, length = 20)
     private TipoContenido contenidoMultimedia;
 
-    //FK a la tabla Categoria relacion n a 1
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;

@@ -16,7 +16,7 @@ public class Reporte {
     @Column(name = "motivo")
     String motivo;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hecho_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "fk_reporte_hecho"))
     Hecho hecho_asociado;
 

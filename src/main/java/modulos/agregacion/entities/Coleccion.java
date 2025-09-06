@@ -47,7 +47,7 @@ public class Coleccion {
     private String descripcion;
 
     //relacion muchos a muchos
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "coleccion_hecho",
             joinColumns = @JoinColumn(name = "coleccion_id"),
@@ -64,7 +64,7 @@ public class Coleccion {
     @Column(name = "modificado", nullable = false)
     private Boolean modificado;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "coleccion_filtro",
             joinColumns = @JoinColumn(name = "coleccion_id"),
@@ -72,7 +72,6 @@ public class Coleccion {
             uniqueConstraints = @UniqueConstraint(name = "uk_coleccion_filtro", columnNames = {"coleccion_id","filtro_id"})
     )
     private List<Filtro> criterios;
-
 
     public <T extends Filtro> T obtenerCriterio(Class<T> tipo) {
         return criterios.stream()
@@ -83,7 +82,7 @@ public class Coleccion {
     }
 
     //relacion muchos a muchos
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "coleccion_hechoConsensuado",
             joinColumns = @JoinColumn(name = "coleccion_id"),

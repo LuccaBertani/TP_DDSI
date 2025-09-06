@@ -13,7 +13,7 @@ import modulos.agregacion.entities.Pais;
 @Entity
 public class FiltroPais extends Filtro {
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_pais", referencedColumnName = "id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_filtro_pais_pais"))
     private Pais pais;

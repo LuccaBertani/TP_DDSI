@@ -15,11 +15,11 @@ public class Mensaje {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "solicitud_hecho_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "fk_solicitud_hecho"))
     SolicitudHecho solicitud_hecho;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "fk_usuario_id"))
     Usuario receptor;
 

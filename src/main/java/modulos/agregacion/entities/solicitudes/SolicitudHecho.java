@@ -4,10 +4,7 @@ package modulos.agregacion.entities.solicitudes;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import modulos.agregacion.entities.Hecho;
 import modulos.agregacion.entities.HechoDinamica;
-import modulos.agregacion.entities.TipoSolicitud;
-import modulos.agregacion.entities.fuentes.Origen;
 import modulos.agregacion.entities.usuario.Usuario;
 
 @Getter
@@ -17,10 +14,10 @@ import modulos.agregacion.entities.usuario.Usuario;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo_solicitud", discriminatorType = DiscriminatorType.STRING, length = 20)
 public abstract class SolicitudHecho {
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_usuario", referencedColumnName = "id")
     protected Usuario usuario;
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_hecho", referencedColumnName = "id")
     protected HechoDinamica hecho;
     @Id

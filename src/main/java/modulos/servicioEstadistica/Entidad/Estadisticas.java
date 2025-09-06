@@ -17,19 +17,19 @@ public class Estadisticas {
     @Embedded
     private CantSolicitudesEliminacionSpam cantidadDeSpam;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     @JoinColumn(name = "categoriaCantidad_id", referencedColumnName = "id")
     CategoriaCantidad categoriaCantidad;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "estadistica_id")
     List<CategoriaHora> categoriaHoras;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "estadistica_id")
     List<CategoriaProvincia> categoriaProvincias;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "estadistica_id")
     List<ColeccionProvincia> coleccionProvincias;
 

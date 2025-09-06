@@ -16,7 +16,7 @@ public class CategoriaCantidad {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_categoria", referencedColumnName = "id", nullable = false,
             foreignKey = @jakarta.persistence.ForeignKey(name = "fk_categoriaCantidad_categoria"))
     private Categoria categoria;

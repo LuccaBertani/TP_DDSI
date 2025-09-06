@@ -14,7 +14,7 @@ import modulos.buscadores.Normalizador;
 @Table(name = "filtro_categoria")
 public class FiltroCategoria extends Filtro {
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_categoria", referencedColumnName = "id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_filtro_categoria_categoria"))
     private Categoria categoria;

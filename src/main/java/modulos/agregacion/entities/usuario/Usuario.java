@@ -9,6 +9,7 @@ import lombok.Setter;
 public class Usuario {
 
     @Setter
+    @Column(name = "contrasenia", length = 100)
     private String contrasenia;
 
     @Getter

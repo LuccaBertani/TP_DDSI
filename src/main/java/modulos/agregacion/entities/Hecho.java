@@ -24,7 +24,7 @@ public abstract class Hecho {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_usuario", referencedColumnName = "id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_usuario_hecho"))
     private Usuario usuario;
@@ -47,6 +47,38 @@ public abstract class Hecho {
     }
 
 }
+
+/*
+
+
+Many To One
+
+
+
+metodo falopa(){
+
+hecho1
+
+hecho1.setNombre("lucca);
+
+save()
+)
+}
+
+* PERSIST → si persisto el padre, persiste también el hijo.
+
+MERGE → si actualizo el padre, mergea también el hijo.
+
+REMOVE → si borro el padre, borra también el hijo.
+
+REFRESH → si refresco el padre, refresca también el hijo.
+
+DETACH → si saco al padre del contexto (detach), también el hijo.
+
+ALL → equivale a todas las anteriores.
+
+* cascade = {PERSIST, MERGE}
+* * */
 
 /*
 * HECHO
