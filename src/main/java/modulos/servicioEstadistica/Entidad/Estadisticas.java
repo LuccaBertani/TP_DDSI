@@ -22,15 +22,15 @@ public class Estadisticas {
     CategoriaCantidad categoriaCantidad;
 
     @OneToMany
-    @JoinColumn(name = "categoriaHora_id")
+    @JoinColumn(name = "estadistica_id")
     List<CategoriaHora> categoriaHoras;
 
     @OneToMany
-    @JoinColumn(name = "categoriaProvincia_id")
+    @JoinColumn(name = "estadistica_id")
     List<CategoriaProvincia> categoriaProvincias;
 
     @OneToMany
-    @JoinColumn(name = "coleccionProvincias_id")
+    @JoinColumn(name = "estadistica_id")
     List<ColeccionProvincia> coleccionProvincias;
 
     public Estadisticas(CantSolicitudesEliminacionSpam cantidadDeSpam, CategoriaCantidad categoriaCantidad, List<CategoriaHora> categoriaHoras, List<CategoriaProvincia> categoriaProvincias, List<ColeccionProvincia> coleccionProvincias) {

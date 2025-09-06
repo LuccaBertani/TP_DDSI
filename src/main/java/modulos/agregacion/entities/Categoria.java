@@ -20,7 +20,7 @@ public class Categoria {
     private String titulo;
 
     @OneToMany
-    @JoinColumn(name = "sinonimo_id")
+    @JoinColumn(name = "categoria_id")
     private List<Sinonimo> sinonimos;
 
     public Categoria(){
