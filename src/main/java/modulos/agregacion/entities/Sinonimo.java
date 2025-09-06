@@ -10,7 +10,6 @@ import lombok.Setter;
 @Table(name = "sinonimo")
 @Entity
 public class Sinonimo {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

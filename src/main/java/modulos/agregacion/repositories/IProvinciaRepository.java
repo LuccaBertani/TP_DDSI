@@ -1,12 +1,15 @@
 package modulos.agregacion.repositories;
 
+import modulos.agregacion.entities.Pais;
 import modulos.agregacion.entities.Provincia;
 import modulos.agregacion.entities.Ubicacion;
 import modulos.agregacion.entities.projections.CategoriaProvinciaProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IProvinciaRepository extends JpaRepository<Provincia, Long> {
     // ¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
@@ -19,6 +22,13 @@ public interface IProvinciaRepository extends JpaRepository<Provincia, Long> {
         ORDER BY count(h.id) DESC
         limit 1""",nativeQuery = true)
     List<CategoriaProvinciaProjection> obtenerCategoriaMayorHechosProvincia();
+
+    @Query(value = """
+    SELECT p
+    FROM Provincia p 
+    WHERE unaccent(REPLACE(LOWER(p.provincia), ' ', '')) = unaccent(REPLACE(LOWER(:nombre), ' ', ''))
+""")
+    Optional<Provincia> findByNombreNormalizado(@Param("nombre") String nombre);
 }
 
 

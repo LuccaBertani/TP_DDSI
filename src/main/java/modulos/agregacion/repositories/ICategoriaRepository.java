@@ -7,8 +7,10 @@ import modulos.agregacion.entities.projections.CategoriaCantidadProjection;
 import modulos.agregacion.entities.projections.HoraCategoriaProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ICategoriaRepository extends JpaRepository<Categoria, Long> {
 
@@ -37,6 +39,14 @@ GROUP BY HOUR(h.fecha_hora), c.id
 ORDER BY totalHechos DESC
 LIMIT 1""",nativeQuery = true)
 List<HoraCategoriaProjection> obtenerHoraMaxHechosCategoria();
+
+
+    @Query(value = """
+    SELECT c 
+    FROM Categoria c 
+    WHERE unaccent(REPLACE(LOWER(c.titulo), ' ', '')) = unaccent(REPLACE(LOWER(:nombre), ' ', ''))
+""")
+    Optional<Categoria> findByNombreNormalizado(@Param("nombre") String nombre);
 
 }
 

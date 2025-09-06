@@ -6,6 +6,10 @@ import modulos.agregacion.entities.filtros.*;
 import modulos.agregacion.repositories.*;
 import modulos.agregacion.entities.fuentes.Dataset;
 import modulos.agregacion.entities.fuentes.Origen;
+import modulos.buscadores.BuscadorCategoria;
+import modulos.buscadores.BuscadorHecho;
+import modulos.buscadores.BuscadorPais;
+import modulos.buscadores.BuscadorProvincia;
 import modulos.shared.dtos.input.*;
 import modulos.agregacion.entities.RespuestaHttp;
 import org.springframework.scheduling.annotation.Async;
@@ -35,19 +39,31 @@ public class HechosService {
     private final IUsuarioRepository usuariosRepo;
     private final IColeccionRepository coleccionRepo;
     private final IDatasetsRepository datasetsRepo;
+    private final BuscadorCategoria buscadorCategoria;
+    private final BuscadorPais buscadorPais;
+    private final BuscadorProvincia buscadorProvincia;
+    private final BuscadorHecho buscadorHecho;
 
     public HechosService(IHechosProxyRepository hechosProxyRepo,
                          IHechosEstaticaRepository hechosEstaticaRepo,
                          IHechosDinamicaRepository hechosDinamicaRepo,
                          IUsuarioRepository usuariosRepo,
                          IColeccionRepository coleccionRepo,
-                         IDatasetsRepository datasetsRepo) {
+                         IDatasetsRepository datasetsRepo,
+                         BuscadorCategoria buscadorCategoria,
+                         BuscadorPais buscadorPais,
+                         BuscadorProvincia buscadorProvincia,
+                         BuscadorHecho buscadorHecho) {
         this.hechosProxyRepo = hechosProxyRepo;
         this.hechosDinamicaRepo = hechosDinamicaRepo;
         this.hechosEstaticaRepo = hechosEstaticaRepo;
         this.usuariosRepo = usuariosRepo;
         this.coleccionRepo = coleccionRepo;
         this.datasetsRepo = datasetsRepo;
+        this.buscadorCategoria = buscadorCategoria;
+        this.buscadorPais = buscadorPais;
+        this.buscadorProvincia = buscadorProvincia;
+        this.buscadorHecho = buscadorHecho;
     }
 
     /* Se pide que, una vez por hora, el servicio de agregación actualice los hechos pertenecientes a las distintas colecciones,
@@ -191,7 +207,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
             HechoDinamica hecho = new HechoDinamica();
 
-            AtributosHecho atributos = formateador.formatearAtributosHecho(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),dtoInput);
+            AtributosHecho atributos = formateador.formatearAtributosHecho(buscadorCategoria,buscadorPais, buscadorProvincia, dtoInput);
 
             hecho.setAtributosHecho(atributos);
             hecho.setActivo(true);
@@ -215,7 +231,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             datasetsRepo.save(dataset);
             fuente.setDataSet(dataset);
 
-            List<HechoEstatica> hechos = fuente.leerFuente(hechosProxyRepo.findAll(), hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll());
+            List<HechoEstatica> hechos = fuente.leerFuente(buscadorCategoria, buscadorPais, buscadorProvincia, buscadorHecho);
 
 
             if (hechos.isEmpty()){
@@ -236,7 +252,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         List<Filtro> filtros;
 
         FormateadorHecho formateador = new FormateadorHecho();
-        filtros = formateador.obtenerListaDeFiltros(formateador.formatearFiltrosColeccion(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),new CriteriosColeccionDTO(
+        filtros = formateador.obtenerListaDeFiltros(formateador.formatearFiltrosColeccion(buscadorCategoria, buscadorPais, buscadorProvincia, new CriteriosColeccionDTO(
                 inputDTO.getCategoria(),
                 inputDTO.getContenidoMultimedia(),
                 inputDTO.getDescripcion(),

@@ -40,6 +40,9 @@ public class SolicitudHechoService {
     private final IUsuarioRepository usuariosRepository;
     private final IMensajeRepository mensajesRepository;
     private final IReporteHechoRepository reportesHechoRepository;
+    private final BuscadorPais buscadorPais;
+    private final BuscadorProvincia buscadorProvincia;
+    private final BuscadorCategoria buscadorCategoria;
 
     GestorRoles gestorRoles;
 
@@ -51,7 +54,9 @@ public class SolicitudHechoService {
                                  IHechosEstaticaRepository hechosEstaticaRepository,
                                  IHechosDinamicaRepository hechosDinamicaRepository,
                                  IMensajeRepository mensajesRepository,
-                                 IReporteHechoRepository reportesHechoRepository) {
+                                 IReporteHechoRepository reportesHechoRepository, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia,
+                                 BuscadorCategoria buscadorCategoria) {
+
         this.solicitudAgregarHechoRepo = solicitudAgregarHechoRepo;
         this.solicitudEliminarHechoRepo = solicitudEliminarHechoRepo;
         this.hechosProxyRepository = hechosProxyRepository;
@@ -61,6 +66,9 @@ public class SolicitudHechoService {
         this.solicitudModificarHechoRepo = solicitudModificarHechoRepo;
         this.mensajesRepository = mensajesRepository;
         this.reportesHechoRepository = reportesHechoRepository;
+        this.buscadorPais = buscadorPais;
+        this.buscadorCategoria = buscadorCategoria;
+        this.buscadorProvincia = buscadorProvincia;
         gestorRoles = new GestorRoles();
     }
 
@@ -72,8 +80,8 @@ public class SolicitudHechoService {
             return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
         }
 
-        Pais pais = BuscadorPais.buscarOCrear(hechosDinamicaRepository.findAll(),dto.getPais(),hechosProxyRepository.findAll(),hechosEstaticaRepository.findAll());
-        Provincia provincia = BuscadorProvincia.buscarOCrear(hechosDinamicaRepository.findAll(),dto.getProvincia(),hechosProxyRepository.findAll(),hechosEstaticaRepository.findAll());
+        Pais pais = buscadorPais.buscarOCrear(dto.getPais());
+        Provincia provincia = buscadorProvincia.buscarOCrear(dto.getProvincia());
         HechosData hechosData = new HechosData(dto.getTitulo(), dto.getDescripcion(), dto.getTipoContenido(),
                 pais, dto.getFechaAcontecimiento(), provincia);
 
@@ -147,9 +155,9 @@ public class SolicitudHechoService {
         }
 
         hecho.getAtributosHecho().setTitulo(dto.getTitulo());
-        hecho.getAtributosHecho().getUbicacion().setPais(BuscadorPais.buscarOCrear(hechosDinamicaRepository.findAll(), dto.getPais(), hechosProxyRepository.findAll(), hechosEstaticaRepository.findAll()));
-        hecho.getAtributosHecho().getUbicacion().setProvincia(BuscadorProvincia.buscarOCrear(hechosDinamicaRepository.findAll(), dto.getProvincia(), hechosProxyRepository.findAll(), hechosEstaticaRepository.findAll()));
-        hecho.getAtributosHecho().setCategoria(BuscadorCategoria.buscarOCrear(hechosDinamicaRepository.findAll(), dto.getPais(), hechosProxyRepository.findAll(), hechosEstaticaRepository.findAll()));
+        hecho.getAtributosHecho().getUbicacion().setPais(buscadorPais.buscarOCrear(dto.getPais()));
+        hecho.getAtributosHecho().getUbicacion().setProvincia(buscadorProvincia.buscarOCrear(dto.getProvincia()));
+        hecho.getAtributosHecho().setCategoria(buscadorCategoria.buscarOCrear(dto.getCategoria()));
         hecho.getAtributosHecho().setFechaAcontecimiento(FechaParser.parsearFecha(dto.getFechaAcontecimiento()));
         hecho.getAtributosHecho().setContenidoMultimedia(TipoContenido.fromCodigo(dto.getTipoContenido()));
         solicitudModificarHechoRepo.save(solicitud);

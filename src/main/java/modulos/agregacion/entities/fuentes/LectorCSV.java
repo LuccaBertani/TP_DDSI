@@ -32,7 +32,7 @@ public class LectorCSV {
     }
 
     // Entrega 3: los hechos no se pisan los atributos
-    public List<HechoEstatica> leerCSV(List<HechoProxy> hechosFuenteProxy, List<HechoDinamica> hechosFuenteDinamica, List<HechoEstatica> hechosFuenteEstatica) {
+    public List<HechoEstatica> leerCSV(BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, BuscadorHecho buscadorHecho) {
 
         List<HechoEstatica> hechosASubir = new ArrayList<>();
 
@@ -85,10 +85,9 @@ public class LectorCSV {
 
                 hecho.getAtributosHecho().setTitulo((indicesColumnas.get(0) != -1) ? registros.get(indicesColumnas.get(0)) : "N/A");
                 //Se leen los de fuente estatica
-                Optional<HechoEstatica> hecho0 = hechosFuenteEstatica.stream().filter(h-> Normalizador.normalizarYComparar(h.getAtributosHecho().getTitulo(), hecho.getAtributosHecho().getTitulo())).findFirst();
+                HechoEstatica hecho0 = buscadorHecho.buscarEstatica(hecho.getAtributosHecho().getTitulo());
 
-                if (hecho0.isPresent() && !hecho0.get().getAtributosHecho().getTitulo().equals("N/A")){
-                    System.out.println("El hecho está repetido");
+                if (hecho0 != null && !hecho0.getAtributosHecho().getTitulo().equals("N/A")){
                     tituloRepetido = true;
                 }
 
@@ -96,7 +95,7 @@ public class LectorCSV {
 
                 String categoriaString = indicesColumnas.get(2) != -1 ? registros.get(indicesColumnas.get(2)) : "N/A";
 
-                hecho.getAtributosHecho().setCategoria(BuscadorCategoria.buscarOCrear(hechosFuenteDinamica,categoriaString,hechosFuenteProxy,hechosFuenteEstatica));
+                hecho.getAtributosHecho().setCategoria(buscadorCategoria.buscarOCrear(categoriaString));
 
                 UbicacionString ubicacion;
                 if (indicesColumnas.get(3) != -1 && indicesColumnas.get(4) != -1 &&
@@ -111,9 +110,8 @@ public class LectorCSV {
                     ubicacion.setProvincia(indicesColumnas.get(7) != -1 ? registros.get(indicesColumnas.get(7)) : "N/A");
                 }
 
-                hecho.getAtributosHecho().getUbicacion().setPais(BuscadorPais.buscarOCrear(hechosFuenteDinamica, ubicacion.getPais(), hechosFuenteProxy, hechosFuenteEstatica));
-                hecho.getAtributosHecho().getUbicacion().setProvincia(BuscadorProvincia.buscarOCrear(hechosFuenteDinamica, ubicacion.getProvincia(), hechosFuenteProxy, hechosFuenteEstatica));
-
+                hecho.getAtributosHecho().getUbicacion().setPais(buscadorPais.buscarOCrear(ubicacion.getPais()));
+                hecho.getAtributosHecho().getUbicacion().setProvincia(buscadorProvincia.buscarOCrear(ubicacion.getProvincia()));
                 //ZonedDateTime fecha = FechaParser.parsearFecha(registros.get(indicesColumnas.get(5)));
                 //ZonedDateTime fecha = (indicesColumnas.get(5) != -1) ? fecha :ZonedDateTime.parse(registros.get(indicesColumnas.get(5)));
                 hecho.getAtributosHecho().setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))) : ZonedDateTime.of(0, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")));
@@ -122,25 +120,15 @@ public class LectorCSV {
                 hecho.getAtributosHecho().setFechaUltimaActualizacion(hecho.getAtributosHecho().getFechaCarga());
                 hecho.getDatasets().add(this.dataSet);
                 if (tituloRepetido){
-                    boolean existeHechoIdentico = BuscadorHechoIdentico.existeHechoIdentico(hecho, hechosFuenteEstatica);
-                    if (existeHechoIdentico){
+                    Hecho hechoIdentico = buscadorHecho.existeHechoIdentico(hecho);
+                    if (hechoIdentico!=null){
+                        hechoIdentico.getDatasets().add(this.dataSet);
                         continue; // Evito agregar un hecho identico
                     }
                 }
 
                 hechosASubir.add(hecho);
 
-
-                System.out.println("Hechos a subir: ");
-                for (Hecho hechoASubir : hechosASubir){
-                    System.out.println(hechoASubir.getAtributosHecho().getTitulo());
-                    System.out.println(hechoASubir.getAtributosHecho().getDescripcion());
-                    System.out.println(hechoASubir.getAtributosHecho().getCategoria().getTitulo());
-                    System.out.println(hechoASubir.getAtributosHecho().getUbicacion().getPais());
-                    System.out.println(hechoASubir.getAtributosHecho().getUbicacion().getProvincia());
-                    System.out.println(hechoASubir.getAtributosHecho().getFechaAcontecimiento());
-                    System.out.println(hechoASubir.getAtributosHecho().getFechaCarga());
-                }
             }
             parser.close();
         }

@@ -9,33 +9,32 @@ import modulos.buscadores.BuscadorCategoria;
 import modulos.buscadores.BuscadorPais;
 import modulos.agregacion.entities.filtros.*;
 import modulos.shared.utils.FechaParser;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+
 
 public class FormateadorHecho {
 
-public AtributosHecho formatearAtributosHecho(List<HechoDinamica> hechosDinamica, List<HechoEstatica> hechosEstatica, List<HechoProxy> hechosProxy, SolicitudHechoInputDTO dtoInput){
+    public AtributosHecho formatearAtributosHecho(BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, SolicitudHechoInputDTO dtoInput){
 
     AtributosHecho atributos = new AtributosHecho();
 
     if(dtoInput.getPais() != null) {
-        Pais pais = BuscadorPais.buscarOCrear(hechosDinamica,dtoInput.getPais(),hechosProxy,hechosEstatica);
+        Pais pais = buscadorPais.buscarOCrear(dtoInput.getPais());
         atributos.getUbicacion().setPais(pais);
     }else{
-        Pais pais = BuscadorPais.buscarOCrear(hechosDinamica,"N/A",hechosProxy,hechosEstatica);
+        Pais pais = buscadorPais.buscarOCrear("N/A");
         atributos.getUbicacion().setPais(pais);
     }
 
     if(dtoInput.getProvincia() != null) {
-        Provincia provincia = BuscadorProvincia.buscarOCrear(hechosDinamica,dtoInput.getProvincia(),hechosProxy,hechosEstatica);
+        Provincia provincia = buscadorProvincia.buscarOCrear(dtoInput.getProvincia());
         atributos.getUbicacion().setProvincia(provincia);
     }else{
-        Pais pais = BuscadorPais.buscarOCrear(hechosDinamica,"N/A",hechosProxy,hechosEstatica);
+        Pais pais = buscadorPais.buscarOCrear("N/A");
         atributos.getUbicacion().setPais(pais);
     }
 
@@ -57,11 +56,11 @@ public AtributosHecho formatearAtributosHecho(List<HechoDinamica> hechosDinamica
         atributos.setContenidoMultimedia(TipoContenido.INVALIDO);
     }
     if(dtoInput.getCategoria() != null){
-        Categoria categoria = BuscadorCategoria.buscarOCrear(hechosDinamica,dtoInput.getCategoria(),hechosProxy,hechosEstatica);
+        Categoria categoria = buscadorCategoria.buscarOCrear(dtoInput.getCategoria());
         atributos.setCategoria(categoria);
     }
     else{
-        Categoria categoria = BuscadorCategoria.buscarOCrear(hechosDinamica,"N/A",hechosProxy,hechosEstatica);
+        Categoria categoria = buscadorCategoria.buscarOCrear("N/A");
         atributos.setCategoria(categoria);
     }
 
@@ -71,12 +70,12 @@ public AtributosHecho formatearAtributosHecho(List<HechoDinamica> hechosDinamica
 
 }
 
-public FiltrosColeccion formatearFiltrosColeccion(List<HechoDinamica> hechosDinamica, List<HechoEstatica> hechosEstatica, List<HechoProxy> hechosProxy , CriteriosColeccionDTO inputDTO){
+public FiltrosColeccion formatearFiltrosColeccion(BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, CriteriosColeccionDTO inputDTO){
 
     FiltrosColeccion filtros = new FiltrosColeccion();
 
     if (inputDTO.getCategoria() != null) {
-        Categoria categoria = BuscadorCategoria.buscar(hechosDinamica, inputDTO.getCategoria(), hechosProxy, hechosEstatica);
+        Categoria categoria = buscadorCategoria.buscar(inputDTO.getCategoria());
         if (categoria!=null)
             filtros.setFiltroCategoria(new FiltroCategoria(categoria));
     }
@@ -110,7 +109,7 @@ public FiltrosColeccion formatearFiltrosColeccion(List<HechoDinamica> hechosDina
     }
 
     if (inputDTO.getPais() != null) {
-        Pais pais = BuscadorPais.buscar(hechosDinamica, inputDTO.getPais(), hechosProxy, hechosEstatica);
+        Pais pais = buscadorPais.buscar(inputDTO.getPais());
         if (pais!=null)
             filtros.setFiltroPais(new FiltroPais(pais));
     }

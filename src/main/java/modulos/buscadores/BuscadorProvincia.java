@@ -1,12 +1,31 @@
 package modulos.buscadores;
 
 import modulos.agregacion.entities.*;
+import modulos.agregacion.repositories.IPaisRepository;
+import modulos.agregacion.repositories.IProvinciaRepository;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class BuscadorProvincia {
-    //TODO HACER ESTA MIERDA
-    public static Provincia buscarOCrear(List<HechoDinamica> hechosTotalesDinamica, String provincia, List<HechoProxy> hechosTotalesProxy, List<HechoEstatica> hechosTotalesEstatica){
-    return null;
+
+    private final IProvinciaRepository repoProvincia;
+
+    public BuscadorProvincia(IProvinciaRepository repoProvincia) {
+        this.repoProvincia = repoProvincia;
+    }
+
+    public Provincia buscarOCrear(String elemento) {
+        Provincia provincia = this.buscar(elemento);
+        if(provincia == null){
+            provincia = new Provincia();
+            provincia.setProvincia(elemento);
+        }
+        return provincia;
+    }
+
+    public Provincia buscar(String elemento) {
+        return this.repoProvincia.findByNombreNormalizado(elemento).orElse(null);
     }
 }

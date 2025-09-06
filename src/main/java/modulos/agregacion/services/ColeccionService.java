@@ -11,6 +11,10 @@ import modulos.agregacion.entities.fuentes.FuenteEstatica;
 import modulos.agregacion.entities.Hecho;
 import modulos.agregacion.entities.RespuestaHttp;
 import modulos.agregacion.entities.AtributosHecho;
+import modulos.buscadores.BuscadorCategoria;
+import modulos.buscadores.BuscadorHecho;
+import modulos.buscadores.BuscadorPais;
+import modulos.buscadores.BuscadorProvincia;
 import modulos.shared.dtos.input.*;
 import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.agregacion.entities.usuario.Rol;
@@ -19,8 +23,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import modulos.shared.dtos.output.ColeccionOutputDTO;
+
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ColeccionService  {
@@ -32,6 +39,11 @@ public class ColeccionService  {
     private final IColeccionRepository coleccionesRepo;
     private final IUsuarioRepository usuariosRepo;
     private final IDatasetsRepository datasetsRepo;
+    private final ICategoriaRepository categoriaRepo;
+    private final BuscadorProvincia buscadorProvincia;
+    private final BuscadorPais buscadorPais;
+    private final BuscadorCategoria buscadorCategoria;
+    private final BuscadorHecho buscadorHecho;
 
     public ColeccionService(IHechosProxyRepository hechosProxyRepo,
                             IHechosEstaticaRepository hechosEstaticaRepo,
@@ -39,7 +51,12 @@ public class ColeccionService  {
                             IColeccionRepository coleccionesRepo,
                             IUsuarioRepository usuariosRepo,
                             IDatasetsRepository datasetsRepo,
-                            IHechoRepository hechoRepository) {
+                            IHechoRepository hechoRepository,
+                            ICategoriaRepository categoriaRepo,
+                            BuscadorProvincia buscadorProvincia,
+                            BuscadorPais buscadorPais,
+                            BuscadorCategoria buscadorCategoria,
+                            BuscadorHecho buscadorHecho) {
         this.hechosProxyRepo = hechosProxyRepo;
         this.hechosEstaticaRepo = hechosEstaticaRepo;
         this.hechosDinamicaRepo = hechosDinamicaRepo;
@@ -47,6 +64,11 @@ public class ColeccionService  {
         this.usuariosRepo = usuariosRepo;
         this.datasetsRepo = datasetsRepo;
         this.hechoRepository = hechoRepository;
+        this.categoriaRepo = categoriaRepo;
+        this.buscadorProvincia = buscadorProvincia;
+        this.buscadorPais = buscadorPais;
+        this.buscadorCategoria = buscadorCategoria;
+        this.buscadorHecho = buscadorHecho;
     }
 
 
@@ -83,7 +105,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
         FormateadorHecho formateador = new FormateadorHecho();
 
-        FiltrosColeccion filtros = formateador.formatearFiltrosColeccion(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),dtoInput.getCriterios());
+        FiltrosColeccion filtros = formateador.formatearFiltrosColeccion(buscadorCategoria, buscadorPais, buscadorProvincia, dtoInput.getCriterios());
 
 
         if (dtoInput.getAlgoritmoConsenso() != null){
@@ -170,7 +192,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         Dataset dataset = new Dataset(dataSet);
         fuente.setDataSet(dataset);
 
-        List<HechoEstatica> hechosFuente = fuente.leerFuente(hechosProxyRepo.findAll(),hechosDinamicaRepo.findAll(), hechosEstaticaRepo.findAll());
+        List<HechoEstatica> hechosFuente = fuente.leerFuente(buscadorCategoria, buscadorPais, buscadorProvincia, buscadorHecho);
         List<Hecho> hechos = new ArrayList<>(hechosFuente);
         coleccion.addHechos(hechos);
         return new RespuestaHttp<>(null,HttpStatus.OK.value());
@@ -200,7 +222,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         }
         CriteriosColeccionDTO criterios = new CriteriosColeccionDTO(dto.getCategoria(),dto.getContenidoMultimedia().toString(),dto.getDescripcion(),dto.getFechaAcontecimientoInicial(),dto.getFechaAcontecimientoFinal(),dto.getFechaCargaInicial(),dto.getFechaCargaFinal(),dto.getOrigen().toString(),dto.getPais(),dto.getTitulo());
         FormateadorHecho formateador = new FormateadorHecho();
-        FiltrosColeccion filtrosColeccion = formateador.formatearFiltrosColeccion(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),criterios);
+        FiltrosColeccion filtrosColeccion = formateador.formatearFiltrosColeccion(buscadorCategoria, buscadorPais, buscadorProvincia, criterios);
         List<Hecho> hechosColeccion = new ArrayList<>();
         for(VisualizarHechosOutputDTO hecho : dto.getHechos()){
             SolicitudHechoInputDTO dto1 = new SolicitudHechoInputDTO();
@@ -211,7 +233,11 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             dto1.setDescripcion(hecho.getDescripcion());
             dto1.setCategoria(hecho.getCategoria());
 
-            AtributosHecho atributos = formateador.formatearAtributosHecho(hechosDinamicaRepo.findAll(),hechosEstaticaRepo.findAll(),hechosProxyRepo.findAll(),dto1);
+            Optional<Categoria> categoria = categoriaRepo.findByNombreNormalizado(dto.getCategoria());
+
+
+
+            AtributosHecho atributos = formateador.formatearAtributosHecho(buscadorCategoria, buscadorPais, buscadorProvincia, dto1);
             HechoDinamica hecho1 = new HechoDinamica();
             hecho1.setAtributosHecho(atributos);
             hechosColeccion.add((Hecho)hecho1);

@@ -20,4 +20,5 @@ public class SolicitudHechoModificarInputDTO { //datos del hecho y el id del usu
     private String pais;
     private String fechaAcontecimiento;
     private String provincia;
+    private String categoria;
 }
