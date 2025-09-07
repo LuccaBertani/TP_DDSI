@@ -86,6 +86,7 @@ public final class Geocodificador {
                     String key = n.trim().toLowerCase(Locale.ROOT);
                     if (vistos.add(key)) {
                         Provincia pr = new Provincia();
+                        pr.setPais(pais);
                         pr.setProvincia(n);
                         provincias.add(pr);
                     }
