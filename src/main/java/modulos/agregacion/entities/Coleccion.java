@@ -1,6 +1,8 @@
 package modulos.agregacion.entities;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import lombok.Getter;
 import lombok.Setter;
 import modulos.agregacion.converters.AlgoritmoConsensoConverter;
@@ -8,6 +10,7 @@ import modulos.agregacion.entities.algoritmosConsenso.IAlgoritmoConsenso;
 import modulos.agregacion.entities.filtros.Filtro;
 import modulos.agregacion.entities.filtros.IFiltro;
 import modulos.shared.dtos.input.ColeccionUpdateInputDTO;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.*;
 
@@ -149,6 +152,8 @@ public class Coleccion {
     public void addHechos(List<Hecho> hechos){
         this.hechos.addAll(hechos);
     }
+
+
 
 
 }

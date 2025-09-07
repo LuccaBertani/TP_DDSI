@@ -201,15 +201,13 @@ public class FuenteProxy {
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject obj = array.getJSONObject(i);
                     DatosColeccion datosColeccion = new DatosColeccion(obj.getString("titulo"), obj.getString("descripcion"));
-                    Coleccion coleccion = new Coleccion(datosColeccion);//TODO ojo con repetir el id de la otra instancia con algun id de una coleccion de esta instancia
+                    Coleccion coleccion = new Coleccion(datosColeccion);
                     JSONObject filtrosJson = obj.getJSONObject("criterios");
                     ObjectMapper mapper = new ObjectMapper();
                     CriteriosColeccionDTO filtrosEnString = mapper.readValue(filtrosJson.toString(), CriteriosColeccionDTO.class);
 
-                    FormateadorHecho formateador = new FormateadorHecho();
-
-                    FiltrosColeccion filtros = formateador.formatearFiltrosColeccion(buscadorCategoria, buscadorPais, buscadorProvincia, filtrosEnString);
-                    List<Filtro> filtrosLista = formateador.obtenerListaDeFiltros(filtros);
+                    FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccion(buscadorCategoria, buscadorPais, buscadorProvincia, filtrosEnString);
+                    List<Filtro> filtrosLista = FormateadorHecho.obtenerListaDeFiltros(filtros);
 
                     coleccion.setCriterios(filtrosLista);
                     GetHechosColeccionInputDTO atributos = new GetHechosColeccionInputDTO();

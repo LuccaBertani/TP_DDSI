@@ -1,14 +1,17 @@
 package modulos.agregacion.entities.usuario;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+@Data
 @Entity
 @Table(name="usuario")
 public class Usuario {
 
     @Setter
+    @Getter
     @Column(name = "contrasenia", length = 100)
     private String contrasenia;
 
@@ -16,6 +19,9 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "nombreDeUsuario")
+    private String nombreDeUsuario;
 
     public Usuario() {
         cantHechosSubidos = 0;

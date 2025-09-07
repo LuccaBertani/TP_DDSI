@@ -1,11 +1,20 @@
 package modulos.agregacion.services;
 
+import modulos.agregacion.entities.Hash;
+import modulos.agregacion.entities.usuario.Rol;
 import modulos.agregacion.repositories.IUsuarioRepository;
-import modulos.shared.dtos.input.UsuarioInputDTO;
+import modulos.shared.dtos.input.*;
 import modulos.agregacion.entities.RespuestaHttp;
 import modulos.agregacion.entities.usuario.Usuario;
+import modulos.shared.dtos.output.UsuarioOutputDto;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UsuarioService {
@@ -28,4 +37,118 @@ public class UsuarioService {
         return new RespuestaHttp<>(usuario, HttpStatus.OK.value());
     }
 
+    public ResponseEntity<?> iniciarSesion(LoginDtoInput login) {
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(login.getNombreDeUsuario()).orElse(null);
+
+        if (usuario == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Usuario no encontrado");
+        }
+
+        if (!Hash.verificarPassword(login.getContrasenia(), usuario.getContrasenia())) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Contraseña incorrecta");
+        }
+
+        return ResponseEntity.ok(usuario.getId());
+    }
+
+    public ResponseEntity<?> cambiarContrasenia(CambiarContraseniaDtoInput dtoImput) {
+
+        Usuario usuario = usuarioRepo.findById(dtoImput.getId_usuario()).orElse(null);
+
+        if (usuario == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Usuario no encontrado"));
+        }
+
+        if (!Hash.verificarPassword(dtoImput.getContrasenia_actual(), usuario.getContrasenia())) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Contraseña incorrecta"));
+        }
+
+        String contraseniaNuevaHash = Hash.generarHash(dtoImput.getContrasenia_nueva());
+        usuario.setContrasenia(contraseniaNuevaHash);
+        usuarioRepo.save(usuario);
+
+        return ResponseEntity.ok().build();
+
+    }
+
+    public ResponseEntity<?> editarUsuario(EditarUsuarioDtoInput dtoImput) {
+
+        Usuario usuario = usuarioRepo.findById(dtoImput.getId()).orElse(null);
+
+        if (usuario == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Usuario no encontrado"));
+        }
+
+        Optional.of(dtoImput.getNombre()).ifPresent(usuario.getDatosPersonales()::setNombre);
+        Optional.of(dtoImput.getApellido()).ifPresent(usuario.getDatosPersonales()::setApellido);
+        Optional.of(dtoImput.getEdad()).ifPresent(usuario.getDatosPersonales()::setEdad);
+
+        usuarioRepo.save(usuario);
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    public ResponseEntity<?> editarNombreDeUsuario(EditarNombreDeUsuarioDtoInput dtoImput) {
+
+        Usuario usuario = usuarioRepo.findById(dtoImput.getId()).orElse(null);
+
+        if (usuario == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Usuario no encontrado"));
+        }
+
+        if (!Hash.verificarPassword(dtoImput.getContrasenia(), usuario.getContrasenia())) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Contraseña incorrecta"));
+        }
+
+        usuario.setNombreDeUsuario(dtoImput.getNombreDeUsuarioNuevo());
+
+        usuarioRepo.save(usuario);
+
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<?> getAll(Long id) {
+
+        Usuario usuario = usuarioRepo.findById(id).orElse(null);
+
+        if (usuario == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Usuario no encontrado"));
+        }
+
+        if (!usuario.getRol().equals(Rol.ADMINISTRADOR)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "El usuario no tiene permisos"));
+        }
+
+        List<UsuarioOutputDto> usuariosDto = new ArrayList<>();
+
+        for(Usuario usuario123 : usuarioRepo.findAll()){
+            UsuarioOutputDto usuarioDto = new UsuarioOutputDto();
+            usuarioDto.setId(usuario123.getId());
+            usuarioDto.setNombreDeUsuario(usuario123.getNombreDeUsuario());
+            usuarioDto.setNombre(usuario123.getDatosPersonales().getNombre());
+            usuarioDto.setApellido(usuario123.getDatosPersonales().getApellido());
+            usuarioDto.setEdad(usuario123.getDatosPersonales().getEdad());
+            usuarioDto.setCantHechosSubidos(usuario123.getCantHechosSubidos());
+            usuariosDto.add(usuarioDto);
+        }
+
+        return ResponseEntity.ok(usuariosDto);
+    }
 }

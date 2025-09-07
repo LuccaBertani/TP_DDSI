@@ -1,11 +1,13 @@
 package modulos.agregacion.entities.filtros;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.Path;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import modulos.agregacion.entities.Hecho;
 import modulos.agregacion.entities.Pais;
+import org.springframework.data.jpa.domain.Specification;
 
 @Getter
 @Setter
@@ -29,5 +31,13 @@ public class FiltroPais extends Filtro {
     @Override
     public Boolean aprobarHecho(Hecho hecho){
         return hecho.getAtributosHecho().getUbicacion().getPais().getId().equals(this.pais.getId());
+    }
+
+    @Override
+    public Specification<Hecho> toSpecification() {
+        return((root, query, cb) -> {
+            Path<Long> pathId = root.get("atributosHecho").get("categoria").get("id");
+            return cb.equal(pathId,this.pais.getId());
+        });
     }
 }

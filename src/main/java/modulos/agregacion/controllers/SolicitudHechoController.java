@@ -25,50 +25,38 @@ public class SolicitudHechoController {
     }
 
     @PostMapping("/evaluar/subir")
-    public ResponseEntity<Void> evaluarSolicitudSubida(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
-        RespuestaHttp<Void> respuesta = solicitudHechoService.evaluarSolicitudSubirHecho(dtoInput);
-        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
+    public ResponseEntity<?> evaluarSolicitudSubida(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
+        return solicitudHechoService.evaluarSolicitudSubirHecho(dtoInput); // 200 o 401
     }
 
     @PostMapping("/evaluar/eliminar")
-    public ResponseEntity<Void> evaluarSolicitudEliminacion(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
-        RespuestaHttp<Void> respuesta = solicitudHechoService.evaluarEliminacionHecho(dtoInput);
-        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200, 401
+    public ResponseEntity<?> evaluarSolicitudEliminacion(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
+        return solicitudHechoService.evaluarEliminacionHecho(dtoInput); // 200, 401
     }
 
     @PostMapping("/subir-hecho")
-    public ResponseEntity<Void> enviarSolicitudSubirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput){
-        RespuestaHttp<Void> respuesta = solicitudHechoService.solicitarSubirHecho(dtoInput);
-        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
+    public ResponseEntity<?> enviarSolicitudSubirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput){
+        return solicitudHechoService.solicitarSubirHecho(dtoInput); // 200 o 401
     }
 
     @PostMapping("/eliminar-hecho")
-    public ResponseEntity<Void> enviarSolicitudEliminarHecho(@Valid @RequestBody SolicitudHechoEliminarInputDTO dtoInput){
-        RespuestaHttp<Void> respuesta = solicitudHechoService.solicitarEliminacionHecho(dtoInput);
-        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200 o 401
+    public ResponseEntity<?> enviarSolicitudEliminarHecho(@Valid @RequestBody SolicitudHechoEliminarInputDTO dtoInput){
+        return solicitudHechoService.solicitarEliminacionHecho(dtoInput); // 200 o 401
     }
 
     @PostMapping("/modificar-hecho")
-    public ResponseEntity<Void> enviarSolicitudModificarHecho(@Valid @RequestBody SolicitudHechoModificarInputDTO dtoInput){
-
-        if (dtoInput.getTitulo() == null || dtoInput.getTitulo().isBlank()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-
-        RespuestaHttp<Void> respuesta = solicitudHechoService.solicitarModificacionHecho(dtoInput);
-        return ResponseEntity.status(respuesta.getCodigo()).build(); // 200, 401 o 409 (recurso ya modificado)
+    public ResponseEntity<?> enviarSolicitudModificarHecho(@Valid @RequestBody SolicitudHechoModificarInputDTO dtoInput){
+        return solicitudHechoService.solicitarModificacionHecho(dtoInput); // 200, 401 o 409 (recurso ya modificado)
     }
 
     @GetMapping("/mensajes")
-    public ResponseEntity<List<MensajesHechosUsuarioOutputDTO>> enviarMensajesUsuario(@RequestParam Long id_usuario){
-        RespuestaHttp<List<MensajesHechosUsuarioOutputDTO>> respuesta = solicitudHechoService.enviarMensajes(id_usuario);
-        return ResponseEntity.status(respuesta.getCodigo()).body(respuesta.getDatos());
+    public ResponseEntity<?> enviarMensajesUsuario(@RequestParam Long id_usuario){
+        return solicitudHechoService.enviarMensajes(id_usuario);
     }
 
     @PostMapping("/reportar")
-    public ResponseEntity<Void> reportar(@Valid @RequestParam Long id_hecho, @Valid @RequestParam String motivo){
-        RespuestaHttp<Void> respuesta = solicitudHechoService.reportarHecho(motivo, id_hecho);
-        return ResponseEntity.status(respuesta.getCodigo()).body(respuesta.getDatos());
+    public ResponseEntity<?> reportar(@Valid @RequestParam Long id_hecho, @Valid @RequestParam String motivo){
+        return solicitudHechoService.reportarHecho(motivo, id_hecho);
     }
 
 }

@@ -2,6 +2,7 @@ package modulos.agregacion.entities.filtros;
 
 import jakarta.persistence.*;
 import modulos.agregacion.entities.Hecho;
+import org.springframework.data.jpa.domain.Specification;
 
 @Entity
 @Table(name = "filtro")
@@ -16,4 +17,5 @@ public abstract class Filtro implements IFiltro{
     public Boolean aprobarHecho(Hecho hecho) {
         return null;
     }
+
 }

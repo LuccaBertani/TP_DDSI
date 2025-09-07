@@ -29,6 +29,4 @@ public interface IColeccionRepository extends JpaRepository<Coleccion, Long> {
         """, nativeQuery = true)
     List<ColeccionProvinciaProjection> obtenerMayorCantHechosProvinciaEnColeccion();
 
-
-
 }

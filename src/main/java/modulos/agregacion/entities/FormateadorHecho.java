@@ -18,7 +18,7 @@ import java.util.List;
 
 public class FormateadorHecho {
 
-    public AtributosHecho formatearAtributosHecho(BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, SolicitudHechoInputDTO dtoInput){
+    public static AtributosHecho formatearAtributosHecho(BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, SolicitudHechoInputDTO dtoInput){
 
     AtributosHecho atributos = new AtributosHecho();
 
@@ -70,7 +70,7 @@ public class FormateadorHecho {
 
 }
 
-public FiltrosColeccion formatearFiltrosColeccion(BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, CriteriosColeccionDTO inputDTO){
+public static FiltrosColeccion formatearFiltrosColeccion(BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, CriteriosColeccionDTO inputDTO){
 
     FiltrosColeccion filtros = new FiltrosColeccion();
 
@@ -122,7 +122,7 @@ public FiltrosColeccion formatearFiltrosColeccion(BuscadorCategoria buscadorCate
 
 }
 
-    public CriteriosColeccionDTO filtrosColeccionToString(List<Filtro> filtros) {
+    public static CriteriosColeccionDTO filtrosColeccionToString(List<Filtro> filtros) {
         CriteriosColeccionDTO criterios = new CriteriosColeccionDTO();
 
         for (Filtro filtro : filtros) {
@@ -157,7 +157,7 @@ public FiltrosColeccion formatearFiltrosColeccion(BuscadorCategoria buscadorCate
 
 
 
-    public List<Filtro> obtenerListaDeFiltros(FiltrosColeccion filtrosColeccion) {
+    public static List<Filtro> obtenerListaDeFiltros(FiltrosColeccion filtrosColeccion) {
        List<Filtro> filtros = new ArrayList<>();
 
         if (filtrosColeccion.getFiltroCategoria() != null)

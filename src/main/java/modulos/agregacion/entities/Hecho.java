@@ -1,10 +1,15 @@
 package modulos.agregacion.entities;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import lombok.Getter;
 import lombok.Setter;
 import modulos.agregacion.entities.fuentes.Dataset;
 import modulos.agregacion.entities.usuario.Usuario;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;

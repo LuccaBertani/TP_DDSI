@@ -1,5 +1,10 @@
 package modulos.agregacion.services;
 
+import com.sun.net.httpserver.HttpsServer;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import modulos.agregacion.entities.Coleccion;
 import modulos.agregacion.entities.Filtrador;
 import modulos.agregacion.entities.filtros.*;
@@ -12,6 +17,8 @@ import modulos.buscadores.BuscadorPais;
 import modulos.buscadores.BuscadorProvincia;
 import modulos.shared.dtos.input.*;
 import modulos.agregacion.entities.RespuestaHttp;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.agregacion.entities.fuentes.FuenteEstatica;
@@ -25,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.net.http.HttpResponse;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Stream;
@@ -36,6 +44,10 @@ public class HechosService {
     private final IHechosProxyRepository hechosProxyRepo;
     private final IHechosEstaticaRepository hechosEstaticaRepo;
     private final IHechosDinamicaRepository hechosDinamicaRepo;
+    private final IPaisRepository repoPais;
+    private final IProvinciaRepository repoProvincia;
+
+    private final IHechoRepository hechoRepository;
     private final IUsuarioRepository usuariosRepo;
     private final IColeccionRepository coleccionRepo;
     private final IDatasetsRepository datasetsRepo;
@@ -43,6 +55,8 @@ public class HechosService {
     private final BuscadorPais buscadorPais;
     private final BuscadorProvincia buscadorProvincia;
     private final BuscadorHecho buscadorHecho;
+
+    private final ICategoriaRepository categoriaRepository;
 
     public HechosService(IHechosProxyRepository hechosProxyRepo,
                          IHechosEstaticaRepository hechosEstaticaRepo,
@@ -53,7 +67,13 @@ public class HechosService {
                          BuscadorCategoria buscadorCategoria,
                          BuscadorPais buscadorPais,
                          BuscadorProvincia buscadorProvincia,
-                         BuscadorHecho buscadorHecho) {
+                         BuscadorHecho buscadorHecho,
+                         IHechoRepository hechoRepository,
+                         ICategoriaRepository categoriaRepository,
+                         IProvinciaRepository repoProvincia,
+                         IPaisRepository repoPais){
+        this.repoProvincia = repoProvincia;
+        this.repoPais = repoPais;
         this.hechosProxyRepo = hechosProxyRepo;
         this.hechosDinamicaRepo = hechosDinamicaRepo;
         this.hechosEstaticaRepo = hechosEstaticaRepo;
@@ -64,6 +84,8 @@ public class HechosService {
         this.buscadorPais = buscadorPais;
         this.buscadorProvincia = buscadorProvincia;
         this.buscadorHecho = buscadorHecho;
+        this.hechoRepository = hechoRepository;
+        this.categoriaRepository = categoriaRepository;
     }
 
     /* Se pide que, una vez por hora, el servicio de agregación actualice los hechos pertenecientes a las distintas colecciones,
@@ -131,13 +153,13 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         this.setearFalseModificado(hechosModificados,coleccionesModificadas);
     }
 
-    public RespuestaHttp<Void> refrescarColecciones(Long idUsuario){
+    public ResponseEntity<?> refrescarColecciones(Long idUsuario){
         Usuario usuario = usuariosRepo.findById(idUsuario).orElse(null);
         if (usuario!= null && !usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
         }
         this.refrescarColeccionesCronjob();
-        return new RespuestaHttp<>(null, HttpStatus.OK.value());
+        return ResponseEntity.status(HttpStatus.OK).body("Se refrescaron las colecciones correctamente");
     }
 
     private void eliminarHechosModificadosDeColecciones(List<Coleccion> colecciones, List<Hecho> hechos){
@@ -198,61 +220,57 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         }
     }
     //lo sube un administrador (lo considero carga dinamica)
-    public RespuestaHttp<Void> subirHecho(SolicitudHechoInputDTO dtoInput) {
-
-        FormateadorHecho formateador = new FormateadorHecho();
+    public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO dtoInput) {
 
         Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario()).orElse(null);
-        if(usuario.getRol().equals(Rol.ADMINISTRADOR)){
 
-            HechoDinamica hecho = new HechoDinamica();
-
-            AtributosHecho atributos = formateador.formatearAtributosHecho(buscadorCategoria,buscadorPais, buscadorProvincia, dtoInput);
-
-            hecho.setAtributosHecho(atributos);
-            hecho.setActivo(true);
-            hecho.getAtributosHecho().setFechaCarga(ZonedDateTime.now());
-            hecho.getAtributosHecho().setFechaUltimaActualizacion(hecho.getAtributosHecho().getFechaCarga());
-            hechosDinamicaRepo.save(hecho);
-
-            return new RespuestaHttp<>(null, HttpStatus.CREATED.value());
+        if (usuario == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el usuario");
         }
-        else{
-            return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
+
+        if (!usuario.getRol().equals(Rol.ADMINISTRADOR)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
         }
+
+        HechoDinamica hecho = new HechoDinamica();
+
+        AtributosHecho atributos = FormateadorHecho.formatearAtributosHecho(buscadorCategoria,buscadorPais, buscadorProvincia, dtoInput);
+
+        hecho.setAtributosHecho(atributos);
+        hecho.setActivo(true);
+        hecho.getAtributosHecho().setFechaCarga(ZonedDateTime.now());
+        hecho.getAtributosHecho().setFechaUltimaActualizacion(hecho.getAtributosHecho().getFechaCarga());
+        hechosDinamicaRepo.save(hecho);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Se subió el hecho correctamente");
     }
 
-    public RespuestaHttp<Void> importarHechos(ImportacionHechosInputDTO dtoInput){
+    public ResponseEntity<?> importarHechos(ImportacionHechosInputDTO dtoInput){
         Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario()).orElse(null);
-        if (usuario.getRol().equals(Rol.ADMINISTRADOR)){
 
-            FuenteEstatica fuente = new FuenteEstatica();
-            Dataset dataset = new Dataset(dtoInput.getFuenteString());
-            datasetsRepo.save(dataset);
-            fuente.setDataSet(dataset);
-
-            List<HechoEstatica> hechos = fuente.leerFuente(buscadorCategoria, buscadorPais, buscadorProvincia, buscadorHecho);
-
-
-            if (hechos.isEmpty()){
-                return new RespuestaHttp<>(null, HttpStatus.NO_CONTENT.value());
-            }
-
-            hechosEstaticaRepo.saveAll(hechos);
-
-            return new RespuestaHttp<>(null, HttpStatus.CREATED.value());
+        if (usuario == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el usuario");
         }
 
-        return new RespuestaHttp<>(null, HttpStatus.UNAUTHORIZED.value());
+        if (!usuario.getRol().equals(Rol.ADMINISTRADOR)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
+        }
 
+        FuenteEstatica fuente = new FuenteEstatica();
+        Dataset dataset = new Dataset(dtoInput.getFuenteString());
+        datasetsRepo.save(dataset);
+        fuente.setDataSet(dataset);
+
+        List<HechoEstatica> hechos = fuente.leerFuente(buscadorCategoria, buscadorPais, buscadorProvincia, buscadorHecho);
+        hechosEstaticaRepo.saveAll(hechos);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Se importaron los hechos correctamente");
     }
 
-    public RespuestaHttp<List<VisualizarHechosOutputDTO>> getHechosColeccion(GetHechosColeccionInputDTO inputDTO){
 
-        List<Filtro> filtros;
+    public ResponseEntity<?> getHechosColeccion(GetHechosColeccionInputDTO inputDTO){
 
-        FormateadorHecho formateador = new FormateadorHecho();
-        filtros = formateador.obtenerListaDeFiltros(formateador.formatearFiltrosColeccion(buscadorCategoria, buscadorPais, buscadorProvincia, new CriteriosColeccionDTO(
+        List<Filtro> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccion(buscadorCategoria, buscadorPais, buscadorProvincia, new CriteriosColeccionDTO(
                 inputDTO.getCategoria(),
                 inputDTO.getContenidoMultimedia(),
                 inputDTO.getDescripcion(),
@@ -268,21 +286,33 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         Coleccion coleccion = coleccionRepo.findById(inputDTO.getId_coleccion()).orElse(null);
 
         if (coleccion == null){
-            return new RespuestaHttp<>(null, HttpStatus.NO_CONTENT.value());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se encontró la colección");
         }
 
-        List<Hecho> hechosColeccion;
 
-        if (inputDTO.getNavegacionCurada()){
-            hechosColeccion = new ArrayList<>(coleccion.getHechosConsensuados());
-        }
-        else{
-            hechosColeccion = coleccion.getHechos();
-        }
+        Specification<Hecho> specColeccion =
+                this.perteneceAColeccionYesConsensuado(coleccion.getId());
 
-        List<Hecho> hechosFiltrados = Filtrador
-                .aplicarFiltros(filtros, hechosColeccion);
+        Specification<Hecho> specAnd = filtros.stream()
+                .map(IFiltro::toSpecification)
+                .filter(Objects::nonNull)
+                .reduce(Specification::and)
+                .orElse((root, query, cb) -> cb.conjunction()); // neutro (1=1)
 
+// Forzar DISTINCT una sola vez para evitar duplicados cuando hay JOINs
+        Specification<Hecho> distinct = (root, query, cb) -> {
+            query.distinct(true);
+            return cb.conjunction();
+        };
+
+// Spec final = DISTINCT AND (AND de filtros)
+        Specification<Hecho> specFinal = distinct
+                .and(specColeccion == null ? (r,q,cb) -> cb.conjunction() : specColeccion)
+                .and(specAnd);
+// Ejecutar
+        List<Hecho> hechosFiltrados = hechoRepository.findAll(specFinal);
+
+        //parseo al dto
         List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream().map(hecho -> {
             VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
             dto.setId(hecho.getId());
@@ -295,10 +325,10 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             return dto;
         }).toList();
 
-        return new RespuestaHttp<>(outputDTO, HttpStatus.OK.value());
+        return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
     }
 
-    public RespuestaHttp<List<VisualizarHechosOutputDTO>> getAllHechos() {
+    public ResponseEntity<?> getAllHechos() {
         List<Hecho> hechosTotales = new ArrayList<>();
         hechosTotales.addAll(hechosDinamicaRepo.findAll());
         hechosTotales.addAll(hechosProxyRepo.findAll());
@@ -316,7 +346,125 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             return dto;
         }).toList();
 
-        return new RespuestaHttp<>(outputDTO,HttpStatus.OK.value());
+        return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
     }
+
+    private Specification<Hecho> perteneceAColeccionYesConsensuado(Long coleccionId) {
+        if (coleccionId == null) return null;
+
+        return (root, query, cb) -> {
+            query.distinct(true);
+
+            Subquery<Long> sq = query.subquery(Long.class);
+            Root<Coleccion> coleccionRoot = sq.from(Coleccion.class);
+            Join<Coleccion, Hecho> hechosJoin = coleccionRoot.join("hechosConsensuados", JoinType.INNER);
+
+            sq.select(hechosJoin.get("id"))
+                    .where(cb.equal(coleccionRoot.get("id"), coleccionId));
+
+            return cb.in(root.get("id")).value(sq); // h.id IN (subquery)
+        };
+    }
+
+    public ResponseEntity<?> addCategoria(Long idUsuario, String categoriaStr, List<String> sinonimosString) {
+
+        Usuario usuario = usuariosRepo.findById(idUsuario).orElse(null);
+        if (usuario != null && usuario.getRol().equals(Rol.ADMINISTRADOR)){
+            Categoria categoria = new Categoria();
+            categoria.setTitulo(categoriaStr);
+            List<Sinonimo> sinonimos = new ArrayList<>();
+            if (sinonimosString!=null && !sinonimosString.isEmpty()){
+                for (String sinonimo: sinonimosString){
+                    sinonimos.add(new Sinonimo(sinonimo));
+                }
+            }
+            categoria.setSinonimos(sinonimos);
+            categoriaRepository.save(categoria);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Se creó la categoría correctamente");
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permiso para ejecutar esta acción");
+    }
+
+    public ResponseEntity<?> addSinonimoCategoria(Long idUsuario, Long idCategoria, String sinonimo_str) {
+
+        ResponseEntity<?> respuesta = verificarDatos(idUsuario);
+
+        if (!respuesta.getStatusCode().equals(HttpStatus.OK)){
+            return respuesta;
+        }
+
+    Categoria categoria = categoriaRepository.findById(idCategoria).orElse(null);
+
+        if(categoria == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message","El id de la categoria no es valido"));
+        }
+
+        Sinonimo sinonimo = new Sinonimo(sinonimo_str);
+
+        categoria.getSinonimos().add(sinonimo);
+
+        categoriaRepository.save(categoria);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    public ResponseEntity<?> addSinonimoPais(Long idUsuario, Long idPais, String sinonimo_str) {
+
+        ResponseEntity<?> respuesta = verificarDatos(idUsuario);
+
+        if (!respuesta.getStatusCode().equals(HttpStatus.OK)){
+            return respuesta;
+        }
+
+        Pais pais = repoPais.findById(idPais).orElse(null);
+
+        if(pais == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message","El id del pais no es valido"));
+        }
+
+        Sinonimo sinonimo = new Sinonimo(sinonimo_str);
+
+        pais.getSinonimos().add(sinonimo);
+
+        repoPais.save(pais);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    public ResponseEntity<?> addSinonimoProvincia(Long idUsuario, Long idProvincia, String sinonimo_str) {
+
+        ResponseEntity<?> respuesta = verificarDatos(idUsuario);
+
+        if (!respuesta.getStatusCode().equals(HttpStatus.OK)){
+            return respuesta;
+        }
+
+        Provincia provincia = repoProvincia.findById(idProvincia).orElse(null);
+
+        if(provincia == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message","El id de la provincia no es valido"));
+        }
+
+        Sinonimo sinonimo = new Sinonimo(sinonimo_str);
+
+        provincia.getSinonimos().add(sinonimo);
+
+        repoProvincia.save(provincia);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    private ResponseEntity<?> verificarDatos(Long idUsuario){
+        Usuario usuario = usuariosRepo.findById(idUsuario).orElse(null);
+
+        if(usuario == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message","El id de usuario no es valido"));
+        }
+        if(!usuario.getRol().equals(Rol.ADMINISTRADOR)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message","El usuario no tiene permiso para ejecutar esto"));
+        }
+        return ResponseEntity.ok().build();
+    }
+
 
 }

@@ -30,9 +30,10 @@ public class Categoria {
     }
 }
 
-// TODO: Filtros con SQL
-// TODO: Normalización para categorías y provincias HECHO ?)
-// TODO: Controllers para crear categorías, provincias y países por parte de los administradores
+//TODO hacer que esto lo haga sql + actualizar todos los services con lo de sql
+// TODO: Filtros con SQL HECHO
+// TODO: Normalización para categorías y provincias HECHO
+// TODO: Controllers para crear categorías por parte de los administradores HECHO
 // TODO: Que los buscadores NO CREEN los objetos SINO LOS ADMINISTRADORES CON UN ENDPOINT "CREAR CATEGORIA O PAIS"
 // TODO: TESTEAR TODOS LOS ENDPOINTS (?
 // TODO  HACER EL PUNTO EXTRA!!

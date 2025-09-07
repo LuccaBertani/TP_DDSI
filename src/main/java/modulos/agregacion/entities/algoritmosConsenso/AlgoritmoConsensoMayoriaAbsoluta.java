@@ -10,7 +10,7 @@ public class AlgoritmoConsensoMayoriaAbsoluta implements IAlgoritmoConsenso {
 
 
     // Absoluta: si todas las fuentes contienen el mismo hecho, se lo considera consensuado.
-
+    //TODO hacer que esto lo haga sql + actualizar todos los services con lo de sql
     @Override
     public void ejecutarAlgoritmoConsenso(List<Dataset> fuentes, Coleccion coleccion) {
         //coleccion.getHechosConsensuados().addAll()

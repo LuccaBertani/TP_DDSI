@@ -4,10 +4,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Converter;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import modulos.agregacion.entities.Hecho;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -42,4 +45,14 @@ public class FiltroFechaCarga extends Filtro {
         return !fechaCarga.isAfter(fechaInicial) && !fechaCarga.isBefore(fechaFinal);
 
     }
+
+    public Specification<Hecho> toSpecification(){
+        return ((root, query, criteriaBuilder) -> {
+            Path<ZonedDateTime> pathFecha = root.get("atributosHecho").get("fechaCarga");
+            Predicate predicado1 = criteriaBuilder.greaterThan(pathFecha, this.fechaInicial);
+            Predicate predicado2 = criteriaBuilder.lessThan(pathFecha, this.fechaFinal);
+            return criteriaBuilder.and(predicado1,predicado2);
+        });
+    }
+
 }

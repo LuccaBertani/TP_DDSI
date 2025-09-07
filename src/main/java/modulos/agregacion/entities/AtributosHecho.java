@@ -11,14 +11,14 @@ import java.time.ZonedDateTime;
 @Embeddable
 public class AtributosHecho {
 
-    @Column(name = "titulo", nullable = false)
+    @Column(name = "titulo", columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci", nullable = false)
     private String titulo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ubicacion_id", referencedColumnName = "id",foreignKey = @ForeignKey(name = "fk_hecho_ubicacion"))
     private Ubicacion ubicacion;
 
-    @Column(name = "descripcion")
+    @Column(name = "descripcion", columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci")
     private String descripcion;
 
     @Column(name = "fechaAcontecimiento")
