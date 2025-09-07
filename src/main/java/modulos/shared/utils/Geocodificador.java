@@ -22,43 +22,45 @@ public final class Geocodificador {
     // ============================
     // API PRINCIPAL QUE PEDISTE
     // ============================
-    /** Devuelve todos los países con sus provincias/estados: List<PaisProvincias>. */
 
-    public static UbicacionString obtenerUbicacion(Double latitud, Double longitud) {
+    public static UbicacionString obtenerUbicacion(Double lat, Double lon) {
         try {
-            String urlStr = String.format(
-                    Locale.US,
-                    "https://nominatim.openstreetmap.org/reverse?format=json&lat=%f&lon=%f",
-                    latitud, longitud
+            // Nominatim reverse (pedimos addressdetails y sesgo de idioma)
+            String url = String.format(Locale.US,
+                    "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=%f&lon=%f&addressdetails=1&zoom=10&accept-language=es",
+                    lat, lon);
+            String UA = "metamapa/1.0 (contacto: tu-email@dominio)";
+            String OVERPASS = "https://overpass-api.de/api/interpreter";
+
+            JSONObject root = new JSONObject(httpGet(url, UA));
+            JSONObject address = root.optJSONObject("address");
+            if (address == null) return null;
+
+            String country = address.optString("country", null);
+            String countryCode = address.optString("country_code", null); // iso2 en minúsculas
+
+            // Elegimos el mejor campo para "provincia" (varía según país)
+            String province = firstNonBlank(
+                    address.optString("state", null),
+                    address.optString("region", null),
+                    address.optString("province", null),
+                    address.optString("state_district", null),
+                    address.optString("county", null)
             );
 
-            URL url = new URL(urlStr);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("User-Agent", "Mozilla/5.0");
+            if (country == null) return null;
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String linea;
+            UbicacionString out = new UbicacionString();
+            out.setPais(country);
+            out.setProvincia(province);
 
-            while ((linea = in.readLine()) != null) {
-                response.append(linea);
-            }
-
-            in.close();
-
-            JSONObject json = new JSONObject(response.toString());
-            UbicacionString ubicacion = new UbicacionString();
-            ubicacion.setPais(json.getJSONObject("address").getString("country"));
-            ubicacion.setProvincia(json.getJSONObject("address").getString("state"));
-            return ubicacion;
+            return out;
 
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
-
 
 
     public static List<PaisProvincias> obtenerTodosLosPaises() {
