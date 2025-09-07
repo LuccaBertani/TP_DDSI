@@ -3,6 +3,7 @@ package modulos.agregacion.repositories;
 import modulos.agregacion.entities.Categoria;
 import modulos.agregacion.entities.CategoriaCantidad;
 import modulos.agregacion.entities.Coleccion;
+import modulos.agregacion.entities.Provincia;
 import modulos.agregacion.entities.projections.CategoriaCantidadProjection;
 import modulos.agregacion.entities.projections.HoraCategoriaProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -41,10 +42,19 @@ LIMIT 1""",nativeQuery = true)
 List<HoraCategoriaProjection> obtenerHoraMaxHechosCategoria();
 
 
-    @Query(value = """
-    SELECT c 
-    FROM Categoria c 
-    WHERE unaccent(REPLACE(LOWER(c.titulo), ' ', '')) = unaccent(REPLACE(LOWER(:nombre), ' ', ''))
+    @Query("""
+SELECT c
+FROM Categoria c
+WHERE
+  REPLACE(LOWER(FUNCTION('unaccent', c.titulo)), ' ', '') =
+  REPLACE(LOWER(FUNCTION('unaccent', :nombre)), ' ', '')
+  OR EXISTS (
+    SELECT 1
+    FROM Sinonimo s
+    WHERE s MEMBER OF c.sinonimos
+      AND REPLACE(LOWER(FUNCTION('unaccent', s.sinonimoStr)), ' ', '') =
+          REPLACE(LOWER(FUNCTION('unaccent', :nombre)),        ' ', '')
+  )
 """)
     Optional<Categoria> findByNombreNormalizado(@Param("nombre") String nombre);
 

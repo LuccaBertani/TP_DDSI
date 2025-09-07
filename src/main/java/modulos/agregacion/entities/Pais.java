@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -15,6 +17,10 @@ public class Pais {
 
     @Column(name = "nombre")
     private String pais;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @JoinColumn(name = "pais_id")
+    private List<Sinonimo> sinonimos;
 
     public Pais(){
 

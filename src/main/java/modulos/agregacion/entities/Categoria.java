@@ -29,3 +29,10 @@ public class Categoria {
         sinonimos = new ArrayList<>();
     }
 }
+
+// TODO: Filtros con SQL
+// TODO: Normalización para categorías y provincias HECHO ?)
+// TODO: Controllers para crear categorías, provincias y países por parte de los administradores
+// TODO: Que los buscadores NO CREEN los objetos SINO LOS ADMINISTRADORES CON UN ENDPOINT "CREAR CATEGORIA O PAIS"
+// TODO: TESTEAR TODOS LOS ENDPOINTS (?
+// TODO  HACER EL PUNTO EXTRA!!

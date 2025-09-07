@@ -15,7 +15,7 @@ public class AtributosHecho {
     private String titulo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ubicacion_id", referencedColumnName = "id",foreignKey = @ForeignKey(name = "fk_usuario_hecho"))
+    @JoinColumn(name = "ubicacion_id", referencedColumnName = "id",foreignKey = @ForeignKey(name = "fk_hecho_ubicacion"))
     private Ubicacion ubicacion;
 
     @Column(name = "descripcion")

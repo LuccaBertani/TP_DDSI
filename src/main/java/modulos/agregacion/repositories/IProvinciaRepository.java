@@ -23,10 +23,19 @@ public interface IProvinciaRepository extends JpaRepository<Provincia, Long> {
         limit 1""",nativeQuery = true)
     List<CategoriaProvinciaProjection> obtenerCategoriaMayorHechosProvincia();
 
-    @Query(value = """
-    SELECT p
-    FROM Provincia p 
-    WHERE unaccent(REPLACE(LOWER(p.provincia), ' ', '')) = unaccent(REPLACE(LOWER(:nombre), ' ', ''))
+    @Query("""
+SELECT p
+FROM Provincia p
+WHERE
+  REPLACE(LOWER(FUNCTION('unaccent', p.provincia)), ' ', '') =
+  REPLACE(LOWER(FUNCTION('unaccent', :nombre)), ' ', '')
+  OR EXISTS (
+    SELECT 1
+    FROM Sinonimo s
+    WHERE s MEMBER OF p.sinonimos
+      AND REPLACE(LOWER(FUNCTION('unaccent', s.sinonimoStr)), ' ', '') =
+          REPLACE(LOWER(FUNCTION('unaccent', :nombre)),        ' ', '')
+  )
 """)
     Optional<Provincia> findByNombreNormalizado(@Param("nombre") String nombre);
 }
