@@ -33,7 +33,7 @@ public class AtributosHecho {
     private Categoria categoria;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "origen",nullable = false, length = 20)
+    @Column(name = "origen", length = 20)
     private Origen origen;
 
     @Column(name = "fechaCarga", nullable = false)

@@ -133,7 +133,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     }
 
     public ResponseEntity<?> getColeccion(Long id_coleccion) {
-
+        System.out.println("PINGAAAAAAAAAAAAAAAAAA");
         Coleccion coleccion = coleccionesRepo.findById(id_coleccion).orElse(null);
 
         if(coleccion == null){
