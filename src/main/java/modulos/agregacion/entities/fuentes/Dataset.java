@@ -15,6 +15,9 @@ public class Dataset {
     @Column(name = "fuente", nullable = false)
     private String fuente;
 
+    @Transient
+    private String storagePath;
+
     protected Dataset() { }
 
     public Dataset(String fuente) {

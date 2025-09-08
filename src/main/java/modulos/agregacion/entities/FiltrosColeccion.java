@@ -15,5 +15,6 @@ public class FiltrosColeccion {
     FiltroFechaCarga filtroFechaCarga;
     FiltroOrigen filtroOrigen;
     FiltroTitulo filtroTitulo;
+    FiltroProvincia filtroProvincia;
 
 }

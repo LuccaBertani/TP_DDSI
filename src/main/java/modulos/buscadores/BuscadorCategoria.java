@@ -22,4 +22,10 @@ public class BuscadorCategoria {
         return this.categoriaRepository.findByNombreNormalizado(elemento).orElse(null);
     }
 
+    public Categoria buscar(Long id){
+        return this.categoriaRepository.findById(id).orElse(null);
+    }
+
+
+
 }

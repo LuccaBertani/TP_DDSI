@@ -20,7 +20,7 @@ public class ColeccionController {
 
     private final ColeccionService coleccionService;
 
-    public ColeccionController(ColeccionService coleccionService, HechosService hechosService){
+    public ColeccionController(ColeccionService coleccionService){
         this.coleccionService = coleccionService;
     }
 
@@ -39,9 +39,9 @@ public class ColeccionController {
         return coleccionService.getColeccion(id_coleccion);
     }
 
-    @PostMapping("/delete/{id_coleccion}")
-    public ResponseEntity<?> deleteColeccion(@PathVariable Long id_coleccion){
-        return coleccionService.deleteColeccion(id_coleccion);
+    @PostMapping("/delete")
+    public ResponseEntity<?> deleteColeccion(@Valid @RequestParam Long id_coleccion, @Valid @RequestParam Long id_usuario){
+        return coleccionService.deleteColeccion(id_coleccion, id_usuario);
     }
 
     @PostMapping("/update")
@@ -50,20 +50,24 @@ public class ColeccionController {
     }
 
     //Agregar o quitar fuentes de hechos de una colección.
-
     @PostMapping("/add/fuente")
-    public ResponseEntity<?> agregarFuente(@Valid @RequestParam Long id_coleccion, @Valid @RequestParam String dataSet){
-        return coleccionService.agregarFuente(id_coleccion,dataSet);
+    public ResponseEntity<?> agregarFuente(@Valid @RequestParam Long id_usuario, @Valid @RequestParam Long id_coleccion, @Valid @RequestParam String dataSet){
+        return coleccionService.agregarFuente(id_usuario, id_coleccion,dataSet);
     }
 
     @PostMapping("/delete/fuente")
-    public ResponseEntity<?> eliminarFuente(@Valid @RequestParam Long id_coleccion, @Valid @RequestParam String dataSet){
-        return coleccionService.eliminarFuente(id_coleccion,dataSet);
+    public ResponseEntity<?> eliminarFuente(@Valid @RequestParam Long id_usuario, @Valid @RequestParam Long id_coleccion, @Valid @RequestParam String dataSet){
+        return coleccionService.eliminarFuente(id_usuario, id_coleccion, dataSet);
     }
 
     @PostMapping("/colecciones/modificar-consenso")
     public ResponseEntity<?> modificarAlgoritmoConsenso(@RequestBody ModificarConsensoInputDTO input) {
         return coleccionService.modificarAlgoritmoConsenso(input);
+    }
+
+    @PostMapping("/colecciones/refrescar")
+    public ResponseEntity<?> refrescarColecciones(@Valid @RequestBody RefrescarColeccionesInputDTO inputDTO){
+        return coleccionService.refrescarColecciones(inputDTO.getIdUsuario());
     }
 
 }

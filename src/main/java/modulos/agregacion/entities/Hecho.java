@@ -30,7 +30,7 @@ public abstract class Hecho {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_usuario", referencedColumnName = "id", nullable = false,
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "fk_usuario_hecho"))
     private Usuario usuario;
 

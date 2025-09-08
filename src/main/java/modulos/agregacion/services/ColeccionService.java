@@ -5,67 +5,53 @@ import modulos.agregacion.entities.*;
 import modulos.agregacion.entities.algoritmosConsenso.AlgoritmoConsensoMayoriaAbsoluta;
 import modulos.agregacion.entities.algoritmosConsenso.AlgoritmoConsensoMayoriaSimple;
 import modulos.agregacion.entities.algoritmosConsenso.AlgoritmoConsensoMultiplesMenciones;
+import modulos.agregacion.entities.filtros.Filtro;
 import modulos.agregacion.repositories.*;
 import modulos.agregacion.entities.fuentes.Dataset;
 import modulos.agregacion.entities.fuentes.FuenteEstatica;
 import modulos.agregacion.entities.Hecho;
-import modulos.agregacion.entities.RespuestaHttp;
-import modulos.agregacion.entities.AtributosHecho;
 import modulos.buscadores.BuscadorCategoria;
 import modulos.buscadores.BuscadorHecho;
 import modulos.buscadores.BuscadorPais;
 import modulos.buscadores.BuscadorProvincia;
 import modulos.shared.dtos.input.*;
-import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.agregacion.entities.usuario.Rol;
 import modulos.agregacion.entities.usuario.Usuario;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import modulos.shared.dtos.output.ColeccionOutputDTO;
-
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Service
 public class ColeccionService  {
 
-    private final IHechosProxyRepository hechosProxyRepo;
-    private final IHechosEstaticaRepository hechosEstaticaRepo;
-    private final IHechosDinamicaRepository hechosDinamicaRepo;
     private final IHechoRepository hechoRepository;
     private final IColeccionRepository coleccionesRepo;
     private final IUsuarioRepository usuariosRepo;
     private final IDatasetsRepository datasetsRepo;
-    private final ICategoriaRepository categoriaRepo;
     private final BuscadorProvincia buscadorProvincia;
     private final BuscadorPais buscadorPais;
     private final BuscadorCategoria buscadorCategoria;
     private final BuscadorHecho buscadorHecho;
 
-    public ColeccionService(IHechosProxyRepository hechosProxyRepo,
-                            IHechosEstaticaRepository hechosEstaticaRepo,
-                            IHechosDinamicaRepository hechosDinamicaRepo,
-                            IColeccionRepository coleccionesRepo,
+    public ColeccionService(IColeccionRepository coleccionesRepo,
                             IUsuarioRepository usuariosRepo,
                             IDatasetsRepository datasetsRepo,
                             IHechoRepository hechoRepository,
-                            ICategoriaRepository categoriaRepo,
                             BuscadorProvincia buscadorProvincia,
                             BuscadorPais buscadorPais,
                             BuscadorCategoria buscadorCategoria,
                             BuscadorHecho buscadorHecho) {
-        this.hechosProxyRepo = hechosProxyRepo;
-        this.hechosEstaticaRepo = hechosEstaticaRepo;
-        this.hechosDinamicaRepo = hechosDinamicaRepo;
         this.coleccionesRepo = coleccionesRepo;
         this.usuariosRepo = usuariosRepo;
         this.datasetsRepo = datasetsRepo;
         this.hechoRepository = hechoRepository;
-        this.categoriaRepo = categoriaRepo;
         this.buscadorProvincia = buscadorProvincia;
         this.buscadorPais = buscadorPais;
         this.buscadorCategoria = buscadorCategoria;
@@ -100,26 +86,28 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
         Coleccion coleccion = new Coleccion(datosColeccion);
 
-        FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccion(buscadorCategoria, buscadorPais, buscadorProvincia, dtoInput.getCriterios());
+        FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccionDinamica(buscadorCategoria, buscadorPais, buscadorProvincia, dtoInput.getCriterios());
 
-
+//todo endpoint get all algoritmo consenso con (nombre)
         if (dtoInput.getAlgoritmoConsenso() != null){
             switch (dtoInput.getAlgoritmoConsenso()) {
-                case "mayoria-absoluta" ->
+                case "AlgoritmoConsensoMayoriaAbsoluta":
                         coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaAbsoluta());
-                case "mayoria-simple" -> coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaSimple());
-                case "multiples-menciones" ->
+                        break;
+                case "AlgoritmoConsensoMayoriaSimple":
+                    coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaSimple());
+                    break;
+                case "AlgoritmoConsensoMultiplesMenciones":
                         coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMultiplesMenciones());
+                        break;
+                default:
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El algoritmo de consenso especificado no existe");
             }
         }
 
         coleccion.setCriterios(FormateadorHecho.obtenerListaDeFiltros(filtros));
 
-        List<Hecho> hechos = hechoRepository.findAll();
-
-        coleccion.addHechos(Filtrador.aplicarFiltros(coleccion.getCriterios(), hechos));
-        coleccion.setModificado(true);
-        coleccionesRepo.save(coleccion);
+        this.mapearHechosAColeccion(coleccion);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("La colección se creó correctamente");
 
@@ -137,10 +125,8 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             dto.setTitulo(coleccion.getTitulo());
             dto.setDescripcion(coleccion.getDescripcion());
 
-            CriteriosColeccionDTO criterios = FormateadorHecho.filtrosColeccionToString(coleccion.getCriterios());
-
+            ProxyDTO criterios = FormateadorHecho.filtrosColeccionToString(coleccion.getCriterios());
             dto.setCriterios(criterios);
-
             listaDTO.add(dto);
         }
         return ResponseEntity.status(HttpStatus.OK).body(listaDTO);
@@ -160,14 +146,21 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         dto.setTitulo(coleccion.getTitulo());
         dto.setDescripcion(coleccion.getDescripcion());
 
-        CriteriosColeccionDTO criterios = FormateadorHecho.filtrosColeccionToString(coleccion.getCriterios());
+        ProxyDTO criterios = FormateadorHecho.filtrosColeccionToString(coleccion.getCriterios());
 
         dto.setCriterios(criterios);
 
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
-    public ResponseEntity<?> deleteColeccion(Long id_coleccion) {
+    public ResponseEntity<?> deleteColeccion(Long id_coleccion, Long id_usuario) {
+
+        Usuario usuario = usuariosRepo.findById(id_usuario).orElse(null);
+
+        if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body("No tenés permisos para ejecutar esta acción");
+        }
+
         Coleccion coleccion = coleccionesRepo.findById(id_coleccion).orElse(null);
         if(coleccion == null){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se encontró la colección");
@@ -177,7 +170,14 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     }
 
 
-    public ResponseEntity<?> agregarFuente(Long idColeccion, String dataSet) {
+    public ResponseEntity<?> agregarFuente(Long id_usuario, Long idColeccion, String dataSet) {
+
+        ResponseEntity<?> respuesta = checkeoAdmin(id_usuario);
+
+        if(respuesta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+            return respuesta;
+        }
+
         Coleccion coleccion = coleccionesRepo.findById(idColeccion).orElse(null);
         FuenteEstatica fuente = new FuenteEstatica();
         Dataset dataset = new Dataset(dataSet);
@@ -185,13 +185,22 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
         List<HechoEstatica> hechosFuente = fuente.leerFuente(buscadorCategoria, buscadorPais, buscadorProvincia, buscadorHecho);
         List<Hecho> hechos = new ArrayList<>(hechosFuente);
+        assert coleccion != null;
         coleccion.addHechos(hechos);
-        return ResponseEntity.status(HttpStatus.CREATED).body("La fuente se creó correctamente");
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    public ResponseEntity<?> eliminarFuente(Long idColeccion, String datasetString) {
+    public ResponseEntity<?> eliminarFuente(Long id_usuario, Long idColeccion, String datasetString) {
+
+        ResponseEntity<?> respuesta = checkeoAdmin(id_usuario);
+
+        if(respuesta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+            return respuesta;
+        }
+
         Coleccion coleccion = coleccionesRepo.findById(idColeccion).orElse(null);
         Dataset dataset = new Dataset(datasetString);
+        assert coleccion != null;
         coleccion.getHechos().forEach(
                 hecho -> {
                     if(hecho.getDatasets().contains(dataset)){
@@ -199,42 +208,37 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
                     }
                 }
         );
-        return ResponseEntity.status(HttpStatus.CREATED).body("La fuente se creó correctamente");
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     public ResponseEntity<?> updateColeccion(ColeccionUpdateInputDTO dto) {
+        ResponseEntity<?> respuesta = checkeoAdmin(dto.getId_usuario());
+
+        if(respuesta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+            return respuesta;
+        }
+
         Coleccion coleccion = coleccionesRepo.findById(dto.getId_coleccion()).orElse(null);
-        Usuario usuario = usuariosRepo.findById(dto.getId_usuario()).orElse(null);
-        if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
-        }
-        if(coleccion == null){
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se encontró la colección");
+
+        if (coleccion == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body("No se encontró la colección");
         }
 
-        CriteriosColeccionDTO criterios = new CriteriosColeccionDTO(dto.getCategoria(),dto.getContenidoMultimedia().toString(),dto.getDescripcion(),dto.getFechaAcontecimientoInicial(),dto.getFechaAcontecimientoFinal(),dto.getFechaCargaInicial(),dto.getFechaCargaFinal(),dto.getOrigen().toString(),dto.getPais(),dto.getTitulo());
-
-        FiltrosColeccion filtrosColeccion = FormateadorHecho.formatearFiltrosColeccion(buscadorCategoria, buscadorPais, buscadorProvincia, criterios);
-
-        List<Hecho> hechosColeccion = new ArrayList<>();
-
-        for(VisualizarHechosOutputDTO hecho : dto.getHechos()){
-            SolicitudHechoInputDTO dto1 = new SolicitudHechoInputDTO();
-            dto1.setPais(hecho.getPais());
-            dto1.setTipoContenido(hecho.getContenidoMultimedia());
-            dto1.setTitulo(hecho.getTitulo());
-            dto1.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
-            dto1.setDescripcion(hecho.getDescripcion());
-            dto1.setCategoria(categoriaRepo.findById(dto.getCategoria()).orElse(null));
-
-            AtributosHecho atributos = FormateadorHecho.formatearAtributosHecho(, buscadorPais, buscadorProvincia, dto1);
-            HechoDinamica hecho1 = new HechoDinamica();
-            hecho1.setAtributosHecho(atributos);
-            hechosColeccion.add(hecho1);
+        if (dto.getTitulo() != null){
+            coleccion.setTitulo(dto.getTitulo());
         }
-        coleccion.setModificado(true);
-        coleccion.actualizar(dto,FormateadorHecho.obtenerListaDeFiltros(filtrosColeccion),hechosColeccion);
-        return ResponseEntity.status(HttpStatus.OK).body("Se actualizó la colección correctamente");
+
+        if (dto.getDescripcion() != null){
+            coleccion.setDescripcion(dto.getDescripcion());
+        }
+
+        FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccionDinamica(buscadorCategoria, buscadorPais, buscadorProvincia, dto.getCriterios());
+
+        coleccion.setCriterios(FormateadorHecho.obtenerListaDeFiltros(filtros));
+
+        this.mapearHechosAColeccion(coleccion);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Scheduled(cron = "0 0 3 * * *")
@@ -249,24 +253,27 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     }
 
     public ResponseEntity<?> modificarAlgoritmoConsenso(ModificarConsensoInputDTO input) {
-        Coleccion coleccion = coleccionesRepo.findById(input.getIdColeccion()).orElse(null);
+
         Usuario usuario = usuariosRepo.findById(input.getIdUsuario()).orElse(null);
 
-        if (coleccion == null || usuario == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Solicitud inválida"); // Datos inválidos en la solicitud
-        }
-        if (!usuario.getRol().equals(Rol.ADMINISTRADOR)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
+        if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body("No tenés permisos para ejecutar esta acción");
         }
 
+        Coleccion coleccion = coleccionesRepo.findById(input.getIdColeccion()).orElse(null);
+        if (coleccion == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró la colección");
+        }
+
+
         switch (input.getTipoConsenso()) {
-            case "mayoria-absoluta":
+            case "AlgoritmoConsensoMayoriaAbsoluta":
                 coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaAbsoluta());
                 break;
-            case "mayoria-simple":
+            case "AlgoritmoConsensoMayoriaSimple":
                 coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaSimple());
                 break;
-            case "multiples-menciones":
+            case "AlgoritmoConsensoMultiplesMenciones":
                 coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMultiplesMenciones());
                 break;
             default:
@@ -275,4 +282,133 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         coleccionesRepo.save(coleccion);
         return ResponseEntity.status(HttpStatus.OK).body("Se actualizó el algoritmo de consenso correctamente");
     }
+
+    @Async
+    @Scheduled(cron = "0 0 * * * *") // cada hora
+    public void refrescarColeccionesCronjob() {
+
+        Specification<Hecho> specs1 = (root, query, cb) -> cb.and(
+                cb.isTrue(root.get("activo")),
+                cb.isTrue(root.get("modificado"))
+        );
+
+        List<Coleccion> colecciones = coleccionesRepo.findByActivoTrue();
+
+        for(Coleccion coleccion : colecciones){
+            Specification<Hecho> specs = crearSpecs(coleccion.getCriterios());
+
+            Specification<Hecho> specFinal = Specification
+                    .where(DISTINCT)
+                    .and(specs1)
+                    .and(specs);
+
+            List<Hecho> hechosFiltrados = hechoRepository.findAll(specFinal);
+            coleccion.setModificado(false);
+            coleccion.setHechos(hechosFiltrados);
+            coleccionesRepo.save(coleccion);
+        }
+            hechoRepository.resetAllModificado();
+    }
+
+    private ResponseEntity<?> checkeoAdmin(Long id_usuario){
+        Usuario usuario = usuariosRepo.findById(id_usuario).orElse(null);
+
+        if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
+        }
+        return ResponseEntity.ok(usuario);
+    }
+
+    public ResponseEntity<?> refrescarColecciones(Long id_usuario){
+        ResponseEntity<?> respuesta = this.checkeoAdmin(id_usuario);
+
+        if (respuesta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+            return respuesta;
+        }
+        this.refrescarColeccionesCronjob();
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    public void mapearHechosAColeccion(Coleccion coleccion){
+
+        Specification<Hecho> specs = crearSpecs(coleccion.getCriterios());
+
+        Specification<Hecho> specFinal = Specification
+                .where(DISTINCT)
+                .and(specs);
+
+        coleccion.setHechos(hechoRepository.findAll(specFinal));
+
+        coleccionesRepo.save(coleccion);
+    }
+
+    private Specification<Hecho> crearSpecs(List<Filtro> filtros) {
+        return filtros.stream()
+                .map(Filtro::toSpecification)   // o IFiltro::toSpecification
+                .filter(Objects::nonNull)
+                .reduce(Specification.where(null), Specification::and); // null-safe
+    }
+
+    private static final Specification<Hecho> DISTINCT = (root, query, cb) -> {
+        query.distinct(true);
+        return cb.conjunction();
+    };
+
 }
+
+/*
+* BIENVENIDO!!! LLEGASTE AL CONTENEDOR DE MIERDA
+*
+* public ResponseEntity<?> refrescarColecciones(Long idUsuario){
+        Usuario usuario = usuariosRepo.findById(idUsuario).orElse(null);
+        if (usuario!= null && !usuario.getRol().equals(Rol.ADMINISTRADOR)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
+        }
+        this.refrescarColeccionesCronjob();
+        return ResponseEntity.status(HttpStatus.OK).body("Se refrescaron las colecciones correctamente");
+    }
+
+    private void actualizarHechosModificadosAColecciones(List<Coleccion> colecciones, List<Hecho> hechos){
+
+        for (Coleccion coleccion: colecciones){
+            List<Hecho> hechosColeccion = coleccion.getHechos();
+
+            for (Hecho hecho: hechos){
+
+                Long hechoId = hecho.getId();
+
+                Hecho hechoEncontrado = hechosColeccion.stream()
+                        .filter(h -> h.getId().equals(hechoId))
+                        .findFirst().orElse(null);
+                if (hechoEncontrado != null && !Filtrador.hechoPasaFiltros(coleccion.getCriterios(), hecho)){
+                    hechosColeccion.remove(hecho);
+                }
+            }
+        }
+
+    }
+
+    public void setearFalseModificado(List<Hecho> hechos, List<Coleccion> colecciones){
+        for (Hecho hecho : hechos){
+            hecho.getAtributosHecho().setModificado(false);
+        }
+        for (Coleccion coleccion : colecciones){
+            coleccion.setModificado(false);
+        }
+    }
+
+    public void mapearHechosAColecciones(List<Coleccion> colecciones, List<Hecho> hechos){
+
+        for (Coleccion coleccion : colecciones){
+            List<Hecho> hechosFiltrados = Filtrador.aplicarFiltros(coleccion.getCriterios(), hechos);
+            for (Hecho hecho : hechosFiltrados) {
+                if (!coleccion.getHechos().contains(hecho)){
+                    coleccion.addHechos(hecho);
+                }
+            }
+
+        }
+
+    }
+*
+* */

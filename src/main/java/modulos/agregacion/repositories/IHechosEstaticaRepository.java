@@ -24,4 +24,5 @@ public interface IHechosEstaticaRepository extends JpaRepository<HechoEstatica, 
     WHERE unaccent(REPLACE(LOWER(h.atributosHecho.titulo), ' ', '')) = unaccent(REPLACE(LOWER(:nombre), ' ', ''))
 """)
     Optional<HechoEstatica> findByNombreNormalizado(@Param("nombre") String nombre);
+
 }

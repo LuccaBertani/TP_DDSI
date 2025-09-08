@@ -36,7 +36,7 @@ public class FiltroPais extends Filtro {
     @Override
     public Specification<Hecho> toSpecification() {
         return((root, query, cb) -> {
-            Path<Long> pathId = root.get("atributosHecho").get("categoria").get("id");
+            Path<Long> pathId = root.get("atributosHecho").get("ubicacion").get("pais").get("id");
             return cb.equal(pathId,this.pais.getId());
         });
     }

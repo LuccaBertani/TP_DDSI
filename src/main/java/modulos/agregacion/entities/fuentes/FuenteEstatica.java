@@ -20,7 +20,7 @@ public class FuenteEstatica {
     private Dataset dataSet;
     public List<HechoEstatica> leerFuente(BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, BuscadorHecho buscadorHecho){
 
-        String[] nombreArchivo = this.dataSet.getFuente().split("\\.");
+        String[] nombreArchivo = this.dataSet.getStoragePath().split("\\.");
         String formato = nombreArchivo[1].toLowerCase();
         if (formato.equals("csv")){
             var lectorCSV = new LectorCSV(this.dataSet);

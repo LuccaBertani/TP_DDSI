@@ -6,10 +6,13 @@ import modulos.shared.dtos.input.*;
 import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.agregacion.entities.RespuestaHttp;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -26,11 +29,17 @@ public class HechosController {
         return hechosService.subirHecho(dtoInput); // 201 o 401
     }
 
-    @PostMapping("/importar")
-    public ResponseEntity<?> importarHechos(@Valid @RequestBody ImportacionHechosInputDTO dtoInput){
-        return hechosService.importarHechos(dtoInput); // 201, 204 o 401
+    @PostMapping(
+            path = "/importar",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<?> importarHechos(
+            @Valid @RequestPart("meta") ImportacionHechosInputDTO dtoInput,
+            @RequestPart("file") MultipartFile file) throws IOException {
+        return hechosService.importarHechos(dtoInput, file);
     }
-// todos los hechos del sistema
+
+    // todos los hechos del sistema
     @GetMapping("/get-all")
     public ResponseEntity<?> visualizarHechos(){
         return hechosService.getAllHechos();
@@ -43,25 +52,34 @@ public class HechosController {
         return hechosService.getHechosColeccion(inputDTO);
     }
 
+    /*
+    Esta ruta expone todos los hechos del sistema y los devuelve como una lista en formato JSON. La misma acepta parámetros para filtrar los resultados:
+categoría, fecha_reporte_desde, fecha_reporte_hasta,
+fecha_acontecimiento_desde, fecha_acontecimiento_hasta, ubicacion BARBARO!!.
+
+    */
+
 //hechos filtrados de all el sistema
     @GetMapping("/get")
     public ResponseEntity<?> listarHechos(
-            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false, name = "categoria") Long categoria,
             @RequestParam(required = false, name = "fecha_reporte_desde") String fechaReporteDesde,
             @RequestParam(required = false, name = "fecha_reporte_hasta") String fechaReporteHasta,
             @RequestParam(required = false, name = "fecha_acontecimiento_desde") String fechaAcontecimientoDesde,
             @RequestParam(required = false, name = "fecha_acontecimiento_hasta") String fechaAcontecimientoHasta,
-            @RequestParam(required = false) String ubicacion
+            @RequestParam(required = false, name = "pais") Long id_pais,
+            @RequestParam(required = false, name = "provincia") Long id_provincia
     )
     {
 
         GetHechosColeccionInputDTO dto = new GetHechosColeccionInputDTO();
-        dto.setCategoria(categoria);
+        dto.setCategoriaId(categoria);
         dto.setFechaCargaInicial(fechaReporteDesde);
         dto.setFechaCargaFinal(fechaReporteHasta);
         dto.setFechaAcontecimientoInicial(fechaAcontecimientoDesde);
         dto.setFechaAcontecimientoFinal(fechaAcontecimientoHasta);
-        dto.setPais(ubicacion);
+        dto.setProvinciaId(id_provincia);
+        dto.setPaisId(id_pais);
 
         return hechosService.getHechosColeccion(dto);
     }
@@ -89,10 +107,6 @@ public class HechosController {
     @PostMapping("/add/sinonimo/provincia")
     public ResponseEntity<?> addSinonimoProvincia(@RequestParam Long id_usuario, @RequestParam Long id_categoria, @RequestParam String sinonimo){
         return hechosService.addSinonimoProvincia(id_usuario, id_categoria, sinonimo);
-    }
-    @PostMapping("/colecciones/refrescar")
-    public ResponseEntity<?> refrescarColecciones(@Valid @RequestBody RefrescarColeccionesInputDTO inputDTO){
-        return hechosService.refrescarColecciones(inputDTO.getIdUsuario());
     }
 
 }

@@ -22,4 +22,8 @@ public class BuscadorProvincia {
         return this.repoProvincia.findByNombreNormalizado(elemento).orElse(null);
     }
 
+    public Provincia buscar(Long elemento) {
+        return this.repoProvincia.findById(elemento).orElse(null);
+    }
+
 }

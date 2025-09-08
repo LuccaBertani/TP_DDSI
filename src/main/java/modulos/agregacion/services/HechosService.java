@@ -1,25 +1,20 @@
 package modulos.agregacion.services;
 
-import com.sun.net.httpserver.HttpsServer;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import modulos.agregacion.entities.Coleccion;
-import modulos.agregacion.entities.Filtrador;
 import modulos.agregacion.entities.filtros.*;
 import modulos.agregacion.repositories.*;
 import modulos.agregacion.entities.fuentes.Dataset;
-import modulos.agregacion.entities.fuentes.Origen;
 import modulos.buscadores.BuscadorCategoria;
 import modulos.buscadores.BuscadorHecho;
 import modulos.buscadores.BuscadorPais;
 import modulos.buscadores.BuscadorProvincia;
 import modulos.shared.dtos.input.*;
-import modulos.agregacion.entities.RespuestaHttp;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.agregacion.entities.fuentes.FuenteEstatica;
 import modulos.agregacion.entities.usuario.Rol;
@@ -29,24 +24,26 @@ import modulos.shared.dtos.input.ImportacionHechosInputDTO;
 import modulos.shared.dtos.input.SolicitudHechoInputDTO;
 import modulos.agregacion.entities.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import java.net.http.HttpResponse;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Stream;
 
 @Service
 public class HechosService {
 
 
-    private final IHechosProxyRepository hechosProxyRepo;
     private final IHechosEstaticaRepository hechosEstaticaRepo;
     private final IHechosDinamicaRepository hechosDinamicaRepo;
+    private final IHechoRepository hechoRepo;
     private final IPaisRepository repoPais;
     private final IProvinciaRepository repoProvincia;
-
     private final IHechoRepository hechoRepository;
     private final IUsuarioRepository usuariosRepo;
     private final IColeccionRepository coleccionRepo;
@@ -58,8 +55,7 @@ public class HechosService {
 
     private final ICategoriaRepository categoriaRepository;
 
-    public HechosService(IHechosProxyRepository hechosProxyRepo,
-                         IHechosEstaticaRepository hechosEstaticaRepo,
+    public HechosService(IHechosEstaticaRepository hechosEstaticaRepo,
                          IHechosDinamicaRepository hechosDinamicaRepo,
                          IUsuarioRepository usuariosRepo,
                          IColeccionRepository coleccionRepo,
@@ -71,10 +67,10 @@ public class HechosService {
                          IHechoRepository hechoRepository,
                          ICategoriaRepository categoriaRepository,
                          IProvinciaRepository repoProvincia,
-                         IPaisRepository repoPais){
+                         IPaisRepository repoPais,
+                         IHechoRepository hechoRepo){
         this.repoProvincia = repoProvincia;
         this.repoPais = repoPais;
-        this.hechosProxyRepo = hechosProxyRepo;
         this.hechosDinamicaRepo = hechosDinamicaRepo;
         this.hechosEstaticaRepo = hechosEstaticaRepo;
         this.usuariosRepo = usuariosRepo;
@@ -86,21 +82,8 @@ public class HechosService {
         this.buscadorHecho = buscadorHecho;
         this.hechoRepository = hechoRepository;
         this.categoriaRepository = categoriaRepository;
+        this.hechoRepo = hechoRepo;
     }
-
-    /* Se pide que, una vez por hora, el servicio de agregación actualice los hechos pertenecientes a las distintas colecciones,
-     en caso de que las fuentes hayan incorporado nuevos hechos.*/
-    @Async
-    @Scheduled(cron = "0 0 * * * *")
-    public void actualizarColeccionesCronjob(){
-        List<Coleccion> colecciones = coleccionRepo.findAll();
-        for(Coleccion coleccion: colecciones){
-            List<Hecho> hechosFiltrados = Filtrador.aplicarFiltros(coleccion.getCriterios(),coleccion.getHechos());
-            coleccion.setHechos(hechosFiltrados);
-            coleccionRepo.save(coleccion);
-        }
-    }
-
 
     /*
 
@@ -121,104 +104,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     // MODIFICADO -> TRUE SI HAY QUE EVALUARLO
     // MODIFICADO -> FALSE SI NO!!!!
 
-    @Async
-    @Scheduled(cron = "0 0 * * * *") // cada hora
-    public void refrescarColeccionesCronjob() {
 
-        List<HechoEstatica> hechosEstatica = hechosEstaticaRepo.findAll();
-        List<HechoDinamica> hechosDinamica = hechosDinamicaRepo.findAll();
-
-        List<Hecho> hechos = Stream.concat(hechosEstatica.stream(), hechosDinamica.stream())
-                .toList();
-
-        List<Coleccion> colecciones = coleccionRepo.findAll();
-
-        List<Hecho> hechosModificados = hechos.stream().filter(
-                hecho->hecho.getAtributosHecho().getModificado().equals(true)
-                && hecho.getActivo().equals(true))
-                .toList();
-
-        List<Coleccion> coleccionesModificadas = colecciones.stream().filter(
-                coleccion -> coleccion.getModificado().equals(true)
-                && coleccion.getActivo().equals(true))
-                .toList();
-
-        if (!hechosModificados.isEmpty()){
-            this.eliminarHechosModificadosDeColecciones(colecciones, hechosModificados);
-            this.mapearHechosAColecciones(colecciones,hechosModificados);
-        }
-        if (!coleccionesModificadas.isEmpty()){
-            this.mapearHechosAColecciones(coleccionesModificadas, hechos);
-        }
-        this.setearFalseModificado(hechosModificados,coleccionesModificadas);
-    }
-
-    public ResponseEntity<?> refrescarColecciones(Long idUsuario){
-        Usuario usuario = usuariosRepo.findById(idUsuario).orElse(null);
-        if (usuario!= null && !usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
-        }
-        this.refrescarColeccionesCronjob();
-        return ResponseEntity.status(HttpStatus.OK).body("Se refrescaron las colecciones correctamente");
-    }
-
-    private void eliminarHechosModificadosDeColecciones(List<Coleccion> colecciones, List<Hecho> hechos){
-
-        for (Coleccion coleccion: colecciones){
-            List<Hecho> hechosColeccion = coleccion.getHechos();
-
-            for (Hecho hecho: hechos){
-
-                Long hechoId = hecho.getId();
-                Origen hechoOrigen = hecho.getAtributosHecho().getOrigen();
-
-                Hecho hechoEncontrado = hechosColeccion.stream()
-                                        .filter(h -> h.getId().equals(hechoId) && h.getAtributosHecho().getOrigen().equals(hechoOrigen))
-                                        .findFirst().orElse(null);
-                if (hechoEncontrado != null && !Filtrador.hechoPasaFiltros(coleccion.getCriterios(), hecho)){
-                    hechosColeccion.remove(hecho);
-                }
-            }
-        }
-
-    }
-
-    public void setearFalseModificado(List<Hecho> hechos, List<Coleccion> colecciones){
-        for (Hecho hecho : hechos){
-            hecho.getAtributosHecho().setModificado(false);
-        }
-        for (Coleccion coleccion : colecciones){
-        coleccion.setModificado(false);
-        }
-    }
-
-    public void mapearHechosAColecciones(List<Coleccion> colecciones, List<Hecho> hechos){
-
-        for (Coleccion coleccion : colecciones){
-            List<Hecho> hechosFiltrados = Filtrador.aplicarFiltros(coleccion.getCriterios(), hechos);
-            for (Hecho hecho : hechosFiltrados) {
-                if (!coleccion.getHechos().contains(hecho)){
-                    coleccion.addHechos(hecho);
-                }
-            }
-
-        }
-
-    }
-
-    public void mapearHechoAColecciones(Hecho hecho){
-        List<Coleccion> colecciones = coleccionRepo.findAll();
-
-        for (Coleccion coleccion : colecciones){
-
-            boolean cumpleCriterio = Filtrador.hechoPasaFiltros(coleccion.getCriterios(), hecho);
-
-            if (cumpleCriterio){
-                coleccion.addHechos(hecho);
-            }
-
-        }
-    }
     //lo sube un administrador (lo considero carga dinamica)
     public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO dtoInput) {
 
@@ -245,19 +131,32 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return ResponseEntity.status(HttpStatus.CREATED).body("Se subió el hecho correctamente");
     }
 
-    public ResponseEntity<?> importarHechos(ImportacionHechosInputDTO dtoInput){
+    public ResponseEntity<?> importarHechos(ImportacionHechosInputDTO dtoInput, MultipartFile file) throws IOException {
         Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario()).orElse(null);
 
-        if (usuario == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el usuario");
-        }
-
-        if (!usuario.getRol().equals(Rol.ADMINISTRADOR)){
+        if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
         }
 
+        // 1) Validaciones básicas
+        if (file == null || file.isEmpty()) {
+            return ResponseEntity.badRequest().body("Debés adjuntar un archivo CSV");
+        }
+        if (!Objects.equals(file.getContentType(), "text/csv") && !Objects.requireNonNull(file.getOriginalFilename()).toLowerCase().endsWith(".csv")) {
+            return ResponseEntity.badRequest().body("El archivo debe ser CSV");
+        }
+
+        // === Opción A: guardar en disco ===
+        Path base = Paths.get("uploads/datasets").toAbsolutePath().normalize();
+        Files.createDirectories(base);
+        String storedName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path destino = base.resolve(storedName);
+        Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+
+
         FuenteEstatica fuente = new FuenteEstatica();
         Dataset dataset = new Dataset(dtoInput.getFuenteString());
+        dataset.setStoragePath(destino.toString());
         datasetsRepo.save(dataset);
         fuente.setDataSet(dataset);
 
@@ -270,8 +169,8 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
     public ResponseEntity<?> getHechosColeccion(GetHechosColeccionInputDTO inputDTO){
 
-        List<Filtro> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccion(buscadorCategoria, buscadorPais, buscadorProvincia, new CriteriosColeccionDTO(
-                inputDTO.getCategoria(),
+        CriteriosColeccionDTO criterios = new CriteriosColeccionDTO(
+                inputDTO.getId_coleccion(),
                 inputDTO.getContenidoMultimedia(),
                 inputDTO.getDescripcion(),
                 inputDTO.getFechaAcontecimientoInicial(),
@@ -279,9 +178,12 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 inputDTO.getFechaCargaInicial(),
                 inputDTO.getFechaCargaFinal(),
                 inputDTO.getOrigen(),
-                inputDTO.getPais(),
-                inputDTO.getTitulo()
-        )));
+                inputDTO.getPaisId(),
+                inputDTO.getTitulo(),
+                inputDTO.getProvinciaId());
+
+        List<Filtro> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadorCategoria,
+                buscadorPais, buscadorProvincia, criterios));
 
         Coleccion coleccion = coleccionRepo.findById(inputDTO.getId_coleccion()).orElse(null);
 
@@ -289,62 +191,46 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se encontró la colección");
         }
 
-
         Specification<Hecho> specColeccion =
                 this.perteneceAColeccionYesConsensuado(coleccion.getId());
 
-        Specification<Hecho> specAnd = filtros.stream()
-                .map(IFiltro::toSpecification)
-                .filter(Objects::nonNull)
-                .reduce(Specification::and)
-                .orElse((root, query, cb) -> cb.conjunction()); // neutro (1=1)
+        Specification<Hecho> specs = this.crearSpecs(filtros);
 
-// Forzar DISTINCT una sola vez para evitar duplicados cuando hay JOINs
-        Specification<Hecho> distinct = (root, query, cb) -> {
-            query.distinct(true);
-            return cb.conjunction();
-        };
+        Specification<Hecho> specFinal = Specification
+                .where(DISTINCT)
+                .and(specColeccion)
+                .and(specs);
 
-// Spec final = DISTINCT AND (AND de filtros)
-        Specification<Hecho> specFinal = distinct
-                .and(specColeccion == null ? (r,q,cb) -> cb.conjunction() : specColeccion)
-                .and(specAnd);
-// Ejecutar
         List<Hecho> hechosFiltrados = hechoRepository.findAll(specFinal);
 
-        //parseo al dto
-        List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream().map(hecho -> {
-            VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
-            dto.setId(hecho.getId());
-            dto.setPais(hecho.getAtributosHecho().getUbicacion().getPais().getPais());
-            dto.setProvincia(hecho.getAtributosHecho().getUbicacion().getProvincia().getProvincia());
-            dto.setTitulo(hecho.getAtributosHecho().getTitulo());
-            dto.setDescripcion(hecho.getAtributosHecho().getDescripcion());
-            dto.setFechaAcontecimiento(hecho.getAtributosHecho().getFechaAcontecimiento().toString());
-            dto.setCategoria(hecho.getAtributosHecho().getCategoria().getTitulo());
-            return dto;
-        }).toList();
+        List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream()
+                .map(this::crearHechoDto)
+                .toList();
 
         return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
     }
 
-    public ResponseEntity<?> getAllHechos() {
-        List<Hecho> hechosTotales = new ArrayList<>();
-        hechosTotales.addAll(hechosDinamicaRepo.findAll());
-        hechosTotales.addAll(hechosProxyRepo.findAll());
-        hechosTotales.addAll(hechosEstaticaRepo.findAll());
+    private VisualizarHechosOutputDTO crearHechoDto(Hecho hecho){
+        VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
+        dto.setId(hecho.getId());
+        dto.setPais(hecho.getAtributosHecho().getUbicacion().getPais().getPais());
+        dto.setProvincia(hecho.getAtributosHecho().getUbicacion().getProvincia().getProvincia());
+        dto.setTitulo(hecho.getAtributosHecho().getTitulo());
+        dto.setDescripcion(hecho.getAtributosHecho().getDescripcion());
+        dto.setFechaAcontecimiento(hecho.getAtributosHecho().getFechaAcontecimiento().toString());
+        dto.setCategoria(hecho.getAtributosHecho().getCategoria().getTitulo());
+        dto.setId_pais(hecho.getAtributosHecho().getUbicacion().getPais().getId());
+        dto.setId_provincia(hecho.getAtributosHecho().getUbicacion().getProvincia().getId());
+        dto.setId_categoria(hecho.getAtributosHecho().getCategoria().getId());
+        return dto;
+    }
 
-        List<VisualizarHechosOutputDTO> outputDTO = hechosTotales.stream().map(hecho -> {
-            VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
-            dto.setId(hecho.getId());
-            dto.setPais(hecho.getAtributosHecho().getUbicacion().getPais().getPais());
-            dto.setProvincia(hecho.getAtributosHecho().getUbicacion().getProvincia().getProvincia());
-            dto.setTitulo(hecho.getAtributosHecho().getTitulo());
-            dto.setDescripcion(hecho.getAtributosHecho().getDescripcion());
-            dto.setFechaAcontecimiento(hecho.getAtributosHecho().getFechaAcontecimiento().toString());
-            dto.setCategoria(hecho.getAtributosHecho().getCategoria().getTitulo());
-            return dto;
-        }).toList();
+    public ResponseEntity<?> getAllHechos() {
+        List<Hecho> hechosTotales = hechoRepo.findAll();
+
+        List<VisualizarHechosOutputDTO> outputDTO = hechosTotales.stream()
+                .map(this::crearHechoDto)
+                .toList();
 
         return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
     }
@@ -466,5 +352,16 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return ResponseEntity.ok().build();
     }
 
+    private Specification<Hecho> crearSpecs(List<Filtro> filtros) {
+        return filtros.stream()
+                .map(Filtro::toSpecification)   // o IFiltro::toSpecification
+                .filter(Objects::nonNull)
+                .reduce(Specification.where(null), Specification::and); // NO meter distinct acá
+    }
+
+    private static final Specification<Hecho> DISTINCT = (root, query, cb) -> {
+        query.distinct(true);
+        return cb.conjunction();
+    };
 
 }

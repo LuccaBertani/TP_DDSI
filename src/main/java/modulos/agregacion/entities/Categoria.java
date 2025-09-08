@@ -34,6 +34,6 @@ public class Categoria {
 // TODO: Filtros con SQL HECHO
 // TODO: Normalización para categorías y provincias HECHO
 // TODO: Controllers para crear categorías por parte de los administradores HECHO
-// TODO: Que los buscadores NO CREEN los objetos SINO LOS ADMINISTRADORES CON UN ENDPOINT "CREAR CATEGORIA O PAIS"
+// TODO: Que los buscadores NO CREEN los objeto s SINO LOS ADMINISTRADORES CON UN ENDPOINT "CREAR CATEGORIA O PAIS" HECHO
 // TODO: TESTEAR TODOS LOS ENDPOINTS (?
 // TODO  HACER EL PUNTO EXTRA!!

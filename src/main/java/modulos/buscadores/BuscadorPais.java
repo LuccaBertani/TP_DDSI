@@ -24,6 +24,10 @@ public class BuscadorPais implements CommandLineRunner {
         return this.repoPais.findByNombreNormalizado(elemento).orElse(null);
     }
 
+    public Pais buscar(Long id){
+        return this.repoPais.findById(id).orElse(null);
+    }
+
     @Override
     public void run(String... args) throws Exception {
         if (repoPais.count() > 0)

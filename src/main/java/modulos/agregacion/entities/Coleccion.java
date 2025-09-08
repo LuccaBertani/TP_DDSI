@@ -121,30 +121,6 @@ public class Coleccion {
         }
     }
 
-    // Actualizar ahora recibe List<Filtro> en lugar de Map<...>
-    public void actualizar(ColeccionUpdateInputDTO dto,
-                           List<Filtro> criteriosColeccion,
-                           List<Hecho> hechos) {
-
-        if (dto.getTitulo() != null) {
-            this.setTitulo(dto.getTitulo());
-        }
-        if (dto.getDescripcion() != null) {
-            this.setDescripcion(dto.getDescripcion());
-        }
-        if (criteriosColeccion != null) {
-            // reemplaza criterios, pero conservando la regla de “uno por tipo”
-            this.setCriterios(criteriosColeccion);
-        }
-        if (dto.getHechos() != null) {
-            if (dto.getReemplazarHechos()) {
-                this.hechos = (hechos != null) ? new ArrayList<>(hechos) : new ArrayList<>();
-            } else if (hechos != null) {
-                this.hechos.addAll(hechos);
-            }
-        }
-    }
-
     public void addHechos(Hecho ... hechos){
         this.hechos.addAll(List.of(hechos));
     }

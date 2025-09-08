@@ -3,14 +3,11 @@ package modulos.agregacion.entities.fuentes;
 import modulos.agregacion.entities.*;
 import modulos.agregacion.entities.filtros.*;
 import modulos.buscadores.BuscadorProvincia;
-import modulos.shared.dtos.input.CriteriosColeccionDTO;
-import modulos.shared.dtos.input.GetHechosColeccionInputDTO;
+import modulos.shared.dtos.input.*;
 import modulos.shared.utils.FechaParser;
 import modulos.shared.utils.Geocodificador;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import modulos.shared.dtos.input.FiltroHechosDTO;
-import modulos.shared.dtos.input.SolicitudHechoEliminarInputDTO;
 import modulos.buscadores.BuscadorCategoria;
 import modulos.buscadores.BuscadorPais;
 
@@ -21,7 +18,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -204,14 +200,14 @@ public class FuenteProxy {
                     Coleccion coleccion = new Coleccion(datosColeccion);
                     JSONObject filtrosJson = obj.getJSONObject("criterios");
                     ObjectMapper mapper = new ObjectMapper();
-                    CriteriosColeccionDTO filtrosEnString = mapper.readValue(filtrosJson.toString(), CriteriosColeccionDTO.class);
+                    CriteriosColeccionProxyDTO filtrosEnString = mapper.readValue(filtrosJson.toString(), CriteriosColeccionProxyDTO.class);
 
                     FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccion(buscadorCategoria, buscadorPais, buscadorProvincia, filtrosEnString);
                     List<Filtro> filtrosLista = FormateadorHecho.obtenerListaDeFiltros(filtros);
 
                     coleccion.setCriterios(filtrosLista);
-                    GetHechosColeccionInputDTO atributos = new GetHechosColeccionInputDTO();
-                    atributos.setId_coleccion(coleccion.getId());
+                    ProxyDTO atributos = new ProxyDTO();
+
                     atributos.setOrigen(filtrosEnString.getOrigen());
                     atributos.setDescripcion(filtrosEnString.getDescripcion());
                     atributos.setPais(filtrosEnString.getPais());
@@ -255,13 +251,13 @@ public class FuenteProxy {
             conexion.setRequestProperty("Content-Type", "application/json");
 
             JSONObject jsonBody = new JSONObject();
-            jsonBody.put("categoria", filtros.getCriterios().getCategoria());
+            jsonBody.put("categoria", filtros.getCriterios().getCategoriaId());
             jsonBody.put("fecha_reporte_desde",filtros.getCriterios().getFechaCargaInicial());
             jsonBody.put("fecha_reporte_hasta", filtros.getCriterios().getFechaCargaFinal());
             jsonBody.put("fecha_acontecimiento_desde", filtros.getCriterios().getFechaAcontecimientoInicial());
             jsonBody.put("fecha_acontecimiento_hasta", filtros.getCriterios().getFechaAcontecimientoFinal());
-            jsonBody.put("ubicacion", filtros.getCriterios().getPais());
-
+            jsonBody.put("pais", filtros.getCriterios().getPaisId());
+            jsonBody.put("provincia",filtros.getCriterios().getProvinciaId());
             try(OutputStream os = conexion.getOutputStream()){
                 byte[] input = jsonBody.toString().getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
@@ -311,7 +307,7 @@ public class FuenteProxy {
     }
 
 
-    public List<Hecho> getHechosDeColeccionMetaMapa(GetHechosColeccionInputDTO atributos, String url_1, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, BuscadorCategoria buscadorCategoria){
+    public List<Hecho> getHechosDeColeccionMetaMapa(ProxyDTO atributos, String url_1, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, BuscadorCategoria buscadorCategoria){
         try {
 
             String url_concatenada = url_1 + "get/filtrar";

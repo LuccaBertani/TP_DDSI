@@ -24,4 +24,5 @@ public interface IHechosProxyRepository extends JpaRepository<HechoProxy, Long> 
     WHERE unaccent(REPLACE(LOWER(h.atributosHecho.titulo), ' ', '')) = unaccent(REPLACE(LOWER(:nombre), ' ', ''))
 """)
     List<HechoProxy> findAllByNombreNormalizado(@Param("nombre") String nombre);
+
 }

@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class GestorRoles {
 
-public Boolean VisualizadorAContribuyente(Usuario usuario){
+public static Boolean VisualizadorAContribuyente(Usuario usuario){
 
     if (!Objects.isNull(usuario) && usuario.getRol().equals(Rol.VISUALIZADOR)) {
 
@@ -20,7 +20,7 @@ public Boolean VisualizadorAContribuyente(Usuario usuario){
         return false;
 }
 
-public Boolean ContribuyenteAVisualizador(Usuario usuario){
+public static Boolean ContribuyenteAVisualizador(Usuario usuario){
 
     if (usuario.getCantHechosSubidos() == 0) {
 

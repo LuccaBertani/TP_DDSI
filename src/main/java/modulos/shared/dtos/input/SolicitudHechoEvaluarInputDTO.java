@@ -14,6 +14,8 @@ public class SolicitudHechoEvaluarInputDTO {
     private Long id_solicitud;
     @NotNull(message = "El id_usuario es obligatorio")
     private Long id_usuario; //el que ejecuta la acción
+
+    private String mensaje;
 }
 
 

@@ -5,16 +5,17 @@ import lombok.Data;
 
 @Data
 public class GetHechosColeccionInputDTO {
-    private String categoria;
-    private String contenidoMultimedia;
+    private Long categoriaId;
+    private Integer contenidoMultimedia;
     private String descripcion;
     private String fechaAcontecimientoInicial;
     private String fechaAcontecimientoFinal;
     private String fechaCargaInicial;
     private String fechaCargaFinal;
-    private String origen;
-    private String pais;
+    private Integer origen;
+    private Long paisId;
     private String titulo;
+    private Long provinciaId;
 
 
     @NotNull(message = "La forma de navegación debe ser especificada")

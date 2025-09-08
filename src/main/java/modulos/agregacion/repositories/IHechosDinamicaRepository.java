@@ -24,4 +24,5 @@ public interface IHechosDinamicaRepository extends JpaRepository<HechoDinamica, 
     WHERE unaccent(REPLACE(LOWER(h.atributosHecho.titulo), ' ', '')) = unaccent(REPLACE(LOWER(:nombre), ' ', ''))
 """)
     List<HechoDinamica> findAllByNombreNormalizado(@Param("nombre") String nombre);
+
 }

@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ModificarConsensoInputDTO {
-    private long idColeccion;
+    private Long idColeccion;
     private String tipoConsenso; //multiples menciones, mayría simple, mayoría absoluta
     private Long idUsuario;
 }
