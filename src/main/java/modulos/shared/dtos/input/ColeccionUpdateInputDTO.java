@@ -17,14 +17,15 @@ public class ColeccionUpdateInputDTO {
     private String descripcion;
     private Boolean reemplazarHechos;
     //Criterios (es decir los filtros)
-    private String categoria;
+    private Long categoria;
     private Integer contenidoMultimedia;
     private String fechaAcontecimientoInicial;
     private String fechaAcontecimientoFinal;
     private String fechaCargaInicial;
     private String fechaCargaFinal;
     private Integer origen;
-    private String pais;
+    private Long pais;
+    private Long provincia;
     private String descripcionFiltro;
     private String tituloFiltro;
 

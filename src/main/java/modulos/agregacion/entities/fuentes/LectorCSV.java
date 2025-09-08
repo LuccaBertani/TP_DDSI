@@ -95,7 +95,7 @@ public class LectorCSV {
 
                 String categoriaString = indicesColumnas.get(2) != -1 ? registros.get(indicesColumnas.get(2)) : "N/A";
 
-                hecho.getAtributosHecho().setCategoria(buscadorCategoria.buscarOCrear(categoriaString));
+                hecho.getAtributosHecho().setCategoria(buscadorCategoria.buscar(categoriaString));
 
                 UbicacionString ubicacion;
                 if (indicesColumnas.get(3) != -1 && indicesColumnas.get(4) != -1 &&
@@ -110,11 +110,12 @@ public class LectorCSV {
                     ubicacion.setProvincia(indicesColumnas.get(7) != -1 ? registros.get(indicesColumnas.get(7)) : "N/A");
                 }
 
-                hecho.getAtributosHecho().getUbicacion().setPais(buscadorPais.buscarOCrear(ubicacion.getPais()));
-                hecho.getAtributosHecho().getUbicacion().setProvincia(buscadorProvincia.buscarOCrear(ubicacion.getProvincia()));
+                assert ubicacion != null;
+                hecho.getAtributosHecho().getUbicacion().setPais(buscadorPais.buscar(ubicacion.getPais()));
+                hecho.getAtributosHecho().getUbicacion().setProvincia(buscadorProvincia.buscar(ubicacion.getProvincia()));
                 //ZonedDateTime fecha = FechaParser.parsearFecha(registros.get(indicesColumnas.get(5)));
                 //ZonedDateTime fecha = (indicesColumnas.get(5) != -1) ? fecha :ZonedDateTime.parse(registros.get(indicesColumnas.get(5)));
-                hecho.getAtributosHecho().setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))) : ZonedDateTime.of(0, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")));
+                hecho.getAtributosHecho().setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))) : null);
                 hecho.getAtributosHecho().setModificado(true);
                 hecho.getAtributosHecho().setFechaCarga(ZonedDateTime.now());
                 hecho.getAtributosHecho().setFechaUltimaActualizacion(hecho.getAtributosHecho().getFechaCarga());

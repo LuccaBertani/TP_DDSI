@@ -225,9 +225,9 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             dto1.setTitulo(hecho.getTitulo());
             dto1.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
             dto1.setDescripcion(hecho.getDescripcion());
-            dto1.setCategoria(hecho.getCategoria());
+            dto1.setCategoria(categoriaRepo.findById(dto.getCategoria()).orElse(null));
 
-            AtributosHecho atributos = FormateadorHecho.formatearAtributosHecho(buscadorCategoria, buscadorPais, buscadorProvincia, dto1);
+            AtributosHecho atributos = FormateadorHecho.formatearAtributosHecho(, buscadorPais, buscadorProvincia, dto1);
             HechoDinamica hecho1 = new HechoDinamica();
             hecho1.setAtributosHecho(atributos);
             hechosColeccion.add(hecho1);

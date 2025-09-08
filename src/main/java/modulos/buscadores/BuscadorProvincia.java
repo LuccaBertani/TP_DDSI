@@ -18,15 +18,6 @@ public class BuscadorProvincia {
         this.repoProvincia = repoProvincia;
     }
 
-    public Provincia buscarOCrear(String elemento) {
-        Provincia provincia = this.buscar(elemento);
-        if(provincia == null){
-            provincia = new Provincia();
-            provincia.setProvincia(elemento);
-        }
-        return provincia;
-    }
-
     public Provincia buscar(String elemento) {
         return this.repoProvincia.findByNombreNormalizado(elemento).orElse(null);
     }

@@ -24,6 +24,7 @@ public class FuenteDinamica {
         hecho.getAtributosHecho().getUbicacion().setProvincia(data.getProvincia());
         hecho.getAtributosHecho().setOrigen(Origen.FUENTE_DINAMICA);
         hecho.getAtributosHecho().setModificado(true);
+        hecho.getAtributosHecho().setCategoria(data.getCategoria());
         return hecho;
     }
 }

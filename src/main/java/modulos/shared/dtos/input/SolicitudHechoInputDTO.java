@@ -14,8 +14,8 @@ public class SolicitudHechoInputDTO { //datos del hecho y el id del usuario
 
     private String descripcion;
     private Integer tipoContenido;
-    private String pais;
+    private Long pais;
     private String fechaAcontecimiento;
-    private String categoria;
-    private String provincia;
+    private Long categoria;
+    private Long provincia;
 }

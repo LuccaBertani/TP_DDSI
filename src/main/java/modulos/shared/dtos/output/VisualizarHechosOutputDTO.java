@@ -9,9 +9,9 @@ public class VisualizarHechosOutputDTO {
     private Long id;
     private String titulo;
     private String descripcion;
-    private String categoria;
-    private String pais;
+    private Long categoria;
+    private Long pais;
     private String fechaAcontecimiento;
     private int contenidoMultimedia;
-    private String provincia;
+    private Long provincia;
 }

@@ -6,7 +6,6 @@ import modulos.shared.dtos.input.SolicitudHechoEliminarInputDTO;
 import modulos.shared.dtos.input.SolicitudHechoEvaluarInputDTO;
 import modulos.shared.dtos.input.SolicitudHechoInputDTO;
 import modulos.shared.dtos.input.SolicitudHechoModificarInputDTO;
-import modulos.shared.dtos.output.MensajesHechosUsuarioOutputDTO;
 import modulos.agregacion.entities.RespuestaHttp;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,15 +48,32 @@ public class SolicitudHechoController {
         return solicitudHechoService.solicitarModificacionHecho(dtoInput); // 200, 401 o 409 (recurso ya modificado)
     }
 
-    @GetMapping("/mensajes")
-    public ResponseEntity<?> enviarMensajesUsuario(@RequestParam Long id_usuario){
-        return solicitudHechoService.enviarMensajes(id_usuario);
+    @PostMapping("/enviar-mensaje")
+    public ResponseEntity<?> enviarMensajeUsuario(@Valid @RequestParam Long id_emisor, @Valid @RequestParam Long id_receptor, @Valid @RequestParam Long id_solicitud, @Valid @RequestParam String mensaje){
+        return solicitudHechoService.enviarMensaje(id_emisor, id_receptor, id_solicitud, mensaje);
+    }
+
+    @GetMapping("/get-mensajes")
+    public ResponseEntity<?> getMensajesUsuario(@Valid @RequestParam Long id_receptor){
+        return solicitudHechoService.obtenerMensajes(id_receptor);
     }
 
     @PostMapping("/reportar")
     public ResponseEntity<?> reportar(@Valid @RequestParam Long id_hecho, @Valid @RequestParam String motivo){
         return solicitudHechoService.reportarHecho(motivo, id_hecho);
     }
+
+    @GetMapping("/get/all")
+    public ResponseEntity<?> getAllSolicitudes(@Valid @RequestParam Long id_usuario){
+        return solicitudHechoService.getAllSolicitudes(id_usuario);
+    }
+
+    @GetMapping("/get/pendientes")
+    public ResponseEntity<?> getSolicitudesPendientes(@Valid @RequestParam Long id_usuario){
+        return solicitudHechoService.obtenerSolicitudesPendientes(id_usuario);
+    }
+
+
 
 }
 

@@ -20,16 +20,6 @@ public class BuscadorPais implements CommandLineRunner {
         this.repoProvincia = repoProvincia;
     }
 
-    public Pais buscarOCrear(String elemento) {
-
-        Pais pais = this.buscar(elemento);
-        if(pais == null){
-            pais = new Pais();
-            pais.setPais(elemento);
-        }
-        return pais;
-    }
-
     public Pais buscar(String elemento) {
         return this.repoPais.findByNombreNormalizado(elemento).orElse(null);
     }

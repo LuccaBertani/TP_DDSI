@@ -18,25 +18,13 @@ import java.util.List;
 
 public class FormateadorHecho {
 
-    public static AtributosHecho formatearAtributosHecho(BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, SolicitudHechoInputDTO dtoInput){
+    public static AtributosHecho formatearAtributosHecho(Categoria categoria, Pais pais, Provincia provincia, SolicitudHechoInputDTO dtoInput){
 
     AtributosHecho atributos = new AtributosHecho();
 
-    if(dtoInput.getPais() != null) {
-        Pais pais = buscadorPais.buscarOCrear(dtoInput.getPais());
-        atributos.getUbicacion().setPais(pais);
-    }else{
-        Pais pais = buscadorPais.buscarOCrear("N/A");
-        atributos.getUbicacion().setPais(pais);
-    }
-
-    if(dtoInput.getProvincia() != null) {
-        Provincia provincia = buscadorProvincia.buscarOCrear(dtoInput.getProvincia());
-        atributos.getUbicacion().setProvincia(provincia);
-    }else{
-        Pais pais = buscadorPais.buscarOCrear("N/A");
-        atributos.getUbicacion().setPais(pais);
-    }
+    atributos.getUbicacion().setPais(pais);
+    atributos.getUbicacion().setProvincia(provincia);
+    atributos.setCategoria(categoria);
 
     atributos.setTitulo(dtoInput.getTitulo());
 
@@ -48,20 +36,12 @@ public class FormateadorHecho {
     if(dtoInput.getFechaAcontecimiento() != null) {
         atributos.setFechaAcontecimiento(FechaParser.parsearFecha(dtoInput.getFechaAcontecimiento()));
     }else{
-        atributos.setFechaAcontecimiento(ZonedDateTime.of(0, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")));
+        atributos.setFechaAcontecimiento(null);
     }
     if(dtoInput.getTipoContenido() != null){
         atributos.setContenidoMultimedia(TipoContenido.fromCodigo(dtoInput.getTipoContenido()));
     }else{
         atributos.setContenidoMultimedia(TipoContenido.INVALIDO);
-    }
-    if(dtoInput.getCategoria() != null){
-        Categoria categoria = buscadorCategoria.buscarOCrear(dtoInput.getCategoria());
-        atributos.setCategoria(categoria);
-    }
-    else{
-        Categoria categoria = buscadorCategoria.buscarOCrear("N/A");
-        atributos.setCategoria(categoria);
     }
 
     atributos.setOrigen(Origen.CARGA_MANUAL);
@@ -69,6 +49,7 @@ public class FormateadorHecho {
     return atributos;
 
 }
+
 
 public static FiltrosColeccion formatearFiltrosColeccion(BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, CriteriosColeccionDTO inputDTO){
 

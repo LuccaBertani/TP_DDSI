@@ -13,4 +13,6 @@ public interface ISolicitudEliminarHechoRepository extends JpaRepository<Solicit
     WHERE s.rechazada_por_spam = 1""",nativeQuery = true)
     CantSolicitudesSpamProjection obtenerCantSolicitudesEliminacionSpam();
 
+
+
 }
