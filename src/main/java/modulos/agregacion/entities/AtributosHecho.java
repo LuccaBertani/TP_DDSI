@@ -11,10 +11,10 @@ import java.time.ZonedDateTime;
 @Embeddable
 public class AtributosHecho {
 
-    @Column(name = "titulo", columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci", nullable = false)
+    @Column(name = "titulo", columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci")
     private String titulo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     @JoinColumn(name = "ubicacion_id", referencedColumnName = "id",foreignKey = @ForeignKey(name = "fk_hecho_ubicacion"))
     private Ubicacion ubicacion;
 
@@ -25,11 +25,11 @@ public class AtributosHecho {
     private ZonedDateTime fechaAcontecimiento;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipoContenidoMultimedia", nullable = false, length = 20)
+    @Column(name = "tipoContenidoMultimedia", length = 20)
     private TipoContenido contenidoMultimedia;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoria_id", nullable = false)
+    @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
     @Enumerated(EnumType.STRING)

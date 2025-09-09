@@ -13,8 +13,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IHechoRepository extends JpaRepository<Hecho, Long>, JpaSpecificationExecutor<Hecho> {
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Transactional
-    @Query("update Hecho h set h.atributosHecho.modificado = false")
+    @Query("""
+   UPDATE Hecho h
+   SET h.atributosHecho.modificado = false
+   WHERE COALESCE(h.atributosHecho.modificado, false) = true
+""")
     int resetAllModificado();
 }

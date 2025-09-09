@@ -210,18 +210,38 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
     }
 
+
+
+
+
     private VisualizarHechosOutputDTO crearHechoDto(Hecho hecho){
         VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
         dto.setId(hecho.getId());
-        dto.setPais(hecho.getAtributosHecho().getUbicacion().getPais().getPais());
-        dto.setProvincia(hecho.getAtributosHecho().getUbicacion().getProvincia().getProvincia());
+
+        Optional.ofNullable(hecho.getAtributosHecho().getUbicacion())
+                .ifPresent(ubicacion -> {
+                    Optional.ofNullable(ubicacion.getPais())
+                            .ifPresent(pais -> {
+                                dto.setPais(pais.getPais());
+                                dto.setId_pais(pais.getId());
+                            });
+                    Optional.ofNullable(ubicacion.getProvincia())
+                            .ifPresent(provincia -> {
+                                dto.setProvincia(provincia.getProvincia());
+                                dto.setId_provincia(provincia.getId());
+                            });
+                });
+
         dto.setTitulo(hecho.getAtributosHecho().getTitulo());
         dto.setDescripcion(hecho.getAtributosHecho().getDescripcion());
-        dto.setFechaAcontecimiento(hecho.getAtributosHecho().getFechaAcontecimiento().toString());
-        dto.setCategoria(hecho.getAtributosHecho().getCategoria().getTitulo());
-        dto.setId_pais(hecho.getAtributosHecho().getUbicacion().getPais().getId());
-        dto.setId_provincia(hecho.getAtributosHecho().getUbicacion().getProvincia().getId());
-        dto.setId_categoria(hecho.getAtributosHecho().getCategoria().getId());
+        Optional.ofNullable(hecho.getAtributosHecho().getFechaAcontecimiento())
+                .map(Object::toString)
+                .ifPresent(dto::setFechaAcontecimiento);
+
+        Optional.ofNullable(hecho.getAtributosHecho().getCategoria()).ifPresent(categoria -> {
+            dto.setCategoria(categoria.getTitulo());
+            dto.setId_categoria(categoria.getId());
+        });
         return dto;
     }
 

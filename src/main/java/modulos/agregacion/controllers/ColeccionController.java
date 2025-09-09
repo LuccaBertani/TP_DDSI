@@ -25,7 +25,8 @@ public class ColeccionController {
     }
 
     @PostMapping("/crear")
-    public ResponseEntity<?> crearColeccion(@Valid @RequestBody ColeccionInputDTO inputDTO){
+    public ResponseEntity<?> crearColeccion(@RequestBody ColeccionInputDTO inputDTO){
+        System.out.println("soy un desastre");
         return coleccionService.crearColeccion(inputDTO); // 201 o 401
     }
 

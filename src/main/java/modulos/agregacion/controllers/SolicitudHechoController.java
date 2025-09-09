@@ -73,7 +73,5 @@ public class SolicitudHechoController {
         return solicitudHechoService.obtenerSolicitudesPendientes(id_usuario);
     }
 
-
-
 }
 

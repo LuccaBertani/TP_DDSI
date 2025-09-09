@@ -86,18 +86,22 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
         Coleccion coleccion = new Coleccion(datosColeccion);
 
-        FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccionDinamica(buscadorCategoria, buscadorPais, buscadorProvincia, dtoInput.getCriterios());
+        coleccion.setActivo(true);
+        coleccion.setModificado(false);
 
+        System.out.println("PORONGA 1");
+        FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccionDinamica(buscadorCategoria, buscadorPais, buscadorProvincia, dtoInput.getCriterios());
+        System.out.println("PORONGA 2");
 //todo endpoint get all algoritmo consenso con (nombre)
         if (dtoInput.getAlgoritmoConsenso() != null){
             switch (dtoInput.getAlgoritmoConsenso()) {
-                case "AlgoritmoConsensoMayoriaAbsoluta":
+                case "MAYORIA_ABSOLUTA":
                         coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaAbsoluta());
                         break;
-                case "AlgoritmoConsensoMayoriaSimple":
+                case "MAYORIA_SIMPLE":
                     coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaSimple());
                     break;
-                case "AlgoritmoConsensoMultiplesMenciones":
+                case "MULTIPLES_MENCIONES":
                         coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMultiplesMenciones());
                         break;
                 default:
@@ -137,7 +141,9 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         Coleccion coleccion = coleccionesRepo.findById(id_coleccion).orElse(null);
 
         if(coleccion == null){
+            System.out.println("soy null");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se encontró la colección");
+
         }
 
         ColeccionOutputDTO dto = new ColeccionOutputDTO();
@@ -284,13 +290,17 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     }
 
     @Async
-    @Scheduled(cron = "0 0 * * * *") // cada hora
+    @Scheduled(cron = "0 * * * * *") // cada hora
     public void refrescarColeccionesCronjob() {
 
-        Specification<Hecho> specs1 = (root, query, cb) -> cb.and(
-                cb.isTrue(root.get("activo")),
-                cb.isTrue(root.get("modificado"))
-        );
+        /*
+        Specification<Hecho> specs1 = (root, query, cb) -> {
+            if (query != null) query.distinct(true); // útil si después hay JOINs
+            // activo = true AND atributosHecho.modificado = true (null => false)
+            var activo = root.<Boolean>get("activo");
+            var modif  = root.get("atributosHecho").<Boolean>get("modificado");
+            return cb.and(cb.isTrue(activo), cb.isTrue(cb.coalesce(modif, cb.literal(false))));
+        };*/
 
         List<Coleccion> colecciones = coleccionesRepo.findByActivoTrue();
 
@@ -299,7 +309,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
             Specification<Hecho> specFinal = Specification
                     .where(DISTINCT)
-                    .and(specs1)
+                    //.and(specs1)
                     .and(specs);
 
             List<Hecho> hechosFiltrados = hechoRepository.findAll(specFinal);

@@ -30,7 +30,7 @@ public class FechaParser {
 
     public static ZonedDateTime parsearFecha(String fechaStr) {
         if (fechaStr == null || fechaStr.trim().isEmpty()) {
-            throw new IllegalArgumentException("La fecha no puede estar vacía o ser null.");
+            return null;
         }
 
         fechaStr = fechaStr.trim();
@@ -60,7 +60,7 @@ public class FechaParser {
             }
         }
 
-        throw new IllegalArgumentException("Formato de fecha no reconocido: " + fechaStr);
+        return null;
     }
 
     public static void main(String[] args) {
