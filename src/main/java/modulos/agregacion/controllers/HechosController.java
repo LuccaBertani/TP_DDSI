@@ -24,8 +24,10 @@ public class HechosController {
         this.hechosService = hechosService;
     }
 
+    //anda
     @PostMapping("/subir")
     public ResponseEntity<?> subirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput){
+        System.out.println("id_usuario: " + dtoInput.getId_usuario());
         return hechosService.subirHecho(dtoInput); // 201 o 401
     }
 
@@ -39,6 +41,7 @@ public class HechosController {
         return hechosService.importarHechos(dtoInput, file);
     }
 
+    //anda
     // todos los hechos del sistema
     @GetMapping("/get-all")
     public ResponseEntity<?> visualizarHechos(){
@@ -92,8 +95,8 @@ fecha_acontecimiento_desde, fecha_acontecimiento_hasta, ubicacion BARBARO!!.
     }
 
     @PostMapping("/add/categoria")
-    public ResponseEntity<?> addCategoria(@RequestParam Long id_suaurio, @RequestParam String categoriaStr, @RequestParam(required = false) List<String> sinonimos){
-        return hechosService.addCategoria(id_suaurio, categoriaStr, sinonimos);
+    public ResponseEntity<?> addCategoria(@RequestParam Long id_usuario, @RequestParam String categoriaStr, @RequestParam(required = false) List<String> sinonimos){
+        return hechosService.addCategoria(id_usuario, categoriaStr, sinonimos);
     }
 
     @PostMapping("/add/sinonimo/categoria")

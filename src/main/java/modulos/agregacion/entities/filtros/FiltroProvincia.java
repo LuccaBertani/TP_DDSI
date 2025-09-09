@@ -2,11 +2,17 @@ package modulos.agregacion.entities.filtros;
 
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.Path;
+import lombok.Getter;
+import lombok.Setter;
 import modulos.agregacion.entities.Hecho;
 import modulos.agregacion.entities.Pais;
 import modulos.agregacion.entities.Provincia;
 import org.springframework.data.jpa.domain.Specification;
 
+@Getter
+@Setter
+@Table(name = "filtro_provincia")
+@Entity
 public class FiltroProvincia extends Filtro{
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_provincia", referencedColumnName = "id", nullable = false,

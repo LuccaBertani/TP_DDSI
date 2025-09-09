@@ -8,10 +8,7 @@ import modulos.agregacion.entities.Coleccion;
 import modulos.agregacion.entities.filtros.*;
 import modulos.agregacion.repositories.*;
 import modulos.agregacion.entities.fuentes.Dataset;
-import modulos.buscadores.BuscadorCategoria;
-import modulos.buscadores.BuscadorHecho;
-import modulos.buscadores.BuscadorPais;
-import modulos.buscadores.BuscadorProvincia;
+import modulos.buscadores.*;
 import modulos.shared.dtos.input.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +49,7 @@ public class HechosService {
     private final BuscadorPais buscadorPais;
     private final BuscadorProvincia buscadorProvincia;
     private final BuscadorHecho buscadorHecho;
+    private final BuscadorFiltro buscadorFiltro;
 
     private final ICategoriaRepository categoriaRepository;
 
@@ -68,7 +66,8 @@ public class HechosService {
                          ICategoriaRepository categoriaRepository,
                          IProvinciaRepository repoProvincia,
                          IPaisRepository repoPais,
-                         IHechoRepository hechoRepo){
+                         IHechoRepository hechoRepo,
+                         BuscadorFiltro buscadorFiltro){
         this.repoProvincia = repoProvincia;
         this.repoPais = repoPais;
         this.hechosDinamicaRepo = hechosDinamicaRepo;
@@ -83,6 +82,7 @@ public class HechosService {
         this.hechoRepository = hechoRepository;
         this.categoriaRepository = categoriaRepository;
         this.hechoRepo = hechoRepo;
+        this.buscadorFiltro = buscadorFiltro;
     }
 
     /*
@@ -118,12 +118,16 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
         }
 
+        System.out.println("USUARIO ROTO???" + usuario.getNombreDeUsuario());
+
         HechoDinamica hecho = new HechoDinamica();
 
         AtributosHecho atributos = FormateadorHecho.formatearAtributosHecho(buscadorCategoria,buscadorPais, buscadorProvincia, dtoInput);
 
+        hecho.setUsuario(usuario);
         hecho.setAtributosHecho(atributos);
         hecho.setActivo(true);
+        hecho.getAtributosHecho().setModificado(true);
         hecho.getAtributosHecho().setFechaCarga(ZonedDateTime.now());
         hecho.getAtributosHecho().setFechaUltimaActualizacion(hecho.getAtributosHecho().getFechaCarga());
         hechosDinamicaRepo.save(hecho);
@@ -182,7 +186,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 inputDTO.getTitulo(),
                 inputDTO.getProvinciaId());
 
-        List<Filtro> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadorCategoria,
+        List<Filtro> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadorFiltro, buscadorCategoria,
                 buscadorPais, buscadorProvincia, criterios));
 
         Coleccion coleccion = coleccionRepo.findById(inputDTO.getId_coleccion()).orElse(null);

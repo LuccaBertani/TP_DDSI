@@ -10,10 +10,7 @@ import modulos.agregacion.repositories.*;
 import modulos.agregacion.entities.fuentes.Dataset;
 import modulos.agregacion.entities.fuentes.FuenteEstatica;
 import modulos.agregacion.entities.Hecho;
-import modulos.buscadores.BuscadorCategoria;
-import modulos.buscadores.BuscadorHecho;
-import modulos.buscadores.BuscadorPais;
-import modulos.buscadores.BuscadorProvincia;
+import modulos.buscadores.*;
 import modulos.shared.dtos.input.*;
 import modulos.agregacion.entities.usuario.Rol;
 import modulos.agregacion.entities.usuario.Usuario;
@@ -39,6 +36,7 @@ public class ColeccionService  {
     private final BuscadorPais buscadorPais;
     private final BuscadorCategoria buscadorCategoria;
     private final BuscadorHecho buscadorHecho;
+    private final BuscadorFiltro buscadorFiltro;
 
     public ColeccionService(IColeccionRepository coleccionesRepo,
                             IUsuarioRepository usuariosRepo,
@@ -47,7 +45,8 @@ public class ColeccionService  {
                             BuscadorProvincia buscadorProvincia,
                             BuscadorPais buscadorPais,
                             BuscadorCategoria buscadorCategoria,
-                            BuscadorHecho buscadorHecho) {
+                            BuscadorHecho buscadorHecho,
+                            BuscadorFiltro buscadorFiltro) {
         this.coleccionesRepo = coleccionesRepo;
         this.usuariosRepo = usuariosRepo;
         this.datasetsRepo = datasetsRepo;
@@ -56,6 +55,7 @@ public class ColeccionService  {
         this.buscadorPais = buscadorPais;
         this.buscadorCategoria = buscadorCategoria;
         this.buscadorHecho = buscadorHecho;
+        this.buscadorFiltro = buscadorFiltro;
     }
 
 
@@ -89,9 +89,8 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         coleccion.setActivo(true);
         coleccion.setModificado(false);
 
-        System.out.println("PORONGA 1");
-        FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccionDinamica(buscadorCategoria, buscadorPais, buscadorProvincia, dtoInput.getCriterios());
-        System.out.println("PORONGA 2");
+        FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccionDinamica(buscadorFiltro, buscadorCategoria, buscadorPais, buscadorProvincia, dtoInput.getCriterios());
+
 //todo endpoint get all algoritmo consenso con (nombre)
         if (dtoInput.getAlgoritmoConsenso() != null){
             switch (dtoInput.getAlgoritmoConsenso()) {
@@ -172,6 +171,9 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se encontró la colección");
         }
         coleccion.setActivo(false);
+
+        coleccionesRepo.save(coleccion);
+
         return ResponseEntity.status(HttpStatus.OK).body("Se ha borrado la colección");
     }
 
@@ -185,6 +187,11 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         }
 
         Coleccion coleccion = coleccionesRepo.findById(idColeccion).orElse(null);
+
+        if(coleccion == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
         FuenteEstatica fuente = new FuenteEstatica();
         Dataset dataset = new Dataset(dataSet);
         fuente.setDataSet(dataset);
@@ -238,7 +245,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             coleccion.setDescripcion(dto.getDescripcion());
         }
 
-        FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccionDinamica(buscadorCategoria, buscadorPais, buscadorProvincia, dto.getCriterios());
+        FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccionDinamica(buscadorFiltro, buscadorCategoria, buscadorPais, buscadorProvincia, dto.getCriterios());
 
         coleccion.setCriterios(FormateadorHecho.obtenerListaDeFiltros(filtros));
 
@@ -293,14 +300,13 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     @Scheduled(cron = "0 * * * * *") // cada hora
     public void refrescarColeccionesCronjob() {
 
-        /*
         Specification<Hecho> specs1 = (root, query, cb) -> {
             if (query != null) query.distinct(true); // útil si después hay JOINs
             // activo = true AND atributosHecho.modificado = true (null => false)
             var activo = root.<Boolean>get("activo");
             var modif  = root.get("atributosHecho").<Boolean>get("modificado");
             return cb.and(cb.isTrue(activo), cb.isTrue(cb.coalesce(modif, cb.literal(false))));
-        };*/
+        };
 
         List<Coleccion> colecciones = coleccionesRepo.findByActivoTrue();
 
@@ -309,13 +315,17 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
             Specification<Hecho> specFinal = Specification
                     .where(DISTINCT)
-                    //.and(specs1)
+                    .and(specs1)
                     .and(specs);
 
             List<Hecho> hechosFiltrados = hechoRepository.findAll(specFinal);
-            coleccion.setModificado(false);
-            coleccion.setHechos(hechosFiltrados);
-            coleccionesRepo.save(coleccion);
+
+            if(!hechosFiltrados.isEmpty()) {
+
+                coleccion.setModificado(false);
+                coleccion.setHechos(hechosFiltrados);
+                coleccionesRepo.save(coleccion);
+            }
         }
             hechoRepository.resetAllModificado();
     }

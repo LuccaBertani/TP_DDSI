@@ -2,6 +2,7 @@ package modulos.agregacion.entities.fuentes;
 
 import modulos.agregacion.entities.*;
 import modulos.agregacion.entities.filtros.*;
+import modulos.buscadores.BuscadorFiltro;
 import modulos.buscadores.BuscadorProvincia;
 import modulos.shared.dtos.input.*;
 import modulos.shared.utils.FechaParser;
@@ -172,7 +173,7 @@ public class FuenteProxy {
 
 
 
-    public List<Coleccion> getColeccionesMetaMapa(String url_1, BuscadorProvincia buscadorProvincia, BuscadorPais buscadorPais, BuscadorCategoria buscadorCategoria){
+    public List<Coleccion> getColeccionesMetaMapa(BuscadorFiltro buscadorFiltro, String url_1, BuscadorProvincia buscadorProvincia, BuscadorPais buscadorPais, BuscadorCategoria buscadorCategoria){
         try {
 
         String urlStr = this.url_base + "/get-all";
@@ -202,7 +203,7 @@ public class FuenteProxy {
                     ObjectMapper mapper = new ObjectMapper();
                     CriteriosColeccionProxyDTO filtrosEnString = mapper.readValue(filtrosJson.toString(), CriteriosColeccionProxyDTO.class);
 
-                    FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccion(buscadorCategoria, buscadorPais, buscadorProvincia, filtrosEnString);
+                    FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccion(buscadorFiltro, buscadorCategoria, buscadorPais, buscadorProvincia, filtrosEnString);
                     List<Filtro> filtrosLista = FormateadorHecho.obtenerListaDeFiltros(filtros);
 
                     coleccion.setCriterios(filtrosLista);
