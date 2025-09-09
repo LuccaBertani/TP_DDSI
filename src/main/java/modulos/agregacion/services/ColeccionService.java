@@ -21,6 +21,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import modulos.shared.dtos.output.ColeccionOutputDTO;
+
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -203,7 +205,35 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    public ResponseEntity<?> eliminarFuente(Long id_usuario, Long idColeccion, String datasetString) {
+    /*
+    * Muy buena lectura 👌
+Sí, lo que el enunciado te está pidiendo indirectamente es eso:
+
+🔹 Cuando agregás una fuente a una colección
+
+Esa colección ahora “escucha” también a esa fuente/dataset.
+
+Por lo tanto, todos los hechos de esa fuente que cumplan los criterios de la colección deben incorporarse.
+
+Técnicamente:
+
+Asociás la fuente a la colección.
+
+Leés todos los hechos de esa fuente.
+
+Filtrás por los criterios de la colección (categoría, fechas, etc.).
+
+Los agregás a la colección.
+
+🔹 Cuando quitás una fuente de una colección
+
+Dejás de usar esa fuente como input de hechos.
+
+Por lo tanto, todos los hechos que provienen de esa fuente deben eliminarse de la colección (o al menos dejar de estar vinculados).
+
+Esto asegura que la colección refleje solo los hechos de las fuentes actualmente asociadas*/
+
+    public ResponseEntity<?> eliminarFuente(Long id_usuario, Long idColeccion, Long id_dataset) {
 
         ResponseEntity<?> respuesta = checkeoAdmin(id_usuario);
 
@@ -212,16 +242,20 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         }
 
         Coleccion coleccion = coleccionesRepo.findById(idColeccion).orElse(null);
-        Dataset dataset = new Dataset(datasetString);
-        assert coleccion != null;
-        coleccion.getHechos().forEach(
-                hecho -> {
-                    if(hecho.getDatasets().contains(dataset)){
-                        coleccion.getHechos().remove(hecho);
-                    }
-                }
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+
+        Dataset dataset = datasetsRepo.findById(id_dataset).orElse(null);
+
+        if(dataset == null || coleccion == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        List<Hecho> hechosDeFuente = hechoRepository.findHechosByColeccionAndDataset(coleccion.getId(),id_dataset);
+
+        coleccion.getHechos().removeAll(hechosDeFuente);
+
+        coleccionesRepo.save(coleccion);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     public ResponseEntity<?> updateColeccion(ColeccionUpdateInputDTO dto) {
@@ -278,7 +312,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró la colección");
         }
 
-
+        //no habría que recibir el id del algoritmo?
         switch (input.getTipoConsenso()) {
             case "AlgoritmoConsensoMayoriaAbsoluta":
                 coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaAbsoluta());
@@ -293,11 +327,11 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El algoritmo de consenso especificado no existe");
         }
         coleccionesRepo.save(coleccion);
-        return ResponseEntity.status(HttpStatus.OK).body("Se actualizó el algoritmo de consenso correctamente");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @Async
-    @Scheduled(cron = "0 * * * * *") // cada hora
+    @Scheduled(cron = "0 0 * * * *") // cada hora
     public void refrescarColeccionesCronjob() {
 
         Specification<Hecho> specs1 = (root, query, cb) -> {
@@ -320,6 +354,8 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
             List<Hecho> hechosFiltrados = hechoRepository.findAll(specFinal);
 
+            hechosFiltrados.forEach(hecho -> hecho.getAtributosHecho().setModificado(false));
+
             if(!hechosFiltrados.isEmpty()) {
 
                 coleccion.setModificado(false);
@@ -327,7 +363,6 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
                 coleccionesRepo.save(coleccion);
             }
         }
-            hechoRepository.resetAllModificado();
     }
 
     private ResponseEntity<?> checkeoAdmin(Long id_usuario){

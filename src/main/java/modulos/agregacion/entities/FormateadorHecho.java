@@ -2,15 +2,12 @@ package modulos.agregacion.entities;
 
 
 import modulos.agregacion.entities.fuentes.FuenteProxy;
-import modulos.buscadores.BuscadorFiltro;
-import modulos.buscadores.BuscadorProvincia;
+import modulos.buscadores.*;
 import modulos.agregacion.entities.fuentes.Origen;
 import modulos.shared.dtos.input.CriteriosColeccionDTO;
 import modulos.shared.dtos.input.CriteriosColeccionProxyDTO;
 import modulos.shared.dtos.input.ProxyDTO;
 import modulos.shared.dtos.input.SolicitudHechoInputDTO;
-import modulos.buscadores.BuscadorCategoria;
-import modulos.buscadores.BuscadorPais;
 import modulos.agregacion.entities.filtros.*;
 import modulos.shared.utils.FechaParser;
 import java.time.ZoneId;
@@ -22,18 +19,22 @@ import java.util.Optional;
 
 public class FormateadorHecho {
 
-    public static AtributosHecho formatearAtributosHecho(BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscarProvincia, SolicitudHechoInputDTO dtoInput){
+    public static AtributosHecho formatearAtributosHecho(BuscadorUbicacion buscadorUbicacion, BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscarProvincia, SolicitudHechoInputDTO dtoInput){
 
     AtributosHecho atributos = new AtributosHecho();
-    atributos.setUbicacion(new Ubicacion());
+
+    Pais pais = null;
+    Provincia provincia = null;
 
     if (dtoInput.getId_pais() != null){
-        atributos.getUbicacion().setPais(buscadorPais.buscar(dtoInput.getId_pais()));
+        pais = buscadorPais.buscar(dtoInput.getId_pais());
     }
 
     if (dtoInput.getId_provincia() != null){
-        atributos.getUbicacion().setProvincia(buscarProvincia.buscar(dtoInput.getId_provincia()));
+        provincia = buscarProvincia.buscar(dtoInput.getId_provincia());
     }
+
+    atributos.setUbicacion(buscadorUbicacion.buscarOCrear(pais,provincia));
 
     if (dtoInput.getId_categoria() != null){
         atributos.setCategoria(buscadorCategoria.buscar(dtoInput.getId_categoria()));
@@ -43,8 +44,6 @@ public class FormateadorHecho {
 
     if(dtoInput.getDescripcion() != null) {
         atributos.setDescripcion(dtoInput.getDescripcion());
-    }else{
-        atributos.setDescripcion("N/A");
     }
     if(dtoInput.getFechaAcontecimiento() != null) {
         atributos.setFechaAcontecimiento(FechaParser.parsearFecha(dtoInput.getFechaAcontecimiento()));
@@ -217,10 +216,10 @@ public class FormateadorHecho {
             }
         }
 
-        // ---------- PROVINCIA (Long id) ----------
         if (inputDTO.getProvinciaId() != null) {
             Provincia provincia = buscadorProvincia.buscar(inputDTO.getProvinciaId());
             if (provincia != null) {
+                System.out.println("ENTRO ACA");
                 var existente = buscadorFiltro.buscarFiltroProvinciaPorProvinciaId(provincia.getId());
                 filtros.setFiltroProvincia(existente.orElseGet(() -> new FiltroProvincia(provincia)));
             }
@@ -298,6 +297,9 @@ public class FormateadorHecho {
 
         if (filtrosColeccion.getFiltroTitulo() != null)
             filtros.add(filtrosColeccion.getFiltroTitulo());
+
+        if (filtrosColeccion.getFiltroProvincia() != null)
+            filtros.add(filtrosColeccion.getFiltroProvincia());
 
         return filtros;
     }

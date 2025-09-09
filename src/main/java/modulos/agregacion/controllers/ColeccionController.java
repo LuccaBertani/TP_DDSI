@@ -57,8 +57,8 @@ public class ColeccionController {
     }
 
     @PostMapping("/delete/fuente")
-    public ResponseEntity<?> eliminarFuente(@Valid @RequestParam Long id_usuario, @Valid @RequestParam Long id_coleccion, @Valid @RequestParam String dataSet){
-        return coleccionService.eliminarFuente(id_usuario, id_coleccion, dataSet);
+    public ResponseEntity<?> eliminarFuente(@Valid @RequestParam Long id_usuario, @Valid @RequestParam Long id_coleccion, @Valid @RequestParam Long id_dataset){
+        return coleccionService.eliminarFuente(id_usuario, id_coleccion, id_dataset);
     }
 
     @PostMapping("/colecciones/modificar-consenso")

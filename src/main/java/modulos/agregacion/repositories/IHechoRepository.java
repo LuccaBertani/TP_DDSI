@@ -21,4 +21,17 @@ public interface IHechoRepository extends JpaRepository<Hecho, Long>, JpaSpecifi
    WHERE COALESCE(h.atributosHecho.modificado, false) = true
 """)
     int resetAllModificado();
+
+
+    @Query("""
+        select distinct h
+        from Coleccion c
+        join c.hechos h
+        join h.datasets d
+        where c.id = :coleccionId
+          and d.id = :datasetId
+    """)
+    List<Hecho> findHechosByColeccionAndDataset(@Param("coleccionId") Long coleccionId,
+                                                @Param("datasetId") Long datasetId);
+
 }

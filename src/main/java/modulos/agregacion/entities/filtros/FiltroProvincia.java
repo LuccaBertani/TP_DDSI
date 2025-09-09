@@ -29,7 +29,7 @@ public class FiltroProvincia extends Filtro{
 
     @Override
     public Boolean aprobarHecho(Hecho hecho){
-        return hecho.getAtributosHecho().getUbicacion().getPais().getId().equals(this.provincia.getId());
+        return hecho.getAtributosHecho().getUbicacion().getProvincia().getId().equals(this.provincia.getId());
     }
 
     @Override

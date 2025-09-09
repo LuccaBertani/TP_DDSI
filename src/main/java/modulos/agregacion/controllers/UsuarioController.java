@@ -54,7 +54,7 @@ public class UsuarioController {
         return usuarioService.editarNombreDeUsuario(dtoImput);
     }
 
-    @GetMapping("/getAll")
+    @GetMapping("/get-all")
     public ResponseEntity<?> getAll(@RequestParam Long id){
         return usuarioService.getAll(id);
     }

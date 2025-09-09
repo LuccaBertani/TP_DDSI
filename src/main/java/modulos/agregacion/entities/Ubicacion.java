@@ -15,6 +15,11 @@ import lombok.Data;
         }
 )
 public class Ubicacion {
+    public Ubicacion(Pais pais, Provincia provincia) {
+        this.pais = pais;
+        this.provincia = provincia;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,4 +31,8 @@ public class Ubicacion {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "pais_id")
     private Pais pais;
+
+    public Ubicacion() {
+
+    }
 }

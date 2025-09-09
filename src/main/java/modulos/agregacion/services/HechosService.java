@@ -50,7 +50,7 @@ public class HechosService {
     private final BuscadorProvincia buscadorProvincia;
     private final BuscadorHecho buscadorHecho;
     private final BuscadorFiltro buscadorFiltro;
-
+    private final BuscadorUbicacion buscadorUbicacion;
     private final ICategoriaRepository categoriaRepository;
 
     public HechosService(IHechosEstaticaRepository hechosEstaticaRepo,
@@ -67,7 +67,8 @@ public class HechosService {
                          IProvinciaRepository repoProvincia,
                          IPaisRepository repoPais,
                          IHechoRepository hechoRepo,
-                         BuscadorFiltro buscadorFiltro){
+                         BuscadorFiltro buscadorFiltro,
+                         BuscadorUbicacion buscadorUbicacion){
         this.repoProvincia = repoProvincia;
         this.repoPais = repoPais;
         this.hechosDinamicaRepo = hechosDinamicaRepo;
@@ -83,6 +84,7 @@ public class HechosService {
         this.categoriaRepository = categoriaRepository;
         this.hechoRepo = hechoRepo;
         this.buscadorFiltro = buscadorFiltro;
+        this.buscadorUbicacion = buscadorUbicacion;
     }
 
     /*
@@ -122,7 +124,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
         HechoDinamica hecho = new HechoDinamica();
 
-        AtributosHecho atributos = FormateadorHecho.formatearAtributosHecho(buscadorCategoria,buscadorPais, buscadorProvincia, dtoInput);
+        AtributosHecho atributos = FormateadorHecho.formatearAtributosHecho(buscadorUbicacion, buscadorCategoria,buscadorPais, buscadorProvincia, dtoInput);
 
         hecho.setUsuario(usuario);
         hecho.setAtributosHecho(atributos);
@@ -174,7 +176,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     public ResponseEntity<?> getHechosColeccion(GetHechosColeccionInputDTO inputDTO){
 
         CriteriosColeccionDTO criterios = new CriteriosColeccionDTO(
-                inputDTO.getId_coleccion(),
+                inputDTO.getCategoriaId(),
                 inputDTO.getContenidoMultimedia(),
                 inputDTO.getDescripcion(),
                 inputDTO.getFechaAcontecimientoInicial(),
@@ -186,8 +188,19 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 inputDTO.getTitulo(),
                 inputDTO.getProvinciaId());
 
+        System.out.println(inputDTO.getCategoriaId());
+
         List<Filtro> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadorFiltro, buscadorCategoria,
                 buscadorPais, buscadorProvincia, criterios));
+
+        System.out.println("SIZE DE LA LISTA FILTROS: " + filtros.size());
+
+        for(Filtro filtro : filtros){
+            System.out.println(filtro.getClass());
+            if(filtro instanceof FiltroProvincia){
+                System.out.println("HOLA SOY UNA PROVINCIA MUY FELIZ!!: " + ((FiltroProvincia) filtro).getProvincia().getProvincia());
+            }
+        }
 
         Coleccion coleccion = coleccionRepo.findById(inputDTO.getId_coleccion()).orElse(null);
 
@@ -196,7 +209,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         }
 
         Specification<Hecho> specColeccion =
-                this.perteneceAColeccionYesConsensuado(coleccion.getId());
+                this.perteneceAColeccionYesConsensuadoSiAplica(coleccion.getId(),inputDTO.getNavegacionCurada());
 
         Specification<Hecho> specs = this.crearSpecs(filtros);
 
@@ -206,6 +219,10 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 .and(specs);
 
         List<Hecho> hechosFiltrados = hechoRepository.findAll(specFinal);
+
+        if(hechosFiltrados.isEmpty()){
+            System.out.println("soy un estorbo");
+        }
 
         List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream()
                 .map(this::crearHechoDto)
@@ -259,20 +276,31 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
     }
 
-    private Specification<Hecho> perteneceAColeccionYesConsensuado(Long coleccionId) {
-        if (coleccionId == null) return null;
+    private Specification<Hecho> perteneceAColeccionYesConsensuadoSiAplica(Long coleccionId, boolean navegacionCurada) {
+        if (coleccionId == null) {
+            // Podés devolver cb.conjunction() para no filtrar nada; con null Spring ignora esta spec.
+            return null;
+        }
 
         return (root, query, cb) -> {
             query.distinct(true);
 
+            // subquery que devuelve los IDs de Hecho que pertenecen a la colección
             Subquery<Long> sq = query.subquery(Long.class);
-            Root<Coleccion> coleccionRoot = sq.from(Coleccion.class);
-            Join<Coleccion, Hecho> hechosJoin = coleccionRoot.join("hechosConsensuados", JoinType.INNER);
+            Root<Coleccion> c = sq.from(Coleccion.class);
 
-            sq.select(hechosJoin.get("id"))
-                    .where(cb.equal(coleccionRoot.get("id"), coleccionId));
+            // Elegimos la colección de hechos según el modo de navegación
+            // - "hechosConsensuados": navegación curada
+            // - "hechos": navegación irrestricta
+            Join<Coleccion, Hecho> hJoin = navegacionCurada
+                    ? c.join("hechosConsensuados", JoinType.INNER)
+                    : c.join("hechos", JoinType.INNER);
 
-            return cb.in(root.get("id")).value(sq); // h.id IN (subquery)
+            sq.select(hJoin.get("id"))
+                    .where(cb.equal(c.get("id"), coleccionId));
+
+            // h.id IN (subquery)
+            return cb.in(root.get("id")).value(sq);
         };
     }
 
@@ -294,7 +322,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permiso para ejecutar esta acción");
     }
-
+// TODO: Evitar agregar sinonimos iguales
     public ResponseEntity<?> addSinonimoCategoria(Long idUsuario, Long idCategoria, String sinonimo_str) {
 
         ResponseEntity<?> respuesta = verificarDatos(idUsuario);

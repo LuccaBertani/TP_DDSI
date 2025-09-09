@@ -34,6 +34,7 @@ public class BuscadorPais implements CommandLineRunner {
             return;
         List<PaisProvincias> paisesProvincias = Geocodificador.obtenerTodosLosPaises();
 
+
         for (PaisProvincias paisProvincias : paisesProvincias){
             this.repoPais.save(paisProvincias.getPais());
             this.repoProvincia.saveAll(paisProvincias.getProvincias());

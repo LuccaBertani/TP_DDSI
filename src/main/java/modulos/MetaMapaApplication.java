@@ -4,6 +4,8 @@ import modulos.agregacion.entities.Pais;
 import modulos.agregacion.entities.PaisProvincias;
 import modulos.agregacion.entities.Provincia;
 import modulos.agregacion.entities.UbicacionString;
+import modulos.agregacion.repositories.IProvinciaRepository;
+import modulos.buscadores.BuscadorProvincia;
 import modulos.shared.utils.Geocodificador;
 import org.hibernate.boot.model.source.spi.SingularAttributeSourceToOne;
 import org.springframework.boot.SpringApplication;
@@ -22,5 +24,8 @@ public class MetaMapaApplication {
         UbicacionString ubi = Geocodificador.obtenerUbicacion(-34.371678, -57.573933);
         System.out.println(ubi.getPais());
         System.out.println(ubi.getProvincia());
+
+
+
     }
 }

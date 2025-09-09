@@ -47,13 +47,29 @@ public class HechosController {
     public ResponseEntity<?> visualizarHechos(){
         return hechosService.getAllHechos();
     }
+
 //hechos filtrados de una coleccion
     @PostMapping("/get/filtrar")
-    public ResponseEntity<?> visualizarHechosFiltrados(
+    public ResponseEntity<?> getHechosFiltradosColeccion(
             @RequestBody GetHechosColeccionInputDTO inputDTO)
     {
         return hechosService.getHechosColeccion(inputDTO);
     }
+
+
+    /*
+    * COLECCION 4:
+    * CRITERIOS:
+    * PAIS: 10
+    *
+    * HECHO 1
+    * PAIS: 10
+    * HECHO 2
+    * PAIS: 10
+    * HECH 3
+    * PAIS: 10
+    *
+    * * */
 
     /*
     Esta ruta expone todos los hechos del sistema y los devuelve como una lista en formato JSON. La misma acepta parámetros para filtrar los resultados:
@@ -63,53 +79,30 @@ fecha_acontecimiento_desde, fecha_acontecimiento_hasta, ubicacion BARBARO!!.
     */
 
 //hechos filtrados de all el sistema
-    @GetMapping("/get")
-    public ResponseEntity<?> listarHechos(
-            @RequestParam(required = false, name = "categoria") Long categoria,
-            @RequestParam(required = false, name = "fecha_reporte_desde") String fechaReporteDesde,
-            @RequestParam(required = false, name = "fecha_reporte_hasta") String fechaReporteHasta,
-            @RequestParam(required = false, name = "fecha_acontecimiento_desde") String fechaAcontecimientoDesde,
-            @RequestParam(required = false, name = "fecha_acontecimiento_hasta") String fechaAcontecimientoHasta,
-            @RequestParam(required = false, name = "pais") Long id_pais,
-            @RequestParam(required = false, name = "provincia") Long id_provincia
-    )
-    {
 
-        GetHechosColeccionInputDTO dto = new GetHechosColeccionInputDTO();
-        dto.setCategoriaId(categoria);
-        dto.setFechaCargaInicial(fechaReporteDesde);
-        dto.setFechaCargaFinal(fechaReporteHasta);
-        dto.setFechaAcontecimientoInicial(fechaAcontecimientoDesde);
-        dto.setFechaAcontecimientoFinal(fechaAcontecimientoHasta);
-        dto.setProvinciaId(id_provincia);
-        dto.setPaisId(id_pais);
 
-        return hechosService.getHechosColeccion(dto);
-    }
-
-    @GetMapping("/prueba")
-    public ResponseEntity<Integer> prueba(
-            @RequestParam Integer num)
-    {
-        return ResponseEntity.status(HttpStatus.OK.value()).body(num+1);
-    }
-
+    // Anda
     @PostMapping("/add/categoria")
     public ResponseEntity<?> addCategoria(@RequestParam Long id_usuario, @RequestParam String categoriaStr, @RequestParam(required = false) List<String> sinonimos){
         return hechosService.addCategoria(id_usuario, categoriaStr, sinonimos);
     }
 
+    // Anda
     @PostMapping("/add/sinonimo/categoria")
     public ResponseEntity<?> addSinonimoCategoria(@RequestParam Long id_usuario, @RequestParam Long id_categoria, @RequestParam String sinonimo){
         return hechosService.addSinonimoCategoria(id_usuario, id_categoria, sinonimo);
     }
+
+    // Anda
     @PostMapping("/add/sinonimo/pais")
-    public ResponseEntity<?> addSinonimoPais(@RequestParam Long id_usuario, @RequestParam Long id_categoria, @RequestParam String sinonimo){
-        return hechosService.addSinonimoPais(id_usuario, id_categoria, sinonimo);
+    public ResponseEntity<?> addSinonimoPais(@RequestParam Long id_usuario, @RequestParam Long id_pais, @RequestParam String sinonimo){
+        return hechosService.addSinonimoPais(id_usuario, id_pais, sinonimo);
     }
+
+    // Anda
     @PostMapping("/add/sinonimo/provincia")
-    public ResponseEntity<?> addSinonimoProvincia(@RequestParam Long id_usuario, @RequestParam Long id_categoria, @RequestParam String sinonimo){
-        return hechosService.addSinonimoProvincia(id_usuario, id_categoria, sinonimo);
+    public ResponseEntity<?> addSinonimoProvincia(@RequestParam Long id_usuario, @RequestParam Long id_provincia, @RequestParam String sinonimo){
+        return hechosService.addSinonimoProvincia(id_usuario, id_provincia, sinonimo);
     }
 
 }

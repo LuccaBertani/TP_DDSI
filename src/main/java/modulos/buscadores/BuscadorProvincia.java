@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class BuscadorProvincia {
@@ -23,7 +24,30 @@ public class BuscadorProvincia {
     }
 
     public Provincia buscar(Long elemento) {
-        return this.repoProvincia.findById(elemento).orElse(null);
+        System.out.println("ENTRO EN BUSCAR CON ID");
+
+        Provincia provincia =  repoProvincia.findById(1L).orElse(null);
+        if(provincia!=null) {
+            System.out.println(provincia.getProvincia());
+        }
+        provincia = repoProvincia.findById(22L).orElse(null);
+        if(provincia!=null) {
+            System.out.println(provincia.getProvincia());
+        }
+
+        provincia = repoProvincia.findById(elemento).orElse(null);
+        if(provincia == null){
+            System.out.println("DEFINITIVAMENTE ME GUSTA LA MIERDA");
+        }else {
+            System.out.println(provincia.getProvincia());
+        }
+        return provincia;
+        }
+
+    public List<Provincia> buscarTodos() {
+        System.out.println("ENTRO EN BUSCAR TODOS");
+
+        return this.repoProvincia.findAll();
     }
 
 }
