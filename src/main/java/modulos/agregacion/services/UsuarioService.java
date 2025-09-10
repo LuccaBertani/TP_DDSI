@@ -25,31 +25,32 @@ public class UsuarioService {
         this.usuarioRepo = usuarioRepo;
     }
     //Momento en el que un usuario se registra y guarda datos personales (NO LLAMAR A ESTE METODO SI ES ANONIMO)
-    public RespuestaHttp<Usuario> crearUsuario(UsuarioInputDTO inputDTO){
+    public ResponseEntity<?> crearUsuario(UsuarioInputDTO inputDTO){
 
-        Usuario usuario = new Usuario();
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(inputDTO.getNombreUsuario()).orElse(null);
+
+        if(usuario != null){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("El nombre de usuario ya existe");
+        }
+
+        usuario = new Usuario();
 
         usuario.getDatosPersonales().setNombre(inputDTO.getNombre());
+        usuario.setNombreDeUsuario(inputDTO.getNombreUsuario());
         usuario.getDatosPersonales().setApellido(inputDTO.getApellido());
         usuario.getDatosPersonales().setEdad(inputDTO.getEdad());
-        usuario.setContrasenia(inputDTO.getContrasenia());
+        usuario.setContrasenia(Hash.generarHash(inputDTO.getContrasenia()));
         usuarioRepo.save(usuario);
-        return new RespuestaHttp<>(usuario, HttpStatus.OK.value());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     public ResponseEntity<?> iniciarSesion(LoginDtoInput login) {
         Usuario usuario = usuarioRepo.findByNombreDeUsuario(login.getNombreDeUsuario()).orElse(null);
 
-        if (usuario == null) {
+        if (usuario == null || !Hash.verificarPassword(login.getContrasenia(), usuario.getContrasenia())) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body("Usuario no encontrado");
-        }
-
-        if (!Hash.verificarPassword(login.getContrasenia(), usuario.getContrasenia())) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body("Contraseña incorrecta");
+                    .body("Nombre de usuario o contraseña incorrecto");
         }
 
         return ResponseEntity.ok(usuario.getId());
@@ -59,16 +60,10 @@ public class UsuarioService {
 
         Usuario usuario = usuarioRepo.findById(dtoImput.getId_usuario()).orElse(null);
 
-        if (usuario == null) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", "Usuario no encontrado"));
-        }
-
-        if (!Hash.verificarPassword(dtoImput.getContrasenia_actual(), usuario.getContrasenia())) {
+        if (usuario == null || !Hash.verificarPassword(dtoImput.getContrasenia_actual(), usuario.getContrasenia())) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Contraseña incorrecta"));
+                    .body("Nombre de usuario o contraseña incorrecto");
         }
 
         String contraseniaNuevaHash = Hash.generarHash(dtoImput.getContrasenia_nueva());
@@ -89,9 +84,9 @@ public class UsuarioService {
                     .body(Map.of("message", "Usuario no encontrado"));
         }
 
-        Optional.of(dtoImput.getNombre()).ifPresent(usuario.getDatosPersonales()::setNombre);
-        Optional.of(dtoImput.getApellido()).ifPresent(usuario.getDatosPersonales()::setApellido);
-        Optional.of(dtoImput.getEdad()).ifPresent(usuario.getDatosPersonales()::setEdad);
+        Optional.ofNullable(dtoImput.getNombre()).ifPresent(usuario.getDatosPersonales()::setNombre);
+        Optional.ofNullable(dtoImput.getApellido()).ifPresent(usuario.getDatosPersonales()::setApellido);
+        Optional.ofNullable(dtoImput.getEdad()).ifPresent(usuario.getDatosPersonales()::setEdad);
 
         usuarioRepo.save(usuario);
 

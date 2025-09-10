@@ -120,7 +120,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
         }
 
-        System.out.println("USUARIO ROTO???" + usuario.getNombreDeUsuario());
+        usuario.incrementarHechosSubidos();
 
         HechoDinamica hecho = new HechoDinamica();
 

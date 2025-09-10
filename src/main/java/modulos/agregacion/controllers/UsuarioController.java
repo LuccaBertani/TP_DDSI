@@ -23,37 +23,37 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
+    // Anda
     @PostMapping("/crear")
-    public ResponseEntity<String> crearUsuario(@Valid @RequestBody UsuarioInputDTO dtoInput){
-        RespuestaHttp<Usuario> respuesta = usuarioService.crearUsuario(dtoInput);
-        Integer codigo = respuesta.getCodigo();
-        if (codigo.equals(HttpStatus.BAD_REQUEST.value())){
-            return ResponseEntity.status(codigo).body("No tenes permiso!");
-        }
-
-        return ResponseEntity.status(codigo).body("El usuario se creó correctamente");
+    public ResponseEntity<?> crearUsuario(@Valid @RequestBody UsuarioInputDTO dtoInput){
+        return usuarioService.crearUsuario(dtoInput);
     }
 
-    @PostMapping("/iniciarSesion")
+    // Anda
+    @PostMapping("/iniciar-sesion")
     public ResponseEntity<?> iniciarSesion(@RequestBody LoginDtoInput login){
         return usuarioService.iniciarSesion(login);
     }
 
+    // Anda
     @PostMapping("/editar/contrasenia")
     public ResponseEntity<?> cambiarContrasenia(@RequestBody CambiarContraseniaDtoInput dtoImput){
         return usuarioService.cambiarContrasenia(dtoImput);
     }
 
-    @PostMapping("/editar/camposEscalares")
+    // Anda
+    @PostMapping("/editar/campos-escalares")
     public ResponseEntity<?> editarUsuario(@RequestBody EditarUsuarioDtoInput dtoImput){
         return usuarioService.editarUsuario(dtoImput);
     }
 
-    @PostMapping("/editar/nombreDeUsuario")
+    // Anda
+    @PostMapping("/editar/nombre-usuario")
     public ResponseEntity<?> editarNombreDeUsuario(@RequestBody EditarNombreDeUsuarioDtoInput dtoImput){
         return usuarioService.editarNombreDeUsuario(dtoImput);
     }
 
+    // Anda
     @GetMapping("/get-all")
     public ResponseEntity<?> getAll(@RequestParam Long id){
         return usuarioService.getAll(id);

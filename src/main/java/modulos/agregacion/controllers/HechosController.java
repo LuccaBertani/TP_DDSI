@@ -48,7 +48,7 @@ public class HechosController {
         return hechosService.getAllHechos();
     }
 
-//hechos filtrados de una coleccion
+    // Anda
     @PostMapping("/get/filtrar")
     public ResponseEntity<?> getHechosFiltradosColeccion(
             @RequestBody GetHechosColeccionInputDTO inputDTO)

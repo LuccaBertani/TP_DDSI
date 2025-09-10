@@ -26,6 +26,7 @@ public class Usuario {
     public Usuario() {
         cantHechosSubidos = 0;
         rol = Rol.VISUALIZADOR;
+        datosPersonales = new DatosPersonalesPublicador();
     }
 
     @Setter
