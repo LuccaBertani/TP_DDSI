@@ -52,6 +52,7 @@ public class HechosService {
     private final BuscadorFiltro buscadorFiltro;
     private final BuscadorUbicacion buscadorUbicacion;
     private final ICategoriaRepository categoriaRepository;
+    private final ISinonimoRepository repoSinonimo;
 
     public HechosService(IHechosEstaticaRepository hechosEstaticaRepo,
                          IHechosDinamicaRepository hechosDinamicaRepo,
@@ -68,7 +69,7 @@ public class HechosService {
                          IPaisRepository repoPais,
                          IHechoRepository hechoRepo,
                          BuscadorFiltro buscadorFiltro,
-                         BuscadorUbicacion buscadorUbicacion){
+                         BuscadorUbicacion buscadorUbicacion, ISinonimoRepository repoSinonimo){
         this.repoProvincia = repoProvincia;
         this.repoPais = repoPais;
         this.hechosDinamicaRepo = hechosDinamicaRepo;
@@ -85,6 +86,7 @@ public class HechosService {
         this.hechoRepo = hechoRepo;
         this.buscadorFiltro = buscadorFiltro;
         this.buscadorUbicacion = buscadorUbicacion;
+        this.repoSinonimo = repoSinonimo;
     }
 
     /*
@@ -322,7 +324,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permiso para ejecutar esta acción");
     }
-// TODO: Evitar agregar sinonimos iguales
+
     public ResponseEntity<?> addSinonimoCategoria(Long idUsuario, Long idCategoria, String sinonimo_str) {
 
         ResponseEntity<?> respuesta = verificarDatos(idUsuario);
@@ -337,7 +339,13 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message","El id de la categoria no es valido"));
         }
 
-        Sinonimo sinonimo = new Sinonimo(sinonimo_str);
+        Sinonimo sinonimo = repoSinonimo.findByIdCategoriaAndNombre(idCategoria, sinonimo_str).orElse(null);
+
+        if(sinonimo != null){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("El sinonimo ya existe");
+        }
+
+        sinonimo = new Sinonimo(sinonimo_str);
 
         categoria.getSinonimos().add(sinonimo);
 
@@ -360,7 +368,13 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message","El id del pais no es valido"));
         }
 
-        Sinonimo sinonimo = new Sinonimo(sinonimo_str);
+        Sinonimo sinonimo = repoSinonimo.findByIdPaisAndNombre(idPais, sinonimo_str).orElse(null);
+
+        if(sinonimo != null){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("El sinonimo ya existe");
+        }
+
+        sinonimo = new Sinonimo(sinonimo_str);
 
         pais.getSinonimos().add(sinonimo);
 
@@ -383,7 +397,13 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message","El id de la provincia no es valido"));
         }
 
-        Sinonimo sinonimo = new Sinonimo(sinonimo_str);
+        Sinonimo sinonimo = repoSinonimo.findByIdProvinciaAndNombre(idProvincia, sinonimo_str).orElse(null);
+
+        if(sinonimo != null){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("El sinonimo ya existe");
+        }
+
+        sinonimo = new Sinonimo(sinonimo_str);
 
         provincia.getSinonimos().add(sinonimo);
 
