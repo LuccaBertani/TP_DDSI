@@ -39,6 +39,7 @@ public class ColeccionService  {
     private final BuscadorCategoria buscadorCategoria;
     private final BuscadorHecho buscadorHecho;
     private final BuscadorFiltro buscadorFiltro;
+    private final BuscadorUbicacion buscadorUbicacion;
 
     public ColeccionService(IColeccionRepository coleccionesRepo,
                             IUsuarioRepository usuariosRepo,
@@ -48,7 +49,7 @@ public class ColeccionService  {
                             BuscadorPais buscadorPais,
                             BuscadorCategoria buscadorCategoria,
                             BuscadorHecho buscadorHecho,
-                            BuscadorFiltro buscadorFiltro) {
+                            BuscadorFiltro buscadorFiltro, BuscadorUbicacion buscadorUbicacion) {
         this.coleccionesRepo = coleccionesRepo;
         this.usuariosRepo = usuariosRepo;
         this.datasetsRepo = datasetsRepo;
@@ -58,6 +59,7 @@ public class ColeccionService  {
         this.buscadorCategoria = buscadorCategoria;
         this.buscadorHecho = buscadorHecho;
         this.buscadorFiltro = buscadorFiltro;
+        this.buscadorUbicacion = buscadorUbicacion;
     }
 
 
@@ -198,7 +200,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         Dataset dataset = new Dataset(dataSet);
         fuente.setDataSet(dataset);
 
-        List<HechoEstatica> hechosFuente = fuente.leerFuente(buscadorCategoria, buscadorPais, buscadorProvincia, buscadorHecho);
+        List<HechoEstatica> hechosFuente = fuente.leerFuente(buscadorUbicacion, buscadorCategoria, buscadorPais, buscadorProvincia, buscadorHecho);
         List<Hecho> hechos = new ArrayList<>(hechosFuente);
         assert coleccion != null;
         coleccion.addHechos(hechos);

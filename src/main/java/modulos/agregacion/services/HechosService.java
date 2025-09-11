@@ -166,7 +166,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         datasetsRepo.save(dataset);
         fuente.setDataSet(dataset);
 
-        List<HechoEstatica> hechos = fuente.leerFuente(buscadorCategoria, buscadorPais, buscadorProvincia, buscadorHecho);
+        List<HechoEstatica> hechos = fuente.leerFuente(buscadorUbicacion, buscadorCategoria, buscadorPais, buscadorProvincia, buscadorHecho);
         hechosEstaticaRepo.saveAll(hechos);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Se importaron los hechos correctamente");

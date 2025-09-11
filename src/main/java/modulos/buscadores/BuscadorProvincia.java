@@ -24,25 +24,8 @@ public class BuscadorProvincia {
     }
 
     public Provincia buscar(Long elemento) {
-        System.out.println("ENTRO EN BUSCAR CON ID");
-
-        Provincia provincia =  repoProvincia.findById(1L).orElse(null);
-        if(provincia!=null) {
-            System.out.println(provincia.getProvincia());
-        }
-        provincia = repoProvincia.findById(22L).orElse(null);
-        if(provincia!=null) {
-            System.out.println(provincia.getProvincia());
-        }
-
-        provincia = repoProvincia.findById(elemento).orElse(null);
-        if(provincia == null){
-            System.out.println("DEFINITIVAMENTE ME GUSTA LA MIERDA");
-        }else {
-            System.out.println(provincia.getProvincia());
-        }
-        return provincia;
-        }
+        return repoProvincia.findById(elemento).orElse(null);
+    }
 
     public List<Provincia> buscarTodos() {
         System.out.println("ENTRO EN BUSCAR TODOS");

@@ -19,10 +19,13 @@ public interface IHechosEstaticaRepository extends JpaRepository<HechoEstatica, 
     List<HechoEstatica> findAllByNombreNormalizado(@Param("nombre") String nombre);
 
     @Query(value = """
-    SELECT h
-    FROM Hecho h 
-    WHERE unaccent(REPLACE(LOWER(h.atributosHecho.titulo), ' ', '')) = unaccent(REPLACE(LOWER(:nombre), ' ', ''))
-""")
+  select h.*
+  from hecho h
+  where REPLACE(LOWER(h.titulo), ' ', '') COLLATE utf8mb4_0900_ai_ci
+        = REPLACE(LOWER(:nombre), ' ', '') COLLATE utf8mb4_0900_ai_ci
+  limit 1
+""", nativeQuery = true)
     Optional<HechoEstatica> findByNombreNormalizado(@Param("nombre") String nombre);
+
 
 }

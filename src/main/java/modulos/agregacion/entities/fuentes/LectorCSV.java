@@ -32,7 +32,7 @@ public class LectorCSV {
     }
 
     // Entrega 3: los hechos no se pisan los atributos
-    public List<HechoEstatica> leerCSV(BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, BuscadorHecho buscadorHecho) {
+    public List<HechoEstatica> leerCSV(BuscadorUbicacion buscadorUbicacion, BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, BuscadorHecho buscadorHecho) {
 
         List<HechoEstatica> hechosASubir = new ArrayList<>();
 
@@ -83,38 +83,47 @@ public class LectorCSV {
 
                 boolean tituloRepetido = false;
 
-                hecho.getAtributosHecho().setTitulo((indicesColumnas.get(0) != -1) ? registros.get(indicesColumnas.get(0)) : "N/A");
+                hecho.getAtributosHecho().setTitulo((indicesColumnas.get(0) != -1) ? registros.get(indicesColumnas.get(0)) : null);
                 //Se leen los de fuente estatica
                 HechoEstatica hecho0 = buscadorHecho.buscarEstatica(hecho.getAtributosHecho().getTitulo());
 
-                if (hecho0 != null && !hecho0.getAtributosHecho().getTitulo().equals("N/A")){
+                if (hecho0 != null){
                     tituloRepetido = true;
                 }
 
-                hecho.getAtributosHecho().setDescripcion((indicesColumnas.get(1) != -1) ? registros.get(indicesColumnas.get(1)) : "N/A");
+                hecho.getAtributosHecho().setDescripcion((indicesColumnas.get(1) != -1) ? registros.get(indicesColumnas.get(1)) : null);
 
-                String categoriaString = indicesColumnas.get(2) != -1 ? registros.get(indicesColumnas.get(2)) : "N/A";
+                String categoriaString = indicesColumnas.get(2) != -1 ? registros.get(indicesColumnas.get(2)) : null;
 
                 hecho.getAtributosHecho().setCategoria(buscadorCategoria.buscar(categoriaString));
 
-                UbicacionString ubicacion;
+                UbicacionString ubicacionString;
+                Pais pais = null;
+                Provincia provincia = null;
+                Ubicacion ubicacion = null;
                 if (indicesColumnas.get(3) != -1 && indicesColumnas.get(4) != -1 &&
                         (!registros.get(indicesColumnas.get(3)).isEmpty() && !registros.get(indicesColumnas.get(4)).isEmpty())) {
                     Double latitud = Double.parseDouble(registros.get(indicesColumnas.get(3)));
                     Double longitud = Double.parseDouble(registros.get(indicesColumnas.get(4)));
-                    ubicacion = Geocodificador.obtenerUbicacion(latitud, longitud);
+                    ubicacionString = Geocodificador.obtenerUbicacion(latitud, longitud);
                 }
                 else {
-                    ubicacion = new UbicacionString();
-                    ubicacion.setPais(indicesColumnas.get(6) != -1 ? registros.get(indicesColumnas.get(6)) : "N/A");
-                    ubicacion.setProvincia(indicesColumnas.get(7) != -1 ? registros.get(indicesColumnas.get(7)) : "N/A");
+                    ubicacionString = new UbicacionString();
+                    ubicacionString.setPais(indicesColumnas.get(6) != -1 ? registros.get(indicesColumnas.get(6)) : null);
+                    ubicacionString.setProvincia(indicesColumnas.get(7) != -1 ? registros.get(indicesColumnas.get(7)) : null);
                 }
 
-                assert ubicacion != null;
-                hecho.getAtributosHecho().getUbicacion().setPais(buscadorPais.buscar(ubicacion.getPais()));
-                hecho.getAtributosHecho().getUbicacion().setProvincia(buscadorProvincia.buscar(ubicacion.getProvincia()));
-                //ZonedDateTime fecha = FechaParser.parsearFecha(registros.get(indicesColumnas.get(5)));
-                //ZonedDateTime fecha = (indicesColumnas.get(5) != -1) ? fecha :ZonedDateTime.parse(registros.get(indicesColumnas.get(5)));
+                if (ubicacionString != null){
+                    pais = buscadorPais.buscar(ubicacionString.getPais());
+                    provincia = buscadorProvincia.buscar(ubicacionString.getProvincia());
+                    ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
+                }
+
+                hecho.getAtributosHecho().setUbicacion(ubicacion);
+                hecho.getAtributosHecho().getUbicacion().setPais(pais);
+                hecho.getAtributosHecho().getUbicacion().setProvincia(provincia);
+
+
                 hecho.getAtributosHecho().setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))) : null);
                 hecho.getAtributosHecho().setModificado(true);
                 hecho.getAtributosHecho().setFechaCarga(ZonedDateTime.now());
