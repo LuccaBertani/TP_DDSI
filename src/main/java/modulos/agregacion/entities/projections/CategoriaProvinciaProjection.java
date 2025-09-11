@@ -4,7 +4,7 @@ import modulos.agregacion.entities.Categoria;
 import modulos.agregacion.entities.Provincia;
 
 public interface CategoriaProvinciaProjection {
-    Long provinciaId();
-    Integer cantHechos();
-    Long categoriaId();
+    Long getProvinciaId();
+    Long getCategoriaId();
+    Integer getCantHechos();
 }

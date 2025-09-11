@@ -17,7 +17,7 @@ public class CategoriaCantidad {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_categoria", referencedColumnName = "id", nullable = false,
+    @JoinColumn(name = "id_categoria", referencedColumnName = "id",
             foreignKey = @jakarta.persistence.ForeignKey(name = "fk_categoriaCantidad_categoria"))
     private Categoria categoria;
 

@@ -21,11 +21,5 @@ import java.util.List;
 public class MetaMapaApplication {
     public static void main(String[] args) {
         SpringApplication.run(MetaMapaApplication.class, args);
-        UbicacionString ubi = Geocodificador.obtenerUbicacion(-34.371678, -57.573933);
-        System.out.println(ubi.getPais());
-        System.out.println(ubi.getProvincia());
-
-
-
     }
 }

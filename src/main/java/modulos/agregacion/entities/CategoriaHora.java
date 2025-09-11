@@ -3,6 +3,8 @@ package modulos.agregacion.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.Instant;
+
 @Data
 @Entity
 @Table(name = "categoriaHora")
@@ -12,13 +14,16 @@ public class CategoriaHora {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_categoria", referencedColumnName = "id", nullable = false,
+    @JoinColumn(name = "id_categoria", referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "fk_categoria_categoriaHora"))
     private Categoria categoria;
     @Column(name = "hora")
     private Integer hora;
     @Column(name = "cantidad_hechos")
     private Integer cantidad;
+
+    @Column(name = "timestamp")
+    private Instant timestamp;
 
     public CategoriaHora(Categoria categoria, Integer hora, Integer cantidad){
         this.categoria = categoria;

@@ -2,6 +2,7 @@ package modulos.servicioEstadistica.controller;
 
 import modulos.servicioEstadistica.ServicioDeEstadistica;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,15 +24,18 @@ public class EstadisticasController {
 
     @GetMapping(value = "/reporte/{id}.csv", produces = "text/csv")
     public ResponseEntity<StreamingResponseBody> exportarCSV(@PathVariable int id) throws Exception {
-        // ahora le pasás el id al servicio
+
         Path csv = servicioDeEstadistica.obtenerEstadistica(id);
+
+        if (csv == null){
+            return ResponseEntity.noContent().build();
+        }
+
         String filename = csv.getFileName().toString();
 
         StreamingResponseBody body = output -> {
             try (var in = java.nio.file.Files.newInputStream(csv)) {
                 in.transferTo(output);
-            } finally {
-                java.nio.file.Files.deleteIfExists(csv); // limpia el tmp
             }
         };
 
@@ -39,12 +43,5 @@ public class EstadisticasController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .body(body);
-    }
-
-    @GetMapping(value = "/reporte/minga")
-    public ResponseEntity<Integer> minga() {
-        System.out.println("MINGA");
-        return ResponseEntity.status(200).body(2);
-
     }
 }

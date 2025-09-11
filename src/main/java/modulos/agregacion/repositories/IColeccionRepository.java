@@ -24,7 +24,7 @@ public interface IColeccionRepository extends JpaRepository<Coleccion, Long> {
         JOIN ubicacion u       ON u.id = h.ubicacion_id
         JOIN provincia p       ON p.id = u.provincia_id
         GROUP BY p.id, c.id
-        ORDER BY total_hechos DESC
+        ORDER BY totalHechos DESC
         LIMIT 1
         """, nativeQuery = true)
     List<ColeccionProvinciaProjection> obtenerMayorCantHechosProvinciaEnColeccion();

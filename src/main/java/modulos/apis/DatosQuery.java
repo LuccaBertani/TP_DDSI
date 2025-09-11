@@ -33,8 +33,11 @@ public class DatosQuery implements IDatosQuery{
         List<ColeccionProvincia> infos = new ArrayList<>();
 
         for(ColeccionProvinciaProjection cpp : info){
-            ColeccionProvincia coleccionProvincia = new ColeccionProvincia(repoColeccion.findById(cpp.getColeccionId()).orElse(null),
-                    repoProvincia.findById(cpp.getProvinciaId()).orElse(null), cpp.getTotalHechos());
+
+            Coleccion coleccion = cpp.getColeccionId() != null ? repoColeccion.findById(cpp.getColeccionId()).orElse(null) : null;
+            Provincia provincia = cpp.getProvinciaId() != null ? repoProvincia.findById(cpp.getProvinciaId()).orElse(null) : null;
+
+            ColeccionProvincia coleccionProvincia = new ColeccionProvincia(coleccion, provincia, cpp.getTotalHechos());
             infos.add(coleccionProvincia);
         }
 
@@ -44,7 +47,8 @@ public class DatosQuery implements IDatosQuery{
     @Override
     public CategoriaCantidad mayorCantHechosCategoria() {
         CategoriaCantidadProjection info = repoCategoria.obtenerColeccionMayorHechos();
-        return new CategoriaCantidad(repoCategoria.findById(info.getCategoriaId()).orElse(null),info.getCantHechos());
+        Categoria categoria = info.getCategoriaId() != null ? repoCategoria.findById(info.getCategoriaId()).orElse(null) : null;
+        return new CategoriaCantidad(categoria,info.getCantHechos());
     }
 
     @Override
@@ -54,10 +58,12 @@ public class DatosQuery implements IDatosQuery{
         List<CategoriaProvincia> infos = new ArrayList<>();
 
         for(CategoriaProvinciaProjection cpp : info){
-        CategoriaProvincia categoriaProvincia = new CategoriaProvincia(repoCategoria.findById(cpp.categoriaId()).orElse(null),repoProvincia.findById(cpp.provinciaId()).orElse(null),cpp.cantHechos());
-        infos.add(categoriaProvincia);
+            Categoria categoria = cpp.getCategoriaId() != null ? repoCategoria.findById(cpp.getCategoriaId()).orElse(null) : null;
+            Provincia provincia = cpp.getProvinciaId() != null ? repoProvincia.findById(cpp.getProvinciaId()).orElse(null) : null;
+            CategoriaProvincia categoriaProvincia = new CategoriaProvincia(categoria,provincia,cpp.getCantHechos());
+            infos.add(categoriaProvincia);
         }
-    return infos;
+        return infos;
     }
 
     @Override
@@ -67,7 +73,9 @@ public class DatosQuery implements IDatosQuery{
         List<CategoriaHora> infos = new ArrayList<>();
 
         for(HoraCategoriaProjection cpp : info){
-            CategoriaHora categoriaHora = new CategoriaHora(repoCategoria.findById(cpp.getIdCategoria()).orElse(null),cpp.getHora(),cpp.getTotalHechos());
+            Categoria categoria = cpp.getIdCategoria() != null ? repoCategoria.findById(cpp.getIdCategoria()).orElse(null) : null;
+            System.out.println("HORA DE RE MIL MIERDA: " + cpp.getHoraDelDia());
+            CategoriaHora categoriaHora = new CategoriaHora(categoria,cpp.getHoraDelDia(),cpp.getTotalHechos());
             infos.add(categoriaHora);
         }
         return infos;
@@ -76,7 +84,7 @@ public class DatosQuery implements IDatosQuery{
     @Override
     public CantSolicitudesEliminacionSpam cantSolicitudesEliminacionSpam() {
         CantSolicitudesSpamProjection info = repoSoliElimHecho.obtenerCantSolicitudesEliminacionSpam();
-        return new CantSolicitudesEliminacionSpam(info.getCant());
+        return new CantSolicitudesEliminacionSpam(info.getTotalSpam());
     }
 }
 

@@ -29,17 +29,28 @@ public interface ICategoriaRepository extends JpaRepository<Categoria, Long> {
 
 // ¿A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría?
 
-@Query(value = """
+    @Query(value = """
 SELECT
-HOUR(h.fecha_hora) AS hora_del_dia,
-COUNT(h.id)           AS totalHechos,
-c.id AS Idcategoria
+  IF(
+    h.fecha_acontecimiento IS NULL,
+    NULL,
+    HOUR(
+      STR_TO_DATE(
+        REPLACE(SUBSTRING(h.fecha_acontecimiento,1,19),'T',' '),
+        '%Y-%m-%d %H:%i:%s'
+      )
+    )
+  ) AS hora_del_dia,
+  COUNT(h.id) AS totalHechos,
+  c.id        AS idCategoria
 FROM hecho h
 JOIN categoria c ON c.id = h.categoria_id
-GROUP BY HOUR(h.fecha_hora), c.id
+GROUP BY hora_del_dia, c.id
 ORDER BY totalHechos DESC
-LIMIT 1""",nativeQuery = true)
-List<HoraCategoriaProjection> obtenerHoraMaxHechosCategoria();
+LIMIT 1;
+""", nativeQuery = true)
+    List<HoraCategoriaProjection> obtenerHoraMaxHechosCategoria();
+
 
 
     @Query("""
