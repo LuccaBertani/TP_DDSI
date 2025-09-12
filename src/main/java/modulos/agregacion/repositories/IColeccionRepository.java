@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface IColeccionRepository extends JpaRepository<Coleccion, Long> {
     @Query(value = """
@@ -31,4 +32,14 @@ public interface IColeccionRepository extends JpaRepository<Coleccion, Long> {
 
     List<Coleccion> findByActivoTrueAndModificadoTrue();
     List<Coleccion> findByActivoTrue();
+
+    @Query("""
+    SELECT c FROM Coleccion c where c.activo = true
+    """)
+    List<Coleccion> findAllByActivoTrue();
+
+    @Query("""
+    SELECT c FROM Coleccion c where c.id = :id_coleccion
+    """)
+    Optional<Coleccion> findByIdAndActivoTrue(@Param("id_coleccion") Long idColeccion);
 }

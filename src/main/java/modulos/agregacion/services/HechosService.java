@@ -112,6 +112,10 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     //lo sube un administrador (lo considero carga dinamica)
     public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO dtoInput) {
 
+        if(dtoInput.getTitulo() == null){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Campos obligatorios no ingresados");
+        }
+
         Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario()).orElse(null);
 
         if (usuario == null){
@@ -204,7 +208,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             }
         }
 
-        Coleccion coleccion = coleccionRepo.findById(inputDTO.getId_coleccion()).orElse(null);
+        Coleccion coleccion = coleccionRepo.findByIdAndActivoTrue(inputDTO.getId_coleccion()).orElse(null);
 
         if (coleccion == null){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se encontró la colección");

@@ -68,6 +68,8 @@ public class SolicitudHechoService {
 
     public ResponseEntity<?> solicitarSubirHecho(SolicitudHechoInputDTO dto) {
 
+
+
         ResponseEntity<?> rta = checkeoAdmin(dto.getId_usuario());
 
         if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){

@@ -80,6 +80,10 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
     public ResponseEntity<?> crearColeccion(ColeccionInputDTO dtoInput) {
 
+        if(dtoInput.getTitulo() == null){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Campos obligatorios no ingresados");
+        }
+
         Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario()).orElse(null);
 
         if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
@@ -124,7 +128,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
         List<ColeccionOutputDTO> listaDTO = new ArrayList<>();
 
-        List<Coleccion> colecciones = coleccionesRepo.findAll();
+        List<Coleccion> colecciones = coleccionesRepo.findAllByActivoTrue();
 
         for (Coleccion coleccion : colecciones){
             ColeccionOutputDTO dto = new ColeccionOutputDTO();
@@ -141,7 +145,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
     public ResponseEntity<?> getColeccion(Long id_coleccion) {
         System.out.println("PINGAAAAAAAAAAAAAAAAAA");
-        Coleccion coleccion = coleccionesRepo.findById(id_coleccion).orElse(null);
+        Coleccion coleccion = coleccionesRepo.findByIdAndActivoTrue(id_coleccion).orElse(null);
 
         if(coleccion == null){
             System.out.println("soy null");
@@ -170,7 +174,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body("No tenés permisos para ejecutar esta acción");
         }
 
-        Coleccion coleccion = coleccionesRepo.findById(id_coleccion).orElse(null);
+        Coleccion coleccion = coleccionesRepo.findByIdAndActivoTrue(id_coleccion).orElse(null);
         if(coleccion == null){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se encontró la colección");
         }
@@ -190,7 +194,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             return respuesta;
         }
 
-        Coleccion coleccion = coleccionesRepo.findById(idColeccion).orElse(null);
+        Coleccion coleccion = coleccionesRepo.findByIdAndActivoTrue(idColeccion).orElse(null);
 
         if(coleccion == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -243,7 +247,7 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
             return respuesta;
         }
 
-        Coleccion coleccion = coleccionesRepo.findById(idColeccion).orElse(null);
+        Coleccion coleccion = coleccionesRepo.findByIdAndActivoTrue(idColeccion).orElse(null);
 
         Dataset dataset = datasetsRepo.findById(id_dataset).orElse(null);
 
@@ -267,7 +271,7 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
             return respuesta;
         }
 
-        Coleccion coleccion = coleccionesRepo.findById(dto.getId_coleccion()).orElse(null);
+        Coleccion coleccion = coleccionesRepo.findByIdAndActivoTrue(dto.getId_coleccion()).orElse(null);
 
         if (coleccion == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body("No se encontró la colección");
@@ -292,7 +296,7 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
 
     @Scheduled(cron = "0 0 3 * * *")
     public void setearHechosConsensuados(){
-        List<Coleccion> colecciones = coleccionesRepo.findAll();
+        List<Coleccion> colecciones = coleccionesRepo.findAllByActivoTrue();
         List<Dataset> datasets = datasetsRepo.findAll();
         this.ejecutarAlgoritmoConsenso(colecciones, datasets);
     }
@@ -309,7 +313,7 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body("No tenés permisos para ejecutar esta acción");
         }
 
-        Coleccion coleccion = coleccionesRepo.findById(input.getIdColeccion()).orElse(null);
+        Coleccion coleccion = coleccionesRepo.findByIdAndActivoTrue(input.getIdColeccion()).orElse(null);
         if (coleccion == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró la colección");
         }
