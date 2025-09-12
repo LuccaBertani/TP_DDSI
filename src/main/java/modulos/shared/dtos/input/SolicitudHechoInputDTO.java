@@ -7,9 +7,9 @@ import lombok.Data;
 
 @Data
 public class SolicitudHechoInputDTO { //datos del hecho y el id del usuario
-    @NotNull(message = "El id del usuario es obligatorio")
+
     private Long id_usuario;
-    @NotNull(message = "El titulo del hecho es obligatorio")
+
     private String titulo;
 
     private String descripcion;

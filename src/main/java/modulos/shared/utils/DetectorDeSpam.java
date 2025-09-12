@@ -74,19 +74,19 @@ public class DetectorDeSpam {
     }
 
     private static boolean esTextoRepetitivo(String texto) {
-        String[] palabras = texto.split("\\s+");
+        String[] palabras = texto.trim().split("\\s+");
 
+        // Evitar falsos positivos en títulos/entradas cortas
+        if (palabras.length < 5) return false;
 
         Map<String, Long> frecuencia = Arrays.stream(palabras)
                 .filter(p -> !p.isEmpty())
-                .collect(Collectors.groupingBy(p -> p, Collectors.counting())); // para agrupar las palabras con sus cantidades
+                .collect(Collectors.groupingBy(p -> p, Collectors.counting()));
 
         long maxRepeticiones = frecuencia.values().stream().max(Long::compare).orElse(0L);
-        return (double) maxRepeticiones / palabras.length > 0.2;
-
-        // Saco el mayor numero de palabras repetidas
-        // Si más del 20% de las palabras son la misma, el texto es considerado repetitivo
+        return (double) maxRepeticiones / palabras.length > 0.5;
     }
+
 
     private static boolean esRelleno(String texto) {
         // Detectar si el texto está lleno de caracteres de relleno

@@ -47,6 +47,7 @@ public class DatosQuery implements IDatosQuery{
     @Override
     public CategoriaCantidad mayorCantHechosCategoria() {
         CategoriaCantidadProjection info = repoCategoria.obtenerColeccionMayorHechos();
+        // null pointer exception cuando info es null
         Categoria categoria = info.getCategoriaId() != null ? repoCategoria.findById(info.getCategoriaId()).orElse(null) : null;
         return new CategoriaCantidad(categoria,info.getCantHechos());
     }
@@ -74,7 +75,6 @@ public class DatosQuery implements IDatosQuery{
 
         for(HoraCategoriaProjection cpp : info){
             Categoria categoria = cpp.getIdCategoria() != null ? repoCategoria.findById(cpp.getIdCategoria()).orElse(null) : null;
-            System.out.println("HORA DE RE MIL MIERDA: " + cpp.getHoraDelDia());
             CategoriaHora categoriaHora = new CategoriaHora(categoria,cpp.getHoraDelDia(),cpp.getTotalHechos());
             infos.add(categoriaHora);
         }

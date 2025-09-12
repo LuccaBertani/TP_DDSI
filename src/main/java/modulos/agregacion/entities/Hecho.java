@@ -37,6 +37,10 @@ public abstract class Hecho {
     @Embedded
     private AtributosHecho atributosHecho;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @JoinColumn(name = "id_hecho")
+    private List<AtributosHechoModificar> atributosHechoAModificar;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "hecho_dataset",
@@ -49,6 +53,7 @@ public abstract class Hecho {
     public Hecho() {
         this.datasets = new ArrayList<>();
         this.atributosHecho = new AtributosHecho();
+        this.atributosHechoAModificar = new ArrayList<>();
         this.activo = false;
     }
 

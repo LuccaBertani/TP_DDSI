@@ -24,7 +24,7 @@ public class BuscadorProvincia {
     }
 
     public Provincia buscar(Long elemento) {
-        return repoProvincia.findById(elemento).orElse(null);
+        return elemento != null ? repoProvincia.findById(elemento).orElse(null) : null;
     }
 
     public List<Provincia> buscarTodos() {

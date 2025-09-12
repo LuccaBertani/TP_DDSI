@@ -25,7 +25,7 @@ public class BuscadorPais implements CommandLineRunner {
     }
 
     public Pais buscar(Long id){
-        return this.repoPais.findById(id).orElse(null);
+        return id != null ? this.repoPais.findById(id).orElse(null) : null;
     }
 
     @Override

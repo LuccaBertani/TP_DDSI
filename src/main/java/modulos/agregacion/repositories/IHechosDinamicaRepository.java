@@ -26,4 +26,14 @@ public interface IHechosDinamicaRepository extends JpaRepository<HechoDinamica, 
 """)
     List<HechoDinamica> findAllByNombreNormalizado(@Param("nombre") String nombre);
 
+    @Query("""
+  select h
+  from HechoDinamica h
+  where h.id = :idHecho
+    and h.usuario is not null
+    and h.usuario.id = :idUsuario
+""")
+    Optional<HechoDinamica> findByIdAndUsuario(@Param("idHecho") Long idHecho, @Param("idUsuario") Long idUsuario);
+
+
 }

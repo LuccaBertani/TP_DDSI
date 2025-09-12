@@ -23,15 +23,18 @@ public class SolicitudHechoController {
         this.solicitudHechoService = solicitudHechoService;
     }
 
+    // Anda
     @PostMapping("/evaluar/subir")
     public ResponseEntity<?> evaluarSolicitudSubida(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
         return solicitudHechoService.evaluarSolicitudSubirHecho(dtoInput); // 200 o 401
     }
 
+    // Anda
     @PostMapping("/evaluar/eliminar")
     public ResponseEntity<?> evaluarSolicitudEliminacion(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
         return solicitudHechoService.evaluarEliminacionHecho(dtoInput); // 200, 401
     }
+
 
     @PostMapping("/evaluar/modificar")
     public ResponseEntity<?> evaluarSolicitudModificacion(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
@@ -44,31 +47,37 @@ public class SolicitudHechoController {
         return solicitudHechoService.solicitarSubirHecho(dtoInput); // 200 o 401
     }
 
+    // Anda
     @PostMapping("/eliminar-hecho")
     public ResponseEntity<?> enviarSolicitudEliminarHecho(@Valid @RequestBody SolicitudHechoEliminarInputDTO dtoInput){
         return solicitudHechoService.solicitarEliminacionHecho(dtoInput); // 200 o 401
     }
 
+    // Anda
     @PostMapping("/modificar-hecho")
     public ResponseEntity<?> enviarSolicitudModificarHecho(@Valid @RequestBody SolicitudHechoModificarInputDTO dtoInput){
         return solicitudHechoService.solicitarModificacionHecho(dtoInput); // 200, 401 o 409 (recurso ya modificado)
     }
 
+    // Anda
     @GetMapping("/get-mensajes")
     public ResponseEntity<?> getMensajesUsuario(@Valid @RequestParam Long id_receptor){
         return solicitudHechoService.obtenerMensajes(id_receptor);
     }
 
+    // Anda
     @PostMapping("/reportar")
     public ResponseEntity<?> reportar(@Valid @RequestParam Long id_hecho, @Valid @RequestParam String motivo){
         return solicitudHechoService.reportarHecho(motivo, id_hecho);
     }
 
+    // Anda
     @GetMapping("/get/all")
     public ResponseEntity<?> getAllSolicitudes(@Valid @RequestParam Long id_usuario){
         return solicitudHechoService.getAllSolicitudes(id_usuario);
     }
 
+    // Anda
     @GetMapping("/get/pendientes")
     public ResponseEntity<?> getSolicitudesPendientes(@Valid @RequestParam Long id_usuario){
         return solicitudHechoService.obtenerSolicitudesPendientes(id_usuario);

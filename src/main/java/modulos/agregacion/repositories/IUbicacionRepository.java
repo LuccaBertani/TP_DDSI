@@ -8,12 +8,17 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface IUbicacionRepository extends JpaRepository<Ubicacion, Long> {
-    @Query("""
-        select u
-        from Ubicacion u
-        where u.pais.id = :paisId
-          and u.provincia.id = :provinciaId
-    """)
+    @Query(value = """
+    SELECT *
+    FROM ubicacion u
+    WHERE 
+        ((:paisId IS NULL AND u.pais_id IS NULL) OR (:paisId IS NOT NULL AND u.pais_id = :paisId))
+      AND
+        ((:provinciaId IS NULL AND u.provincia_id IS NULL) OR (:provinciaId IS NOT NULL AND u.provincia_id = :provinciaId))
+    LIMIT 1
+""", nativeQuery = true) // El limit 1 porque sin querer ya guardé ubicaciones con fks repetidas
     Optional<Ubicacion> findByPaisIdAndProvinciaId(@Param("paisId") Long paisId,
                                                    @Param("provinciaId") Long provinciaId);
+
+
 }

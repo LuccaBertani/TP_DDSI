@@ -30,7 +30,7 @@ public class Categoria {
     }
 }
 
-// TODO: TESTEAR TODOS LOS ENDPOINTS (?
-// TODO  HACER EL PUNTO EXTRA!!
-// TODO testear y corregir si es necesario el endpoint importarHechos
-// TODO testear y corregir si es necesario endpoints de SolicitarHechoController
+// TODO: Testear algoritmos consenso
+// TODO: Arreglar querys busqueda normalizada -> testear importar hechos
+// TODO: Arreglar null pointer exceptions de servicio de estadisticas
+// TODO: HACER EL PUNTO EXTRA!!

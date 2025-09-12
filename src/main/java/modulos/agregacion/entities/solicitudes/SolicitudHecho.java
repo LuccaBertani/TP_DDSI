@@ -14,16 +14,18 @@ import modulos.agregacion.entities.usuario.Usuario;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo_solicitud", discriminatorType = DiscriminatorType.STRING, length = 20)
 public abstract class SolicitudHecho {
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_usuario", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_solicitudHecho_usuario"))
     protected Usuario usuario;
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_hecho", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_hecho", referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_solicitudHecho_hecho"))
     protected HechoDinamica hecho;
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     protected long id;
-    @Column (name = "justificacion")
+    @Column (name = "justificacion", length = 1000)
     protected String justificacion;
     @Column (name = "procesada")
     protected boolean procesada;
