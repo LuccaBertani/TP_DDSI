@@ -32,3 +32,5 @@ public class Categoria {
 
 // TODO: TESTEAR TODOS LOS ENDPOINTS (?
 // TODO  HACER EL PUNTO EXTRA!!
+// TODO testear y corregir si es necesario el endpoint importarHechos
+// TODO testear y corregir si es necesario endpoints de SolicitarHechoController

@@ -2,15 +2,12 @@ package modulos.agregacion.entities.fuentes;
 
 import modulos.agregacion.entities.*;
 import modulos.agregacion.entities.filtros.*;
-import modulos.buscadores.BuscadorFiltro;
-import modulos.buscadores.BuscadorProvincia;
+import modulos.buscadores.*;
 import modulos.shared.dtos.input.*;
 import modulos.shared.utils.FechaParser;
 import modulos.shared.utils.Geocodificador;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import modulos.buscadores.BuscadorCategoria;
-import modulos.buscadores.BuscadorPais;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -68,7 +65,7 @@ public class FuenteProxy {
 
     }
 
-        public List<Hecho> getHechos(BuscadorCategoria buscadorCategoria, BuscadorProvincia buscadorProvincia, BuscadorPais buscadorPais) {
+        public List<Hecho> getHechos(BuscadorUbicacion buscadorUbicacion, BuscadorCategoria buscadorCategoria, BuscadorProvincia buscadorProvincia, BuscadorPais buscadorPais) {
 
             List<Hecho> hechos = new ArrayList<>();
 
@@ -98,8 +95,10 @@ public class FuenteProxy {
                         hecho.getAtributosHecho().setCategoria(buscadorCategoria.buscar(obj.getString("categoria")));
                         UbicacionString ubicacionString = Geocodificador.obtenerUbicacion(obj.getDouble("latitud"),obj.getDouble("longitud"));
                         if(ubicacionString != null) {
-                            hecho.getAtributosHecho().getUbicacion().setPais(buscadorPais.buscar(ubicacionString.getPais()));
-                            hecho.getAtributosHecho().getUbicacion().setProvincia(buscadorProvincia.buscar(ubicacionString.getProvincia()));
+                            Pais pais = buscadorPais.buscar(ubicacionString.getPais());
+                            Provincia provincia = buscadorProvincia.buscar(ubicacionString.getProvincia());
+                            Ubicacion ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
+                            hecho.getAtributosHecho().setUbicacion(ubicacion);
                         }
                         hecho.getAtributosHecho().setFechaAcontecimiento(FechaParser.parsearFecha(obj.getString("fecha_hecho")));
                         hecho.getAtributosHecho().setFechaCarga(FechaParser.parsearFecha(obj.getString("created_at")));
@@ -125,7 +124,7 @@ public class FuenteProxy {
             return hechos;
     }
 
-    public Hecho getHechoPorId(int id, BuscadorCategoria buscadorCategoria, BuscadorProvincia buscadorProvincia, BuscadorPais buscadorPais) {
+    public Hecho getHechoPorId(int id, BuscadorUbicacion buscadorUbicacion, BuscadorCategoria buscadorCategoria, BuscadorProvincia buscadorProvincia, BuscadorPais buscadorPais) {
         try {
             String urlStr = this.url_base + "/desastres-naturales/?id=" + id;
             URL url = new URL(urlStr);
@@ -148,8 +147,10 @@ public class FuenteProxy {
                 hecho.getAtributosHecho().setCategoria(buscadorCategoria.buscar(obj.getString("categoria")));
                 UbicacionString ubicacionString = Geocodificador.obtenerUbicacion(obj.getDouble("latitud"),obj.getDouble("longitud"));
                 if(ubicacionString != null) {
-                    hecho.getAtributosHecho().getUbicacion().setPais(buscadorPais.buscar(ubicacionString.getPais()));
-                    hecho.getAtributosHecho().getUbicacion().setProvincia(buscadorProvincia.buscar(ubicacionString.getProvincia()));
+                    Pais pais = buscadorPais.buscar(ubicacionString.getPais());
+                    Provincia provincia = buscadorProvincia.buscar(ubicacionString.getProvincia());
+                    Ubicacion ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
+                    hecho.getAtributosHecho().setUbicacion(ubicacion);
                 }
                     hecho.getAtributosHecho().setFechaAcontecimiento(FechaParser.parsearFecha(obj.getString("fecha_hecho")));
                     hecho.getAtributosHecho().setFechaCarga(FechaParser.parsearFecha(obj.getString("created_at")));
@@ -173,7 +174,7 @@ public class FuenteProxy {
 
 
 
-    public List<Coleccion> getColeccionesMetaMapa(BuscadorFiltro buscadorFiltro, String url_1, BuscadorProvincia buscadorProvincia, BuscadorPais buscadorPais, BuscadorCategoria buscadorCategoria){
+    public List<Coleccion> getColeccionesMetaMapa(BuscadorFiltro buscadorFiltro, String url_1, BuscadorUbicacion buscadorUbicacion, BuscadorProvincia buscadorProvincia, BuscadorPais buscadorPais, BuscadorCategoria buscadorCategoria){
         try {
 
         String urlStr = this.url_base + "/get-all";
@@ -219,7 +220,7 @@ public class FuenteProxy {
                     atributos.setFechaCargaInicial(filtrosEnString.getFechaCargaInicial());
                     atributos.setFechaCargaFinal(filtrosEnString.getFechaCargaFinal());
 
-                    List<Hecho> hechos = this.getHechosDeColeccionMetaMapa(atributos,url_1, buscadorPais, buscadorProvincia, buscadorCategoria);
+                    List<Hecho> hechos = this.getHechosDeColeccionMetaMapa(atributos,url_1, buscadorUbicacion, buscadorPais, buscadorProvincia, buscadorCategoria);
 
                     coleccion.setHechos(hechos);
                     colecciones.add(coleccion);
@@ -241,7 +242,7 @@ public class FuenteProxy {
     }
 
 
-    public List<Hecho> getHechosMetaMapa(String url_1, FiltroHechosDTO filtros, BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia){
+    public List<Hecho> getHechosMetaMapa(String url_1, FiltroHechosDTO filtros, BuscadorUbicacion buscadorUbicacion, BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia){
 
         try {
             String urlStr = url_1 + "/get";
@@ -284,8 +285,10 @@ public class FuenteProxy {
                     hecho.getAtributosHecho().setCategoria(buscadorCategoria.buscar(obj.getString("categoria")));
                     UbicacionString ubicacionString = Geocodificador.obtenerUbicacion(obj.getDouble("latitud"),obj.getDouble("longitud"));
                     if(ubicacionString != null) {
-                        hecho.getAtributosHecho().getUbicacion().setPais(buscadorPais.buscar(ubicacionString.getPais()));
-                        hecho.getAtributosHecho().getUbicacion().setProvincia(buscadorProvincia.buscar(ubicacionString.getProvincia()));
+                        Pais pais = buscadorPais.buscar(ubicacionString.getPais());
+                        Provincia provincia = buscadorProvincia.buscar(ubicacionString.getProvincia());
+                        Ubicacion ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
+                        hecho.getAtributosHecho().setUbicacion(ubicacion);
                     }
                     hecho.getAtributosHecho().setFechaAcontecimiento(FechaParser.parsearFecha(obj.getString("fechaAcontecimiento")));
                     hecho.getAtributosHecho().setModificado(true);
@@ -308,7 +311,7 @@ public class FuenteProxy {
     }
 
 
-    public List<Hecho> getHechosDeColeccionMetaMapa(ProxyDTO atributos, String url_1, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, BuscadorCategoria buscadorCategoria){
+    public List<Hecho> getHechosDeColeccionMetaMapa(ProxyDTO atributos, String url_1, BuscadorUbicacion buscadorUbicacion, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, BuscadorCategoria buscadorCategoria){
         try {
 
             String url_concatenada = url_1 + "get/filtrar";
@@ -347,8 +350,10 @@ public class FuenteProxy {
                     hecho.getAtributosHecho().setCategoria(buscadorCategoria.buscar(obj.getString("categoria")));
                     UbicacionString ubicacionString = Geocodificador.obtenerUbicacion(obj.getDouble("latitud"),obj.getDouble("longitud"));
                     if(ubicacionString != null) {
-                        hecho.getAtributosHecho().getUbicacion().setPais(buscadorPais.buscar(ubicacionString.getPais()));
-                        hecho.getAtributosHecho().getUbicacion().setProvincia(buscadorProvincia.buscar(ubicacionString.getProvincia()));
+                        Pais pais = buscadorPais.buscar(ubicacionString.getPais());
+                        Provincia provincia = buscadorProvincia.buscar(ubicacionString.getProvincia());
+                        Ubicacion ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
+                        hecho.getAtributosHecho().setUbicacion(ubicacion);
                     }
                     hecho.getAtributosHecho().setFechaAcontecimiento(FechaParser.parsearFecha(obj.getString("fechaAcontecimiento")));
                     hecho.getAtributosHecho().setModificado(true);

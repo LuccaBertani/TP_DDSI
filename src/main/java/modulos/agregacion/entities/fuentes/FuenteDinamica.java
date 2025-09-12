@@ -1,10 +1,7 @@
 package modulos.agregacion.entities.fuentes;
 
-import modulos.agregacion.entities.Hecho;
-import modulos.agregacion.entities.HechoDinamica;
+import modulos.agregacion.entities.*;
 import modulos.shared.utils.FechaParser;
-import modulos.agregacion.entities.HechosData;
-import modulos.agregacion.entities.TipoContenido;
 
 import java.time.ZonedDateTime;
 
@@ -17,11 +14,11 @@ public class FuenteDinamica {
         hecho.getAtributosHecho().setTitulo(data.getTitulo());
         hecho.setActivo(false);
         hecho.getAtributosHecho().setDescripcion(data.getDescripcion());
-        hecho.getAtributosHecho().setContenidoMultimedia(TipoContenido.fromCodigo(data.getTipoContenido()));
+        TipoContenido contenido = data.getTipoContenido() != null ? TipoContenido.fromCodigo(data.getTipoContenido()) : null;
+        hecho.getAtributosHecho().setContenidoMultimedia(contenido);
         ZonedDateTime fecha = FechaParser.parsearFecha(data.getFechaAcontecimiento());
         hecho.getAtributosHecho().setFechaAcontecimiento(fecha);
-        hecho.getAtributosHecho().getUbicacion().setPais(data.getPais());
-        hecho.getAtributosHecho().getUbicacion().setProvincia(data.getProvincia());
+        hecho.getAtributosHecho().setUbicacion(data.getUbicacion());
         hecho.getAtributosHecho().setOrigen(Origen.FUENTE_DINAMICA);
         hecho.getAtributosHecho().setModificado(true);
         hecho.getAtributosHecho().setCategoria(data.getCategoria());

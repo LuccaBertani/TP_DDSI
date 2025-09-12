@@ -405,6 +405,7 @@
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Color de Identificación</label>
                                     <select class="form-select">
+                                        <option value="">Seleccionar tipo</option>
                                         <option value="primary">Azul</option>
                                         <option value="success">Verde</option>
                                         <option value="warning">Amarillo</option>
@@ -564,8 +565,7 @@
                                         <option value="">Seleccionar tipo</option>
                                         <option value="categoria">Categoría</option>
                                         <option value="pais">País</option>
-                                        <option value="provincia">Provincia/Estado</option>
-                                        <option value="ciudad">Ciudad</option>
+                                        <option value="provincia">Provincia</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -623,7 +623,7 @@
                                     <div class="flex-grow-1">
                                         <div class="d-flex align-items-center mb-2">
                                             <h6 class="mb-0 me-2">Buenos Aires</h6>
-                                            <span class="badge bg-secondary">País/Provincia</span>
+                                            <span class="badge bg-secondary">Provincia</span>
                                         </div>
                                         <div>
                                             <span class="synonym-badge">Ciudad Autónoma de Buenos Aires</span>
@@ -724,27 +724,29 @@
                             </div>
 
 
-                        <div class="text-center mt-3">
-                            <nav aria-label="Navegación de sinónimos">
-                                <ul class="pagination pagination-sm justify-content-center">
-                                    <li class="page-item active">
-                                        <span class="page-link">1</span>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page=2">2</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page=3">3</a>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </div>
+                            <div class="text-center mt-3">
+                                <nav aria-label="Navegación de sinónimos">
+                                    <ul class="pagination pagination-sm justify-content-center">
+                                        <li class="page-item active">
+                                            <span class="page-link">1</span>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=2">2</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=3">3</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
 
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+
+
 
 </main>
 

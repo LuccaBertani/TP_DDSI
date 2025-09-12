@@ -117,12 +117,10 @@ public class LectorCSV {
                     pais = buscadorPais.buscar(ubicacionString.getPais());
                     provincia = buscadorProvincia.buscar(ubicacionString.getProvincia());
                     ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
+                    hecho.getAtributosHecho().setUbicacion(ubicacion);
                 }
 
                 hecho.getAtributosHecho().setUbicacion(ubicacion);
-                hecho.getAtributosHecho().getUbicacion().setPais(pais);
-                hecho.getAtributosHecho().getUbicacion().setProvincia(provincia);
-
 
                 hecho.getAtributosHecho().setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))) : null);
                 hecho.getAtributosHecho().setModificado(true);

@@ -36,7 +36,7 @@ public class AtributosHecho {
     @Column(name = "origen", length = 20)
     private Origen origen;
 
-    @Column(name = "fechaCarga", nullable = false)
+    @Column(name = "fechaCarga")
     private ZonedDateTime fechaCarga;
 
     @Column(name = "fechaUltimaActualizacion")

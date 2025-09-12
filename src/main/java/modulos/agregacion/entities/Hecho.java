@@ -49,7 +49,7 @@ public abstract class Hecho {
     public Hecho() {
         this.datasets = new ArrayList<>();
         this.atributosHecho = new AtributosHecho();
-        //this.atributosHecho = atributosHecho;
+        this.activo = false;
     }
 
 }

@@ -38,6 +38,7 @@ public class SolicitudHechoController {
         return solicitudHechoService.evaluarModificacionHecho(dtoInput); // 200, 401
     }
 
+    // Anda
     @PostMapping("/subir-hecho")
     public ResponseEntity<?> enviarSolicitudSubirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput){
         return solicitudHechoService.solicitarSubirHecho(dtoInput); // 200 o 401

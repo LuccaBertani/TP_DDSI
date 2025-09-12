@@ -1,11 +1,15 @@
 package modulos.agregacion.entities.algoritmosConsenso;
 
+import modulos.agregacion.entities.AtributosHecho;
 import modulos.agregacion.entities.Coleccion;
+import modulos.agregacion.entities.Ubicacion;
 import modulos.agregacion.entities.fuentes.Dataset;
 import modulos.agregacion.entities.Hecho;
 import modulos.buscadores.Normalizador;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class AlgoritmoConsensoMultiplesMenciones implements IAlgoritmoConsenso {
 
@@ -39,11 +43,36 @@ public class AlgoritmoConsensoMultiplesMenciones implements IAlgoritmoConsenso {
         return hechoRep!=null;
     }
 
-    private boolean tienenAtributosDistintos(Hecho h1, Hecho h2){
-        return !Normalizador.normalizarYComparar(h1.getAtributosHecho().getDescripcion(),h2.getAtributosHecho().getDescripcion())||
-                !h1.getAtributosHecho().getCategoria().equals(h2.getAtributosHecho().getCategoria()) ||
-                !h1.getAtributosHecho().getUbicacion().getPais().equals(h2.getAtributosHecho().getUbicacion().getPais()) ||
-                !h1.getAtributosHecho().getFechaAcontecimiento().equals(h2.getAtributosHecho().getFechaAcontecimiento()) ||
-                !h1.getAtributosHecho().getUbicacion().getProvincia().equals(h2.getAtributosHecho().getUbicacion().getProvincia());
+    private boolean tienenAtributosDistintos(Hecho h1, Hecho h2) {
+        var a1 = Optional.ofNullable(h1.getAtributosHecho());
+        var a2 = Optional.ofNullable(h2.getAtributosHecho());
+
+        // descripcion: si es null, comparo como "" para que el normalizador no reciba null
+        String d1 = a1.map(AtributosHecho::getDescripcion).orElse("");
+        String d2 = a2.map(AtributosHecho::getDescripcion).orElse("");
+        boolean descDistinta = !Normalizador.normalizarYComparar(d1, d2);
+
+        // categoria (puede ser null)
+        boolean categoriaDistinta = !Objects.equals(
+                a1.map(AtributosHecho::getCategoria).orElse(null),
+                a2.map(AtributosHecho::getCategoria).orElse(null)
+        );
+
+        // pais (ubicacion puede ser null)
+        var pais1 = a1.map(AtributosHecho::getUbicacion).map(Ubicacion::getPais).orElse(null);
+        var pais2 = a2.map(AtributosHecho::getUbicacion).map(Ubicacion::getPais).orElse(null);
+        boolean paisDistinto = !Objects.equals(pais1, pais2);
+
+        // fecha (puede ser null)
+        var f1 = a1.map(AtributosHecho::getFechaAcontecimiento).orElse(null);
+        var f2 = a2.map(AtributosHecho::getFechaAcontecimiento).orElse(null);
+        boolean fechaDistinta = !Objects.equals(f1, f2);
+
+        // provincia (ubicacion puede ser null)
+        var prov1 = a1.map(AtributosHecho::getUbicacion).map(Ubicacion::getProvincia).orElse(null);
+        var prov2 = a2.map(AtributosHecho::getUbicacion).map(Ubicacion::getProvincia).orElse(null);
+        boolean provinciaDistinta = !Objects.equals(prov1, prov2);
+
+        return descDistinta || categoriaDistinta || paisDistinto || fechaDistinta || provinciaDistinta;
     }
 }
