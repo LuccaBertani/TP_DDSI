@@ -14,14 +14,14 @@ public interface IPaisRepository extends JpaRepository<Pais, Long> {
 SELECT p
 FROM Pais p
 WHERE
-  REPLACE(LOWER(FUNCTION('unaccent', p.pais)), ' ', '') =
-  REPLACE(LOWER(FUNCTION('unaccent', :nombre)), ' ', '')
+  REPLACE(LOWER(p.pais), ' ', '') =
+  REPLACE(LOWER(:nombre), ' ', '')
   OR EXISTS (
     SELECT 1
     FROM Sinonimo s
     WHERE s MEMBER OF p.sinonimos
-      AND REPLACE(LOWER(FUNCTION('unaccent', s.sinonimoStr)), ' ', '') =
-          REPLACE(LOWER(FUNCTION('unaccent', :nombre)),        ' ', '')
+      AND REPLACE(LOWER(s.sinonimoStr), ' ', '') =
+          REPLACE(LOWER(:nombre), ' ', '')
   )
 """)
     Optional<Pais> findByNombreNormalizado(@Param("nombre") String nombre);

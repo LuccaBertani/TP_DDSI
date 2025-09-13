@@ -28,57 +28,69 @@ public class DatosQuery implements IDatosQuery{
 
     @Override
     public List<ColeccionProvincia> obtenerMayorCantHechosProvinciaEnColeccion() {
-        List<ColeccionProvinciaProjection> info = repoColeccion.obtenerMayorCantHechosProvinciaEnColeccion();
+        List<ColeccionProvinciaProjection> info = repoColeccion.obtenerMayorCantHechosProvinciaEnColeccion().orElse(null);
+        if (info != null){
+            List<ColeccionProvincia> infos = new ArrayList<>();
 
-        List<ColeccionProvincia> infos = new ArrayList<>();
+            for(ColeccionProvinciaProjection cpp : info){
 
-        for(ColeccionProvinciaProjection cpp : info){
+                Coleccion coleccion = cpp.getColeccionId() != null ? repoColeccion.findById(cpp.getColeccionId()).orElse(null) : null;
+                Provincia provincia = cpp.getProvinciaId() != null ? repoProvincia.findById(cpp.getProvinciaId()).orElse(null) : null;
 
-            Coleccion coleccion = cpp.getColeccionId() != null ? repoColeccion.findById(cpp.getColeccionId()).orElse(null) : null;
-            Provincia provincia = cpp.getProvinciaId() != null ? repoProvincia.findById(cpp.getProvinciaId()).orElse(null) : null;
+                ColeccionProvincia coleccionProvincia = new ColeccionProvincia(coleccion, provincia, cpp.getTotalHechos());
+                infos.add(coleccionProvincia);
+            }
 
-            ColeccionProvincia coleccionProvincia = new ColeccionProvincia(coleccion, provincia, cpp.getTotalHechos());
-            infos.add(coleccionProvincia);
+            return infos;
         }
-
-        return infos;
+        return null;
     }
 
     @Override
     public CategoriaCantidad mayorCantHechosCategoria() {
-        CategoriaCantidadProjection info = repoCategoria.obtenerColeccionMayorHechos();
-        // null pointer exception cuando info es null
-        Categoria categoria = info.getCategoriaId() != null ? repoCategoria.findById(info.getCategoriaId()).orElse(null) : null;
-        return new CategoriaCantidad(categoria,info.getCantHechos());
+        CategoriaCantidadProjection info = repoCategoria.obtenerColeccionMayorHechos().orElse(null);
+        if (info != null){
+            Categoria categoria = repoCategoria.findById(info.getCategoriaId()).orElse(null);
+            return new CategoriaCantidad(categoria,info.getCantHechos());
+        }
+        return null;
     }
 
     @Override
     public List<CategoriaProvincia> obtenerMayorCantHechosProvincia() {
         List<CategoriaProvinciaProjection> info = repoProvincia.obtenerCategoriaMayorHechosProvincia();
 
-        List<CategoriaProvincia> infos = new ArrayList<>();
+        if (info!=null){
+            List<CategoriaProvincia> infos = new ArrayList<>();
 
-        for(CategoriaProvinciaProjection cpp : info){
-            Categoria categoria = cpp.getCategoriaId() != null ? repoCategoria.findById(cpp.getCategoriaId()).orElse(null) : null;
-            Provincia provincia = cpp.getProvinciaId() != null ? repoProvincia.findById(cpp.getProvinciaId()).orElse(null) : null;
-            CategoriaProvincia categoriaProvincia = new CategoriaProvincia(categoria,provincia,cpp.getCantHechos());
-            infos.add(categoriaProvincia);
+            for(CategoriaProvinciaProjection cpp : info){
+                Categoria categoria = cpp.getCategoriaId() != null ? repoCategoria.findById(cpp.getCategoriaId()).orElse(null) : null;
+                Provincia provincia = cpp.getProvinciaId() != null ? repoProvincia.findById(cpp.getProvinciaId()).orElse(null) : null;
+                CategoriaProvincia categoriaProvincia = new CategoriaProvincia(categoria,provincia,cpp.getCantHechos());
+                infos.add(categoriaProvincia);
+            }
+            return infos;
         }
-        return infos;
+        return null;
+
     }
 
     @Override
     public List<CategoriaHora> horaMayorCantHechos() {
-        List<HoraCategoriaProjection> info = repoCategoria.obtenerHoraMaxHechosCategoria();
+        List<HoraCategoriaProjection> info = repoCategoria.obtenerHoraMaxHechosCategoria().orElse(null);
 
-        List<CategoriaHora> infos = new ArrayList<>();
+        if (info != null){
+            List<CategoriaHora> infos = new ArrayList<>();
 
-        for(HoraCategoriaProjection cpp : info){
-            Categoria categoria = cpp.getIdCategoria() != null ? repoCategoria.findById(cpp.getIdCategoria()).orElse(null) : null;
-            CategoriaHora categoriaHora = new CategoriaHora(categoria,cpp.getHoraDelDia(),cpp.getTotalHechos());
-            infos.add(categoriaHora);
+            for(HoraCategoriaProjection cpp : info){
+                Categoria categoria = cpp.getIdCategoria() != null ? repoCategoria.findById(cpp.getIdCategoria()).orElse(null) : null;
+                CategoriaHora categoriaHora = new CategoriaHora(categoria,cpp.getHoraDelDia(),cpp.getTotalHechos());
+                infos.add(categoriaHora);
+            }
+            return infos;
         }
-        return infos;
+
+        return null;
     }
 
     @Override

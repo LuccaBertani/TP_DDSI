@@ -28,7 +28,7 @@ public interface IColeccionRepository extends JpaRepository<Coleccion, Long> {
         ORDER BY totalHechos DESC
         LIMIT 1
         """, nativeQuery = true)
-    List<ColeccionProvinciaProjection> obtenerMayorCantHechosProvinciaEnColeccion();
+    Optional<List<ColeccionProvinciaProjection>> obtenerMayorCantHechosProvinciaEnColeccion();
 
     List<Coleccion> findByActivoTrueAndModificadoTrue();
     List<Coleccion> findByActivoTrue();

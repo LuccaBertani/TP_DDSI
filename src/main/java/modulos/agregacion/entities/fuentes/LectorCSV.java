@@ -90,7 +90,7 @@ public class LectorCSV {
                 if (hecho0 != null){
                     tituloRepetido = true;
                 }
-
+                System.out.println("INDICE DE COLUMNA DE DESCRIPCION" + indicesColumnas.get(1));
                 hecho.getAtributosHecho().setDescripcion((indicesColumnas.get(1) != -1) ? registros.get(indicesColumnas.get(1)) : null);
 
                 String categoriaString = indicesColumnas.get(2) != -1 ? registros.get(indicesColumnas.get(2)) : null;
@@ -118,9 +118,11 @@ public class LectorCSV {
                     provincia = buscadorProvincia.buscar(ubicacionString.getProvincia());
                     ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
                     hecho.getAtributosHecho().setUbicacion(ubicacion);
+                }else{
+                    hecho.getAtributosHecho().setUbicacion(null);
                 }
 
-                hecho.getAtributosHecho().setUbicacion(ubicacion);
+                System.out.println("Soy una fecha asquerosa: " + FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))));
 
                 hecho.getAtributosHecho().setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))) : null);
                 hecho.getAtributosHecho().setModificado(true);
@@ -151,6 +153,14 @@ public class LectorCSV {
      * Variante con header opcional.
      * - Si 'header' != null y no está vacío, se escribe como primera fila.
      * - Luego se parte valoresLineales en filas de 'columnasPorFila' (con padding si falta).
+
+
+     Titulo: Corte parcial de Av. 9 de Julio
+     Descripcion: Reducción de carriles por obras
+     Categoría:
+     Provincia: Ciudad Autónoma de Buenos Aires
+     Pais: Argentina
+     Fecha del hecho: null
      */
     public static Path generarCsvDesdeListaLineal(
             List<?> valoresLineales,
@@ -327,10 +337,13 @@ public class LectorCSV {
         for (int i = 0; i < headers.size(); i++) {
             String valorColumna = headers.get(i);
             valorColumna = Normalizador.normalizar(valorColumna);
+            System.out.println("VALOR COLUMNA: " + valorColumna);
             int j = 0;
             for (String campoEsperado : LectorCSV.campos) {
+                System.out.println("CAMPO ESPERADO: " + campoEsperado);
                 if (valorColumna.equals(campoEsperado)) {
                     indicesColumnas.set(j, i); // i: posicion del campo del header. j: posicion de la lista
+                    break;
                 }
                 j++;
             }

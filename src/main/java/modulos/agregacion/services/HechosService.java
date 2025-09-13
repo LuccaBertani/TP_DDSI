@@ -173,7 +173,22 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         fuente.setDataSet(dataset);
 
         List<HechoEstatica> hechos = fuente.leerFuente(buscadorUbicacion, buscadorCategoria, buscadorPais, buscadorProvincia, buscadorHecho);
-        hechosEstaticaRepo.saveAll(hechos);
+
+        if (hechos == null || hechos.isEmpty())
+            System.out.println("SOY EZEQUIEL!!!");
+
+        for (HechoEstatica hecho : hechos){
+            System.out.println("Titulo: " + hecho.getAtributosHecho().getTitulo());
+            System.out.println("Descripcion: " + hecho.getAtributosHecho().getDescripcion());
+            if(hecho.getAtributosHecho().getUbicacion().getProvincia() != null) {
+                System.out.println("Provincia: " + hecho.getAtributosHecho().getUbicacion().getProvincia().getProvincia());
+            }
+            System.out.println("Pais: " + hecho.getAtributosHecho().getUbicacion().getPais().getPais());
+            System.out.println("Fecha del hecho: " + hecho.getAtributosHecho().getFechaAcontecimiento());
+            hecho.setActivo(true);
+            hecho.getAtributosHecho().setFechaCarga(ZonedDateTime.now());
+            hechosEstaticaRepo.save(hecho);
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Se importaron los hechos correctamente");
     }

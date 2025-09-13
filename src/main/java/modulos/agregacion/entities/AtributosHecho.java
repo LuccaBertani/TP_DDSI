@@ -11,7 +11,7 @@ import java.time.ZonedDateTime;
 @Embeddable
 public class AtributosHecho {
 
-    @Column(name = "titulo", columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci", nullable = false)
+    @Column(name = "titulo", columnDefinition = "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci")
     private String titulo;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,CascadeType.MERGE})

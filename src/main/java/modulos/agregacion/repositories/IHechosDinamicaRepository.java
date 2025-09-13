@@ -11,20 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IHechosDinamicaRepository extends JpaRepository<HechoDinamica, Long> {
-    @Query(value = """
-    SELECT h
-    FROM Hecho h 
-    WHERE unaccent(REPLACE(LOWER(h.atributosHecho.titulo), ' ', '')) = unaccent(REPLACE(LOWER(:nombre), ' ', ''))
-    """)
-    Optional<HechoDinamica> findByNombreNormalizado(@Param("nombre") String nombre);
-    //Optional<HechoDinamica> findByNombreNormalizado(@Param("nombre") String nombre);
-
-    @Query(value = """
-    SELECT h
-    FROM Hecho h 
-    WHERE unaccent(REPLACE(LOWER(h.atributosHecho.titulo), ' ', '')) = unaccent(REPLACE(LOWER(:nombre), ' ', ''))
-""")
-    List<HechoDinamica> findAllByNombreNormalizado(@Param("nombre") String nombre);
 
     @Query("""
   select h
@@ -35,5 +21,20 @@ public interface IHechosDinamicaRepository extends JpaRepository<HechoDinamica, 
 """)
     Optional<HechoDinamica> findByIdAndUsuario(@Param("idHecho") Long idHecho, @Param("idUsuario") Long idUsuario);
 
+    @Query("""
+SELECT h
+FROM Hecho h 
+WHERE REPLACE(LOWER(h.atributosHecho.titulo), ' ', '') =
+      REPLACE(LOWER(:nombre), ' ', '')
+""")
+    List<HechoDinamica> findAllByNombreNormalizado(@Param("nombre") String nombre);
+
+    @Query("""
+SELECT h
+FROM Hecho h 
+WHERE REPLACE(LOWER(h.atributosHecho.titulo), ' ', '') =
+      REPLACE(LOWER(:nombre), ' ', '')
+""")
+    Optional<HechoDinamica> findByNombreNormalizado(@Param("nombre") String nombre);
 
 }

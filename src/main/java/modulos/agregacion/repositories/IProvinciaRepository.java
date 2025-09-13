@@ -27,14 +27,14 @@ public interface IProvinciaRepository extends JpaRepository<Provincia, Long> {
 SELECT p
 FROM Provincia p
 WHERE
-  REPLACE(LOWER(FUNCTION('unaccent', p.provincia)), ' ', '') =
-  REPLACE(LOWER(FUNCTION('unaccent', :nombre)), ' ', '')
+  REPLACE(LOWER(p.provincia), ' ', '') =
+  REPLACE(LOWER(:nombre), ' ', '')
   OR EXISTS (
     SELECT 1
     FROM Sinonimo s
     WHERE s MEMBER OF p.sinonimos
-      AND REPLACE(LOWER(FUNCTION('unaccent', s.sinonimoStr)), ' ', '') =
-          REPLACE(LOWER(FUNCTION('unaccent', :nombre)),        ' ', '')
+      AND REPLACE(LOWER(s.sinonimoStr), ' ', '') =
+          REPLACE(LOWER(:nombre), ' ', '')
   )
 """)
     Optional<Provincia> findByNombreNormalizado(@Param("nombre") String nombre);

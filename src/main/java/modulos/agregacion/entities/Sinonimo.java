@@ -14,7 +14,7 @@ public class Sinonimo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "sinonimo", length = 50, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci")
+    @Column(name = "sinonimo", columnDefinition = "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci")
     private String sinonimoStr;
 
     public Sinonimo(String sinonimoStr){

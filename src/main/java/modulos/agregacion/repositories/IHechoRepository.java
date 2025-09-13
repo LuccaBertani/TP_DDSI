@@ -2,6 +2,7 @@ package modulos.agregacion.repositories;
 
 import jakarta.transaction.Transactional;
 import modulos.agregacion.entities.Hecho;
+import modulos.agregacion.entities.HechoEstatica;
 import modulos.agregacion.entities.Pais;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

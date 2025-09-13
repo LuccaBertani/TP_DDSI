@@ -15,7 +15,7 @@ public class Provincia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nombre")
+    @Column(name = "nombre", columnDefinition = "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci")
     private String provincia;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -11,21 +11,19 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IHechosEstaticaRepository extends JpaRepository<HechoEstatica, Long> {
-    @Query(value = """
-    SELECT h
-    FROM Hecho h 
-    WHERE unaccent(REPLACE(LOWER(h.atributosHecho.titulo), ' ', '')) = unaccent(REPLACE(LOWER(:nombre), ' ', ''))
+    @Query("""
+SELECT h
+FROM Hecho h 
+WHERE REPLACE(LOWER(h.atributosHecho.titulo), ' ', '') =
+      REPLACE(LOWER(:nombre), ' ', '')
 """)
     List<HechoEstatica> findAllByNombreNormalizado(@Param("nombre") String nombre);
 
-    @Query(value = """
-  select h.*
-  from hecho h
-  where REPLACE(LOWER(h.titulo), ' ', '') COLLATE utf8mb4_0900_ai_ci
-        = REPLACE(LOWER(:nombre), ' ', '') COLLATE utf8mb4_0900_ai_ci
-  limit 1
-""", nativeQuery = true)
+    @Query("""
+SELECT h
+FROM Hecho h 
+WHERE REPLACE(LOWER(h.atributosHecho.titulo), ' ', '') =
+      REPLACE(LOWER(:nombre), ' ', '')
+""")
     Optional<HechoEstatica> findByNombreNormalizado(@Param("nombre") String nombre);
-
-
 }

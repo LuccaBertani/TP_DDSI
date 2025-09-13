@@ -72,7 +72,7 @@ public class FechaParser {
                 "01/05/2017",
                 "5/1/2017",
                 "05/01/2017",
-                "2023-10-05"
+                "2023-10-05",
         };
         DateTimeFormatter formatterSalida = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss z", Locale.ENGLISH);
 

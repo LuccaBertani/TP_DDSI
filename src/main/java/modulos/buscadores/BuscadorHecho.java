@@ -14,11 +14,13 @@ public class BuscadorHecho {
     private final IHechosEstaticaRepository hechoRepoEstatica;
     private final IHechosDinamicaRepository hechoRepoDinamica;
     private final IHechosProxyRepository hechoRepoProxy;
+    private final IHechoRepository hechosRepo;
 
-    public BuscadorHecho(IHechosEstaticaRepository hechoRepoEstatica, IHechosDinamicaRepository hechoRepoDinamica, IHechosProxyRepository hechoRepoProxy) {
+    public BuscadorHecho(IHechosEstaticaRepository hechoRepoEstatica, IHechosDinamicaRepository hechoRepoDinamica, IHechosProxyRepository hechoRepoProxy, IHechoRepository hechosRepo) {
         this.hechoRepoEstatica = hechoRepoEstatica;
         this.hechoRepoDinamica = hechoRepoDinamica;
         this.hechoRepoProxy = hechoRepoProxy;
+        this.hechosRepo = hechosRepo;
     }
 
     public Hecho buscarOCrearEstatica(String elemento){

@@ -24,7 +24,7 @@ public interface ICategoriaRepository extends JpaRepository<Categoria, Long> {
     ORDER BY COUNT(h.id) DESC 
     LIMIT 1
         """, nativeQuery = true)
-    CategoriaCantidadProjection obtenerColeccionMayorHechos();
+    Optional<CategoriaCantidadProjection> obtenerColeccionMayorHechos();
 
 
 // ¿A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría?
@@ -49,7 +49,7 @@ GROUP BY hora_del_dia, c.id
 ORDER BY totalHechos DESC
 LIMIT 1;
 """, nativeQuery = true)
-    List<HoraCategoriaProjection> obtenerHoraMaxHechosCategoria();
+    Optional<List<HoraCategoriaProjection>> obtenerHoraMaxHechosCategoria();
 
 
 
@@ -57,14 +57,14 @@ LIMIT 1;
 SELECT c
 FROM Categoria c
 WHERE
-  REPLACE(LOWER(FUNCTION('unaccent', c.titulo)), ' ', '') =
-  REPLACE(LOWER(FUNCTION('unaccent', :nombre)), ' ', '')
+  REPLACE(LOWER(c.titulo), ' ', '') =
+  REPLACE(LOWER(:nombre), ' ', '')
   OR EXISTS (
     SELECT 1
     FROM Sinonimo s
     WHERE s MEMBER OF c.sinonimos
-      AND REPLACE(LOWER(FUNCTION('unaccent', s.sinonimoStr)), ' ', '') =
-          REPLACE(LOWER(FUNCTION('unaccent', :nombre)),        ' ', '')
+      AND REPLACE(LOWER(s.sinonimoStr), ' ', '') =
+          REPLACE(LOWER(:nombre), ' ', '')
   )
 """)
     Optional<Categoria> findByNombreNormalizado(@Param("nombre") String nombre);
