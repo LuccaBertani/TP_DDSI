@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import modulos.agregacion.entities.*;
+import modulos.agregacion.entities.usuario.Usuario;
 import modulos.buscadores.*;
 import modulos.shared.utils.FechaParser;
 import modulos.shared.utils.Geocodificador;
@@ -32,7 +33,7 @@ public class LectorCSV {
     }
 
     // Entrega 3: los hechos no se pisan los atributos
-    public List<HechoEstatica> leerCSV(BuscadorUbicacion buscadorUbicacion, BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, BuscadorHecho buscadorHecho) {
+    public List<HechoEstatica> leerCSV(Usuario usuario, BuscadorUbicacion buscadorUbicacion, BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, BuscadorHecho buscadorHecho) {
 
         List<HechoEstatica> hechosASubir = new ArrayList<>();
 
@@ -126,8 +127,7 @@ public class LectorCSV {
 
                 hecho.getAtributosHecho().setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))) : null);
                 hecho.getAtributosHecho().setModificado(true);
-                hecho.getAtributosHecho().setFechaCarga(ZonedDateTime.now());
-                hecho.getAtributosHecho().setFechaUltimaActualizacion(hecho.getAtributosHecho().getFechaCarga());
+                hecho.setUsuario(usuario);
                 hecho.getDatasets().add(this.dataSet);
                 if (tituloRepetido){
                     Hecho hechoIdentico = buscadorHecho.existeHechoIdentico(hecho);

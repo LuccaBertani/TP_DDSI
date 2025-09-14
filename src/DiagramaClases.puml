@@ -1,107 +1,87 @@
 @startuml
 
 '-----------------------------------------------
-'CLASES DENTRO DE BUSCADORES'
-
-class BuscadorCategoria{
-    +buscarOCrear(hechos: List<Hecho>, elemento: String): Categoria
-    +buscar(hechos: List<Hecho>, elemento: String): Categoria
-
-}
-
-class BuscadorPais{
-    +buscarOCrear(hechos: List<Hecho>, elemento: String): Pais
-    +buscar(hechos: List<Hecho>, elemento: String): Pais
-}
-
-'-----------------------------------------------
 'CLASES DENTRO DE ALGORITMOS DE CONSENSO'
 
 Interface AlgoritmoConsenso {
-    +ejecutarAlgoritmoConsenso(fuentes: List<Dataset>)
+    +ejecutarAlgoritmoConsenso(fuentes: List<Dataset>, coleccion: Coleccion)
 }
 
 class AlgoritmoConsensoMayoriaAbsoluta implements AlgoritmoConsenso{
-    -coleccion: Coleccion
-    +ejecutarAlgoritmoConsenso(fuentes: List<Dataset>)
+    +ejecutarAlgoritmoConsenso(fuentes: List<Dataset>, coleccion: Coleccion)
     +mapearIdsDatasets(fuentes: List<Dataset>): List<Long>
 }
 
 class AlgoritmoConsensoMayoriaSimple implements AlgoritmoConsenso{
-    -coleccion: Coleccion
-    +ejecutarAlgoritmoConsenso(fuentes: List<Dataset>)
+    +ejecutarAlgoritmoConsenso(fuentes: List<Dataset>, coleccion: Coleccion)
     +mitadDeFuentesContienenHecho(hecho: Hecho, fuentes: List<Dataset>): List<Long>
 }
 
 class AlgoritmoConsensoMultiplesMenciones implements AlgoritmoConsenso{
-    -coleccion: Coleccion
-    +ejecutarAlgoritmoConsenso(fuentes: List<Dataset>)
+    +ejecutarAlgoritmoConsenso(fuentes: List<Dataset>, coleccion: Coleccion)
     -dosFuentesContienenHecho(hecho: Hecho): Boolean
     -existeHechoIgualTituloDiferentesAtributos(hecho: Hecho, hechos: List<Hecho>)
     -tienenAtributosDistintos(h1: Hecho, h2: Hecho): Boolean
-    }
+}
 
 
 
 '-----------------------------------------------
 'CLASES DENTRO DE FILTROS'
 
-Interface Filtro {
+abstract class Filtro {
+    -id: Long
+}
+
+Interface IFiltro {
     +aprobarHecho(hecho: Hecho): Boolean
+    +toSpecification(): Specification(Hecho)
 }
 
 class FiltroCategoria implements Filtro {
     -categoria: Categoria
-    +aprobarHecho(hecho: Hecho): Boolean
 }
 
 class FiltroContenidoMultimedia implements Filtro {
     -tipoContenido: TipoContenido
-    +aprobarHecho(hecho: Hecho): Boolean
 }
 
 class FiltroDescripcion implements Filtro {
     -descripcion: String
-    +aprobarHecho(hecho: Hecho): Boolean
 }
 
 class FiltroFechaAcontecimiento implements Filtro {
     -fechaInicial: ZonedDateTime
     -fechaFinal: ZonedDateTime
-    +aprobarHecho(hecho: Hecho): Boolean
 }
 
 class FiltroFechaCarga implements Filtro {
     -fechaInicial: ZonedDateTime
     -fechaFinal: ZonedDateTime
-    +aprobarHecho(hecho: Hecho): Boolean
 }
 
 class FiltroOrigen implements Filtro {
     -origenDeseado: Origen
-    +aprobarHecho(hecho: Hecho): Boolean
 }
 
 class FiltroPais implements Filtro {
     -pais: Pais
-    +aprobarHecho(hecho: Hecho): Boolean
 }
 
 class FiltroTitulo implements Filtro {
     -titulo: String
-    +aprobarHecho(hecho: Hecho): Boolean
 }
 
 '-----------------------------------------------
 'CLASES DENTRO DE FUENTES'
 
 class FuenteDinamica {
-    +leerFuente(): ModificadorHechos
+    +crearHecho(data: HechosData): HechoDinamica
 }
 
 class FuenteEstatica {
-    -dataSet: String
-    +leerFuente(): ModificadorHechos
+    -dataSet: Dataset
+    +leerFuente(usuario: Usuario, buscadorUbicacion: BuscadorUbicacion, buscadorCategoria: BuscadorCategoria): ModificadorHechos
 }
 
 ' Para próximas entregas
@@ -121,7 +101,6 @@ class FuenteProxy {
 'CLASES DENTRO DE PERSONAS'
 
 class DatosPersonalesPublicador {
-    -id: Long
     -nombre: String
     -apellido: String
     -edad: Integer
@@ -135,6 +114,7 @@ enum Rol {
 
 class Usuario {
     -contrasenia: String
+    -nombreDeUsuario: String
     -id: Long
     -cantHechosSubidos: Integer
     -rol: Rol
@@ -145,21 +125,16 @@ class Usuario {
 
 '---------------------------------------------
 'CLASES DENTRO DE ENTITIES'
-class AtributosHecho {
-    -titulo: String
-    -ubicacion: Ubicacion
-    -descripcion: Descripcion
-    -fechaAcontecimiento: ZonedDateTime
-    -contenidoMultimedia: TipoContenido
-    -categoria: Categoria
-    -origen: Origen
-    -fechaCarga: ZonedDateTime
-    -fechaUltimaActualizacion: ZonedDateTime
-    -modificado: Boolean
-}
 
 class Categoria{
+    -id: Long
     -titulo: String
+    -sinonimos: List<Sinonimo>
+}
+
+class Sinonimo{
+    -id: Long
+    -sinonimoStr: String
 }
 
 class Coleccion {
@@ -168,9 +143,12 @@ class Coleccion {
     -titulo: String
     -descripcion: String
     -hechos: List<Hecho>
-    -criterio: List<Filtro>
-    +addCriterios(filtros ... Filtro)
-    +addCriterios(filtros: List<Filtro>)
+    -hechosConsensuados: List<Hecho>
+    -algoritmoConsenso: IAlgoritmoConsenso
+    -modificado: Boolean
+    -criterios: List<Filtro>
+    -upsertPorTipo(filtroNuevo : Filtro)
+    +setCriterios(filtros: List<Filtro>)
     +addHechos(hechos ... Hecho)
     +addHechos(hechos: List<Hecho>)
 }
@@ -181,28 +159,16 @@ class FechaParser {
     +parsearFecha(fechaStr: String): ZonedDateTime
 }
 
-class Filtrador{
-    +aplicarFiltros(filtros: List<Filtro>, hechos: List<Hecho>)
-    +hechoPasaFiltros(filtros: List<Filtro>, hecho: Hecho): Boolean
-    +filtrarMensajes(mensajes: List<Mensaje>, id_usuario: Long): List<Mensaje>
-}
-
 class FiltrosColeccion {
     - filtroCategoria : FiltroCategoria
     - filtroPais : FiltroPais
+    - filtroProvincia: FiltroProvincia
     - filtroDescripcion : FiltroDescripcion
     - filtroContenidoMultimedia : FiltroContenidoMultimedia
     - filtroFechaAcontecimiento : FiltroFechaAcontecimiento
     - filtroFechaCarga : FiltroFechaCarga
     - filtroOrigen : FiltroOrigen
     - filtroTitulo : FiltroTitulo
-}
-
-class FormateadorHecho{
-    +formatearAtributosHecho(hechosDinamica: List<Hecho>,hechosEstatica: List<Hecho>,hechosProxy: List<Hecho> , dtoInput: SolicitudHechoInputDTO ): AtributosHecho
-    +formatearFiltrosColeccion(hechosDinamica: List<Hecho>, hechosEstatica: List<Hecho>, hechosProxy: List<Hecho>  , inputDTO: CriteriosColeccionDTO ): FiltrosColeccion
-    +filtrosColeccionToString(filtros: Map<Class<? extends Filtro>, Filtro>): CriteriosColeccionDTO
-    +obtenerMapaDeFiltros(filtrosColeccion: FiltrosColeccion): Map<Class<? extends Filtro>, Filtro>
 }
 
 class Geocodificador {
@@ -214,29 +180,49 @@ class GestorRoles {
     +ContribuyenteAVisualizador(usuario: Usuario): Boolean
 }
 
-class Hecho {
+abstract Hecho {
     -activo: Boolean
     -id: Long
-    -id_usuario: Long
+    -usuario: Usuario
     -titulo: String
     -descripcion: String
     -categoria: Categoria
-    -contenidoMultimediaOpcional: TipoContenido
-    -pais: Pais
+    -contenidoMultimedia: TipoContenido
     -fechaAcontecimiento: ZonedDateTime
-    -fechaDeCarga: ZonedDateTime
-    -origen: Origen
+    -fechaCarga: ZonedDateTime
     -fechaUltimaActualizacion: ZonedDateTime
+    -origen: Origen
+    -modificado : Boolean
+    -atributosHechoAModificar : List<AtributosHechoModificar>
+    -datasets : List<Dataset>
+    -ubicacion: Ubicacion
 }
 
-class HechosData {
-    -titulo: String
-    -descripcion: String
-    -tipoContenido: Integer
-    -fechaAcontecimiento: String
-    -categoria: Categoria
-    -ubicacion: Ubicacion
-    }
+class HechoDinamica{
+}
+
+class HechoEstatica{
+}
+
+class HechoProxy{
+}
+
+class Hash{
+    +encoder(): BCryptPasswordEncoder
+    +generarHash(passwordPlano: String): String
+    +verificarPassword(passwordPlano: String, hashGuardado: String): boolean
+}
+
+class AtributosHechoModificar{
+    -id : Long
+    -descripcion : String
+    -contenidoMultimedia : TipoContenido
+    -fechaAcontecimiento : ZonedDateTime
+    -latitud : Double
+    -longitud : Double
+    -ubicacion : Ubicacion
+    -categoria : Categoria
+}
 
 class LectorCSV {
     -dataSet: String
@@ -247,14 +233,9 @@ class LectorCSV {
 
 class Mensaje{
     -id: Long
-    -id_solicitud_hecho: Long
-    -id_receptor: Long
+    -solicitud_hecho: SolicitudHecho
+    -receptor: Usuario
     -textoMensaje: String
-}
-
-class ModificadorHechos {
-    -hechosASubir: List<Hecho>
-    -hechosAModificar: List<Hecho>
 }
 
 class Normalizador{
@@ -271,7 +252,9 @@ enum Origen {
 }
 
 class Pais {
+    -id: Long
     -pais: String
+    -sinonimo: List<Sinonimo>
 }
 
 class PaisProvincias {
@@ -289,19 +272,19 @@ class Provincia {
 'RespuestaHttp
 
 class SolicitudHecho {
-    -usuario: Usuario
-    -hecho: Hecho
-    -id: Long
-    -justificacion: String
-    -procesada: boolean
-    -rechazadaPorSpam: boolean
+    #usuario: Usuario
+    #hecho: Hecho
+    #id: Long
+    #justificacion: String
+    #procesada: boolean
+    #rechazadaPorSpam: boolean
 }
 
 class Ubicacion {
     -id: Long
     -provincia: Provincia
     -pais: Pais
-    }
+}
 
 enum TipoContenido {
     INVALIDO
@@ -323,6 +306,7 @@ class Estadisticas {
     -coleccionProvincias: List<ColeccionProvincia>
     -timestamp: Instant
 }
+
 class CantSolicitudesEliminacionSpam {
     -cantidad: Integer
 }
@@ -357,108 +341,92 @@ class ColeccionProvincia {
     -timestamp: Instant
 }
 
-class GeneradorEstadisticas {
-    +generarEstadisticas(hechos: List<Hecho>, colecciones: List<Coleccion>, solicitudes: List<SolicitudHecho>): Estadisticas
-    +calcularCategoriaCantidad(hechos: List<Hecho>): CategoriaCantidad
-    +calcularCategoriaHoras(hechos: List<Hecho>): List<CategoriaHora>
-    +calcularCategoriaProvincia(hechos: List<Hecho>): List<CategoriaProvincia>
-    +calcularColeccionProvincia(colecciones: List<Coleccion>): List<ColeccionProvincia>
-    +calcularSolicitudesSpam(solicitudes: List<SolicitudHecho>): CantSolicitudesEliminacionSpam
-}
 
-class AnalizadorEstadistico {
-    -estadisticas: Estadisticas
-    +obtenerTendenciasPorCategoria(): Map<Categoria, Double>
-    +obtenerDistribucionGeografica(): Map<Pais, Integer>
-    +obtenerHorasPico(): List<Integer>
-    +obtenerTasaSpam(): Double
-}
+'--------------------------------------------
+' Relaciones de AlgoritmoConsenso
+AlgoritmoConsensoMayoriaAbsoluta ..|> AlgoritmoConsenso
+AlgoritmoConsensoMayoriaSimple ..|> AlgoritmoConsenso
+AlgoritmoConsensoMultiplesMenciones ..|> AlgoritmoConsenso
 
-' Relación Hechos
-
+Coleccion --> AlgoritmoConsenso
 Coleccion *-- Hecho
-Pais --* Hecho
-Hecho --> TipoContenido
-Hecho *-- Categoria
-Hecho --> Origen
-SolicitudHecho --* Hecho
-
-
-
-
-' Relación entre Usuario y Rol
-Usuario --> Rol
-
-GestorRoles --* Usuario
-
-' Relacion de Lectores
-LectorCSV --> Hecho
-LectorCSV --> ModificadorHechos
-LectorCSV --> FuenteEstatica
-
-Filtrador --> Hecho: *
-Filtrador --> Filtro: *
-
-FiltrosColeccion *-- Filtro
-
-Usuario *-- DatosPersonalesPublicador
-
-FuenteDinamica --> Hecho: *
-FuenteEstatica --> Hecho: *
-FuenteProxy --> Hecho: *
-
-
-'FormateadorHecho --> Filtro
-'FormateadorHecho --> Hecho
-'FormateadorHecho --> FiltrosColeccion
-'FormateadorHecho --> BuscadorPais
-'FormateadorHecho --> BuscadorCategoria
-'FormateadorHecho --> FechaParser
-'FormateadorHecho --> Pais
-'FormateadorHecho --> Categoria
-'FormateadorHecho --> TipoContenido
-'FormateadorHecho --> Origen'
-
-Geocodificador --> FuenteProxy
-Geocodificador --> LectorCSV
-
-BuscadorCategoria --> FuenteProxy
-BuscadorCategoria --> FuenteEstatica
-BuscadorCategoria --> FuenteDinamica
-
-BuscadorPais --> FuenteProxy
-BuscadorPais --> FuenteEstatica
-BuscadorPais --> FuenteDinamica
-
-Normalizador --> BuscadorPais
-Normalizador --> BuscadorCategoria
-
-FechaParser --> LectorCSV
-FechaParser --> FuenteProxy
-
-Mensaje --> Filtrador
-
-Coleccion *-- AlgoritmoConsenso
 Coleccion *-- Filtro
 
-AtributosHecho --> Ubicacion
-AtributosHecho --> TipoContenido
-AtributosHecho --> Categoria
-AtributosHecho --> Origen
+AlgoritmoConsenso --> Dataset
+AlgoritmoConsenso --> Coleccion
+AlgoritmoConsensoMayoriaSimple --> Hecho
+AlgoritmoConsensoMayoriaSimple --> Dataset
+AlgoritmoConsensoMultiplesMenciones --> Hecho
+
+'--------------------------------------------
+' Relaciones de Filtros
+Filtro <|-- FiltroCategoria
+Filtro <|-- FiltroContenidoMultimedia
+Filtro <|-- FiltroDescripcion
+Filtro <|-- FiltroFechaAcontecimiento
+Filtro <|-- FiltroFechaCarga
+Filtro <|-- FiltroOrigen
+Filtro <|-- FiltroPais
+Filtro <|-- FiltroTitulo
+
+FiltrosColeccion *-- FiltroCategoria
+FiltrosColeccion *-- FiltroPais
+FiltrosColeccion *-- FiltroDescripcion
+FiltrosColeccion *-- FiltroContenidoMultimedia
+FiltrosColeccion *-- FiltroFechaAcontecimiento
+FiltrosColeccion *-- FiltroFechaCarga
+FiltrosColeccion *-- FiltroOrigen
+FiltrosColeccion *-- FiltroTitulo
+
+'--------------------------------------------
+' Relaciones de Hecho y entidades
+Hecho <|-- HechoDinamica
+Hecho <|-- HechoEstatica
+Hecho <|-- HechoProxy
+
+Hecho --> Usuario
+Hecho --> Categoria
+Hecho --> TipoContenido
+Hecho --> Origen
+Hecho --> Ubicacion
+Hecho --> Dataset
+Hecho *-- AtributosHechoModificar
+
+AtributosHechoModificar --> Ubicacion
+AtributosHechoModificar --> TipoContenido
+AtributosHechoModificar --> Categoria
+AtributosHechoModificar --> Origen
+
+'--------------------------------------------
+' Relaciones de Usuario
+Usuario --> Rol
+Usuario *-- DatosPersonalesPublicador
+
+'--------------------------------------------
+' Relaciones de Fuentes
+FuenteDinamica --> Hecho
+FuenteEstatica --> Hecho
+FuenteEstatica --> Dataset
+FuenteProxy --> Hecho
+
+'--------------------------------------------
+' Relaciones auxiliares
+PaisProvincias --> Pais
+PaisProvincias --> Provincia
+Provincia --> Pais
+Ubicacion --> Provincia
+Ubicacion --> Pais
 
 HechosData --> Categoria
 HechosData --> Ubicacion
 
-PaisProvincias --> Pais
-PaisProvincias --> Provincia
+SolicitudHecho --* Hecho
+Mensaje --> SolicitudHecho
+Mensaje --> Usuario
 
-Provincia --> Pais
-
-Estadisticas --> CantSolicitudesEliminacionSpam
-Estadisticas--> CategoriaCantidad
-Estadisticas --> CategoriaHora
-Estadisticas --> CategoriaProvincia
-Estadisticas --> ColeccionProvincia
+Categoria *-- Sinonimo
+Pais *-- Sinonimo
+Provincia *-- Sinonimo
 
 CategoriaCantidad --> Categoria
 CategoriaHora --> Categoria
@@ -467,16 +435,44 @@ CategoriaProvincia --> Provincia
 ColeccionProvincia --> Coleccion
 ColeccionProvincia --> Provincia
 
+Estadisticas --> CantSolicitudesEliminacionSpam
+Estadisticas --> CategoriaCantidad
+Estadisticas --> CategoriaHora
+Estadisticas --> CategoriaProvincia
+Estadisticas --> ColeccionProvincia
+
 GeneradorEstadisticas --> Hecho
 GeneradorEstadisticas --> Coleccion
 GeneradorEstadisticas --> SolicitudHecho
 GeneradorEstadisticas --> Estadisticas
 
 AnalizadorEstadistico --> Estadisticas
+
 CantSolicitudesEliminacionSpam ..> SolicitudHecho
 
-Ubicacion --> Pais
-Ubicacion --> Provincia
+'--------------------------------------------
+' Relación de Formateadores, Buscadores y Parsers
+Normalizador --> BuscadorPais
+Normalizador --> BuscadorCategoria
+
+BuscadorPais --> FuenteProxy
+BuscadorPais --> FuenteEstatica
+BuscadorPais --> FuenteDinamica
+
+BuscadorCategoria --> FuenteProxy
+BuscadorCategoria --> FuenteEstatica
+BuscadorCategoria --> FuenteDinamica
+
+Geocodificador --> FuenteProxy
+Geocodificador --> LectorCSV
+Geocodificador --> Ubicacion
+
+FechaParser --> LectorCSV
+FechaParser --> FuenteProxy
+
+LectorCSV --> Hecho
+LectorCSV --> ModificadorHechos
+LectorCSV --> FuenteEstatica
 
 @enduml
 

@@ -76,14 +76,6 @@ public class Coleccion {
     )
     private List<Filtro> criterios;
 
-    public <T extends Filtro> T obtenerCriterio(Class<T> tipo) {
-        return criterios.stream()
-                .filter(filtro -> tipo.isInstance(filtro))
-                .map(tipo::cast)
-                .findFirst()
-                .orElse(null); // o lanzar excepción si preferís
-    }
-
     //relacion muchos a muchos
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
@@ -99,18 +91,6 @@ public class Coleccion {
     private void upsertPorTipo(Filtro filtroNuevo) {
         criterios.removeIf(f -> f.getClass().equals(filtroNuevo.getClass()));
         criterios.add(filtroNuevo);
-    }
-
-    public void addCriterios(Filtro... filtros) {
-        for (Filtro filtro : filtros) {
-            upsertPorTipo(filtro); // reemplaza por tipo
-        }
-    }
-
-    public void addCriterios(List<Filtro> filtros) {
-        for (Filtro filtro : filtros) {
-            upsertPorTipo(filtro); // reemplaza por tipo
-        }
     }
 
     // Si querés un setter directo que normalice por tipo:

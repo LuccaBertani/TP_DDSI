@@ -64,6 +64,10 @@ public class DatosQuery implements IDatosQuery{
             List<CategoriaProvincia> infos = new ArrayList<>();
 
             for(CategoriaProvinciaProjection cpp : info){
+                if (cpp.getCategoriaId()!=null)
+                    System.out.println("categoria: " + cpp.getCategoriaId());
+                System.out.println("cant hechos: " + cpp.getCantHechos());
+                System.out.println("provincia id: " + cpp.getProvinciaId());
                 Categoria categoria = cpp.getCategoriaId() != null ? repoCategoria.findById(cpp.getCategoriaId()).orElse(null) : null;
                 Provincia provincia = cpp.getProvinciaId() != null ? repoProvincia.findById(cpp.getProvinciaId()).orElse(null) : null;
                 CategoriaProvincia categoriaProvincia = new CategoriaProvincia(categoria,provincia,cpp.getCantHechos());

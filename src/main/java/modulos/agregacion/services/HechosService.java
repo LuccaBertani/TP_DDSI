@@ -172,7 +172,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         datasetsRepo.save(dataset);
         fuente.setDataSet(dataset);
 
-        List<HechoEstatica> hechos = fuente.leerFuente(buscadorUbicacion, buscadorCategoria, buscadorPais, buscadorProvincia, buscadorHecho);
+        List<HechoEstatica> hechos = fuente.leerFuente(usuario,buscadorUbicacion, buscadorCategoria, buscadorPais, buscadorProvincia, buscadorHecho);
 
         if (hechos == null || hechos.isEmpty())
             System.out.println("SOY EZEQUIEL!!!");
@@ -186,7 +186,9 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             System.out.println("Pais: " + hecho.getAtributosHecho().getUbicacion().getPais().getPais());
             System.out.println("Fecha del hecho: " + hecho.getAtributosHecho().getFechaAcontecimiento());
             hecho.setActivo(true);
-            hecho.getAtributosHecho().setFechaCarga(ZonedDateTime.now());
+            ZonedDateTime fechaActual = ZonedDateTime.now();
+            hecho.getAtributosHecho().setFechaCarga(fechaActual);
+            hecho.getAtributosHecho().setFechaUltimaActualizacion(fechaActual);
             hechosEstaticaRepo.save(hecho);
         }
 

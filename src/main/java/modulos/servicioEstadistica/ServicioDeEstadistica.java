@@ -131,8 +131,8 @@ public Path obtenerEstadistica(int id) {
                 Integer cant = Optional.ofNullable(v.getCantidad()).orElse(0);
 
                 valores.add(categoria);
-                valores.add(provincia);
                 valores.add(cant);
+                valores.add(provincia);
             }
 
             return LectorCSV.generarCsvDesdeListaLineal(valores, nombre, header);

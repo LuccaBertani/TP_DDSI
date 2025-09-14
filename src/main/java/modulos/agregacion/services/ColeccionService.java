@@ -202,9 +202,9 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         Dataset dataset = new Dataset(dataSet);
         fuente.setDataSet(dataset);
 
-        List<HechoEstatica> hechosFuente = fuente.leerFuente(buscadorUbicacion, buscadorCategoria, buscadorPais, buscadorProvincia, buscadorHecho);
+        List<HechoEstatica> hechosFuente = fuente.leerFuente((Usuario)respuesta.getBody(), buscadorUbicacion, buscadorCategoria, buscadorPais, buscadorProvincia, buscadorHecho);
         List<Hecho> hechos = new ArrayList<>(hechosFuente);
-        assert coleccion != null;
+
         coleccion.addHechos(hechos);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
