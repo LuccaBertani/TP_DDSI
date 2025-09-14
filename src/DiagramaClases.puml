@@ -145,6 +145,19 @@ class Usuario {
 
 '---------------------------------------------
 'CLASES DENTRO DE ENTITIES'
+class AtributosHecho {
+    -titulo: String
+    -ubicacion: Ubicacion
+    -descripcion: Descripcion
+    -fechaAcontecimiento: ZonedDateTime
+    -contenidoMultimedia: TipoContenido
+    -categoria: Categoria
+    -origen: Origen
+    -fechaCarga: ZonedDateTime
+    -fechaUltimaActualizacion: ZonedDateTime
+    -modificado: Boolean
+}
+
 class Categoria{
     -titulo: String
 }
@@ -216,6 +229,15 @@ class Hecho {
     -fechaUltimaActualizacion: ZonedDateTime
 }
 
+class HechosData {
+    -titulo: String
+    -descripcion: String
+    -tipoContenido: Integer
+    -fechaAcontecimiento: String
+    -categoria: Categoria
+    -ubicacion: Ubicacion
+    }
+
 class LectorCSV {
     -dataSet: String
     -campos: List<String>
@@ -252,6 +274,18 @@ class Pais {
     -pais: String
 }
 
+class PaisProvincias {
+    -pais: Pais
+    -provincias: List<Provincia>
+}
+
+class Provincia {
+    -id: Long
+    -provincia: String
+    -pais: Pais
+    -sinonimos: List<Sinonimo>
+}
+
 'RespuestaHttp
 
 class SolicitudHecho {
@@ -263,6 +297,12 @@ class SolicitudHecho {
     -rechazadaPorSpam: boolean
 }
 
+class Ubicacion {
+    -id: Long
+    -provincia: Provincia
+    -pais: Pais
+    }
+
 enum TipoContenido {
     INVALIDO
     TEXTO
@@ -271,6 +311,68 @@ enum TipoContenido {
     VIDEO
 }
 
+'------------------------------------------------
+'CLASES QUE REPRESENTAN TABLAS'
+
+class Estadisticas {
+    -id: Long
+    -cantidadDeSpam: CantSolicitudesEliminacionSpam
+    -categoriaCantidad: CategoriaCantidad
+    -categoriaHoras: List<CategoriaHora>
+    -categoriaProvincias: List<CategoriaProvincia>
+    -coleccionProvincias: List<ColeccionProvincia>
+    -timestamp: Instant
+}
+class CantSolicitudesEliminacionSpam {
+    -cantidad: Integer
+}
+
+class CategoriaCantidad {
+    -id: Long
+    -categoria: Categoria
+    -cantidad: Integer
+}
+
+class CategoriaHora {
+    -id: Long
+    -categoria: Categoria
+    -hora: Integer
+    -cantidad: Integer
+    -timestamp: Instant
+}
+
+class CategoriaProvincia {
+    -id: Long
+    -categoria: Categoria
+    -provincia: Provincia
+    -cantidad: Integer
+    -timestamp: Instant
+}
+
+class ColeccionProvincia {
+    -id: Long
+    -coleccion: Coleccion
+    -provincia: Provincia
+    -cantidad: Integer
+    -timestamp: Instant
+}
+
+class GeneradorEstadisticas {
+    +generarEstadisticas(hechos: List<Hecho>, colecciones: List<Coleccion>, solicitudes: List<SolicitudHecho>): Estadisticas
+    +calcularCategoriaCantidad(hechos: List<Hecho>): CategoriaCantidad
+    +calcularCategoriaHoras(hechos: List<Hecho>): List<CategoriaHora>
+    +calcularCategoriaProvincia(hechos: List<Hecho>): List<CategoriaProvincia>
+    +calcularColeccionProvincia(colecciones: List<Coleccion>): List<ColeccionProvincia>
+    +calcularSolicitudesSpam(solicitudes: List<SolicitudHecho>): CantSolicitudesEliminacionSpam
+}
+
+class AnalizadorEstadistico {
+    -estadisticas: Estadisticas
+    +obtenerTendenciasPorCategoria(): Map<Categoria, Double>
+    +obtenerDistribucionGeografica(): Map<Pais, Integer>
+    +obtenerHorasPico(): List<Integer>
+    +obtenerTasaSpam(): Double
+}
 
 ' Relación Hechos
 
@@ -338,6 +440,43 @@ Mensaje --> Filtrador
 
 Coleccion *-- AlgoritmoConsenso
 Coleccion *-- Filtro
+
+AtributosHecho --> Ubicacion
+AtributosHecho --> TipoContenido
+AtributosHecho --> Categoria
+AtributosHecho --> Origen
+
+HechosData --> Categoria
+HechosData --> Ubicacion
+
+PaisProvincias --> Pais
+PaisProvincias --> Provincia
+
+Provincia --> Pais
+
+Estadisticas --> CantSolicitudesEliminacionSpam
+Estadisticas--> CategoriaCantidad
+Estadisticas --> CategoriaHora
+Estadisticas --> CategoriaProvincia
+Estadisticas --> ColeccionProvincia
+
+CategoriaCantidad --> Categoria
+CategoriaHora --> Categoria
+CategoriaProvincia --> Categoria
+CategoriaProvincia --> Provincia
+ColeccionProvincia --> Coleccion
+ColeccionProvincia --> Provincia
+
+GeneradorEstadisticas --> Hecho
+GeneradorEstadisticas --> Coleccion
+GeneradorEstadisticas --> SolicitudHecho
+GeneradorEstadisticas --> Estadisticas
+
+AnalizadorEstadistico --> Estadisticas
+CantSolicitudesEliminacionSpam ..> SolicitudHecho
+
+Ubicacion --> Pais
+Ubicacion --> Provincia
 
 @enduml
 
