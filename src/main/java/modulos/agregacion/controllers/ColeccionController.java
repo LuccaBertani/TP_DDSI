@@ -9,6 +9,7 @@ import modulos.shared.dtos.input.ModificarConsensoInputDTO;
 import modulos.shared.dtos.input.RefrescarColeccionesInputDTO;
 import modulos.shared.dtos.output.ColeccionOutputDTO;
 import modulos.agregacion.entities.RespuestaHttp;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,17 +24,19 @@ public class ColeccionController {
     public ColeccionController(ColeccionService coleccionService){
         this.coleccionService = coleccionService;
     }
+
     //anda
     @PostMapping("/crear")
     public ResponseEntity<?> crearColeccion(@RequestBody ColeccionInputDTO inputDTO){
-        System.out.println("soy un desastre");
         return coleccionService.crearColeccion(inputDTO); // 201 o 401
     }
+
     //anda
     @GetMapping("/get-all")
     public ResponseEntity<?> obtenerTodasLasColecciones() {
         return coleccionService.obtenerTodasLasColecciones();
     }
+
     //anda
     @GetMapping("/get/{id_coleccion}")
     public ResponseEntity<?> getColeccion(@PathVariable Long id_coleccion){

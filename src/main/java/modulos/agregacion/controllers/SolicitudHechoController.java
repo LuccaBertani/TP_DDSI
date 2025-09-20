@@ -71,6 +71,8 @@ public class SolicitudHechoController {
         return solicitudHechoService.reportarHecho(motivo, id_hecho);
     }
 
+    // TODO get y evaluacion de reportes
+
     // Anda
     @GetMapping("/get/all")
     public ResponseEntity<?> getAllSolicitudes(@Valid @RequestParam Long id_usuario){

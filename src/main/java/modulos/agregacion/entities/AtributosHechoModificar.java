@@ -29,12 +29,6 @@ public class AtributosHechoModificar {
     @Column(name = "fechaAcontecimiento")
     private ZonedDateTime fechaAcontecimiento;
 
-    @Column(name = "latitud")
-    private Double latitud;//TODO !!
-
-    @Column(name = "longitud")
-    private Double longitud; // TODO!
-
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     @JoinColumn(name = "ubicacion_id", referencedColumnName = "id",foreignKey = @ForeignKey(name = "fk_atributosAModificar_ubicacion"))
     private Ubicacion ubicacion;
@@ -44,5 +38,10 @@ public class AtributosHechoModificar {
             foreignKey = @ForeignKey(name = "fk_categoria_hechoAModificar"))
     private Categoria categoria;
 
+    @Column(name = "latitud")
+    private Double latitud;
+
+    @Column(name = "longitud")
+    private Double longitud;
 
 }

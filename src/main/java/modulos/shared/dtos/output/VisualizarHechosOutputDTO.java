@@ -17,4 +17,6 @@ public class VisualizarHechosOutputDTO {
     private Long id_provincia;
     private String fechaAcontecimiento;
     private int contenidoMultimedia;
+    private Double latitud;
+    private Double longitud;
 }

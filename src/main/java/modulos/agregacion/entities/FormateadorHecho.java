@@ -34,6 +34,14 @@ public class FormateadorHecho {
         provincia = buscarProvincia.buscar(dtoInput.getId_provincia());
     }
 
+    if (dtoInput.getLatitud() != null){
+        atributos.setLatitud(dtoInput.getLatitud());
+    }
+
+    if (dtoInput.getLongitud() != null){
+        atributos.setLongitud(dtoInput.getLongitud());
+    }
+
     atributos.setUbicacion(buscadorUbicacion.buscarOCrear(pais,provincia));
 
     if (dtoInput.getId_categoria() != null){

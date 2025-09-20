@@ -140,7 +140,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         hecho.getAtributosHecho().setFechaUltimaActualizacion(hecho.getAtributosHecho().getFechaCarga());
         hechosDinamicaRepo.save(hecho);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Se subió el hecho correctamente");
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     public ResponseEntity<?> importarHechos(ImportacionHechosInputDTO dtoInput, MultipartFile file) throws IOException {
@@ -173,9 +173,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         fuente.setDataSet(dataset);
 
         List<HechoEstatica> hechos = fuente.leerFuente(usuario,buscadorUbicacion, buscadorCategoria, buscadorPais, buscadorProvincia, buscadorHecho);
-
-        if (hechos == null || hechos.isEmpty())
-            System.out.println("SOY EZEQUIEL!!!");
 
         for (HechoEstatica hecho : hechos){
             System.out.println("Titulo: " + hecho.getAtributosHecho().getTitulo());
@@ -254,10 +251,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
     }
 
-
-
-
-
     private VisualizarHechosOutputDTO crearHechoDto(Hecho hecho){
         VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
         dto.setId(hecho.getId());
@@ -274,6 +267,11 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                                 dto.setProvincia(provincia.getProvincia());
                                 dto.setId_provincia(provincia.getId());
                             });
+                    // TODO DEBERIA haber una ubicacion seteada para la latitud y la longitud
+                    Optional.ofNullable(hecho.getAtributosHecho().getLatitud())
+                            .ifPresent(dto::setLatitud);
+                    Optional.ofNullable(hecho.getAtributosHecho().getLongitud())
+                            .ifPresent(dto::setLongitud);
                 });
 
         dto.setTitulo(hecho.getAtributosHecho().getTitulo());

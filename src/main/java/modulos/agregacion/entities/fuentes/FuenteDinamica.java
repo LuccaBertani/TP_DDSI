@@ -22,6 +22,8 @@ public class FuenteDinamica {
         hecho.getAtributosHecho().setOrigen(Origen.FUENTE_DINAMICA);
         hecho.getAtributosHecho().setModificado(true);
         hecho.getAtributosHecho().setCategoria(data.getCategoria());
+        hecho.getAtributosHecho().setLatitud(data.getLatitud());
+        hecho.getAtributosHecho().setLatitud(data.getLongitud());
         return hecho;
     }
 }

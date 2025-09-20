@@ -80,46 +80,56 @@ public class BuscadorHecho {
         return Normalizador.normalizarYComparar(s1, s2);
     }
 
+    // --- helpers null-safe ---
+    private static boolean eqDouble(Double a, Double b, double eps) {
+        if (a == null && b == null) return true;
+        if (a == null || b == null) return false;
+        // también evita NaN/Infinity si querés:
+        if (!Double.isFinite(a) || !Double.isFinite(b)) return false;
+        return Math.abs(a - b) <= eps;
+    }
+
+
     public Hecho existeHechoIdentico(HechoEstatica hecho) {
+        var tgtAttr = Optional.ofNullable(hecho).map(Hecho::getAtributosHecho);
 
-        var tgtAttr = Optional.ofNullable(hecho)
-                .map(Hecho::getAtributosHecho);
+        if (hecho != null && hecho.getAtributosHecho() != null) {
+            String tituloTgt = tgtAttr.map(AtributosHecho::getTitulo).orElse(null);
+            String catTgt    = tgtAttr.map(AtributosHecho::getCategoria).map(Categoria::getTitulo).orElse(null);
+            String paisTgt   = tgtAttr.map(AtributosHecho::getUbicacion).map(Ubicacion::getPais).map(Pais::getPais).orElse(null);
+            String descTgt   = tgtAttr.map(AtributosHecho::getDescripcion).orElse(null);
+            var    fechaTgt  = tgtAttr.map(AtributosHecho::getFechaAcontecimiento).orElse(null);
+            Double latTgt    = tgtAttr.map(AtributosHecho::getLatitud).orElse(null);
+            Double lonTgt    = tgtAttr.map(AtributosHecho::getLongitud).orElse(null);
 
-        String tituloTgt   = tgtAttr.map(AtributosHecho::getTitulo).orElse(null);
-        String catTgt      = tgtAttr.map(AtributosHecho::getCategoria)
-                .map(Categoria::getTitulo).orElse(null);
-        String paisTgt     = tgtAttr.map(AtributosHecho::getUbicacion)
-                .map(Ubicacion::getPais)
-                .map(Pais::getPais).orElse(null);
-        String descTgt     = tgtAttr.map(AtributosHecho::getDescripcion).orElse(null);
-        var    fechaTgt    = tgtAttr.map(AtributosHecho::getFechaAcontecimiento).orElse(null);
+            List<HechoEstatica> hechos = this.hechoRepoEstatica.findAllByNombreNormalizado(tituloTgt);
 
-        List<HechoEstatica> hechos =
-                this.hechoRepoEstatica.findAllByNombreNormalizado(tituloTgt);
+            final double EPS_DEG = 1e-6; // ~0.11 m en el ecuador; subilo a 1e-5 si querés ~1.1 m
 
-        for (Hecho h : hechos) {
-            var attr = Optional.ofNullable(h).map(Hecho::getAtributosHecho);
+            for (Hecho h : hechos) {
+                var attr  = Optional.ofNullable(h).map(Hecho::getAtributosHecho);
+                String cat   = attr.map(AtributosHecho::getCategoria).map(Categoria::getTitulo).orElse(null);
+                String pais  = attr.map(AtributosHecho::getUbicacion).map(Ubicacion::getPais).map(Pais::getPais).orElse(null);
+                String desc  = attr.map(AtributosHecho::getDescripcion).orElse(null);
+                var    fecha = attr.map(AtributosHecho::getFechaAcontecimiento).orElse(null);
+                Double lat   = attr.map(AtributosHecho::getLatitud).orElse(null);
+                Double lon   = attr.map(AtributosHecho::getLongitud).orElse(null);
 
-            String cat    = attr.map(AtributosHecho::getCategoria)
-                    .map(Categoria::getTitulo).orElse(null);
-            String pais   = attr.map(AtributosHecho::getUbicacion)
-                    .map(Ubicacion::getPais)
-                    .map(Pais::getPais).orElse(null);
-            String desc   = attr.map(AtributosHecho::getDescripcion).orElse(null);
-            var    fecha  = attr.map(AtributosHecho::getFechaAcontecimiento).orElse(null);
+                boolean mismaCat   = normEq(cat,  catTgt);
+                boolean mismoPais  = normEq(pais, paisTgt);
+                boolean mismaDesc  = normEq(desc, descTgt);
+                boolean mismaFecha = Objects.equals(fecha, fechaTgt);
+                boolean mismaLat   = eqDouble(lat, latTgt, EPS_DEG);
+                boolean mismaLon   = eqDouble(lon, lonTgt, EPS_DEG);
 
-            boolean mismaCat   = normEq(cat,  catTgt);
-            boolean mismoPais  = normEq(pais, paisTgt);
-            boolean mismaDesc  = normEq(desc, descTgt);
-            boolean mismaFecha = Objects.equals(fecha, fechaTgt); // maneja nulls
-
-            if (mismaCat && mismoPais && mismaDesc && mismaFecha) {
-                return h;
+                if (mismaCat && mismoPais && mismaDesc && mismaFecha && mismaLat && mismaLon) {
+                    return h;
+                }
             }
         }
-
         return null;
     }
+
 
 
 }

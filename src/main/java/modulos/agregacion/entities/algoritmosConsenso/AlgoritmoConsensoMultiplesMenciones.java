@@ -73,6 +73,15 @@ public class AlgoritmoConsensoMultiplesMenciones implements IAlgoritmoConsenso {
         var prov2 = a2.map(AtributosHecho::getUbicacion).map(Ubicacion::getProvincia).orElse(null);
         boolean provinciaDistinta = !Objects.equals(prov1, prov2);
 
-        return descDistinta || categoriaDistinta || paisDistinto || fechaDistinta || provinciaDistinta;
+        var lat1 = a1.map(AtributosHecho::getLatitud).orElse(null);
+        var lat2 = a2.map(AtributosHecho::getLongitud).orElse(null);
+
+        var lon1 = a1.map(AtributosHecho::getLongitud).orElse(null);
+        var lon2 = a2.map(AtributosHecho::getLongitud).orElse(null);
+
+        boolean latitudDistinta = !Objects.equals(lat1, lat2);
+        boolean longitudDistinta = !Objects.equals(lon1, lon2);
+
+        return descDistinta || categoriaDistinta || paisDistinto || fechaDistinta || provinciaDistinta || latitudDistinta || longitudDistinta;
     }
 }

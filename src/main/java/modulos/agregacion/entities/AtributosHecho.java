@@ -45,4 +45,10 @@ public class AtributosHecho {
     //se persiste porque si se corta la luz, se tiene que saber los hechos que estan modificados y todavia no revisados
     @Column(name = "modificado")
     private Boolean modificado;
+
+    @Column(name = "latitud")
+    private Double latitud;
+
+    @Column(name = "longitud")
+    private Double longitud;
 }

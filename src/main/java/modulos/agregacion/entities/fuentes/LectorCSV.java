@@ -107,6 +107,8 @@ public class LectorCSV {
                     Double latitud = Double.parseDouble(registros.get(indicesColumnas.get(3)));
                     Double longitud = Double.parseDouble(registros.get(indicesColumnas.get(4)));
                     ubicacionString = Geocodificador.obtenerUbicacion(latitud, longitud);
+                    hecho.getAtributosHecho().setLatitud(latitud);
+                    hecho.getAtributosHecho().setLongitud(longitud);
                 }
                 else {
                     ubicacionString = new UbicacionString();

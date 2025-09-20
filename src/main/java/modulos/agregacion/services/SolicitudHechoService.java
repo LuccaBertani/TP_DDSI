@@ -114,7 +114,8 @@ public class SolicitudHechoService {
 
         Ubicacion ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
 
-        HechosData hechosData = new HechosData(dto.getTitulo(), dto.getDescripcion(), dto.getTipoContenido(), dto.getFechaAcontecimiento(), categoria, ubicacion);
+        HechosData hechosData = new HechosData(dto.getTitulo(), dto.getDescripcion(), dto.getTipoContenido(), dto.getFechaAcontecimiento(), categoria, ubicacion,
+                dto.getLatitud(), dto.getLongitud());
 
         FuenteDinamica fuenteDinamica = new FuenteDinamica();
         HechoDinamica hecho = fuenteDinamica.crearHecho(hechosData);
@@ -208,6 +209,13 @@ public class SolicitudHechoService {
             Ubicacion ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
             atributos.setUbicacion(ubicacion);
         }
+        // TODO: En todos los casos, chequear que latitud y longitud VENGAN JUNTOS EN TODOS LOS CASOS
+        if (dto.getLongitud() != null && dto.getLatitud()!=null){
+            atributos.setLatitud(dto.getLatitud());
+            atributos.setLongitud(dto.getLongitud());
+        }
+
+
 
         Optional.ofNullable(dto.getId_categoria())
                 .ifPresent(idCat -> {
@@ -336,7 +344,8 @@ public class SolicitudHechoService {
         Optional.ofNullable(atributos.getTitulo()).ifPresent(hecho.getAtributosHecho()::setTitulo);
         Optional.ofNullable(atributos.getUbicacion()).ifPresent(hecho.getAtributosHecho()::setUbicacion);
         Optional.ofNullable(atributos.getContenidoMultimedia()).ifPresent(hecho.getAtributosHecho()::setContenidoMultimedia);
-
+        Optional.ofNullable(atributos.getLatitud()).ifPresent(hecho.getAtributosHecho()::setLatitud);
+        Optional.ofNullable(atributos.getLongitud()).ifPresent(hecho.getAtributosHecho()::setLongitud);
     }
 
     public ResponseEntity<?> enviarMensaje(Usuario usuario, SolicitudHecho solicitudHecho, String texto){
