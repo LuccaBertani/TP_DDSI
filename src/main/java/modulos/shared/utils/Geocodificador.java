@@ -1,9 +1,9 @@
 package modulos.shared.utils;
 
-import modulos.agregacion.entities.Pais;
-import modulos.agregacion.entities.PaisProvincias;
-import modulos.agregacion.entities.Provincia;
-import modulos.agregacion.entities.UbicacionString;
+import modulos.agregacion.entities.DbMain.Pais;
+import modulos.agregacion.entities.DbMain.PaisProvincias;
+import modulos.agregacion.entities.DbMain.Provincia;
+import modulos.agregacion.entities.DbMain.UbicacionString;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

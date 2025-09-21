@@ -2,18 +2,12 @@ package modulos.agregacion.controllers;
 
 import jakarta.validation.Valid;
 import modulos.agregacion.services.ColeccionService;
-import modulos.agregacion.services.HechosService;
 import modulos.shared.dtos.input.ColeccionInputDTO;
 import modulos.shared.dtos.input.ColeccionUpdateInputDTO;
 import modulos.shared.dtos.input.ModificarConsensoInputDTO;
 import modulos.shared.dtos.input.RefrescarColeccionesInputDTO;
-import modulos.shared.dtos.output.ColeccionOutputDTO;
-import modulos.agregacion.entities.RespuestaHttp;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/coleccion")

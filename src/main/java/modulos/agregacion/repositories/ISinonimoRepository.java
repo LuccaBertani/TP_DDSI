@@ -1,7 +1,7 @@
 package modulos.agregacion.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import modulos.agregacion.entities.Sinonimo;
+import modulos.agregacion.entities.DbMain.Sinonimo;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 

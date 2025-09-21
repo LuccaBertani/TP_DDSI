@@ -1,13 +1,8 @@
 package modulos.buscadores;
 
-import modulos.agregacion.entities.*;
+import modulos.agregacion.entities.DbMain.Categoria;
 import modulos.agregacion.repositories.ICategoriaRepository;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 
 @Component
 public class BuscadorCategoria {

@@ -1,11 +1,10 @@
 package modulos.agregacion.services;
 
-import modulos.agregacion.entities.Hash;
-import modulos.agregacion.entities.usuario.Rol;
+import modulos.agregacion.entities.DbMain.Hash;
+import modulos.agregacion.entities.DbMain.usuario.Rol;
 import modulos.agregacion.repositories.IUsuarioRepository;
 import modulos.shared.dtos.input.*;
-import modulos.agregacion.entities.RespuestaHttp;
-import modulos.agregacion.entities.usuario.Usuario;
+import modulos.agregacion.entities.DbMain.usuario.Usuario;
 import modulos.shared.dtos.output.UsuarioOutputDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

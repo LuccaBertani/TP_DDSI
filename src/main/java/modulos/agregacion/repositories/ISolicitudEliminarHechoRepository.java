@@ -1,7 +1,7 @@
 package modulos.agregacion.repositories;
 
-import modulos.agregacion.entities.projections.CantSolicitudesSpamProjection;
-import modulos.agregacion.entities.solicitudes.SolicitudHecho;
+import modulos.agregacion.entities.DbMain.projections.CantSolicitudesSpamProjection;
+import modulos.agregacion.entities.DbMain.solicitudes.SolicitudHecho;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

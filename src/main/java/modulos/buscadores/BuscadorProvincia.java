@@ -1,14 +1,10 @@
 package modulos.buscadores;
 
-import modulos.agregacion.entities.*;
-import modulos.agregacion.repositories.IPaisRepository;
+import modulos.agregacion.entities.DbMain.Provincia;
 import modulos.agregacion.repositories.IProvinciaRepository;
-import modulos.shared.utils.Geocodificador;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class BuscadorProvincia {

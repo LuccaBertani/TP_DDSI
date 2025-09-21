@@ -1,6 +1,7 @@
 package modulos.buscadores;
 
-import modulos.agregacion.entities.*;
+import modulos.agregacion.entities.DbMain.Pais;
+import modulos.agregacion.entities.DbMain.PaisProvincias;
 import modulos.agregacion.repositories.IPaisRepository;
 import modulos.agregacion.repositories.IProvinciaRepository;
 import modulos.shared.utils.Geocodificador;
@@ -8,7 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
+
 @Component
 public class BuscadorPais implements CommandLineRunner {
 

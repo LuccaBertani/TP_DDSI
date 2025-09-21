@@ -1,10 +1,12 @@
 package modulos.agregacion.services;
 
-import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
-import modulos.agregacion.entities.*;
-import modulos.agregacion.entities.projections.SolicitudHechoProjection;
-import modulos.agregacion.entities.solicitudes.*;
+import modulos.agregacion.entities.DbDinamica.HechoDinamica;
+import modulos.agregacion.entities.DbMain.*;
+import modulos.agregacion.entities.atributosHecho.AtributosHechoModificar;
+import modulos.agregacion.entities.DbMain.projections.SolicitudHechoProjection;
+import modulos.agregacion.entities.DbMain.solicitudes.*;
+import modulos.agregacion.entities.atributosHecho.TipoContenido;
 import modulos.agregacion.repositories.*;
 import modulos.buscadores.BuscadorPais;
 import modulos.buscadores.BuscadorProvincia;
@@ -19,8 +21,8 @@ import modulos.shared.utils.DetectorDeSpam;
 import modulos.shared.utils.FechaParser;
 import modulos.agregacion.entities.fuentes.FuenteDinamica;
 import modulos.shared.utils.GestorRoles;
-import modulos.agregacion.entities.usuario.Rol;
-import modulos.agregacion.entities.usuario.Usuario;
+import modulos.agregacion.entities.DbMain.usuario.Rol;
+import modulos.agregacion.entities.DbMain.usuario.Usuario;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

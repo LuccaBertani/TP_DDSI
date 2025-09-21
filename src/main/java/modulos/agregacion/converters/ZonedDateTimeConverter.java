@@ -2,10 +2,6 @@ package modulos.agregacion.converters;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import modulos.agregacion.entities.algoritmosConsenso.AlgoritmoConsensoMayoriaAbsoluta;
-import modulos.agregacion.entities.algoritmosConsenso.AlgoritmoConsensoMayoriaSimple;
-import modulos.agregacion.entities.algoritmosConsenso.AlgoritmoConsensoMultiplesMenciones;
-import modulos.agregacion.entities.algoritmosConsenso.IAlgoritmoConsenso;
 import modulos.shared.utils.FechaParser;
 
 import java.time.ZonedDateTime;

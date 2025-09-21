@@ -2,11 +2,9 @@ package modulos.agregacion.entities.fuentes;
 
 import lombok.Getter;
 import lombok.Setter;
-import modulos.agregacion.entities.Hecho;
-import modulos.agregacion.entities.HechoDinamica;
-import modulos.agregacion.entities.HechoEstatica;
-import modulos.agregacion.entities.HechoProxy;
-import modulos.agregacion.entities.usuario.Usuario;
+import modulos.agregacion.entities.DbEstatica.Dataset;
+import modulos.agregacion.entities.DbEstatica.HechoEstatica;
+import modulos.agregacion.entities.DbMain.usuario.Usuario;
 import modulos.buscadores.*;
 
 import java.util.ArrayList;

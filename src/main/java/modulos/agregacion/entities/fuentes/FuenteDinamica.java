@@ -1,6 +1,9 @@
 package modulos.agregacion.entities.fuentes;
 
-import modulos.agregacion.entities.*;
+import modulos.agregacion.entities.DbDinamica.HechoDinamica;
+import modulos.agregacion.entities.DbMain.HechosData;
+import modulos.agregacion.entities.atributosHecho.Origen;
+import modulos.agregacion.entities.atributosHecho.TipoContenido;
 import modulos.shared.utils.FechaParser;
 
 import java.time.ZonedDateTime;

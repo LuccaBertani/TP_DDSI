@@ -1,19 +1,16 @@
 package modulos.servicioEstadistica;
 
-import modulos.agregacion.entities.*;
+import modulos.agregacion.entities.DbMain.*;
 import modulos.agregacion.entities.fuentes.LectorCSV;
 import modulos.apis.IDatosQuery;
-import modulos.servicioEstadistica.Entidad.Estadisticas;
+import modulos.servicioEstadistica.entities.*;
 import modulos.servicioEstadistica.repository.IEstadisticasRepository;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 

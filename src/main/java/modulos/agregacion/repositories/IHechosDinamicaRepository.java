@@ -1,8 +1,6 @@
 package modulos.agregacion.repositories;
 
-import modulos.agregacion.entities.Hecho;
-import modulos.agregacion.entities.HechoDinamica;
-import modulos.agregacion.entities.Pais;
+import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

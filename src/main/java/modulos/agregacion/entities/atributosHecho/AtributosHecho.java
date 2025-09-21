@@ -1,0 +1,51 @@
+
+package modulos.agregacion.entities.atributosHecho;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
+import java.time.ZonedDateTime;
+
+@Data
+@Embeddable
+public class AtributosHecho {
+
+    @Column(name = "titulo", columnDefinition = "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci")
+    private String titulo;
+
+    @Column(name = "ubicacion_id")
+    private Long ubicacion_id;
+
+    @Column(name = "descripcion", columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci")
+    private String descripcion;
+
+    @Column(name = "fechaAcontecimiento")
+    private ZonedDateTime fechaAcontecimiento;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipoContenidoMultimedia", length = 20)
+    private TipoContenido contenidoMultimedia;
+
+    @Column(name = "categoria_id")
+    private Long categoria_id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "origen", length = 20)
+    private Origen origen;
+
+    @Column(name = "fechaCarga")
+    private ZonedDateTime fechaCarga;
+
+    @Column(name = "fechaUltimaActualizacion")
+    private ZonedDateTime fechaUltimaActualizacion;
+
+    //se persiste porque si se corta la luz, se tiene que saber los hechos que estan modificados y todavia no revisados
+    @Column(name = "modificado")
+    private Boolean modificado;
+
+    @Column(name = "latitud")
+    private Double latitud;
+
+    @Column(name = "longitud")
+    private Double longitud;
+}

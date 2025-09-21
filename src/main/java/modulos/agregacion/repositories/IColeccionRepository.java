@@ -1,16 +1,12 @@
 package modulos.agregacion.repositories;
 
-import modulos.agregacion.entities.CategoriaCantidad;
-import modulos.agregacion.entities.Coleccion;
-import modulos.agregacion.entities.ColeccionProvincia;
-import modulos.agregacion.entities.projections.ColeccionProvinciaProjection;
-import org.intellij.lang.annotations.Language;
+import modulos.agregacion.entities.DbMain.Coleccion;
+import modulos.agregacion.entities.DbMain.projections.ColeccionProvinciaProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public interface IColeccionRepository extends JpaRepository<Coleccion, Long> {

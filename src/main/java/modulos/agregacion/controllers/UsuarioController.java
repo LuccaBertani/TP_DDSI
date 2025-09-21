@@ -3,9 +3,6 @@ package modulos.agregacion.controllers;
 import jakarta.validation.Valid;
 import modulos.agregacion.services.UsuarioService;
 import modulos.shared.dtos.input.*;
-import modulos.agregacion.entities.RespuestaHttp;
-import modulos.agregacion.entities.usuario.Usuario;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

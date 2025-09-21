@@ -1,19 +1,20 @@
 package modulos.agregacion.services;
 
 
-import modulos.agregacion.entities.*;
-import modulos.agregacion.entities.algoritmosConsenso.AlgoritmoConsensoMayoriaAbsoluta;
-import modulos.agregacion.entities.algoritmosConsenso.AlgoritmoConsensoMayoriaSimple;
-import modulos.agregacion.entities.algoritmosConsenso.AlgoritmoConsensoMultiplesMenciones;
-import modulos.agregacion.entities.filtros.Filtro;
+import modulos.agregacion.entities.DbEstatica.HechoEstatica;
+import modulos.agregacion.entities.DbMain.*;
+import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMayoriaAbsoluta;
+import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMayoriaSimple;
+import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMultiplesMenciones;
+import modulos.agregacion.entities.DbMain.filtros.Filtro;
+import modulos.shared.utils.FormateadorHecho;
 import modulos.agregacion.repositories.*;
-import modulos.agregacion.entities.fuentes.Dataset;
+import modulos.agregacion.entities.DbEstatica.Dataset;
 import modulos.agregacion.entities.fuentes.FuenteEstatica;
-import modulos.agregacion.entities.Hecho;
 import modulos.buscadores.*;
 import modulos.shared.dtos.input.*;
-import modulos.agregacion.entities.usuario.Rol;
-import modulos.agregacion.entities.usuario.Usuario;
+import modulos.agregacion.entities.DbMain.usuario.Rol;
+import modulos.agregacion.entities.DbMain.usuario.Usuario;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,32 +33,18 @@ public class ColeccionService  {
     private final IColeccionRepository coleccionesRepo;
     private final IUsuarioRepository usuariosRepo;
     private final IDatasetsRepository datasetsRepo;
-    private final BuscadorProvincia buscadorProvincia;
-    private final BuscadorPais buscadorPais;
-    private final BuscadorCategoria buscadorCategoria;
-    private final BuscadorHecho buscadorHecho;
-    private final BuscadorFiltro buscadorFiltro;
-    private final BuscadorUbicacion buscadorUbicacion;
+    private final BuscadoresRegistry buscadores;
 
     public ColeccionService(IColeccionRepository coleccionesRepo,
                             IUsuarioRepository usuariosRepo,
                             IDatasetsRepository datasetsRepo,
                             IHechoRepository hechoRepository,
-                            BuscadorProvincia buscadorProvincia,
-                            BuscadorPais buscadorPais,
-                            BuscadorCategoria buscadorCategoria,
-                            BuscadorHecho buscadorHecho,
-                            BuscadorFiltro buscadorFiltro, BuscadorUbicacion buscadorUbicacion) {
+                            BuscadoresRegistry buscadores) {
         this.coleccionesRepo = coleccionesRepo;
         this.usuariosRepo = usuariosRepo;
         this.datasetsRepo = datasetsRepo;
         this.hechoRepository = hechoRepository;
-        this.buscadorProvincia = buscadorProvincia;
-        this.buscadorPais = buscadorPais;
-        this.buscadorCategoria = buscadorCategoria;
-        this.buscadorHecho = buscadorHecho;
-        this.buscadorFiltro = buscadorFiltro;
-        this.buscadorUbicacion = buscadorUbicacion;
+        this.buscadores = buscadores;
     }
 
 

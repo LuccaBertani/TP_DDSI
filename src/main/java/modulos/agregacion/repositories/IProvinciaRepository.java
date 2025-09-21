@@ -1,9 +1,7 @@
 package modulos.agregacion.repositories;
 
-import modulos.agregacion.entities.Pais;
-import modulos.agregacion.entities.Provincia;
-import modulos.agregacion.entities.Ubicacion;
-import modulos.agregacion.entities.projections.CategoriaProvinciaProjection;
+import modulos.agregacion.entities.DbMain.Provincia;
+import modulos.agregacion.entities.DbMain.projections.CategoriaProvinciaProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

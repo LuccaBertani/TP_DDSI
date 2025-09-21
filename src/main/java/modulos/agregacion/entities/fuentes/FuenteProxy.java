@@ -1,7 +1,9 @@
 package modulos.agregacion.entities.fuentes;
 
-import modulos.agregacion.entities.*;
-import modulos.agregacion.entities.filtros.*;
+import modulos.agregacion.entities.DbMain.*;
+import modulos.agregacion.entities.DbMain.filtros.*;
+import modulos.agregacion.entities.DbProxy.HechoProxy;
+import modulos.shared.utils.FormateadorHecho;
 import modulos.buscadores.*;
 import modulos.shared.dtos.input.*;
 import modulos.shared.utils.FechaParser;
@@ -223,8 +225,8 @@ public class FuenteProxy {
                     atributos.setFechaAcontecimientoFinal(filtrosEnString.getFechaAcontecimientoFinal());
                     atributos.setFechaCargaInicial(filtrosEnString.getFechaCargaInicial());
                     atributos.setFechaCargaFinal(filtrosEnString.getFechaCargaFinal());
-
-                    // TODO ALL TUYO LUKITA
+                    atributos.setLatitud(obj.getDouble("latitud"));
+                    atributos.setLongitud(obj.getDouble("longitud"));
 
                     List<Hecho> hechos = this.getHechosDeColeccionMetaMapa(atributos,url_1, buscadorUbicacion, buscadorPais, buscadorProvincia, buscadorCategoria);
 

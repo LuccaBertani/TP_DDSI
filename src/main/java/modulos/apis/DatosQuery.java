@@ -1,11 +1,15 @@
 package modulos.apis;
 
-import modulos.agregacion.entities.*;
-import modulos.agregacion.entities.projections.*;
+import modulos.agregacion.entities.DbMain.*;
+import modulos.agregacion.entities.DbMain.projections.*;
 import modulos.agregacion.repositories.ICategoriaRepository;
 import modulos.agregacion.repositories.IColeccionRepository;
 import modulos.agregacion.repositories.IProvinciaRepository;
 import modulos.agregacion.repositories.ISolicitudEliminarHechoRepository;
+import modulos.servicioEstadistica.entities.CategoriaCantidad;
+import modulos.servicioEstadistica.entities.CategoriaHora;
+import modulos.servicioEstadistica.entities.CategoriaProvincia;
+import modulos.servicioEstadistica.entities.ColeccionProvincia;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

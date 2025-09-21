@@ -1,11 +1,8 @@
 package modulos.agregacion.repositories;
 
-import modulos.agregacion.entities.Categoria;
-import modulos.agregacion.entities.CategoriaCantidad;
-import modulos.agregacion.entities.Coleccion;
-import modulos.agregacion.entities.Provincia;
-import modulos.agregacion.entities.projections.CategoriaCantidadProjection;
-import modulos.agregacion.entities.projections.HoraCategoriaProjection;
+import modulos.agregacion.entities.DbMain.Categoria;
+import modulos.agregacion.entities.DbMain.projections.CategoriaCantidadProjection;
+import modulos.agregacion.entities.DbMain.projections.HoraCategoriaProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,6 +1,10 @@
 package modulos.apis;
 
-import modulos.agregacion.entities.*;
+import modulos.agregacion.entities.DbMain.*;
+import modulos.servicioEstadistica.entities.CategoriaCantidad;
+import modulos.servicioEstadistica.entities.CategoriaHora;
+import modulos.servicioEstadistica.entities.CategoriaProvincia;
+import modulos.servicioEstadistica.entities.ColeccionProvincia;
 
 import java.util.List;
 

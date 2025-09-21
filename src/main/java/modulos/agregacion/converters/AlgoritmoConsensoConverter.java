@@ -2,10 +2,10 @@ package modulos.agregacion.converters;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import modulos.agregacion.entities.algoritmosConsenso.AlgoritmoConsensoMayoriaAbsoluta;
-import modulos.agregacion.entities.algoritmosConsenso.AlgoritmoConsensoMayoriaSimple;
-import modulos.agregacion.entities.algoritmosConsenso.AlgoritmoConsensoMultiplesMenciones;
-import modulos.agregacion.entities.algoritmosConsenso.IAlgoritmoConsenso;
+import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMayoriaAbsoluta;
+import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMayoriaSimple;
+import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMultiplesMenciones;
+import modulos.agregacion.entities.DbMain.algoritmosConsenso.IAlgoritmoConsenso;
 
 @Converter(autoApply = true)
 public class AlgoritmoConsensoConverter implements AttributeConverter<IAlgoritmoConsenso, String> {

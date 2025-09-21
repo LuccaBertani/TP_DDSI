@@ -2,7 +2,7 @@ package modulos.buscadores;
 
 import modulos.agregacion.repositories.IFiltroRepository;
 import org.springframework.stereotype.Component;
-import modulos.agregacion.entities.filtros.*;
+import modulos.agregacion.entities.DbMain.filtros.*;
 
 import java.time.LocalDate;
 import java.util.Optional;

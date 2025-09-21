@@ -1,7 +1,7 @@
 package modulos.shared.utils;
 
-import modulos.agregacion.entities.usuario.Rol;
-import modulos.agregacion.entities.usuario.Usuario;
+import modulos.agregacion.entities.DbMain.usuario.Rol;
+import modulos.agregacion.entities.DbMain.usuario.Usuario;
 
 import java.util.Objects;
 

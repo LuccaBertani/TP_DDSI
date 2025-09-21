@@ -18,4 +18,6 @@ public class ProxyDTO {
     private String pais;
     private String titulo;
     private String provincia;
+    private Double latitud;
+    private Double longitud;
 }

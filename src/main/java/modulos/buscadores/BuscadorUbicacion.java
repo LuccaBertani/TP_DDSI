@@ -1,14 +1,10 @@
 package modulos.buscadores;
 
-import modulos.agregacion.entities.Pais;
-import modulos.agregacion.entities.Provincia;
-import modulos.agregacion.entities.Ubicacion;
-import modulos.agregacion.repositories.IPaisRepository;
-import modulos.agregacion.repositories.IProvinciaRepository;
+import modulos.agregacion.entities.DbMain.Pais;
+import modulos.agregacion.entities.DbMain.Provincia;
+import modulos.agregacion.entities.DbMain.Ubicacion;
 import modulos.agregacion.repositories.IUbicacionRepository;
 import org.springframework.stereotype.Component;
-
-import java.util.Objects;
 
 @Component
 public class BuscadorUbicacion {
@@ -22,6 +18,12 @@ public class BuscadorUbicacion {
     public Ubicacion buscar(Long id_pais, Long id_provincia) {
 
         return this.repoUbicacion.findByPaisIdAndProvinciaId(id_pais,id_provincia).orElse(null);
+    }
+
+    public Ubicacion buscarUbicacion(Long idUbicacion) {
+        if (idUbicacion == null)
+            return null;
+        return repoUbicacion.findById(idUbicacion).orElse(null);
     }
 
     public Ubicacion buscarOCrear(Pais pais, Provincia provincia){

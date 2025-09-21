@@ -1,10 +1,13 @@
 package modulos.buscadores;
 
-import modulos.agregacion.entities.*;
+import modulos.agregacion.entities.DbDinamica.HechoDinamica;
+import modulos.agregacion.entities.DbEstatica.HechoEstatica;
+import modulos.agregacion.entities.DbMain.*;
+import modulos.agregacion.entities.DbProxy.HechoProxy;
+import modulos.agregacion.entities.atributosHecho.AtributosHecho;
 import modulos.agregacion.repositories.*;
 import org.springframework.stereotype.Component;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,6 +18,7 @@ public class BuscadorHecho {
     private final IHechosDinamicaRepository hechoRepoDinamica;
     private final IHechosProxyRepository hechoRepoProxy;
     private final IHechoRepository hechosRepo;
+
 
     public BuscadorHecho(IHechosEstaticaRepository hechoRepoEstatica, IHechosDinamicaRepository hechoRepoDinamica, IHechosProxyRepository hechoRepoProxy, IHechoRepository hechosRepo) {
         this.hechoRepoEstatica = hechoRepoEstatica;
@@ -129,7 +133,5 @@ public class BuscadorHecho {
         }
         return null;
     }
-
-
 
 }
