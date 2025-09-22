@@ -60,19 +60,19 @@ public class FormateadorHecho {
 
         Hecho hecho123 = null;
 
-        switch (hecho.getAtributosHecho().getOrigen()){
-            case CARGA_MANUAL, FUENTE_DINAMICA: {
-                hecho123 = HechoDinamica.builder()
+        if (tipo == HechoDinamica.class){
+
+            hecho123 = HechoDinamica.builder()
                         .id(hecho.getId())
                         .activo(hecho.getActivo())
                         .usuario_id(hecho.getUsuario_id())
                         .atributosHecho(atributos)
                         .atributosHechoAModificar(listaAtributosHechoModificar)
                         .build();
-                break;
-            }
-            case FUENTE_ESTATICA: {
-                hecho123 = HechoEstatica.builder()
+
+        }
+        else if (tipo == HechoEstatica.class){
+            hecho123 = HechoEstatica.builder()
                         .id(hecho.getId())
                         .activo(hecho.getActivo())
                         .usuario_id(hecho.getUsuario_id())
@@ -80,21 +80,19 @@ public class FormateadorHecho {
                         .atributosHecho(atributos)
                         .atributosHechoAModificar(listaAtributosHechoModificar)
                         .build();
-                break;
-            }
-            case FUENTE_PROXY_METAMAPA:{
-                hecho123 = HechoProxy.builder()
-                        .id(hecho.getId())
-                        .activo(hecho.getActivo())
-                        .usuario_id(hecho.getUsuario_id())
-                        .atributosHecho(atributos)
-                        .atributosHechoAModificar(listaAtributosHechoModificar)
-                        .build();
-                break;
-            }
-            default:
-                System.out.println("Nunca voy a entrar acá (?)");
-                return null;
+        }
+        else if (tipo == HechoProxy.class){
+            hecho123 = HechoProxy.builder()
+                    .id(hecho.getId())
+                    .activo(hecho.getActivo())
+                    .usuario_id(hecho.getUsuario_id())
+                    .atributosHecho(atributos)
+                    .atributosHechoAModificar(listaAtributosHechoModificar)
+                    .build();
+        }
+        else{
+            // Nunca debería entrar acá
+            return null;
         }
 
         return tipo.cast(hecho123);
