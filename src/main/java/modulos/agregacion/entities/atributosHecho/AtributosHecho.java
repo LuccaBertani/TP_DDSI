@@ -2,12 +2,16 @@
 package modulos.agregacion.entities.atributosHecho;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.ZonedDateTime;
 
 @Data
 @Embeddable
+@Builder
+@AllArgsConstructor
 public class AtributosHecho {
 
     @Column(name = "titulo", columnDefinition = "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci")
@@ -48,4 +52,8 @@ public class AtributosHecho {
 
     @Column(name = "longitud")
     private Double longitud;
+
+    public AtributosHecho() {
+
+    }
 }

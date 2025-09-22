@@ -1,6 +1,8 @@
 package modulos.agregacion.entities.atributosHecho;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.ZonedDateTime;
@@ -9,6 +11,8 @@ import java.time.ZonedDateTime;
 @Data
 @Table(name = "atributos_modificar_hecho")
 @Entity
+@Builder
+@AllArgsConstructor
 public class AtributosHechoModificar {
 
     @Id
@@ -40,4 +44,7 @@ public class AtributosHechoModificar {
     @Column(name = "longitud")
     private Double longitud;
 
+    public AtributosHechoModificar() {
+
+    }
 }

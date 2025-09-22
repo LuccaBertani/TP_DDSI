@@ -1,8 +1,11 @@
 package modulos.agregacion.entities.DbMain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import modulos.agregacion.entities.atributosHecho.AtributosHecho;
 import modulos.agregacion.entities.atributosHecho.AtributosHechoModificar;
 
@@ -11,7 +14,9 @@ import java.util.List;
 
 @Getter
 @Setter
+@SuperBuilder(toBuilder = true)
 @MappedSuperclass
+@AllArgsConstructor
 public abstract class Hecho {
 
     @Column(name = "activo", nullable = false)

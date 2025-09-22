@@ -1,8 +1,11 @@
 package modulos.agregacion.entities.DbEstatica;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import modulos.agregacion.entities.DbMain.Hecho;
 
 import java.util.ArrayList;
@@ -11,8 +14,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "hecho_estatica")
+@SuperBuilder(toBuilder = true)
 @Setter
 @Getter
+@AllArgsConstructor
 public class HechoEstatica extends Hecho {
 
     @ManyToMany(fetch = FetchType.LAZY)

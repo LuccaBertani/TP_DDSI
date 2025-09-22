@@ -19,7 +19,7 @@ public class FormateadorHechoMemoria {
     public FormateadorHechoMemoria(BuscadoresRegistry buscadores) {
         this.buscadores = buscadores;
     }
-    public HechoMemoria obtenerHechoMemoria(Hecho hecho){
+    public HechoMemoria formatearHechoMemoria(Hecho hecho){
 
         AtributosHechoMemoria atributos = AtributosHechoMemoria.builder().
                 categoria(buscadores.getBuscadorCategoria().buscar(hecho.getAtributosHecho().getCategoria_id()))
