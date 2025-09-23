@@ -1,7 +1,7 @@
 package modulos.buscadores;
 
 import modulos.agregacion.entities.DbMain.Provincia;
-import modulos.agregacion.repositories.IProvinciaRepository;
+import modulos.agregacion.repositories.DbMain.IProvinciaRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

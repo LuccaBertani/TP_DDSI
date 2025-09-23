@@ -37,7 +37,7 @@ public class DbMainConfig {
         return builder
                 .dataSource(mainDataSource())
                 .packages("modulos.agregacion.entities.DbMain", "modulos.agregacion.entities.atributosHecho")  // Ajustar si cambia tu ruta
-                .persistenceUnit("main")
+                .persistenceUnit("db4")
                 .build();
     }
 

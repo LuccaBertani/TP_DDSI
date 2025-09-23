@@ -30,7 +30,7 @@ public class LectorCSV {
     }
 
     // Entrega 3: los hechos no se pisan los atributos
-    public List<HechoEstatica> leerCSV(Usuario usuario, BuscadorUbicacion buscadorUbicacion, BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, BuscadorHecho buscadorHecho) {
+    public List<HechoEstatica> leerCSV(Usuario usuario, BuscadoresRegistry buscadores) {
 
         List<HechoEstatica> hechosASubir = new ArrayList<>();
 
@@ -83,7 +83,7 @@ public class LectorCSV {
 
                 hecho.getAtributosHecho().setTitulo((indicesColumnas.get(0) != -1) ? registros.get(indicesColumnas.get(0)) : null);
                 //Se leen los de fuente estatica
-                HechoEstatica hecho0 = buscadorHecho.buscarEstatica(hecho.getAtributosHecho().getTitulo());
+                HechoEstatica hecho0 = buscadores.getBuscadorHecho().buscarEstatica(hecho.getAtributosHecho().getTitulo());
 
                 if (hecho0 != null){
                     tituloRepetido = true;
@@ -93,7 +93,7 @@ public class LectorCSV {
 
                 String categoriaString = indicesColumnas.get(2) != -1 ? registros.get(indicesColumnas.get(2)) : null;
 
-                hecho.getAtributosHecho().setCategoria(buscadorCategoria.buscar(categoriaString));
+                hecho.getAtributosHecho().setCategoria(buscadores.getBuscadorCategoria().buscar(categoriaString));
 
                 UbicacionString ubicacionString;
                 Pais pais = null;
@@ -114,9 +114,9 @@ public class LectorCSV {
                 }
 
                 if (ubicacionString != null){
-                    pais = buscadorPais.buscar(ubicacionString.getPais());
-                    provincia = buscadorProvincia.buscar(ubicacionString.getProvincia());
-                    ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
+                    pais = buscadores.getBuscadorPais().buscar(ubicacionString.getPais());
+                    provincia = buscadores.getBuscadorProvincia().buscar(ubicacionString.getProvincia());
+                    ubicacion = buscadores.getBuscadorUbicacion().buscarOCrear(pais, provincia);
                     hecho.getAtributosHecho().setUbicacion(ubicacion);
                 }else{
                     hecho.getAtributosHecho().setUbicacion(null);
@@ -127,9 +127,10 @@ public class LectorCSV {
                 hecho.getAtributosHecho().setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))) : null);
                 hecho.getAtributosHecho().setModificado(true);
                 hecho.setUsuario(usuario);
+                hecho.getAtributosHecho().setFuente(Fuente.ESTATICA);
                 hecho.getDatasets().add(this.dataSet);
                 if (tituloRepetido){
-                    Hecho hechoIdentico = buscadorHecho.existeHechoIdentico(hecho);
+                    HechoEstatica hechoIdentico = buscadores.getBuscadorHecho().existeHechoIdentico(hecho);
                     if (hechoIdentico!=null){
                         hechoIdentico.getDatasets().add(this.dataSet);
                         continue; // Evito agregar un hecho identico

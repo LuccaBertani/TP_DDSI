@@ -1,4 +1,4 @@
-package modulos.servicioEstadistica.repository;
+package modulos.servicioEstadistica.repositories;
 
 import modulos.servicioEstadistica.entities.Estadisticas;
 import org.springframework.data.jpa.repository.JpaRepository;

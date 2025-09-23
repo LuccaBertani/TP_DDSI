@@ -1,4 +1,4 @@
-package modulos.agregacion.repositories;
+package modulos.agregacion.repositories.DbDinamica;
 
 import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import org.springframework.data.jpa.repository.JpaRepository;

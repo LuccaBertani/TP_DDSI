@@ -1,4 +1,4 @@
-package modulos.agregacion.repositories;
+package modulos.agregacion.repositories.DbEstatica;
 
 import modulos.agregacion.entities.DbEstatica.Dataset;
 import org.springframework.data.jpa.repository.JpaRepository;

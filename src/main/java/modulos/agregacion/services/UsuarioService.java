@@ -2,7 +2,7 @@ package modulos.agregacion.services;
 
 import modulos.agregacion.entities.DbMain.Hash;
 import modulos.agregacion.entities.DbMain.usuario.Rol;
-import modulos.agregacion.repositories.IUsuarioRepository;
+import modulos.agregacion.repositories.DbMain.IUsuarioRepository;
 import modulos.shared.dtos.input.*;
 import modulos.agregacion.entities.DbMain.usuario.Usuario;
 import modulos.shared.dtos.output.UsuarioOutputDto;

@@ -14,13 +14,13 @@ import java.util.List;
 @Setter
 public class FuenteEstatica {
     private Dataset dataSet;
-    public List<HechoEstatica> leerFuente(Usuario usuario, BuscadorUbicacion buscadorUbicacion, BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, BuscadorHecho buscadorHecho){
+    public List<HechoEstatica> leerFuente(Usuario usuario, BuscadoresRegistry buscadores){
 
         String[] nombreArchivo = this.dataSet.getStoragePath().split("\\.");
         String formato = nombreArchivo[1].toLowerCase();
         if (formato.equals("csv")){
             var lectorCSV = new LectorCSV(this.dataSet);
-            return lectorCSV.leerCSV(usuario, buscadorUbicacion, buscadorCategoria,buscadorPais,buscadorProvincia, buscadorHecho);
+            return lectorCSV.leerCSV(usuario, buscadores);
         }
         else if (formato.equals("json")){
             //TODO el lector del formato JSON

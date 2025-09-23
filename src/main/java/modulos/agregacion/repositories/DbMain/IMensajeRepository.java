@@ -1,4 +1,4 @@
-package modulos.agregacion.repositories;
+package modulos.agregacion.repositories.DbMain;
 
 import modulos.agregacion.entities.DbMain.solicitudes.Mensaje;
 import modulos.agregacion.entities.DbMain.usuario.Usuario;

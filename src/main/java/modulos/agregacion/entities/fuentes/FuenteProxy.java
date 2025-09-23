@@ -180,7 +180,7 @@ public class FuenteProxy {
 
 
 
-    public List<Coleccion> getColeccionesMetaMapa(BuscadorFiltro buscadorFiltro, String url_1, BuscadorUbicacion buscadorUbicacion, BuscadorProvincia buscadorProvincia, BuscadorPais buscadorPais, BuscadorCategoria buscadorCategoria){
+    public List<Coleccion> getColeccionesMetaMapa(BuscadoresRegistry buscadores, String url_1){
         try {
 
         String urlStr = this.url_base + "/get-all";

@@ -1,4 +1,4 @@
-package modulos.agregacion.repositories;
+package modulos.agregacion.repositories.DbMain;
 
 import modulos.agregacion.entities.DbMain.Categoria;
 import modulos.agregacion.entities.DbMain.projections.CategoriaCantidadProjection;

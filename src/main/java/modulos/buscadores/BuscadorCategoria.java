@@ -1,7 +1,7 @@
 package modulos.buscadores;
 
 import modulos.agregacion.entities.DbMain.Categoria;
-import modulos.agregacion.repositories.ICategoriaRepository;
+import modulos.agregacion.repositories.DbMain.ICategoriaRepository;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,6 +1,6 @@
 package modulos.buscadores;
 
-import modulos.agregacion.repositories.IFiltroRepository;
+import modulos.agregacion.repositories.DbMain.IFiltroRepository;
 import org.springframework.stereotype.Component;
 import modulos.agregacion.entities.DbMain.filtros.*;
 

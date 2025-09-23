@@ -1,4 +1,4 @@
-package modulos.agregacion.repositories;
+package modulos.agregacion.repositories.DbMain;
 
 import jakarta.transaction.Transactional;
 import modulos.agregacion.entities.DbMain.Hecho;

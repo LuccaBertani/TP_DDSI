@@ -2,10 +2,10 @@ package modulos.apis;
 
 import modulos.agregacion.entities.DbMain.*;
 import modulos.agregacion.entities.DbMain.projections.*;
-import modulos.agregacion.repositories.ICategoriaRepository;
-import modulos.agregacion.repositories.IColeccionRepository;
-import modulos.agregacion.repositories.IProvinciaRepository;
-import modulos.agregacion.repositories.ISolicitudEliminarHechoRepository;
+import modulos.agregacion.repositories.DbMain.ICategoriaRepository;
+import modulos.agregacion.repositories.DbMain.IColeccionRepository;
+import modulos.agregacion.repositories.DbMain.IProvinciaRepository;
+import modulos.agregacion.repositories.DbMain.ISolicitudEliminarHechoRepository;
 import modulos.servicioEstadistica.entities.CategoriaCantidad;
 import modulos.servicioEstadistica.entities.CategoriaHora;
 import modulos.servicioEstadistica.entities.CategoriaProvincia;

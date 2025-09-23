@@ -7,8 +7,13 @@ import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMa
 import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMayoriaSimple;
 import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMultiplesMenciones;
 import modulos.agregacion.entities.DbMain.filtros.Filtro;
+import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
+import modulos.agregacion.repositories.DbEstatica.IDatasetsRepository;
+import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
+import modulos.agregacion.repositories.DbMain.IColeccionRepository;
+import modulos.agregacion.repositories.DbMain.IUsuarioRepository;
+import modulos.agregacion.repositories.DbProxy.IHechosProxyRepository;
 import modulos.shared.utils.FormateadorHecho;
-import modulos.agregacion.repositories.*;
 import modulos.agregacion.entities.DbEstatica.Dataset;
 import modulos.agregacion.entities.fuentes.FuenteEstatica;
 import modulos.buscadores.*;
@@ -29,22 +34,28 @@ import java.util.Objects;
 @Service
 public class ColeccionService  {
 
-    private final IHechoRepository hechoRepository;
     private final IColeccionRepository coleccionesRepo;
     private final IUsuarioRepository usuariosRepo;
     private final IDatasetsRepository datasetsRepo;
     private final BuscadoresRegistry buscadores;
+    private final IHechosEstaticaRepository hechosEstaticaRepository;
+    private final IHechosDinamicaRepository hechosDinamicaRepository;
+    private final IHechosProxyRepository hechosProxyRepository;
 
     public ColeccionService(IColeccionRepository coleccionesRepo,
                             IUsuarioRepository usuariosRepo,
                             IDatasetsRepository datasetsRepo,
-                            IHechoRepository hechoRepository,
+                            IHechosEstaticaRepository hechosEstaticaRepository,
+                            IHechosDinamicaRepository hechosDinamicaRepository,
+                            IHechosProxyRepository hechosProxyRepository,
                             BuscadoresRegistry buscadores) {
         this.coleccionesRepo = coleccionesRepo;
         this.usuariosRepo = usuariosRepo;
         this.datasetsRepo = datasetsRepo;
-        this.hechoRepository = hechoRepository;
         this.buscadores = buscadores;
+        this.hechosDinamicaRepository = hechosDinamicaRepository;
+        this.hechosEstaticaRepository = hechosEstaticaRepository;
+        this.hechosProxyRepository = hechosProxyRepository;
     }
 
 
@@ -69,10 +80,10 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Campos obligatorios no ingresados");
         }
 
-        Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario()).orElse(null);
+        ResponseEntity<?> rta = checkeoAdmin(dtoInput.getId_usuario());
 
-        if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body("No tenés permisos para ejecutar esta acción");
+        if (!rta.getStatusCode().equals(HttpStatus.OK)){
+            return rta;
         }
 
         DatosColeccion datosColeccion = new DatosColeccion(dtoInput.getTitulo(), dtoInput.getDescripcion());
@@ -82,7 +93,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         coleccion.setActivo(true);
         coleccion.setModificado(false);
 
-        FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccionDinamica(buscadorFiltro, buscadorCategoria, buscadorPais, buscadorProvincia, dtoInput.getCriterios());
+        FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccionDinamica(buscadores, dtoInput.getCriterios());
 
 //todo endpoint get all algoritmo consenso con (nombre)
         if (dtoInput.getAlgoritmoConsenso() != null){
@@ -133,9 +144,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         Coleccion coleccion = coleccionesRepo.findByIdAndActivoTrue(id_coleccion).orElse(null);
 
         if(coleccion == null){
-            System.out.println("soy null");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se encontró la colección");
-
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la colección");
         }
 
         ColeccionOutputDTO dto = new ColeccionOutputDTO();
@@ -153,15 +162,15 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
     public ResponseEntity<?> deleteColeccion(Long id_coleccion, Long id_usuario) {
 
-        Usuario usuario = usuariosRepo.findById(id_usuario).orElse(null);
+        ResponseEntity<?> rta = checkeoAdmin(id_usuario);
 
-        if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body("No tenés permisos para ejecutar esta acción");
+        if (!rta.getStatusCode().equals(HttpStatus.OK)){
+            return rta;
         }
 
         Coleccion coleccion = coleccionesRepo.findByIdAndActivoTrue(id_coleccion).orElse(null);
         if(coleccion == null){
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se encontró la colección");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la colección");
         }
         coleccion.setActivo(false);
 
@@ -175,7 +184,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
         ResponseEntity<?> respuesta = checkeoAdmin(id_usuario);
 
-        if(respuesta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+        if(!respuesta.getStatusCode().equals(HttpStatus.OK)){
             return respuesta;
         }
 
@@ -189,8 +198,10 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         Dataset dataset = new Dataset(dataSet);
         fuente.setDataSet(dataset);
 
-        List<HechoEstatica> hechosFuente = fuente.leerFuente((Usuario)respuesta.getBody(), buscadorUbicacion, buscadorCategoria, buscadorPais, buscadorProvincia, buscadorHecho);
+        List<HechoEstatica> hechosFuente = fuente.leerFuente((Usuario)respuesta.getBody(), buscadores);
         List<Hecho> hechos = new ArrayList<>(hechosFuente);
+
+
 
         coleccion.addHechos(hechos);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -252,14 +263,14 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
     public ResponseEntity<?> updateColeccion(ColeccionUpdateInputDTO dto) {
         ResponseEntity<?> respuesta = checkeoAdmin(dto.getId_usuario());
 
-        if(respuesta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+        if(!respuesta.getStatusCode().equals(HttpStatus.OK)){
             return respuesta;
         }
 
         Coleccion coleccion = coleccionesRepo.findByIdAndActivoTrue(dto.getId_coleccion()).orElse(null);
 
         if (coleccion == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body("No se encontró la colección");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).body("No se encontró la colección");
         }
 
         if (dto.getTitulo() != null){
@@ -270,7 +281,7 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
             coleccion.setDescripcion(dto.getDescripcion());
         }
 
-        FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccionDinamica(buscadorFiltro, buscadorCategoria, buscadorPais, buscadorProvincia, dto.getCriterios());
+        FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccionDinamica(buscadores, dto.getCriterios());
 
         coleccion.setCriterios(FormateadorHecho.obtenerListaDeFiltros(filtros));
 
@@ -292,18 +303,23 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
 
     public ResponseEntity<?> modificarAlgoritmoConsenso(ModificarConsensoInputDTO input) {
 
-        Usuario usuario = usuariosRepo.findById(input.getIdUsuario()).orElse(null);
+        ResponseEntity<?> rta = checkeoAdmin(input.getIdUsuario());
 
-        if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body("No tenés permisos para ejecutar esta acción");
+        if (!rta.getStatusCode().equals(HttpStatus.OK)){
+            return rta;
         }
 
         Coleccion coleccion = coleccionesRepo.findByIdAndActivoTrue(input.getIdColeccion()).orElse(null);
         if (coleccion == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró la colección");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la colección");
         }
 
         //no habría que recibir el id del algoritmo?
+
+        if (input.getTipoConsenso() == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
         switch (input.getTipoConsenso()) {
             case "AlgoritmoConsensoMayoriaAbsoluta":
                 coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaAbsoluta());
@@ -315,7 +331,7 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
                 coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMultiplesMenciones());
                 break;
             default:
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El algoritmo de consenso especificado no existe");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El algoritmo de consenso especificado no existe");
         }
         coleccionesRepo.save(coleccion);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -357,11 +373,20 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
     }
 
     private ResponseEntity<?> checkeoAdmin(Long id_usuario){
+
+        if (id_usuario == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
         Usuario usuario = usuariosRepo.findById(id_usuario).orElse(null);
 
-        if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
+        if (usuario == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró el usuario");
         }
+        else if (!usuario.getRol().equals(Rol.ADMINISTRADOR)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         return ResponseEntity.ok(usuario);
     }
 
@@ -383,11 +408,16 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
                 .where(DISTINCT)
                 .and(specs);
 
+        List<Hecho> hechos = new ArrayList<>();
+
+        hechos.addAll(hechosEstaticaRepository.findAll(specFinal));
+
         coleccion.setHechos(hechoRepository.findAll(specFinal));
 
         coleccionesRepo.save(coleccion);
     }
 
+    // TODO: REVISAR SPECS PORQUE OPERAN HECHOS CON FILTROS
     private Specification<Hecho> crearSpecs(List<Filtro> filtros) {
         return filtros.stream()
                 .map(Filtro::toSpecification)   // o IFiltro::toSpecification

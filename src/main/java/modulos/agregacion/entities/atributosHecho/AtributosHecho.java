@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import modulos.agregacion.entities.DbMain.Fuente;
 
 import java.time.ZonedDateTime;
 
@@ -36,6 +37,10 @@ public class AtributosHecho {
     @Enumerated(EnumType.STRING)
     @Column(name = "origen", length = 20)
     private Origen origen;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "fuente",length = 20)
+    private Fuente fuente;
 
     @Column(name = "fechaCarga")
     private ZonedDateTime fechaCarga;

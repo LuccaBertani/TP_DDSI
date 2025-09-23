@@ -24,7 +24,6 @@ public class HechosController {
     //anda
     @PostMapping("/subir")
     public ResponseEntity<?> subirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput){
-        System.out.println("id_usuario: " + dtoInput.getId_usuario());
         return hechosService.subirHecho(dtoInput); // 201 o 401
     }
 

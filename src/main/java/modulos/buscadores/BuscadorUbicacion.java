@@ -3,7 +3,7 @@ package modulos.buscadores;
 import modulos.agregacion.entities.DbMain.Pais;
 import modulos.agregacion.entities.DbMain.Provincia;
 import modulos.agregacion.entities.DbMain.Ubicacion;
-import modulos.agregacion.repositories.IUbicacionRepository;
+import modulos.agregacion.repositories.DbMain.IUbicacionRepository;
 import org.springframework.stereotype.Component;
 
 @Component

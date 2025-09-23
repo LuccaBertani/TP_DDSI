@@ -2,8 +2,8 @@ package modulos.buscadores;
 
 import modulos.agregacion.entities.DbMain.Pais;
 import modulos.agregacion.entities.DbMain.PaisProvincias;
-import modulos.agregacion.repositories.IPaisRepository;
-import modulos.agregacion.repositories.IProvinciaRepository;
+import modulos.agregacion.repositories.DbMain.IPaisRepository;
+import modulos.agregacion.repositories.DbMain.IProvinciaRepository;
 import modulos.shared.utils.Geocodificador;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

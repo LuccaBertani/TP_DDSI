@@ -4,7 +4,7 @@ import modulos.agregacion.entities.DbMain.*;
 import modulos.agregacion.entities.fuentes.LectorCSV;
 import modulos.apis.IDatosQuery;
 import modulos.servicioEstadistica.entities.*;
-import modulos.servicioEstadistica.repository.IEstadisticasRepository;
+import modulos.servicioEstadistica.repositories.IEstadisticasRepository;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;

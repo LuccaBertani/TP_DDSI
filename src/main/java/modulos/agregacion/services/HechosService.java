@@ -8,8 +8,12 @@ import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
 import modulos.agregacion.entities.DbMain.filtros.*;
+import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
+import modulos.agregacion.repositories.DbEstatica.IDatasetsRepository;
+import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
+import modulos.agregacion.repositories.DbMain.*;
+import modulos.agregacion.repositories.DbProxy.IHechosProxyRepository;
 import modulos.shared.utils.FormateadorHecho;
-import modulos.agregacion.repositories.*;
 import modulos.agregacion.entities.DbEstatica.Dataset;
 import modulos.buscadores.*;
 import modulos.shared.dtos.input.*;
@@ -40,6 +44,7 @@ public class HechosService {
 
     private final IHechosEstaticaRepository hechosEstaticaRepo;
     private final IHechosDinamicaRepository hechosDinamicaRepo;
+    private final IHechosProxyRepository hechosProxyRepo;
     private final IHechoRepository hechoRepo;
     private final IPaisRepository repoPais;
     private final IProvinciaRepository repoProvincia;
@@ -47,48 +52,35 @@ public class HechosService {
     private final IUsuarioRepository usuariosRepo;
     private final IColeccionRepository coleccionRepo;
     private final IDatasetsRepository datasetsRepo;
-    private final BuscadorCategoria buscadorCategoria;
-    private final BuscadorPais buscadorPais;
-    private final BuscadorProvincia buscadorProvincia;
-    private final BuscadorHecho buscadorHecho;
-    private final BuscadorFiltro buscadorFiltro;
-    private final BuscadorUbicacion buscadorUbicacion;
+    private final BuscadoresRegistry buscadores;
     private final ICategoriaRepository categoriaRepository;
     private final ISinonimoRepository repoSinonimo;
 
     public HechosService(IHechosEstaticaRepository hechosEstaticaRepo,
                          IHechosDinamicaRepository hechosDinamicaRepo,
+                         IHechosProxyRepository hechosProxyRepo,
                          IUsuarioRepository usuariosRepo,
                          IColeccionRepository coleccionRepo,
                          IDatasetsRepository datasetsRepo,
-                         BuscadorCategoria buscadorCategoria,
-                         BuscadorPais buscadorPais,
-                         BuscadorProvincia buscadorProvincia,
-                         BuscadorHecho buscadorHecho,
                          IHechoRepository hechoRepository,
                          ICategoriaRepository categoriaRepository,
                          IProvinciaRepository repoProvincia,
                          IPaisRepository repoPais,
                          IHechoRepository hechoRepo,
-                         BuscadorFiltro buscadorFiltro,
-                         BuscadorUbicacion buscadorUbicacion, ISinonimoRepository repoSinonimo){
+                        BuscadoresRegistry buscadores, ISinonimoRepository repoSinonimo){
         this.repoProvincia = repoProvincia;
         this.repoPais = repoPais;
         this.hechosDinamicaRepo = hechosDinamicaRepo;
         this.hechosEstaticaRepo = hechosEstaticaRepo;
+        this.hechosProxyRepo = hechosProxyRepo;
         this.usuariosRepo = usuariosRepo;
         this.coleccionRepo = coleccionRepo;
         this.datasetsRepo = datasetsRepo;
-        this.buscadorCategoria = buscadorCategoria;
-        this.buscadorPais = buscadorPais;
-        this.buscadorProvincia = buscadorProvincia;
-        this.buscadorHecho = buscadorHecho;
         this.hechoRepository = hechoRepository;
         this.categoriaRepository = categoriaRepository;
         this.hechoRepo = hechoRepo;
-        this.buscadorFiltro = buscadorFiltro;
-        this.buscadorUbicacion = buscadorUbicacion;
         this.repoSinonimo = repoSinonimo;
+        this.buscadores = buscadores;
     }
 
     /*
@@ -110,34 +102,50 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     // MODIFICADO -> TRUE SI HAY QUE EVALUARLO
     // MODIFICADO -> FALSE SI NO!!!!
 
+    private ResponseEntity<?> checkeoAdmin(Long id_usuario){
+
+        if (id_usuario == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        Usuario usuario = usuariosRepo.findById(id_usuario).orElse(null);
+
+        if (usuario == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró el usuario");
+        }
+        else if (!usuario.getRol().equals(Rol.ADMINISTRADOR)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return ResponseEntity.ok(usuario);
+    }
+
 
     //lo sube un administrador (lo considero carga dinamica)
     public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO dtoInput) {
 
         if(dtoInput.getTitulo() == null){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Campos obligatorios no ingresados");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario()).orElse(null);
+        ResponseEntity<?> rta = checkeoAdmin(dtoInput.getId_usuario());
 
-        if (usuario == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el usuario");
+        if (!rta.getStatusCode().equals(HttpStatus.OK)){
+            return rta;
         }
 
-        if (!usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
-        }
-
+        Usuario usuario = (Usuario)rta.getBody();
         usuario.incrementarHechosSubidos();
 
         HechoDinamica hecho = new HechoDinamica();
 
-        AtributosHecho atributos = FormateadorHecho.formatearAtributosHecho(buscadorUbicacion, buscadorCategoria,buscadorPais, buscadorProvincia, dtoInput);
+        AtributosHecho atributos = FormateadorHecho.formatearAtributosHecho(buscadores, dtoInput);
 
-        hecho.setUsuario(usuario);
+        hecho.setUsuario_id(usuario.getId());
         hecho.setAtributosHecho(atributos);
         hecho.setActivo(true);
         hecho.getAtributosHecho().setModificado(true);
+        hecho.getAtributosHecho().setFuente(Fuente.DINAMICA);
         hecho.getAtributosHecho().setFechaCarga(ZonedDateTime.now());
         hecho.getAtributosHecho().setFechaUltimaActualizacion(hecho.getAtributosHecho().getFechaCarga());
         hechosDinamicaRepo.save(hecho);
@@ -146,10 +154,10 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     }
 
     public ResponseEntity<?> importarHechos(ImportacionHechosInputDTO dtoInput, MultipartFile file) throws IOException {
-        Usuario usuario = usuariosRepo.findById(dtoInput.getId_usuario()).orElse(null);
+        ResponseEntity<?> rta = checkeoAdmin(dtoInput.getId_usuario());
 
-        if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
+        if (!rta.getStatusCode().equals(HttpStatus.OK)){
+            return rta;
         }
 
         // 1) Validaciones básicas
@@ -174,16 +182,9 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         datasetsRepo.save(dataset);
         fuente.setDataSet(dataset);
 
-        List<HechoEstatica> hechos = fuente.leerFuente(usuario,buscadorUbicacion, buscadorCategoria, buscadorPais, buscadorProvincia, buscadorHecho);
+        List<HechoEstatica> hechos = fuente.leerFuente((Usuario)rta.getBody(),buscadores);
 
         for (HechoEstatica hecho : hechos){
-            System.out.println("Titulo: " + hecho.getAtributosHecho().getTitulo());
-            System.out.println("Descripcion: " + hecho.getAtributosHecho().getDescripcion());
-            if(hecho.getAtributosHecho().getUbicacion().getProvincia() != null) {
-                System.out.println("Provincia: " + hecho.getAtributosHecho().getUbicacion().getProvincia().getProvincia());
-            }
-            System.out.println("Pais: " + hecho.getAtributosHecho().getUbicacion().getPais().getPais());
-            System.out.println("Fecha del hecho: " + hecho.getAtributosHecho().getFechaAcontecimiento());
             hecho.setActivo(true);
             ZonedDateTime fechaActual = ZonedDateTime.now();
             hecho.getAtributosHecho().setFechaCarga(fechaActual);
@@ -212,8 +213,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
         System.out.println(inputDTO.getCategoriaId());
 
-        List<Filtro> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadorFiltro, buscadorCategoria,
-                buscadorPais, buscadorProvincia, criterios));
+        List<Filtro> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadores, criterios));
 
         System.out.println("SIZE DE LA LISTA FILTROS: " + filtros.size());
 
@@ -227,7 +227,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         Coleccion coleccion = coleccionRepo.findByIdAndActivoTrue(inputDTO.getId_coleccion()).orElse(null);
 
         if (coleccion == null){
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se encontró la colección");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la colección");
         }
 
         Specification<Hecho> specColeccion =
@@ -257,7 +257,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
         dto.setId(hecho.getId());
 
-        Optional.ofNullable(hecho.getAtributosHecho().getUbicacion())
+        Optional.ofNullable(hecho.getAtributosHecho().getUbicacion_id())
                 .ifPresent(ubicacion -> {
                     Optional.ofNullable(ubicacion.getPais())
                             .ifPresent(pais -> {
@@ -290,7 +290,12 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     }
 
     public ResponseEntity<?> getAllHechos() {
-        List<Hecho> hechosTotales = hechoRepo.findAll();
+
+
+        List<Hecho> hechosTotales = new ArrayList<>();
+        hechosTotales.addAll(hechosEstaticaRepo.findAll());
+        hechosTotales.addAll(hechosDinamicaRepo.findAll());
+        hechosTotales.addAll(hechosProxyRepo.findAll());
 
         List<VisualizarHechosOutputDTO> outputDTO = hechosTotales.stream()
                 .map(this::crearHechoDto)
@@ -329,21 +334,22 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
     public ResponseEntity<?> addCategoria(Long idUsuario, String categoriaStr, List<String> sinonimosString) {
 
-        Usuario usuario = usuariosRepo.findById(idUsuario).orElse(null);
-        if (usuario != null && usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            Categoria categoria = new Categoria();
-            categoria.setTitulo(categoriaStr);
-            List<Sinonimo> sinonimos = new ArrayList<>();
-            if (sinonimosString!=null && !sinonimosString.isEmpty()){
-                for (String sinonimo: sinonimosString){
-                    sinonimos.add(new Sinonimo(sinonimo));
-                }
-            }
-            categoria.setSinonimos(sinonimos);
-            categoriaRepository.save(categoria);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Se creó la categoría correctamente");
+        ResponseEntity<?> rta = checkeoAdmin(idUsuario);
+
+        if (!rta.getStatusCode().equals(HttpStatus.OK)){
+            return rta;
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permiso para ejecutar esta acción");
+        Categoria categoria = new Categoria();
+        categoria.setTitulo(categoriaStr);
+        List<Sinonimo> sinonimos = new ArrayList<>();
+        if (sinonimosString!=null && !sinonimosString.isEmpty()){
+            for (String sinonimo: sinonimosString){
+                sinonimos.add(new Sinonimo(sinonimo));
+            }
+        }
+        categoria.setSinonimos(sinonimos);
+        categoriaRepository.save(categoria);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Se creó la categoría correctamente");
     }
 
     public ResponseEntity<?> addSinonimoCategoria(Long idUsuario, Long idCategoria, String sinonimo_str) {
@@ -406,7 +412,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
     public ResponseEntity<?> addSinonimoProvincia(Long idUsuario, Long idProvincia, String sinonimo_str) {
 
-        ResponseEntity<?> respuesta = verificarDatos(idUsuario);
+        ResponseEntity<?> respuesta = checkeoAdmin(idUsuario);
 
         if (!respuesta.getStatusCode().equals(HttpStatus.OK)){
             return respuesta;

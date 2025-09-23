@@ -1,6 +1,7 @@
 package modulos.shared.utils;
 
 
+import jakarta.persistence.Table;
 import modulos.agregacion.entities.AtributosHechoModificarMemoria;
 import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
@@ -96,7 +97,6 @@ public class FormateadorHecho {
         }
 
         return tipo.cast(hecho123);
-
     }
 
     public static Hecho formatearHechoBDD(HechoMemoria hecho){
@@ -302,7 +302,7 @@ public class FormateadorHecho {
 
 
 
-    public static AtributosHecho formatearAtributosHecho(BuscadorUbicacion buscadorUbicacion, BuscadorCategoria buscadorCategoria, BuscadorPais buscadorPais, BuscadorProvincia buscarProvincia, SolicitudHechoInputDTO dtoInput){
+    public static AtributosHecho formatearAtributosHecho(BuscadoresRegistry buscadores, SolicitudHechoInputDTO dtoInput){
 
     AtributosHecho atributos = new AtributosHecho();
 
@@ -310,11 +310,11 @@ public class FormateadorHecho {
     Provincia provincia = null;
 
     if (dtoInput.getId_pais() != null){
-        pais = buscadorPais.buscar(dtoInput.getId_pais());
+        pais = buscadores.getBuscadorPais().buscar(dtoInput.getId_pais());
     }
 
     if (dtoInput.getId_provincia() != null){
-        provincia = buscarProvincia.buscar(dtoInput.getId_provincia());
+        provincia = buscadores.getBuscadorProvincia().buscar(dtoInput.getId_provincia());
     }
 
     if (dtoInput.getLatitud() != null){
@@ -437,11 +437,12 @@ public class FormateadorHecho {
     }
     //TODO interface formateador ?)
     public static FiltrosColeccion formatearFiltrosColeccionDinamica(
-            BuscadorFiltro buscadorFiltro,
-            BuscadorCategoria buscadorCategoria,
-            BuscadorPais buscadorPais,
-            BuscadorProvincia buscadorProvincia,
+            BuscadoresRegistry buscadores,
             CriteriosColeccionDTO inputDTO) {
+        BuscadorCategoria buscadorCategoria = buscadores.getBuscadorCategoria();
+        BuscadorFiltro buscadorFiltro = buscadores.getBuscadorFiltro();
+        BuscadorPais buscadorPais = buscadores.getBuscadorPais();
+        BuscadorProvincia buscadorProvincia = buscadores.getBuscadorProvincia();
 
         FiltrosColeccion filtros = new FiltrosColeccion();
 

@@ -1,4 +1,4 @@
-package modulos.agregacion.repositories;
+package modulos.servicioEstadistica.repositories;
 
 import modulos.servicioEstadistica.entities.CategoriaHora;
 import org.springframework.data.jpa.repository.JpaRepository;

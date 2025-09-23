@@ -5,7 +5,10 @@ import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
 import modulos.agregacion.entities.DbProxy.HechoProxy;
 import modulos.agregacion.entities.atributosHecho.AtributosHecho;
-import modulos.agregacion.repositories.*;
+import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
+import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
+import modulos.agregacion.repositories.DbMain.IHechoRepository;
+import modulos.agregacion.repositories.DbProxy.IHechosProxyRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -94,7 +97,7 @@ public class BuscadorHecho {
     }
 
 
-    public Hecho existeHechoIdentico(HechoEstatica hecho) {
+    public HechoEstatica existeHechoIdentico(HechoEstatica hecho) {
         var tgtAttr = Optional.ofNullable(hecho).map(Hecho::getAtributosHecho);
 
         if (hecho != null && hecho.getAtributosHecho() != null) {
