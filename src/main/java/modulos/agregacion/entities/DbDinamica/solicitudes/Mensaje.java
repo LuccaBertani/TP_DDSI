@@ -1,4 +1,4 @@
-package modulos.agregacion.entities.DbMain.solicitudes;
+package modulos.agregacion.entities.DbDinamica.solicitudes;
 
 import jakarta.persistence.*;
 import lombok.Getter;

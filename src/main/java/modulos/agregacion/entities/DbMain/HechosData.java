@@ -10,18 +10,18 @@ public class HechosData {
     String descripcion;
     Integer tipoContenido;
     String fechaAcontecimiento;
-    Categoria categoria;
-    Ubicacion ubicacion;
+    Long categoria_id;
+    Long ubicacion_id;
     Double latitud;
     Double longitud;
 
-    public HechosData(String titulo, String descripcion, Integer tipoContenido, String fechaAcontecimiento, Categoria categoria, Ubicacion ubicacion, Double latitud, Double longitud) {
+    public HechosData(String titulo, String descripcion, String fechaAcontecimiento, Integer tipoContenido, Long categoria_id, Long ubicacion_id, Double latitud, Double longitud) {
         this.titulo = titulo;
         this.descripcion = descripcion;
-        this.tipoContenido = tipoContenido;
         this.fechaAcontecimiento = fechaAcontecimiento;
-        this.categoria = categoria;
-        this.ubicacion = ubicacion;
+        this.tipoContenido = tipoContenido;
+        this.categoria_id = categoria_id;
+        this.ubicacion_id = ubicacion_id;
         this.latitud = latitud;
         this.longitud = longitud;
     }

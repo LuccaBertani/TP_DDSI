@@ -1,6 +1,7 @@
 package modulos.agregacion.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import modulos.AtributosHechoMemoria;
@@ -11,6 +12,7 @@ import modulos.agregacion.entities.atributosHecho.AtributosHechoModificar;
 import java.util.ArrayList;
 import java.util.List;
 
+@AllArgsConstructor
 @Builder
 @Data
 public class HechoMemoria {

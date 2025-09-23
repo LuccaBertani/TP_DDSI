@@ -1,4 +1,4 @@
-package modulos.agregacion.entities.DbMain.solicitudes;
+package modulos.agregacion.entities.DbDinamica.solicitudes;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -16,13 +16,12 @@ public class Reporte {
     @Column(name = "motivo")
     String motivo;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "hecho_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "fk_reporte_hecho"))
-    Hecho hecho_asociado;
+    @Column(name = "hecho_asociado_id")
+    Long hecho_asociado_id;
 
-    public Reporte(String motivo, Hecho hecho){
+    public Reporte(String motivo, Long hecho_asociado_id){
         this.motivo = motivo;
-        this.hecho_asociado = hecho;
+        this.hecho_asociado_id = hecho_asociado_id;
     }
 
     public Reporte() {

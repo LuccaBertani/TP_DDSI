@@ -1,7 +1,7 @@
-package modulos.agregacion.repositories.DbMain;
+package modulos.agregacion.repositories.DbDinamica;
 
 import modulos.agregacion.entities.DbMain.projections.SolicitudHechoProjection;
-import modulos.agregacion.entities.DbMain.solicitudes.SolicitudHecho;
+import modulos.agregacion.entities.DbDinamica.solicitudes.SolicitudHecho;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

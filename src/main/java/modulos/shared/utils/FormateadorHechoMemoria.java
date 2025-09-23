@@ -41,7 +41,7 @@ public class FormateadorHechoMemoria {
                 AtributosHechoModificarMemoria atributos123 = AtributosHechoModificarMemoria.builder().
                         id(atributosModificar.getId()).
                         latitud(atributosModificar.getLatitud()).longitud(atributosModificar.getLongitud())
-                        .categoria(buscadores.getBuscadorCategoria().buscar(atributosModificar.getCategoria()))
+                        .categoria(buscadores.getBuscadorCategoria().buscar(atributosModificar.getCategoria_id()))
                         .titulo(atributosModificar.getTitulo())
                         .contenidoMultimedia(atributosModificar.getContenidoMultimedia()).descripcion(atributosModificar.getDescripcion())
                         .fechaAcontecimiento(atributosModificar.getFechaAcontecimiento())

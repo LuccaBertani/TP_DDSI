@@ -36,7 +36,7 @@ public class AtributosHechoModificar {
     private Long ubicacion_id;
 
     @Column(name = "categoria_id")
-    private Long categoria;
+    private Long categoria_id;
 
     @Column(name = "latitud")
     private Double latitud;

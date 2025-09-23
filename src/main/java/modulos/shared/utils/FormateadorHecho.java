@@ -50,7 +50,7 @@ public class FormateadorHecho {
                     .id(atributosModificar.getId())
                     .latitud(atributosModificar.getLatitud())
                     .longitud(atributosModificar.getLongitud())
-                    .categoria(atributosModificar.getCategoria().getId())
+                    .categoria_id(atributosModificar.getCategoria().getId())
                     .titulo(atributosModificar.getTitulo())
                     .contenidoMultimedia(atributosModificar.getContenidoMultimedia())
                     .fechaAcontecimiento(atributosModificar.getFechaAcontecimiento())
@@ -122,7 +122,7 @@ public class FormateadorHecho {
                     .id(atributosModificar.getId())
                     .latitud(atributosModificar.getLatitud())
                     .longitud(atributosModificar.getLongitud())
-                    .categoria(atributosModificar.getCategoria().getId())
+                    .categoria_id(atributosModificar.getCategoria().getId())
                     .titulo(atributosModificar.getTitulo())
                     .contenidoMultimedia(atributosModificar.getContenidoMultimedia())
                     .fechaAcontecimiento(atributosModificar.getFechaAcontecimiento())
@@ -196,7 +196,7 @@ public class FormateadorHecho {
                     .id(atributosModificar.getId())
                     .latitud(atributosModificar.getLatitud())
                     .longitud(atributosModificar.getLongitud())
-                    .categoria(atributosModificar.getCategoria().getId())
+                    .categoria_id(atributosModificar.getCategoria().getId())
                     .titulo(atributosModificar.getTitulo())
                     .contenidoMultimedia(atributosModificar.getContenidoMultimedia())
                     .fechaAcontecimiento(atributosModificar.getFechaAcontecimiento())
@@ -239,7 +239,7 @@ public class FormateadorHecho {
                     .id(atributosModificar.getId())
                     .latitud(atributosModificar.getLatitud())
                     .longitud(atributosModificar.getLongitud())
-                    .categoria(atributosModificar.getCategoria().getId())
+                    .categoria_id(atributosModificar.getCategoria().getId())
                     .titulo(atributosModificar.getTitulo())
                     .contenidoMultimedia(atributosModificar.getContenidoMultimedia())
                     .fechaAcontecimiento(atributosModificar.getFechaAcontecimiento())
@@ -281,7 +281,7 @@ public class FormateadorHecho {
                     .id(atributosModificar.getId())
                     .latitud(atributosModificar.getLatitud())
                     .longitud(atributosModificar.getLongitud())
-                    .categoria(atributosModificar.getCategoria().getId())
+                    .categoria_id(atributosModificar.getCategoria().getId())
                     .titulo(atributosModificar.getTitulo())
                     .contenidoMultimedia(atributosModificar.getContenidoMultimedia())
                     .fechaAcontecimiento(atributosModificar.getFechaAcontecimiento())
@@ -325,10 +325,12 @@ public class FormateadorHecho {
         atributos.setLongitud(dtoInput.getLongitud());
     }
 
-    atributos.setUbicacion(buscadorUbicacion.buscarOCrear(pais,provincia));
+    Ubicacion ubicacion = buscadores.getBuscadorUbicacion().buscarOCrear(pais,provincia);
+    atributos.setUbicacion_id(ubicacion!=null ? ubicacion.getId() : null);
 
     if (dtoInput.getId_categoria() != null){
-        atributos.setCategoria(buscadorCategoria.buscar(dtoInput.getId_categoria()));
+        Categoria categoria = buscadores.getBuscadorCategoria().buscar(dtoInput.getId_categoria());
+        atributos.setCategoria_id(categoria!=null ? categoria.getId() : null);
     }
 
     atributos.setTitulo(dtoInput.getTitulo());

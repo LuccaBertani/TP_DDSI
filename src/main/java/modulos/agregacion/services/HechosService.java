@@ -8,6 +8,7 @@ import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
 import modulos.agregacion.entities.DbMain.filtros.*;
+import modulos.agregacion.entities.HechoMemoria;
 import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
 import modulos.agregacion.repositories.DbEstatica.IDatasetsRepository;
 import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
@@ -17,6 +18,7 @@ import modulos.shared.utils.FormateadorHecho;
 import modulos.agregacion.entities.DbEstatica.Dataset;
 import modulos.buscadores.*;
 import modulos.shared.dtos.input.*;
+import modulos.shared.utils.FormateadorHechoMemoria;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
@@ -55,6 +57,7 @@ public class HechosService {
     private final BuscadoresRegistry buscadores;
     private final ICategoriaRepository categoriaRepository;
     private final ISinonimoRepository repoSinonimo;
+    private final FormateadorHechoMemoria formateadorHechoMemoria;
 
     public HechosService(IHechosEstaticaRepository hechosEstaticaRepo,
                          IHechosDinamicaRepository hechosDinamicaRepo,
@@ -67,7 +70,8 @@ public class HechosService {
                          IProvinciaRepository repoProvincia,
                          IPaisRepository repoPais,
                          IHechoRepository hechoRepo,
-                        BuscadoresRegistry buscadores, ISinonimoRepository repoSinonimo){
+                        BuscadoresRegistry buscadores, ISinonimoRepository repoSinonimo,
+                         FormateadorHechoMemoria formateadorHechoMemoria){
         this.repoProvincia = repoProvincia;
         this.repoPais = repoPais;
         this.hechosDinamicaRepo = hechosDinamicaRepo;
@@ -81,6 +85,7 @@ public class HechosService {
         this.hechoRepo = hechoRepo;
         this.repoSinonimo = repoSinonimo;
         this.buscadores = buscadores;
+        this.formateadorHechoMemoria = formateadorHechoMemoria;
     }
 
     /*
@@ -257,7 +262,9 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
         dto.setId(hecho.getId());
 
-        Optional.ofNullable(hecho.getAtributosHecho().getUbicacion_id())
+        HechoMemoria hechoMemoria = formateadorHechoMemoria.formatearHechoMemoria(hecho);
+
+        Optional.ofNullable(hechoMemoria.getAtributosHecho().getUbicacion())
                 .ifPresent(ubicacion -> {
                     Optional.ofNullable(ubicacion.getPais())
                             .ifPresent(pais -> {
@@ -282,7 +289,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 .map(Object::toString)
                 .ifPresent(dto::setFechaAcontecimiento);
 
-        Optional.ofNullable(hecho.getAtributosHecho().getCategoria()).ifPresent(categoria -> {
+        Optional.ofNullable(hechoMemoria.getAtributosHecho().getCategoria()).ifPresent(categoria -> {
             dto.setCategoria(categoria.getTitulo());
             dto.setId_categoria(categoria.getId());
         });
@@ -354,7 +361,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
     public ResponseEntity<?> addSinonimoCategoria(Long idUsuario, Long idCategoria, String sinonimo_str) {
 
-        ResponseEntity<?> respuesta = verificarDatos(idUsuario);
+        ResponseEntity<?> respuesta = checkeoAdmin(idUsuario);
 
         if (!respuesta.getStatusCode().equals(HttpStatus.OK)){
             return respuesta;
@@ -383,7 +390,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
     public ResponseEntity<?> addSinonimoPais(Long idUsuario, Long idPais, String sinonimo_str) {
 
-        ResponseEntity<?> respuesta = verificarDatos(idUsuario);
+        ResponseEntity<?> respuesta = checkeoAdmin(idUsuario);
 
         if (!respuesta.getStatusCode().equals(HttpStatus.OK)){
             return respuesta;
@@ -437,18 +444,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         repoProvincia.save(provincia);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    private ResponseEntity<?> verificarDatos(Long idUsuario){
-        Usuario usuario = usuariosRepo.findById(idUsuario).orElse(null);
-
-        if(usuario == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message","El id de usuario no es valido"));
-        }
-        if(!usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message","El usuario no tiene permiso para ejecutar esto"));
-        }
-        return ResponseEntity.ok().build();
     }
 
     private Specification<Hecho> crearSpecs(List<Filtro> filtros) {

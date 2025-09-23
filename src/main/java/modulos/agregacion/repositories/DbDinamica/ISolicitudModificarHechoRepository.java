@@ -1,6 +1,6 @@
-package modulos.agregacion.repositories.DbMain;
+package modulos.agregacion.repositories.DbDinamica;
 
-import modulos.agregacion.entities.DbMain.solicitudes.SolicitudHecho;
+import modulos.agregacion.entities.DbDinamica.solicitudes.SolicitudHecho;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ISolicitudModificarHechoRepository extends JpaRepository<SolicitudHecho, Long> {

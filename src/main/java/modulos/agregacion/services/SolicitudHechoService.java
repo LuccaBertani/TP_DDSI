@@ -2,15 +2,13 @@ package modulos.agregacion.services;
 
 import jakarta.transaction.Transactional;
 import modulos.agregacion.entities.DbDinamica.HechoDinamica;
+import modulos.agregacion.entities.DbDinamica.solicitudes.*;
 import modulos.agregacion.entities.DbMain.*;
 import modulos.agregacion.entities.atributosHecho.AtributosHechoModificar;
 import modulos.agregacion.entities.DbMain.projections.SolicitudHechoProjection;
-import modulos.agregacion.entities.DbMain.solicitudes.*;
 import modulos.agregacion.entities.atributosHecho.TipoContenido;
-import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
-import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
+import modulos.agregacion.repositories.DbDinamica.*;
 import modulos.agregacion.repositories.DbMain.*;
-import modulos.agregacion.repositories.DbProxy.IHechosProxyRepository;
 import modulos.buscadores.BuscadorPais;
 import modulos.buscadores.BuscadorProvincia;
 import modulos.buscadores.BuscadorUbicacion;
@@ -41,8 +39,6 @@ public class SolicitudHechoService {
     private final ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo;
     private final ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo;
     private final ISolicitudModificarHechoRepository solicitudModificarHechoRepo;
-    private final IHechosProxyRepository hechosProxyRepository;
-    private final IHechosEstaticaRepository hechosEstaticaRepository;
     private final IHechosDinamicaRepository hechosDinamicaRepository;
     private final IHechoRepository hechosRepository;
     private final IUsuarioRepository usuariosRepository;
@@ -56,12 +52,10 @@ public class SolicitudHechoService {
     private final BuscadorPais buscadorPais;
     private final BuscadorProvincia buscadorProvincia;
 
-    public SolicitudHechoService(ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo, ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo, ISolicitudModificarHechoRepository solicitudModificarHechoRepo, IHechosProxyRepository hechosProxyRepository, IHechosEstaticaRepository hechosEstaticaRepository, IHechosDinamicaRepository hechosDinamicaRepository, IUsuarioRepository usuariosRepository, IMensajeRepository mensajesRepository, IReporteHechoRepository reportesHechoRepository, ISolicitudRepository solicitudRepository, IPaisRepository paisRepository, IProvinciaRepository provinciaRepository, ICategoriaRepository categoriaRepository, BuscadorUbicacion buscadorUbicacion, IHechoRepository hechosRepository, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia) {
+    public SolicitudHechoService(ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo, ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo, ISolicitudModificarHechoRepository solicitudModificarHechoRepo, IHechosDinamicaRepository hechosDinamicaRepository, IUsuarioRepository usuariosRepository, IMensajeRepository mensajesRepository, IReporteHechoRepository reportesHechoRepository, ISolicitudRepository solicitudRepository, IPaisRepository paisRepository, IProvinciaRepository provinciaRepository, ICategoriaRepository categoriaRepository, BuscadorUbicacion buscadorUbicacion, IHechoRepository hechosRepository, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia) {
         this.solicitudAgregarHechoRepo = solicitudAgregarHechoRepo;
         this.solicitudEliminarHechoRepo = solicitudEliminarHechoRepo;
         this.solicitudModificarHechoRepo = solicitudModificarHechoRepo;
-        this.hechosProxyRepository = hechosProxyRepository;
-        this.hechosEstaticaRepository = hechosEstaticaRepository;
         this.hechosDinamicaRepository = hechosDinamicaRepository;
         this.usuariosRepository = usuariosRepository;
         this.mensajesRepository = mensajesRepository;
@@ -116,10 +110,11 @@ public class SolicitudHechoService {
         Pais pais = dto.getId_pais() != null ? paisRepository.findById(dto.getId_pais()).orElse(null) : null;
         Provincia provincia = dto.getId_provincia() != null ? provinciaRepository.findById(dto.getId_provincia()).orElse(null) : null;
         Categoria categoria = dto.getId_categoria() != null ? categoriaRepository.findById(dto.getId_categoria()).orElse(null) : null;
-
+        Long categoria_id = categoria != null ? categoria.getId() : null;
         Ubicacion ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
+        Long ubicacion_id = ubicacion != null ? ubicacion.getId() : null;
 
-        HechosData hechosData = new HechosData(dto.getTitulo(), dto.getDescripcion(), dto.getTipoContenido(), dto.getFechaAcontecimiento(), categoria, ubicacion,
+        HechosData hechosData = new HechosData(dto.getTitulo(), dto.getDescripcion(), dto.getFechaAcontecimiento(),dto.getTipoContenido(), categoria_id, ubicacion_id,
                 dto.getLatitud(), dto.getLongitud());
 
         FuenteDinamica fuenteDinamica = new FuenteDinamica();
@@ -134,7 +129,10 @@ public class SolicitudHechoService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Se detectó spam");
         }
 
-        hecho.setUsuario((Usuario)rta.getBody());
+        Usuario usuario = (Usuario)rta.getBody();
+
+        hecho.setUsuario_id(usuario.getId());
+        hecho.getAtributosHecho().setFuente(Fuente.DINAMICA);
         hechosDinamicaRepository.save(hecho);
         solicitudAgregarHechoRepo.save(solicitudHecho);
 
@@ -212,7 +210,7 @@ public class SolicitudHechoService {
             Pais pais = buscadorPais.buscar(dto.getId_pais());
             Provincia provincia = buscadorProvincia.buscar(dto.getId_provincia());
             Ubicacion ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
-            atributos.setUbicacion(ubicacion);
+            atributos.setUbicacion_id(ubicacion != null ? ubicacion.getId() : null);
         }
         // TODO: En todos los casos, chequear que latitud y longitud VENGAN JUNTOS EN TODOS LOS CASOS
         if (dto.getLongitud() != null && dto.getLatitud()!=null){
@@ -220,13 +218,8 @@ public class SolicitudHechoService {
             atributos.setLongitud(dto.getLongitud());
         }
 
-
-
-        Optional.ofNullable(dto.getId_categoria())
-                .ifPresent(idCat -> {
-                    categoriaRepository.findById(idCat)
-                            .ifPresent(atributos::setCategoria);
-                });
+        Optional.ofNullable(dto.getId_categoria()).flatMap(categoriaRepository::findById).
+                ifPresent(categoria -> atributos.setCategoria_id(categoria.getId()));
 
 
         Optional.ofNullable(dto.getFechaAcontecimiento()).ifPresent(fechaStr -> {
@@ -252,7 +245,7 @@ public class SolicitudHechoService {
         SolicitudHecho solicitud = solicitudRepository.findByIdAndProcesadaFalse(dtoInput.getId_solicitud()).orElse(null);
 
         if (solicitud == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró la solicitud");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la solicitud");
         }
 
         ResponseEntity<?> rta = checkeoAdmin(dtoInput.getId_usuario());
@@ -343,11 +336,11 @@ public class SolicitudHechoService {
 
     private void setearModificadoAOficial(Hecho hecho, AtributosHechoModificar atributos){
 
-        Optional.ofNullable(atributos.getCategoria()).ifPresent(hecho.getAtributosHecho()::setCategoria);
+        Optional.ofNullable(atributos.getCategoria_id()).ifPresent(hecho.getAtributosHecho()::setCategoria_id);
         Optional.ofNullable(atributos.getDescripcion()).ifPresent(hecho.getAtributosHecho()::setDescripcion);
         Optional.ofNullable(atributos.getFechaAcontecimiento()).ifPresent(hecho.getAtributosHecho()::setFechaAcontecimiento);
         Optional.ofNullable(atributos.getTitulo()).ifPresent(hecho.getAtributosHecho()::setTitulo);
-        Optional.ofNullable(atributos.getUbicacion()).ifPresent(hecho.getAtributosHecho()::setUbicacion);
+        Optional.ofNullable(atributos.getUbicacion_id()).ifPresent(hecho.getAtributosHecho()::setUbicacion_id);
         Optional.ofNullable(atributos.getContenidoMultimedia()).ifPresent(hecho.getAtributosHecho()::setContenidoMultimedia);
         Optional.ofNullable(atributos.getLatitud()).ifPresent(hecho.getAtributosHecho()::setLatitud);
         Optional.ofNullable(atributos.getLongitud()).ifPresent(hecho.getAtributosHecho()::setLongitud);
@@ -423,7 +416,7 @@ public class SolicitudHechoService {
         if(hecho == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el hecho");
         }
-        Reporte reporte = new Reporte(motivo, hecho);
+        Reporte reporte = new Reporte(motivo, id_hecho);
         reportesHechoRepository.save(reporte);
         return ResponseEntity.ok().build();
     }

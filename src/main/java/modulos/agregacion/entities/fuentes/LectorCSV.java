@@ -92,9 +92,8 @@ public class LectorCSV {
                 hecho.getAtributosHecho().setDescripcion((indicesColumnas.get(1) != -1) ? registros.get(indicesColumnas.get(1)) : null);
 
                 String categoriaString = indicesColumnas.get(2) != -1 ? registros.get(indicesColumnas.get(2)) : null;
-
-                hecho.getAtributosHecho().setCategoria(buscadores.getBuscadorCategoria().buscar(categoriaString));
-
+                Categoria categoria = buscadores.getBuscadorCategoria().buscar(categoriaString);
+                hecho.getAtributosHecho().setCategoria_id(categoria != null ? categoria.getId() : null);
                 UbicacionString ubicacionString;
                 Pais pais = null;
                 Provincia provincia = null;
@@ -117,16 +116,16 @@ public class LectorCSV {
                     pais = buscadores.getBuscadorPais().buscar(ubicacionString.getPais());
                     provincia = buscadores.getBuscadorProvincia().buscar(ubicacionString.getProvincia());
                     ubicacion = buscadores.getBuscadorUbicacion().buscarOCrear(pais, provincia);
-                    hecho.getAtributosHecho().setUbicacion(ubicacion);
+                    hecho.getAtributosHecho().setUbicacion_id(ubicacion.getId());
                 }else{
-                    hecho.getAtributosHecho().setUbicacion(null);
+                    hecho.getAtributosHecho().setUbicacion_id(null);
                 }
 
                 System.out.println("Soy una fecha asquerosa: " + FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))));
 
                 hecho.getAtributosHecho().setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))) : null);
                 hecho.getAtributosHecho().setModificado(true);
-                hecho.setUsuario(usuario);
+                hecho.setUsuario_id(usuario.getId());
                 hecho.getAtributosHecho().setFuente(Fuente.ESTATICA);
                 hecho.getDatasets().add(this.dataSet);
                 if (tituloRepetido){
