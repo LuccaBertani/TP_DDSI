@@ -35,10 +35,10 @@ public class FiltroCategoria extends Filtro {
         });
     }
 
-    @Override
+    /*@Override
     public Boolean aprobarHecho(Hecho hecho){
         return hecho.getAtributosHecho().getCategoria().getId().equals(this.categoria.getId());
-    }
+    }*/
 
 }
 

@@ -22,31 +22,27 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 @EnableJpaRepositories(
         basePackages = "modulos.agregacion.repositories.DbEstatica",
-        entityManagerFactoryRef = "mainEntityManagerFactory",
-        transactionManagerRef = "mainTransactionManager"
+        entityManagerFactoryRef = "estaticaEntityManagerFactory",
+        transactionManagerRef = "estaticaTransactionManager"
 )
 public class DbHechosEstaticaConfig {
 
-    @Primary
-    @Bean
+    @Bean(name = "estaticaDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.db1")
-    public DataSource mainDataSource() {
-        return DataSourceBuilder.create().build();
+    public DataSource estaticaDataSource() { return DataSourceBuilder.create().build(); }
+
+    @Bean(name = "estaticaEntityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean estaticaEntityManagerFactory(
+            EntityManagerFactoryBuilder builder,
+            @Qualifier("estaticaDataSource") DataSource ds) {
+        return builder.dataSource(ds)
+                .packages("modulos.agregacion.entities.DbEstatica","modulos.agregacion.entities.atributosHecho")
+                .persistenceUnit("db1").build();
     }
 
-    @Primary
-    @Bean
-    public LocalContainerEntityManagerFactoryBean mainEntityManagerFactory(EntityManagerFactoryBuilder builder) {
-        return builder
-                .dataSource(mainDataSource())
-                .packages("modulos.agregacion.entities.DbEstatica", "modulos.agregacion.entities.atributosHecho")  // Ajustar si cambia tu ruta
-                .persistenceUnit("db1")
-                .build();
-    }
-
-    @Primary
-    @Bean
-    public PlatformTransactionManager mainTransactionManager(@Qualifier("mainEntityManagerFactory") EntityManagerFactory emf) {
+    @Bean(name = "estaticaTransactionManager")
+    public PlatformTransactionManager estaticaTransactionManager(
+            @Qualifier("estaticaEntityManagerFactory") EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);
     }
 }

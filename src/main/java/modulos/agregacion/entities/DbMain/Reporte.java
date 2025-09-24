@@ -3,6 +3,7 @@ package modulos.agregacion.entities.DbMain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
 
 @Getter
 @Setter
@@ -16,8 +17,10 @@ public class Reporte {
     String motivo;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_hecho_asociado", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_reporte_hecho_ref"))
+    @JoinColumns({
+            @JoinColumn(name = "hecho_id",     referencedColumnName = "id"),     // 1º id
+            @JoinColumn(name = "hecho_fuente", referencedColumnName = "fuente")  // 2º fuente
+    })
     HechoRef hecho_asociado;
 
     public Reporte(String motivo, HechoRef hecho_asociado){

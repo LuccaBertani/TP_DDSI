@@ -357,33 +357,30 @@ public class FormateadorHecho {
 
 
     public static FiltrosColeccion formatearFiltrosColeccion(
-            BuscadorFiltro buscadorFiltro,
-            BuscadorCategoria buscadorCategoria,
-            BuscadorPais buscadorPais,
-            BuscadorProvincia buscadorProvincia,
+            BuscadoresRegistry buscadores,
             CriteriosColeccionProxyDTO inputDTO) {
 
         FiltrosColeccion filtros = new FiltrosColeccion();
 
         // ---------- CATEGORIA ----------
         if (inputDTO.getCategoria() != null) {
-            Categoria categoria = buscadorCategoria.buscar(inputDTO.getCategoria());
+            Categoria categoria = buscadores.getBuscadorCategoria().buscar(inputDTO.getCategoria());
             if (categoria != null) {
-                var existente = buscadorFiltro.buscarFiltroCategoriaPorCategoriaId(categoria.getId());
+                var existente = buscadores.getBuscadorFiltro().buscarFiltroCategoriaPorCategoriaId(categoria.getId());
                 filtros.setFiltroCategoria(existente.orElseGet(() -> new FiltroCategoria(categoria)));
             }
         }
 
         // ---------- CONTENIDO MULTIMEDIA ----------
         if (inputDTO.getContenidoMultimedia() != null) {
-            var existente = buscadorFiltro.buscarFiltroContenidoMultimediaPorTipo(inputDTO.getContenidoMultimedia());
+            var existente = buscadores.getBuscadorFiltro().buscarFiltroContenidoMultimediaPorTipo(inputDTO.getContenidoMultimedia());
             filtros.setFiltroContenidoMultimedia(existente.orElseGet(() -> new FiltroContenidoMultimedia(TipoContenido.valueOf(inputDTO.getContenidoMultimedia()))));
         }
 
         // ---------- DESCRIPCION ----------
         if (inputDTO.getDescripcion() != null) {
             String descripcion = inputDTO.getDescripcion();
-            var existente = buscadorFiltro.buscarFiltroDescripcionExacta(descripcion);
+            var existente = buscadores.getBuscadorFiltro().buscarFiltroDescripcionExacta(descripcion);
             filtros.setFiltroDescripcion(existente.orElseGet(() -> new FiltroDescripcion(descripcion)));
         }
 
@@ -391,7 +388,7 @@ public class FormateadorHecho {
         ZonedDateTime faIni = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoInicial());
         ZonedDateTime faFin = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoFinal());
         if (faIni != null && faFin != null) {
-            var existente = buscadorFiltro.buscarFiltroFechaAcontecimientoPorRango(faIni.toLocalDate(), faFin.toLocalDate());
+            var existente = buscadores.getBuscadorFiltro().buscarFiltroFechaAcontecimientoPorRango(faIni.toLocalDate(), faFin.toLocalDate());
             filtros.setFiltroFechaAcontecimiento(existente.orElseGet(() -> new FiltroFechaAcontecimiento(faIni, faFin)));
         }
 
@@ -399,31 +396,31 @@ public class FormateadorHecho {
         ZonedDateTime fcIni = FechaParser.parsearFecha(inputDTO.getFechaCargaInicial());
         ZonedDateTime fcFin = FechaParser.parsearFecha(inputDTO.getFechaCargaFinal());
         if (fcIni != null && fcFin != null) {
-            var existente = buscadorFiltro.buscarFiltroFechaCargaPorRango(fcIni.toLocalDate(), fcFin.toLocalDate());
+            var existente = buscadores.getBuscadorFiltro().buscarFiltroFechaCargaPorRango(fcIni.toLocalDate(), fcFin.toLocalDate());
             filtros.setFiltroFechaCarga(existente.orElseGet(() -> new FiltroFechaCarga(fcIni, fcFin)));
         }
 
         // ---------- ORIGEN ----------
         if (inputDTO.getOrigen() != null) {
             Origen origen = Origen.valueOf(inputDTO.getOrigen());
-            var existente = buscadorFiltro.buscarFiltroOrigenPorValor(origen.getCodigo());
+            var existente = buscadores.getBuscadorFiltro().buscarFiltroOrigenPorValor(origen.getCodigo());
             filtros.setFiltroOrigen(existente.orElseGet(() -> new FiltroOrigen(origen)));
         }
 
         // ---------- PAIS ----------
         if (inputDTO.getPais() != null) {
-            Pais pais = buscadorPais.buscar(inputDTO.getPais());
+            Pais pais = buscadores.getBuscadorPais().buscar(inputDTO.getPais());
             if (pais != null) {
-                var existente = buscadorFiltro.buscarFiltroPaisPorPaisId(pais.getId());
+                var existente = buscadores.getBuscadorFiltro().buscarFiltroPaisPorPaisId(pais.getId());
                 filtros.setFiltroPais(existente.orElseGet(() -> new FiltroPais(pais)));
             }
         }
 
         // ---------- PROVINCIA ----------
         if (inputDTO.getProvincia() != null) {
-            Provincia provincia = buscadorProvincia.buscar(inputDTO.getProvincia());
+            Provincia provincia = buscadores.getBuscadorProvincia().buscar(inputDTO.getProvincia());
             if (provincia != null) {
-                var existente = buscadorFiltro.buscarFiltroProvinciaPorProvinciaId(provincia.getId());
+                var existente = buscadores.getBuscadorFiltro().buscarFiltroProvinciaPorProvinciaId(provincia.getId());
                 filtros.setFiltroProvincia(existente.orElseGet(() -> new FiltroProvincia(provincia)));
             }
         }
@@ -431,7 +428,7 @@ public class FormateadorHecho {
         // ---------- TITULO ----------
         if (inputDTO.getTitulo() != null) {
             String titulo = inputDTO.getTitulo();
-            var existente = buscadorFiltro.buscarFiltroTituloExacto(titulo);
+            var existente = buscadores.getBuscadorFiltro().buscarFiltroTituloExacto(titulo);
             filtros.setFiltroTitulo(existente.orElseGet(() -> new FiltroTitulo(titulo)));
         }
 

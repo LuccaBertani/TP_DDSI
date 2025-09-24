@@ -27,10 +27,10 @@ public class FiltroPais extends Filtro {
 
     }
 
-    @Override
+    /*@Override
     public Boolean aprobarHecho(Hecho hecho){
         return hecho.getAtributosHecho().getUbicacion().getPais().getId().equals(this.pais.getId());
-    }
+    }*/
 
     @Override
     public Specification<Hecho> toSpecification() {

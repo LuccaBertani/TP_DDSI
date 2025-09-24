@@ -129,7 +129,7 @@ public class LectorCSV {
                 hecho.getAtributosHecho().setFuente(Fuente.ESTATICA);
                 hecho.getDatasets().add(this.dataSet);
                 if (tituloRepetido){
-                    HechoEstatica hechoIdentico = buscadores.getBuscadorHecho().existeHechoIdentico(hecho);
+                    HechoEstatica hechoIdentico = buscadores.getBuscadorHecho().existeHechoIdentico(hecho, categoria, pais, provincia);
                     if (hechoIdentico!=null){
                         hechoIdentico.getDatasets().add(this.dataSet);
                         continue; // Evito agregar un hecho identico

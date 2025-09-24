@@ -20,17 +20,18 @@ public class AlgoritmoConsensoMultiplesMenciones implements IAlgoritmoConsenso {
     @Override
     public void ejecutarAlgoritmoConsenso(List<Dataset> fuentes, Coleccion coleccion) {
 
-        List<Hecho> hechos = coleccion.getHechos();
+        /*List<Hecho> hechos = coleccion.getHechos();
         List<Hecho> hechosConsensuados = hechos.stream().filter(hecho->
                 !coleccion.getHechosConsensuados().contains(hecho) &&
                 this.dosFuentesContienenHecho(hecho) &&
                 !this.existeHechoIgualTituloDiferentesAtributos(hecho, hechos)).toList();
 
-        coleccion.getHechosConsensuados().addAll(hechosConsensuados);
+        coleccion.getHechosConsensuados().addAll(hechosConsensuados);*/
     }
 
     private boolean dosFuentesContienenHecho(Hecho hecho){
-        return hecho.getDatasets().size() >= 2;
+        //return hecho.getDatasets().size() >= 2;
+        return true;
     }
 
     // No hay necesidad de hacer chequeo de fuentes
@@ -44,7 +45,7 @@ public class AlgoritmoConsensoMultiplesMenciones implements IAlgoritmoConsenso {
     }
 
     private boolean tienenAtributosDistintos(Hecho h1, Hecho h2) {
-        var a1 = Optional.ofNullable(h1.getAtributosHecho());
+        /*var a1 = Optional.ofNullable(h1.getAtributosHecho());
         var a2 = Optional.ofNullable(h2.getAtributosHecho());
 
         // descripcion: si es null, comparo como "" para que el normalizador no reciba null
@@ -82,6 +83,7 @@ public class AlgoritmoConsensoMultiplesMenciones implements IAlgoritmoConsenso {
         boolean latitudDistinta = !Objects.equals(lat1, lat2);
         boolean longitudDistinta = !Objects.equals(lon1, lon2);
 
-        return descDistinta || categoriaDistinta || paisDistinto || fechaDistinta || provinciaDistinta || latitudDistinta || longitudDistinta;
+        return descDistinta || categoriaDistinta || paisDistinto || fechaDistinta || provinciaDistinta || latitudDistinta || longitudDistinta;*/
+        return true;
     }
 }

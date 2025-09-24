@@ -14,10 +14,8 @@ import modulos.agregacion.entities.DbMain.usuario.Usuario;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo_solicitud", discriminatorType = DiscriminatorType.STRING, length = 20)
 public abstract class SolicitudHecho {
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_usuario", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_solicitudHecho_usuario"))
-    protected Usuario usuario;
+
+    protected Long usuario_id;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_hecho", referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "fk_solicitudHecho_hecho"))
@@ -32,15 +30,15 @@ public abstract class SolicitudHecho {
     @Column (name = "rechazadaPorSpam")
     protected boolean rechazadaPorSpam;
 
-    public SolicitudHecho(Usuario usuario, HechoDinamica hecho) {
-        this.usuario = usuario;
+    public SolicitudHecho(Long usuario_id, HechoDinamica hecho) {
+        this.usuario_id = usuario_id;
         this.hecho = hecho;
         this.procesada = false;
         this.rechazadaPorSpam = false;
     }
 
-    public SolicitudHecho(Usuario usuario, HechoDinamica hecho, String justificacion) {
-        this(usuario, hecho);
+    public SolicitudHecho(Long usuario_id, HechoDinamica hecho, String justificacion) {
+        this(usuario_id, hecho);
         this.justificacion = justificacion;
     }
 

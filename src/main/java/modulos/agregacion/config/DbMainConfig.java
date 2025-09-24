@@ -24,27 +24,27 @@ import javax.sql.DataSource;
 )
 public class DbMainConfig {
 
-        @Primary
-        @Bean
-        @ConfigurationProperties(prefix = "spring.datasource.db4")
-        public DataSource mainDataSource() {
-            return DataSourceBuilder.create().build();
-        }
+    @Primary
+    @Bean(name = "mainDataSource")
+    @ConfigurationProperties(prefix = "spring.datasource.db4")
+    public DataSource mainDataSource() { return DataSourceBuilder.create().build(); }
 
     @Primary
-    @Bean
-    public LocalContainerEntityManagerFactoryBean mainEntityManagerFactory(EntityManagerFactoryBuilder builder) {
-        return builder
-                .dataSource(mainDataSource())
-                .packages("modulos.agregacion.entities.DbMain", "modulos.agregacion.entities.atributosHecho")  // Ajustar si cambia tu ruta
-                .persistenceUnit("db4")
-                .build();
+    @Bean(name = "mainEntityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean mainEntityManagerFactory(
+            EntityManagerFactoryBuilder builder,
+            @Qualifier("mainDataSource") DataSource ds) {
+        return builder.dataSource(ds)
+                .packages("modulos.agregacion.entities.DbMain","modulos.agregacion.entities.atributosHecho")
+                .persistenceUnit("db4").build();
     }
 
     @Primary
-    @Bean
-    public PlatformTransactionManager mainTransactionManager(@Qualifier("mainEntityManagerFactory") EntityManagerFactory emf) {
-            return new JpaTransactionManager(emf);
-        }
+    @Bean(name = "mainTransactionManager")
+    public PlatformTransactionManager mainTransactionManager(
+            @Qualifier("mainEntityManagerFactory") EntityManagerFactory emf) {
+        return new JpaTransactionManager(emf);
+    }
 }
+
 

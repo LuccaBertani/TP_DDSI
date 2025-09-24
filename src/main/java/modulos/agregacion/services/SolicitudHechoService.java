@@ -3,12 +3,17 @@ package modulos.agregacion.services;
 import jakarta.transaction.Transactional;
 import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import modulos.agregacion.entities.DbDinamica.solicitudes.*;
+import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
+import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
+import modulos.agregacion.entities.DbProxy.HechoProxy;
 import modulos.agregacion.entities.atributosHecho.AtributosHechoModificar;
 import modulos.agregacion.entities.DbMain.projections.SolicitudHechoProjection;
 import modulos.agregacion.entities.atributosHecho.TipoContenido;
 import modulos.agregacion.repositories.DbDinamica.*;
+import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
 import modulos.agregacion.repositories.DbMain.*;
+import modulos.agregacion.repositories.DbProxy.IHechosProxyRepository;
 import modulos.buscadores.BuscadorPais;
 import modulos.buscadores.BuscadorProvincia;
 import modulos.buscadores.BuscadorUbicacion;
@@ -40,7 +45,6 @@ public class SolicitudHechoService {
     private final ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo;
     private final ISolicitudModificarHechoRepository solicitudModificarHechoRepo;
     private final IHechosDinamicaRepository hechosDinamicaRepository;
-    private final IHechoRepository hechosRepository;
     private final IUsuarioRepository usuariosRepository;
     private final IMensajeRepository mensajesRepository;
     private final IReporteHechoRepository reportesHechoRepository;
@@ -51,8 +55,10 @@ public class SolicitudHechoService {
     private final BuscadorUbicacion buscadorUbicacion;
     private final BuscadorPais buscadorPais;
     private final BuscadorProvincia buscadorProvincia;
+    private final IHechosEstaticaRepository hechosEstaticaRepository;
+    private final IHechosProxyRepository hechosProxyRepository;
 
-    public SolicitudHechoService(ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo, ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo, ISolicitudModificarHechoRepository solicitudModificarHechoRepo, IHechosDinamicaRepository hechosDinamicaRepository, IUsuarioRepository usuariosRepository, IMensajeRepository mensajesRepository, IReporteHechoRepository reportesHechoRepository, ISolicitudRepository solicitudRepository, IPaisRepository paisRepository, IProvinciaRepository provinciaRepository, ICategoriaRepository categoriaRepository, BuscadorUbicacion buscadorUbicacion, IHechoRepository hechosRepository, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia) {
+    public SolicitudHechoService(ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo, IHechosProxyRepository hechosProxyRepository, ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo, ISolicitudModificarHechoRepository solicitudModificarHechoRepo, IHechosDinamicaRepository hechosDinamicaRepository, IUsuarioRepository usuariosRepository, IMensajeRepository mensajesRepository, IReporteHechoRepository reportesHechoRepository, ISolicitudRepository solicitudRepository, IPaisRepository paisRepository, IProvinciaRepository provinciaRepository, ICategoriaRepository categoriaRepository, BuscadorUbicacion buscadorUbicacion, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, IHechosEstaticaRepository hechosEstaticaRepository) {
         this.solicitudAgregarHechoRepo = solicitudAgregarHechoRepo;
         this.solicitudEliminarHechoRepo = solicitudEliminarHechoRepo;
         this.solicitudModificarHechoRepo = solicitudModificarHechoRepo;
@@ -65,9 +71,10 @@ public class SolicitudHechoService {
         this.provinciaRepository = provinciaRepository;
         this.categoriaRepository = categoriaRepository;
         this.buscadorUbicacion = buscadorUbicacion;
-        this.hechosRepository = hechosRepository;
         this.buscadorPais = buscadorPais;
         this.buscadorProvincia = buscadorProvincia;
+        this.hechosEstaticaRepository = hechosEstaticaRepository;
+        this.hechosProxyRepository = hechosProxyRepository;
     }
 
     private ResponseEntity<?> checkeoAdmin(Long id_usuario){
@@ -119,7 +126,9 @@ public class SolicitudHechoService {
 
         FuenteDinamica fuenteDinamica = new FuenteDinamica();
         HechoDinamica hecho = fuenteDinamica.crearHecho(hechosData);
-        SolicitudSubirHecho solicitudHecho = new SolicitudSubirHecho((Usuario)rta.getBody(), hecho);
+
+        Usuario usuario = (Usuario)rta.getBody();
+        SolicitudSubirHecho solicitudHecho = new SolicitudSubirHecho(usuario.getId(), hecho);
 
         if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion())) {
             solicitudHecho.setProcesada(true);
@@ -128,8 +137,6 @@ public class SolicitudHechoService {
             solicitudAgregarHechoRepo.save(solicitudHecho);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Se detectó spam");
         }
-
-        Usuario usuario = (Usuario)rta.getBody();
 
         hecho.setUsuario_id(usuario.getId());
         hecho.getAtributosHecho().setFuente(Fuente.DINAMICA);
@@ -152,10 +159,11 @@ public class SolicitudHechoService {
         HechoDinamica hecho = hechosDinamicaRepository.findByIdAndUsuario(dto.getId_hecho(), dto.getId_usuario()).orElse(null);
         if (hecho == null){
             // Puede ser que se haya encontrado el hecho pero que el usuario no esté asociado al hecho
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No tenés permisos para ejecutar esta acción");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
         }
 
-        SolicitudEliminarHecho solicitud = new SolicitudEliminarHecho((Usuario)rta.getBody(), hecho, dto.getJustificacion());
+        Usuario usuario = (Usuario)rta.getBody();
+        SolicitudEliminarHecho solicitud = new SolicitudEliminarHecho(usuario.getId(), hecho, dto.getJustificacion());
 
         if (DetectorDeSpam.esSpam(dto.getJustificacion())) {
             // Marcar como rechazada por spam y guardar
@@ -189,7 +197,7 @@ public class SolicitudHechoService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
         }
 
-        SolicitudModificarHecho solicitud = new SolicitudModificarHecho(usuario, hecho);
+        SolicitudModificarHecho solicitud = new SolicitudModificarHecho(usuario.getId(), hecho);
 
         if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion()))
         {
@@ -258,14 +266,20 @@ public class SolicitudHechoService {
         solicitud.setProcesada(true);
         if (dtoInput.getRespuesta()) {
             solicitud.getHecho().setActivo(true);
+            solicitud.getHecho().getAtributosHecho().setModificado(true);
             solicitud.getHecho().getAtributosHecho().setFechaCarga(ZonedDateTime.now());
             solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(solicitud.getHecho().getAtributosHecho().getFechaCarga()); // Nueva fecha de modificación
 
-            if (solicitud.getUsuario() != null){
-                solicitud.getUsuario().incrementarHechosSubidos();
-                if (solicitud.getUsuario().getRol().equals(Rol.VISUALIZADOR)){
-                    GestorRoles.VisualizadorAContribuyente(solicitud.getUsuario());
+            if (solicitud.getUsuario_id() != null){
+                Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
+                // El usuario va a existir si o si porque ya se verificó cuando solicitó subir un hecho, pero x si pide borrar la cuenta hago el chequeo antes
+                if (usuario != null){
+                    usuario.incrementarHechosSubidos();
+                    if (usuario.getRol().equals(Rol.VISUALIZADOR)){
+                        GestorRoles.VisualizadorAContribuyente(usuario);
+                    }
                 }
+
             }
 
         }
@@ -291,11 +305,14 @@ public class SolicitudHechoService {
         solicitud.setProcesada(true);
         if (dtoInput.getRespuesta()) {
             // No va a haber null pointer exception porque sí o sí hay un usuario asociado al hecho que se solicita eliminar
-            solicitud.getUsuario().disminuirHechosSubidos();
             solicitud.getHecho().getAtributosHecho().setModificado(true);
-
-            if (solicitud.getUsuario().getCantHechosSubidos() == 0){
-                GestorRoles.ContribuyenteAVisualizador(solicitud.getUsuario());
+            Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
+            // El usuario va a existir si o si porque ya se verificó cuando solicitó eliminar un hecho, pero x si pide borrar la cuenta hago el chequeo antes
+            if (usuario != null){
+                usuario.disminuirHechosSubidos();
+                if (usuario.getCantHechosSubidos() == 0){
+                    GestorRoles.ContribuyenteAVisualizador(usuario);
+                }
             }
         }
 
@@ -327,8 +344,10 @@ public class SolicitudHechoService {
             solicitud.getHecho().getAtributosHecho().setModificado(true);
         }
         else{
-            if (dtoInput.getMensaje() != null){
-                return this.enviarMensaje(solicitud.getUsuario(),solicitud, dtoInput.getMensaje());
+            Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
+            // X si se borró la cuenta del usuario chequeo si es null o no
+            if (dtoInput.getMensaje() != null && usuario != null){
+                return this.enviarMensaje(usuario,solicitud, dtoInput.getMensaje());
             }
         }
         return ResponseEntity.ok().build();
@@ -349,7 +368,7 @@ public class SolicitudHechoService {
     public ResponseEntity<?> enviarMensaje(Usuario usuario, SolicitudHecho solicitudHecho, String texto){
 
         Mensaje mensaje = new Mensaje();
-        mensaje.setSolicitud_hecho(solicitudHecho);
+        mensaje.setSolicitud_hecho_id(solicitudHecho.getId());
         mensaje.setTextoMensaje(texto);
         mensaje.setReceptor(usuario);
         mensajesRepository.save(mensaje);
@@ -370,11 +389,7 @@ public class SolicitudHechoService {
         for (SolicitudHecho solicitud: solicitudesHechos){
             SolicitudHechoOutputDTO dto = SolicitudHechoOutputDTO.builder()
                     .id(solicitud.getId())
-                    .usuarioId(
-                            Optional.ofNullable(solicitud.getUsuario())
-                                    .map(Usuario::getId)
-                                    .orElse(null)   // o un valor por defecto, si no querés null
-                    )
+                    .usuarioId(solicitud.getUsuario_id())
                     .hechoId(solicitud.getHecho().getId())
                     .justificacion(solicitud.getJustificacion())
                     .procesada(solicitud.isProcesada())
@@ -411,14 +426,45 @@ public class SolicitudHechoService {
         return ResponseEntity.status(HttpStatus.OK).body(solicitudHechoOutputDTOS);
     }
 
-    public ResponseEntity<?> reportarHecho(String motivo, Long id_hecho) {
-        Hecho hecho = hechosRepository.findById(id_hecho).orElse(null);
-        if(hecho == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el hecho");
+    public ResponseEntity<?> reportarHecho(String motivo, Long id_hecho, String fuente) {
+
+
+        if (fuente.equals(Fuente.DINAMICA.codigoEnString())){
+            HechoDinamica hecho = hechosDinamicaRepository.findById(id_hecho).orElse(null);
+
+            if(hecho == null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el hecho");
+            }
+            HechoRef hechoRef = new HechoRef(hecho.getId(), hecho.getAtributosHecho().getFuente());
+            Reporte reporte = new Reporte(motivo, hechoRef);
+            reportesHechoRepository.save(reporte);
+            return ResponseEntity.ok().build();
         }
-        Reporte reporte = new Reporte(motivo, id_hecho);
-        reportesHechoRepository.save(reporte);
-        return ResponseEntity.ok().build();
+        else if (fuente.equals(Fuente.ESTATICA.codigoEnString())){
+            HechoEstatica hecho = hechosEstaticaRepository.findById(id_hecho).orElse(null);
+
+            if(hecho == null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el hecho");
+            }
+            HechoRef hechoRef = new HechoRef(hecho.getId(), hecho.getAtributosHecho().getFuente());
+            Reporte reporte = new Reporte(motivo, hechoRef);
+            reportesHechoRepository.save(reporte);
+            return ResponseEntity.ok().build();
+        }
+
+        else if (fuente.equals(Fuente.PROXY.codigoEnString())){
+            HechoProxy hecho = hechosProxyRepository.findById(id_hecho).orElse(null);
+
+            if(hecho == null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el hecho");
+            }
+            HechoRef hechoRef = new HechoRef(hecho.getId(), hecho.getAtributosHecho().getFuente());
+            Reporte reporte = new Reporte(motivo, hechoRef);
+            reportesHechoRepository.save(reporte);
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.badRequest().build();
     }
 
     public ResponseEntity<?> obtenerMensajes(Long id_receptor) {
@@ -432,7 +478,7 @@ public class SolicitudHechoService {
         for (Mensaje mensaje: mensajes){
             MensajeOutputDTO dto = MensajeOutputDTO.builder()
                     .id_usuario(id_receptor)
-                    .id_solicitud_hecho(mensaje.getSolicitud_hecho().getId())
+                    .id_solicitud_hecho(mensaje.getSolicitud_hecho_id())
                     .id_mensaje(mensaje.getId())
                     .mensaje(mensaje.getTextoMensaje())
                     .build();

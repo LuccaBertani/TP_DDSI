@@ -1,6 +1,7 @@
 package modulos;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import modulos.agregacion.entities.DbMain.Ubicacion;
@@ -12,6 +13,7 @@ import java.time.ZonedDateTime;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class AtributosHechoMemoria {
 
     private String titulo;

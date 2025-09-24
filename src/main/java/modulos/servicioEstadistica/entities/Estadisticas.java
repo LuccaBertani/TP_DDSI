@@ -2,6 +2,7 @@ package modulos.servicioEstadistica.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 import modulos.agregacion.entities.DbMain.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -51,7 +52,6 @@ public class Estadisticas {
         this.categoriaProvincias = new ArrayList<>();
         this.categoriaHoras = new ArrayList<>();
         this.coleccionProvincias = new ArrayList<>();
-        timestamp = Instant.now();
     }
 }
 

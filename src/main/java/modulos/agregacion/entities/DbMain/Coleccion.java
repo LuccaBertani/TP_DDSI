@@ -6,6 +6,7 @@ import lombok.Setter;
 import modulos.agregacion.converters.AlgoritmoConsensoConverter;
 import modulos.agregacion.entities.DbMain.algoritmosConsenso.IAlgoritmoConsenso;
 import modulos.agregacion.entities.DbMain.filtros.Filtro;
+import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
 
 import java.util.*;
 
@@ -48,9 +49,15 @@ public class Coleccion {
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "coleccion_hecho",
-            joinColumns = @JoinColumn(name = "coleccion_id"),
-            inverseJoinColumns = @JoinColumn(name = "hecho_id"),
-            uniqueConstraints = @UniqueConstraint(name = "uk_coleccion_hecho", columnNames = {"coleccion_id","hecho_id"})
+            joinColumns = @JoinColumn(name = "coleccion_id"),  // FK a la PK simple de Coleccion
+            inverseJoinColumns = {
+                    @JoinColumn(name = "hecho_id",     referencedColumnName = "id"),     // 1º id
+                    @JoinColumn(name = "hecho_fuente", referencedColumnName = "fuente")  // 2º fuente
+            },
+            uniqueConstraints = @UniqueConstraint(
+                    name = "uk_coleccion_hecho",
+                    columnNames = {"coleccion_id", "hecho_id", "hecho_fuente"}
+            )
     )
     private List<HechoRef> hechos;
 
@@ -71,13 +78,19 @@ public class Coleccion {
     )
     private List<Filtro> criterios;
 
-    //relacion muchos a muchos
+    // relación muchos-a-muchos con HechoRef (PK compuesta id+fuente)
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
-            name = "coleccion_hechoConsensuado",
-            joinColumns = @JoinColumn(name = "coleccion_id"),
-            inverseJoinColumns = @JoinColumn(name = "hechoConsensuado_id"),
-            uniqueConstraints = @UniqueConstraint(name = "uk_coleccion_hechoConsensuado", columnNames = {"coleccion_id","hechoConsensuado_id"})
+            name = "coleccion_hecho_consensuado",
+            joinColumns = @JoinColumn(name = "coleccion_id"),  // FK a la PK simple de Coleccion
+            inverseJoinColumns = {
+                    @JoinColumn(name = "hecho_id",     referencedColumnName = "id"),     // 1º id
+                    @JoinColumn(name = "hecho_fuente", referencedColumnName = "fuente")  // 2º fuente
+            },
+            uniqueConstraints = @UniqueConstraint(
+                    name = "uk_coleccion_hecho_consensuado",
+                    columnNames = {"coleccion_id", "hecho_id", "hecho_fuente"}
+            )
     )
     private List<HechoRef> hechosConsensuados = new ArrayList<>();
 

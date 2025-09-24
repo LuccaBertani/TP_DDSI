@@ -20,31 +20,27 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 @EnableJpaRepositories(
         basePackages = "modulos.agregacion.repositories.DbProxy",
-        entityManagerFactoryRef = "mainEntityManagerFactory",
-        transactionManagerRef = "mainTransactionManager"
+        entityManagerFactoryRef = "proxyEntityManagerFactory",
+        transactionManagerRef = "proxyTransactionManager"
 )
 public class DbHechosProxyConfig {
 
-    @Primary
-    @Bean
+    @Bean(name = "proxyDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.db3")
-    public DataSource mainDataSource() {
-        return DataSourceBuilder.create().build();
+    public DataSource proxyDataSource() { return DataSourceBuilder.create().build(); }
+
+    @Bean(name = "proxyEntityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean proxyEntityManagerFactory(
+            EntityManagerFactoryBuilder builder,
+            @Qualifier("proxyDataSource") DataSource ds) {
+        return builder.dataSource(ds)
+                .packages("modulos.agregacion.entities.DbProxy","modulos.agregacion.entities.atributosHecho")
+                .persistenceUnit("db3").build();
     }
 
-    @Primary
-    @Bean
-    public LocalContainerEntityManagerFactoryBean mainEntityManagerFactory(EntityManagerFactoryBuilder builder) {
-        return builder
-                .dataSource(mainDataSource())
-                .packages("modulos.agregacion.entities.DbProxy", "modulos.agregacion.entities.atributosHecho")  // Ajustar si cambia tu ruta
-                .persistenceUnit("db3")
-                .build();
-    }
-
-    @Primary
-    @Bean
-    public PlatformTransactionManager mainTransactionManager(@Qualifier("mainEntityManagerFactory") EntityManagerFactory emf) {
+    @Bean(name = "proxyTransactionManager")
+    public PlatformTransactionManager proxyTransactionManager(
+            @Qualifier("proxyEntityManagerFactory") EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);
     }
 }

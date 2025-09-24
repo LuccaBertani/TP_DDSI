@@ -18,32 +18,28 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        basePackages = "modulos.agregacion.repositories",
-        entityManagerFactoryRef = "mainEntityManagerFactory",
-        transactionManagerRef = "mainTransactionManager"
+        basePackages = "modulos.servicioEstadistica.repositories",
+        entityManagerFactoryRef = "estadisticaEntityManagerFactory",
+        transactionManagerRef = "estadisticaTransactionManager"
 )
 public class DbEstadisticaConfig {
 
-    @Primary
-    @Bean
+    @Bean(name = "estadisticaDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.db5")
-    public DataSource mainDataSource() {
-        return DataSourceBuilder.create().build();
+    public DataSource estadisticaDataSource() { return DataSourceBuilder.create().build(); }
+
+    @Bean(name = "estadisticaEntityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean estadisticaEntityManagerFactory(
+            EntityManagerFactoryBuilder builder,
+            @Qualifier("estadisticaDataSource") DataSource ds) {
+        return builder.dataSource(ds)
+                .packages("modulos.servicioEstadistica.entities")
+                .persistenceUnit("db5").build();
     }
 
-    @Primary
-    @Bean
-    public LocalContainerEntityManagerFactoryBean mainEntityManagerFactory(EntityManagerFactoryBuilder builder) {
-        return builder
-                .dataSource(mainDataSource())
-                .packages("modulos.servicioEstadistica.entities")  // Ajustar si cambia tu ruta
-                .persistenceUnit("db5")
-                .build();
-    }
-
-    @Primary
-    @Bean
-    public PlatformTransactionManager mainTransactionManager(@Qualifier("mainEntityManagerFactory") EntityManagerFactory emf) {
+    @Bean(name = "estadisticaTransactionManager")
+    public PlatformTransactionManager estadisticaTransactionManager(
+            @Qualifier("estadisticaEntityManagerFactory") EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);
     }
 }

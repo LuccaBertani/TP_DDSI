@@ -1,17 +1,19 @@
 package modulos.agregacion.repositories.DbProxy;
 
+import modulos.agregacion.entities.DbMain.Hecho;
 import modulos.agregacion.entities.DbProxy.HechoProxy;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface IHechosProxyRepository extends JpaRepository<HechoProxy, Long> {
+public interface IHechosProxyRepository extends JpaRepository<HechoProxy, Long>, JpaSpecificationExecutor<HechoProxy> {
     @Query("""
 SELECT h
-FROM Hecho h 
+FROM HechoProxy h 
 WHERE REPLACE(LOWER(h.atributosHecho.titulo), ' ', '') =
       REPLACE(LOWER(:nombre), ' ', '')
 """)
@@ -19,7 +21,7 @@ WHERE REPLACE(LOWER(h.atributosHecho.titulo), ' ', '') =
 
     @Query("""
 SELECT h
-FROM Hecho h 
+FROM HechoProxy h 
 WHERE REPLACE(LOWER(h.atributosHecho.titulo), ' ', '') =
       REPLACE(LOWER(:nombre), ' ', '')
 """)

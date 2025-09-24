@@ -1,12 +1,15 @@
 package modulos.agregacion.services;
 
 
+import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
 import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMayoriaAbsoluta;
 import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMayoriaSimple;
 import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMultiplesMenciones;
 import modulos.agregacion.entities.DbMain.filtros.Filtro;
+import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
+import modulos.agregacion.entities.DbProxy.HechoProxy;
 import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
 import modulos.agregacion.repositories.DbEstatica.IDatasetsRepository;
 import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
@@ -199,11 +202,12 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         fuente.setDataSet(dataset);
 
         List<HechoEstatica> hechosFuente = fuente.leerFuente((Usuario)respuesta.getBody(), buscadores);
-        List<Hecho> hechos = new ArrayList<>(hechosFuente);
+        List<HechoRef> hechosRef = new ArrayList<>();
+        for (HechoEstatica h : hechosFuente){
+            hechosRef.add(new HechoRef(h.getId(), Fuente.ESTATICA));
+        }
 
-
-
-        coleccion.addHechos(hechos);
+        coleccion.addHechos(hechosRef);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -251,7 +255,9 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        List<Hecho> hechosDeFuente = hechoRepository.findHechosByColeccionAndDataset(coleccion.getId(),id_dataset);
+        List<HechoRef> hechosRef =
+
+        List<HechoEstatica> hechosDeFuente = hechosEstaticaRepository.findHechosByColeccionAndDataset(coleccion.getId(),id_dataset);
 
         coleccion.getHechos().removeAll(hechosDeFuente);
 
@@ -337,11 +343,11 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @Async
+    /*@Async
     @Scheduled(cron = "0 0 * * * *") // cada hora
     public void refrescarColeccionesCronjob() {
 
-        Specification<Hecho> specs1 = (root, query, cb) -> {
+        Specification<HechoEstatica> specs1 = (root, query, cb) -> {
             if (query != null) query.distinct(true); // útil si después hay JOINs
             // activo = true AND atributosHecho.modificado = true (null => false)
             var activo = root.<Boolean>get("activo");
@@ -349,28 +355,44 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
             return cb.and(cb.isTrue(activo), cb.isTrue(cb.coalesce(modif, cb.literal(false))));
         };
 
+        Specification<HechoDinamica> specs2 = (root, query, cb) -> {
+            if (query != null) query.distinct(true); // útil si después hay JOINs
+            // activo = true AND atributosHecho.modificado = true (null => false)
+            var activo = root.<Boolean>get("activo");
+            var modif  = root.get("atributosHecho").<Boolean>get("modificado");
+            return cb.and(cb.isTrue(activo), cb.isTrue(cb.coalesce(modif, cb.literal(false))));
+        };
+
+
         List<Coleccion> colecciones = coleccionesRepo.findByActivoTrue();
 
         for(Coleccion coleccion : colecciones){
             Specification<Hecho> specs = crearSpecs(coleccion.getCriterios());
 
-            Specification<Hecho> specFinal = Specification
+            Specification<HechoEstatica> specFinal = Specification
                     .where(DISTINCT)
                     .and(specs1)
                     .and(specs);
 
-            List<Hecho> hechosFiltrados = hechoRepository.findAll(specFinal);
+            List<HechoEstatica> hechosEstatica = hechosEstaticaRepository.findAll(specFinal);
+            List<HechoDinamica> hechosDinamica = hechosDinamicaRepository.findAll(specFinal);
+            List<HechoProxy> hechosProxy = hechosProxyRepository.findAll(specFinal);
+
+            List<Hecho> hechosFiltrados = new ArrayList<>();
+            hechosFiltrados.addAll(hechosEstatica);
+            hechosFiltrados.addAll(hechosDinamica);
+            hechosFiltrados.addAll(hechosProxy);
 
             hechosFiltrados.forEach(hecho -> hecho.getAtributosHecho().setModificado(false));
 
             if(!hechosFiltrados.isEmpty()) {
 
                 coleccion.setModificado(false);
-                coleccion.setHechos(hechosFiltrados);
+                coleccion.setHechos(hechosFiltrados.stream().map(h->new HechoRef(h.getId(), h.getAtributosHecho().getFuente())).toList());
                 coleccionesRepo.save(coleccion);
             }
         }
-    }
+    }*/
 
     private ResponseEntity<?> checkeoAdmin(Long id_usuario){
 
@@ -396,7 +418,7 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
         if (respuesta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
             return respuesta;
         }
-        this.refrescarColeccionesCronjob();
+        //this.refrescarColeccionesCronjob();
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -408,11 +430,15 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
                 .where(DISTINCT)
                 .and(specs);
 
+
+        //List<HechoEstatica> hechosEstatica = hechosEstaticaRepository.findAll(specFinal);
+        //List<HechoDinamica> hechosDinamica = hechosDinamicaRepository.findAll(specFinal);
         List<Hecho> hechos = new ArrayList<>();
 
-        hechos.addAll(hechosEstaticaRepository.findAll(specFinal));
+        //hechos.addAll(hechosEstatica);
+        //hechos.addAll(hechosDinamica);
 
-        coleccion.setHechos(hechoRepository.findAll(specFinal));
+        coleccion.setHechos(hechos.stream().map(h->new HechoRef(h.getId(), h.getAtributosHecho().getFuente())).toList());
 
         coleccionesRepo.save(coleccion);
     }

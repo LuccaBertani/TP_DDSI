@@ -27,6 +27,7 @@ public class CategoriaHora {
         this.categoria_id = categoria_id;
         this.hora = hora;
         this.cantidad = cantidad;
+        this.timestamp = Instant.now();
     }
 
     public CategoriaHora() {

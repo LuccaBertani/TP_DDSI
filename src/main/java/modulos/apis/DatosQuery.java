@@ -41,7 +41,10 @@ public class DatosQuery implements IDatosQuery{
                 Coleccion coleccion = cpp.getColeccionId() != null ? repoColeccion.findById(cpp.getColeccionId()).orElse(null) : null;
                 Provincia provincia = cpp.getProvinciaId() != null ? repoProvincia.findById(cpp.getProvinciaId()).orElse(null) : null;
 
-                ColeccionProvincia coleccionProvincia = new ColeccionProvincia(coleccion, provincia, cpp.getTotalHechos());
+                Long coleccion_id = coleccion != null ? coleccion.getId() : null;
+                Long provincia_id = provincia != null ? provincia.getId() : null;
+
+                ColeccionProvincia coleccionProvincia = new ColeccionProvincia(coleccion_id, provincia_id, cpp.getTotalHechos());
                 infos.add(coleccionProvincia);
             }
 
@@ -54,8 +57,11 @@ public class DatosQuery implements IDatosQuery{
     public CategoriaCantidad mayorCantHechosCategoria() {
         CategoriaCantidadProjection info = repoCategoria.obtenerColeccionMayorHechos().orElse(null);
         if (info != null){
-            Categoria categoria = repoCategoria.findById(info.getCategoriaId()).orElse(null);
-            return new CategoriaCantidad(categoria,info.getCantHechos());
+            Categoria categoria = null;
+            if (info.getCategoriaId()!=null)
+                categoria = repoCategoria.findById(info.getCategoriaId()).orElse(null);
+            Long categoria_id = categoria != null ? categoria.getId() : null;
+            return new CategoriaCantidad(categoria_id,info.getCantHechos());
         }
         return null;
     }
@@ -74,7 +80,11 @@ public class DatosQuery implements IDatosQuery{
                 System.out.println("provincia id: " + cpp.getProvinciaId());
                 Categoria categoria = cpp.getCategoriaId() != null ? repoCategoria.findById(cpp.getCategoriaId()).orElse(null) : null;
                 Provincia provincia = cpp.getProvinciaId() != null ? repoProvincia.findById(cpp.getProvinciaId()).orElse(null) : null;
-                CategoriaProvincia categoriaProvincia = new CategoriaProvincia(categoria,provincia,cpp.getCantHechos());
+
+                Long categoria_id = categoria != null ? categoria.getId() : null;
+                Long provincia_id = provincia != null ? provincia.getId() : null;
+
+                CategoriaProvincia categoriaProvincia = new CategoriaProvincia(categoria_id,provincia_id,cpp.getCantHechos());
                 infos.add(categoriaProvincia);
             }
             return infos;
@@ -92,7 +102,8 @@ public class DatosQuery implements IDatosQuery{
 
             for(HoraCategoriaProjection cpp : info){
                 Categoria categoria = cpp.getIdCategoria() != null ? repoCategoria.findById(cpp.getIdCategoria()).orElse(null) : null;
-                CategoriaHora categoriaHora = new CategoriaHora(categoria,cpp.getHoraDelDia(),cpp.getTotalHechos());
+                Long categoria_id = categoria!=null? categoria.getId() : null;
+                CategoriaHora categoriaHora = new CategoriaHora(categoria_id,cpp.getHoraDelDia(),cpp.getTotalHechos());
                 infos.add(categoriaHora);
             }
             return infos;

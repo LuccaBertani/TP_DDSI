@@ -47,10 +47,8 @@ public class HechosService {
     private final IHechosEstaticaRepository hechosEstaticaRepo;
     private final IHechosDinamicaRepository hechosDinamicaRepo;
     private final IHechosProxyRepository hechosProxyRepo;
-    private final IHechoRepository hechoRepo;
     private final IPaisRepository repoPais;
     private final IProvinciaRepository repoProvincia;
-    private final IHechoRepository hechoRepository;
     private final IUsuarioRepository usuariosRepo;
     private final IColeccionRepository coleccionRepo;
     private final IDatasetsRepository datasetsRepo;
@@ -65,11 +63,9 @@ public class HechosService {
                          IUsuarioRepository usuariosRepo,
                          IColeccionRepository coleccionRepo,
                          IDatasetsRepository datasetsRepo,
-                         IHechoRepository hechoRepository,
                          ICategoriaRepository categoriaRepository,
                          IProvinciaRepository repoProvincia,
                          IPaisRepository repoPais,
-                         IHechoRepository hechoRepo,
                         BuscadoresRegistry buscadores, ISinonimoRepository repoSinonimo,
                          FormateadorHechoMemoria formateadorHechoMemoria){
         this.repoProvincia = repoProvincia;
@@ -80,9 +76,7 @@ public class HechosService {
         this.usuariosRepo = usuariosRepo;
         this.coleccionRepo = coleccionRepo;
         this.datasetsRepo = datasetsRepo;
-        this.hechoRepository = hechoRepository;
         this.categoriaRepository = categoriaRepository;
-        this.hechoRepo = hechoRepo;
         this.repoSinonimo = repoSinonimo;
         this.buscadores = buscadores;
         this.formateadorHechoMemoria = formateadorHechoMemoria;
@@ -244,8 +238,9 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 .where(DISTINCT)
                 .and(specColeccion)
                 .and(specs);
+        // TODO CAMBIAAAAAAAAAR
 
-        List<Hecho> hechosFiltrados = hechoRepository.findAll(specFinal);
+        /*List<Hecho> hechosFiltrados = hechoRepository.findAll(specFinal);
 
         if(hechosFiltrados.isEmpty()){
             System.out.println("soy un estorbo");
@@ -255,7 +250,8 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 .map(this::crearHechoDto)
                 .toList();
 
-        return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(outputDTO);*/
+        return ResponseEntity.ok().build();
     }
 
     private VisualizarHechosOutputDTO crearHechoDto(Hecho hecho){

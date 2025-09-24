@@ -1,6 +1,7 @@
 package modulos.servicioEstadistica.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import modulos.agregacion.entities.DbMain.Coleccion;
 import modulos.agregacion.entities.DbMain.Provincia;
@@ -10,6 +11,7 @@ import java.time.Instant;
 @Data
 @Entity
 @Table(name = "coleccionProvincia")
+@AllArgsConstructor
 public class ColeccionProvincia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,15 +27,13 @@ public class ColeccionProvincia {
     @Column(name = "timestamp")
     private Instant timestamp;
 
-    public ColeccionProvincia(Long id, Long coleccion_id, Long provincia_id, Integer cantidad, Instant timestamp) {
-        this.id = id;
+    public ColeccionProvincia(Long coleccion_id, Long provincia_id, Integer cantidad) {
         this.coleccion_id = coleccion_id;
         this.provincia_id = provincia_id;
         this.cantidad = cantidad;
-        this.timestamp = timestamp;
+        this.timestamp = Instant.now();
     }
 
     public ColeccionProvincia() {
-
     }
 }

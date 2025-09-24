@@ -1,7 +1,6 @@
 package modulos.agregacion.entities.DbMain;
 
 import modulos.agregacion.entities.DbMain.filtros.Filtro;
-import modulos.agregacion.entities.DbDinamica.solicitudes.Mensaje;
 
 import java.util.ArrayList;
 import java.util.List;

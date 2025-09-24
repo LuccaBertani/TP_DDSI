@@ -13,14 +13,14 @@ public class AlgoritmoConsensoMayoriaAbsoluta implements IAlgoritmoConsenso {
     @Override
     public void ejecutarAlgoritmoConsenso(List<Dataset> fuentes, Coleccion coleccion) {
         //coleccion.getHechosConsensuados().addAll()
-        List<Hecho> hechos = coleccion.getHechos();
+        /*List<Hecho> hechos = coleccion.getHechos();
         List<Long> idsDatasets = this.mapearIdsDatasets(fuentes);
         List<Hecho> hechosConsensudados = hechos.stream().filter(
                 hecho->!coleccion.getHechosConsensuados().contains(hecho) &&
                         this.mapearIdsDatasets(hecho.getDatasets()).equals(idsDatasets)
                 )
                 .toList();
-        coleccion.getHechosConsensuados().addAll(hechosConsensudados);
+        coleccion.getHechosConsensuados().addAll(hechosConsensudados);*/
     }
 
     private List<Long> mapearIdsDatasets(List<Dataset> fuentes){

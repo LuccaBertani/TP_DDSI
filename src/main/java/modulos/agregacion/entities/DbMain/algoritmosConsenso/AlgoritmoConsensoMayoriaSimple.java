@@ -12,14 +12,15 @@ public class AlgoritmoConsensoMayoriaSimple implements IAlgoritmoConsenso {
     @Override
     public void ejecutarAlgoritmoConsenso(List<Dataset> fuentes, Coleccion coleccion){
         //coleccion.getHechosConsensuados().addAll()
-        List<Hecho> hechos = coleccion.getHechos();
+        /*List<Hecho> hechos = coleccion.getHechos();
         List<Hecho> hechosConsensudados = hechos.stream().filter(hecho->!coleccion.getHechosConsensuados().contains(hecho) &&
                 this.mitadDeFuentesContienenHecho(hecho, fuentes)).toList();
-        coleccion.getHechosConsensuados().addAll(hechosConsensudados);
+        coleccion.getHechosConsensuados().addAll(hechosConsensudados);*/
     }
 
     private boolean mitadDeFuentesContienenHecho(Hecho hecho, List<Dataset> fuentes) {
-        return hecho.getDatasets().size() >= fuentes.size() / 2;
+        //return hecho.getDatasets().size() >= fuentes.size() / 2;
+        return true;
     }
 
 }

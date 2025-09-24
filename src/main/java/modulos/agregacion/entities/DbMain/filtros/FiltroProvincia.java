@@ -26,10 +26,10 @@ public class FiltroProvincia extends Filtro{
 
     }
 
-    @Override
+    /*@Override
     public Boolean aprobarHecho(Hecho hecho){
         return hecho.getAtributosHecho().getUbicacion().getProvincia().getId().equals(this.provincia.getId());
-    }
+    }*/
 
     @Override
     public Specification<Hecho> toSpecification() {

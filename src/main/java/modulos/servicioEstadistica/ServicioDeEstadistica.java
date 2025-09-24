@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+// TODO cambiar estadisticas
 public class ServicioDeEstadistica {
 
     private final IDatosQuery datosQuery;
@@ -26,7 +27,7 @@ public class ServicioDeEstadistica {
         this.datosQuery = datosQuery;
         this.estadisticasRepository = estadisticasRepository;
         // Si querés tener las estadísticas ni bien entrás -> this.generarEstadistica();
-        this.generarEstadistica();
+        //this.generarEstadistica();
     }
 
     @Async
@@ -73,7 +74,7 @@ public Path obtenerEstadistica(int id) {
             String nombre = "estadisticaCategoriaMasHechos.csv";
             header = List.of("categoria", "cantidad");
 
-            var cc = snap.getCategoriaCantidad();
+           /* var cc = snap.getCategoriaCantidad();
             String categoria = Optional.ofNullable(cc)
                     .map(CategoriaCantidad::getCategoria)
                     .map(Categoria::getTitulo)
@@ -83,7 +84,7 @@ public Path obtenerEstadistica(int id) {
                     .orElse(0);
 
             valores.add(categoria);
-            valores.add(cantidad);
+            valores.add(cantidad);*/
             return LectorCSV.generarCsvDesdeListaLineal(valores, nombre, header);
         }
 
@@ -94,7 +95,7 @@ public Path obtenerEstadistica(int id) {
             List<CategoriaHora> lista = Optional.ofNullable(snap.getCategoriaHoras())
                     .orElse(List.of());
 
-            for (var v : lista) {
+            /*for (var v : lista) {
                 if (v == null) continue;
                 String categoria = Optional.ofNullable(v.getCategoria())
                         .map(Categoria::getTitulo)
@@ -105,7 +106,7 @@ public Path obtenerEstadistica(int id) {
                 valores.add(categoria);
                 valores.add(hora);
                 valores.add(cant);
-            }
+            }*/
 
             return LectorCSV.generarCsvDesdeListaLineal(valores, nombre, header);
         }
@@ -117,7 +118,7 @@ public Path obtenerEstadistica(int id) {
             List<CategoriaProvincia> lista = Optional.ofNullable(snap.getCategoriaProvincias())
                     .orElse(List.of());
 
-            for (var v : lista) {
+            /*for (var v : lista) {
                 if (v == null) continue;
                 String categoria = Optional.ofNullable(v.getCategoria())
                         .map(Categoria::getTitulo)
@@ -130,7 +131,7 @@ public Path obtenerEstadistica(int id) {
                 valores.add(categoria);
                 valores.add(cant);
                 valores.add(provincia);
-            }
+            }*/
 
             return LectorCSV.generarCsvDesdeListaLineal(valores, nombre, header);
         }
@@ -142,7 +143,7 @@ public Path obtenerEstadistica(int id) {
             List<ColeccionProvincia> lista = Optional.ofNullable(snap.getColeccionProvincias())
                     .orElse(List.of());
 
-            for (var v : lista) {
+            /*for (var v : lista) {
                 if (v == null) continue;
                 String coleccion = Optional.ofNullable(v.getColeccion())
                         .map(Coleccion::getTitulo)
@@ -155,7 +156,7 @@ public Path obtenerEstadistica(int id) {
                 valores.add(coleccion);
                 valores.add(provincia);
                 valores.add(cant);
-            }
+            }*/
 
             return LectorCSV.generarCsvDesdeListaLineal(valores, nombre, header);
         }

@@ -1,4 +1,4 @@
-package modulos.agregacion.entities.DbDinamica.solicitudes;
+package modulos.agregacion.entities.DbMain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -15,9 +15,8 @@ public class Mensaje {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "solicitud_hecho_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "fk_solicitud_hecho"))
-    SolicitudHecho solicitud_hecho;
+    @Column(name = "solicitud_hecho_id")
+    Long solicitud_hecho_id;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "fk_usuario_id"))
@@ -26,8 +25,8 @@ public class Mensaje {
     @Column (name = "texto")
     String textoMensaje;
 
-    public Mensaje(SolicitudHecho solicitudHecho, Usuario receptor, String textoMensaje){
-        this.solicitud_hecho=solicitudHecho;
+    public Mensaje(Long solicitud_hecho_id, Usuario receptor, String textoMensaje){
+        this.solicitud_hecho_id=solicitud_hecho_id;
         this.receptor=receptor;
         this.textoMensaje=textoMensaje;
     }

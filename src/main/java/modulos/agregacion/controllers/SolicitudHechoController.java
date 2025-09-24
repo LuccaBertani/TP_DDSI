@@ -63,8 +63,8 @@ public class SolicitudHechoController {
 
     // Anda
     @PostMapping("/reportar")
-    public ResponseEntity<?> reportar(@Valid @RequestParam Long id_hecho, @Valid @RequestParam String motivo){
-        return solicitudHechoService.reportarHecho(motivo, id_hecho);
+    public ResponseEntity<?> reportar(@Valid @RequestParam Long id_hecho, @Valid @RequestParam String fuente, @Valid @RequestParam String motivo){
+        return solicitudHechoService.reportarHecho(motivo, id_hecho, fuente);
     }
 
     // TODO get y evaluacion de reportes

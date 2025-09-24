@@ -7,7 +7,7 @@ import modulos.agregacion.entities.DbProxy.HechoProxy;
 import modulos.agregacion.entities.atributosHecho.AtributosHecho;
 import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
 import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
-import modulos.agregacion.repositories.DbMain.IHechoRepository;
+import modulos.agregacion.repositories.DbMain.*;
 import modulos.agregacion.repositories.DbProxy.IHechosProxyRepository;
 import org.springframework.stereotype.Component;
 
@@ -20,14 +20,20 @@ public class BuscadorHecho {
     private final IHechosEstaticaRepository hechoRepoEstatica;
     private final IHechosDinamicaRepository hechoRepoDinamica;
     private final IHechosProxyRepository hechoRepoProxy;
-    private final IHechoRepository hechosRepo;
+    private final ICategoriaRepository categoriaRepository;
+    private final IPaisRepository paisRepository;
+    private final IProvinciaRepository provinciaRepository;
+    private final IUbicacionRepository ubicacionRepository;
 
 
-    public BuscadorHecho(IHechosEstaticaRepository hechoRepoEstatica, IHechosDinamicaRepository hechoRepoDinamica, IHechosProxyRepository hechoRepoProxy, IHechoRepository hechosRepo) {
+    public BuscadorHecho(IHechosEstaticaRepository hechoRepoEstatica, IHechosDinamicaRepository hechoRepoDinamica, IUbicacionRepository ubicacionRepository, IHechosProxyRepository hechoRepoProxy, ICategoriaRepository categoriaRepository, IPaisRepository paisRepository, IProvinciaRepository provinciaRepository) {
         this.hechoRepoEstatica = hechoRepoEstatica;
         this.hechoRepoDinamica = hechoRepoDinamica;
         this.hechoRepoProxy = hechoRepoProxy;
-        this.hechosRepo = hechosRepo;
+        this.categoriaRepository = categoriaRepository;
+        this.paisRepository = paisRepository;
+        this.provinciaRepository = provinciaRepository;
+        this.ubicacionRepository = ubicacionRepository;
     }
 
     public Hecho buscarOCrearEstatica(String elemento){
@@ -97,13 +103,14 @@ public class BuscadorHecho {
     }
 
 
-    public HechoEstatica existeHechoIdentico(HechoEstatica hecho) {
+    public HechoEstatica existeHechoIdentico(HechoEstatica hecho, Categoria categoria, Pais pais, Provincia provincia) {
         var tgtAttr = Optional.ofNullable(hecho).map(Hecho::getAtributosHecho);
 
         if (hecho != null && hecho.getAtributosHecho() != null) {
             String tituloTgt = tgtAttr.map(AtributosHecho::getTitulo).orElse(null);
-            String catTgt    = tgtAttr.map(AtributosHecho::getCategoria).map(Categoria::getTitulo).orElse(null);
-            String paisTgt   = tgtAttr.map(AtributosHecho::getUbicacion).map(Ubicacion::getPais).map(Pais::getPais).orElse(null);
+            String catTgt = categoria != null ? categoria.getTitulo() : null;
+            String paisTgt  = pais != null ? pais.getPais() : null;
+            String provTgt = provincia != null ? provincia.getProvincia() : null;
             String descTgt   = tgtAttr.map(AtributosHecho::getDescripcion).orElse(null);
             var    fechaTgt  = tgtAttr.map(AtributosHecho::getFechaAcontecimiento).orElse(null);
             Double latTgt    = tgtAttr.map(AtributosHecho::getLatitud).orElse(null);
@@ -113,23 +120,29 @@ public class BuscadorHecho {
 
             final double EPS_DEG = 1e-6; // ~0.11 m en el ecuador; subilo a 1e-5 si querés ~1.1 m
 
-            for (Hecho h : hechos) {
+            for (HechoEstatica h : hechos) {
                 var attr  = Optional.ofNullable(h).map(Hecho::getAtributosHecho);
-                String cat   = attr.map(AtributosHecho::getCategoria).map(Categoria::getTitulo).orElse(null);
-                String pais  = attr.map(AtributosHecho::getUbicacion).map(Ubicacion::getPais).map(Pais::getPais).orElse(null);
+
                 String desc  = attr.map(AtributosHecho::getDescripcion).orElse(null);
                 var    fecha = attr.map(AtributosHecho::getFechaAcontecimiento).orElse(null);
                 Double lat   = attr.map(AtributosHecho::getLatitud).orElse(null);
                 Double lon   = attr.map(AtributosHecho::getLongitud).orElse(null);
 
+                String cat = h.getAtributosHecho().getCategoria_id()!=null ? categoriaRepository.findById(h.getAtributosHecho().getCategoria_id()).orElse(null).getTitulo() : null;
+                Ubicacion ubicacion = ubicacionRepository.findById(h.getAtributosHecho().getUbicacion_id()).orElse(null);
+
+                String paisStr = ubicacion.getPais() != null ? ubicacion.getPais().getPais() : null;
+                String prov = ubicacion.getProvincia() != null ? ubicacion.getProvincia().getProvincia() : null;
+
                 boolean mismaCat   = normEq(cat,  catTgt);
-                boolean mismoPais  = normEq(pais, paisTgt);
+                boolean mismoPais  = normEq(paisStr, paisTgt);
+                boolean mismaProvincia = normEq(prov,provTgt);
                 boolean mismaDesc  = normEq(desc, descTgt);
                 boolean mismaFecha = Objects.equals(fecha, fechaTgt);
                 boolean mismaLat   = eqDouble(lat, latTgt, EPS_DEG);
                 boolean mismaLon   = eqDouble(lon, lonTgt, EPS_DEG);
 
-                if (mismaCat && mismoPais && mismaDesc && mismaFecha && mismaLat && mismaLon) {
+                if (mismaCat && mismoPais && mismaProvincia && mismaDesc && mismaFecha && mismaLat && mismaLon) {
                     return h;
                 }
             }

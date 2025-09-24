@@ -3,11 +3,13 @@ package modulos.servicioEstadistica.entities;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @Entity
 @Table(name = "categoriaCantidad")
+@AllArgsConstructor
 public class CategoriaCantidad {
 
     @Id
@@ -20,8 +22,8 @@ public class CategoriaCantidad {
     @Column(name = "cantidad_hechos")
     private Integer cantidad;
 
-    public CategoriaCantidad(Long id, Long categoria_id, Integer cantidad) {
-        this.id = id;
+
+    public CategoriaCantidad(Long categoria_id, Integer cantidad) {
         this.categoria_id = categoria_id;
         this.cantidad = cantidad;
     }
