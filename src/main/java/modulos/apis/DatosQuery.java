@@ -1,19 +1,23 @@
 package modulos.apis;
 
+import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
+import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
 import modulos.agregacion.entities.DbMain.projections.*;
+import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
+import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
 import modulos.agregacion.repositories.DbMain.ICategoriaRepository;
 import modulos.agregacion.repositories.DbMain.IColeccionRepository;
 import modulos.agregacion.repositories.DbMain.IProvinciaRepository;
 import modulos.agregacion.repositories.DbDinamica.ISolicitudEliminarHechoRepository;
+import modulos.agregacion.repositories.DbProxy.IHechosProxyRepository;
 import modulos.servicioEstadistica.entities.CategoriaCantidad;
 import modulos.servicioEstadistica.entities.CategoriaHora;
 import modulos.servicioEstadistica.entities.CategoriaProvincia;
 import modulos.servicioEstadistica.entities.ColeccionProvincia;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class DatosQuery implements IDatosQuery{
@@ -22,17 +26,25 @@ public class DatosQuery implements IDatosQuery{
     IProvinciaRepository repoProvincia;
     ICategoriaRepository repoCategoria;
     ISolicitudEliminarHechoRepository repoSoliElimHecho;
+    IHechosDinamicaRepository hechosDinamicaRepository;
+    IHechosEstaticaRepository hechosEstaticaRepository;
+    IHechosProxyRepository hechosProxyRepository;
 
-    public DatosQuery(IColeccionRepository repoColeccion, IProvinciaRepository repoProvincia, ICategoriaRepository repoCategoria, ISolicitudEliminarHechoRepository repoSoliElimHecho){
+    public DatosQuery(IColeccionRepository repoColeccion, IProvinciaRepository repoProvincia, ICategoriaRepository repoCategoria, ISolicitudEliminarHechoRepository repoSoliElimHecho, IHechosDinamicaRepository hechosDinamicaRepository, IHechosEstaticaRepository hechosEstaticaRepository, IHechosProxyRepository hechosProxyRepository) {
         this.repoColeccion = repoColeccion;
         this.repoProvincia = repoProvincia;
         this.repoCategoria = repoCategoria;
         this.repoSoliElimHecho = repoSoliElimHecho;
+        this.hechosDinamicaRepository = hechosDinamicaRepository;
+        this.hechosEstaticaRepository = hechosEstaticaRepository;
+        this.hechosProxyRepository = hechosProxyRepository;
     }
 
     @Override
     public List<ColeccionProvincia> obtenerMayorCantHechosProvinciaEnColeccion() {
-        List<ColeccionProvinciaProjection> info = repoColeccion.obtenerMayorCantHechosProvinciaEnColeccion().orElse(null);
+
+        List<ColeccionProvinciaProjection> info = new ArrayList<>();
+        //List<ColeccionProvinciaProjection> info = repoColeccion.obtenerMayorCantHechosProvinciaEnColeccion().orElse(null);
         if (info != null){
             List<ColeccionProvincia> infos = new ArrayList<>();
 
@@ -54,20 +66,63 @@ public class DatosQuery implements IDatosQuery{
     }
 
     @Override
-    public CategoriaCantidad mayorCantHechosCategoria() {
-        CategoriaCantidadProjection info = repoCategoria.obtenerColeccionMayorHechos().orElse(null);
-        if (info != null){
-            Categoria categoria = null;
-            if (info.getCategoriaId()!=null)
-                categoria = repoCategoria.findById(info.getCategoriaId()).orElse(null);
-            Long categoria_id = categoria != null ? categoria.getId() : null;
-            return new CategoriaCantidad(categoria_id,info.getCantHechos());
+    public CategoriaCantidad categoriaMayorCantHechos() {
+        List<CategoriaCantidadProjection> infoEstatica = hechosEstaticaRepository.categoriaMayorCantHechos().orElse(null);
+        List<CategoriaCantidadProjection> infoDinamica = hechosDinamicaRepository.categoriaMayorCantHechos().orElse(null);
+        List<CategoriaCantidadProjection> infoProxy = hechosProxyRepository.categoriaMayorCantHechos().orElse(null);
+
+        List<CategoriaCantidadProjection> infoOrdenada = new ArrayList<>();
+
+        if (infoEstatica != null)
+            infoOrdenada.addAll(infoEstatica);
+        if (infoDinamica != null)
+            infoOrdenada.addAll(infoDinamica);
+        if (infoProxy != null)
+            infoOrdenada.addAll(infoProxy);
+
+        if (!infoOrdenada.isEmpty()){
+            infoOrdenada.sort(Comparator.comparing(CategoriaCantidadProjection::getCantHechos).reversed());
+            CategoriaCantidadProjection infoFinal = infoOrdenada.get(0);
+            Long categoria_id = infoFinal.getCategoriaId() != null ? infoFinal.getCategoriaId() : null;
+            return new CategoriaCantidad(categoria_id, infoFinal.getCantHechos());
         }
         return null;
     }
 
-    @Override
+    /*@Override
     public List<CategoriaProvincia> obtenerMayorCantHechosProvincia() {
+
+        List<CategoriaProvinciaProjection> info = repoProvincia.obtenerCategoriaMayorHechosProvincia();
+
+        if (info!=null){
+            List<CategoriaProvincia> infos = new ArrayList<>();
+
+            for(CategoriaProvinciaProjection cpp : info){
+                if (cpp.getCategoriaId()!=null)
+                    System.out.println("categoria: " + cpp.getCategoriaId());
+                System.out.println("cant hechos: " + cpp.getCantHechos());
+                System.out.println("provincia id: " + cpp.getProvinciaId());
+                Categoria categoria = cpp.getCategoriaId() != null ? repoCategoria.findById(cpp.getCategoriaId()).orElse(null) : null;
+                Provincia provincia = cpp.getProvinciaId() != null ? repoProvincia.findById(cpp.getProvinciaId()).orElse(null) : null;
+
+                Long categoria_id = categoria != null ? categoria.getId() : null;
+                Long provincia_id = provincia != null ? provincia.getId() : null;
+
+                CategoriaProvincia categoriaProvincia = new CategoriaProvincia(categoria_id,provincia_id,cpp.getCantHechos());
+                infos.add(categoriaProvincia);
+            }
+            return infos;
+        }
+        return null;
+
+    }*/
+
+    @Override
+    public List<CategoriaProvincia> mayorCantHechosCategoriaXProvincia() {
+
+        //List<CategoriaProvinciaProjection> infoEstatica =
+
+
         List<CategoriaProvinciaProjection> info = repoProvincia.obtenerCategoriaMayorHechosProvincia();
 
         if (info!=null){
@@ -93,14 +148,28 @@ public class DatosQuery implements IDatosQuery{
 
     }
 
+
+
     @Override
     public List<CategoriaHora> horaMayorCantHechos() {
-        List<HoraCategoriaProjection> info = repoCategoria.obtenerHoraMaxHechosCategoria().orElse(null);
 
-        if (info != null){
+        List<HoraCategoriaProjection> infoEstatica = hechosEstaticaRepository.horaMayorCantHechos().orElse(null);
+        List<HoraCategoriaProjection> infoDinamica = hechosDinamicaRepository.horaMayorCantHechos().orElse(null);
+        List<HoraCategoriaProjection> infoProxy = hechosProxyRepository.horaMayorCantHechos().orElse(null);
+
+        List<HoraCategoriaProjection> infoOrdenada = new ArrayList<>();
+
+        if (infoEstatica != null)
+            infoOrdenada.addAll(infoEstatica);
+        if (infoDinamica != null)
+            infoOrdenada.addAll(infoDinamica);
+        if (infoProxy != null)
+            infoOrdenada.addAll(infoProxy);
+
+        if (!infoOrdenada.isEmpty()){
             List<CategoriaHora> infos = new ArrayList<>();
 
-            for(HoraCategoriaProjection cpp : info){
+            for(HoraCategoriaProjection cpp : infoOrdenada){
                 Categoria categoria = cpp.getIdCategoria() != null ? repoCategoria.findById(cpp.getIdCategoria()).orElse(null) : null;
                 Long categoria_id = categoria!=null? categoria.getId() : null;
                 CategoriaHora categoriaHora = new CategoriaHora(categoria_id,cpp.getHoraDelDia(),cpp.getTotalHechos());

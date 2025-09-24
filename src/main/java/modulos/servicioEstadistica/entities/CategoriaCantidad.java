@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "categoriaCantidad")
+@Table(name = "categoria_cantidad")
 @AllArgsConstructor
 public class CategoriaCantidad {
 

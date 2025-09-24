@@ -10,7 +10,7 @@ import java.time.Instant;
 
 @Data
 @Entity
-@Table(name = "coleccionProvincia")
+@Table(name = "coleccion_provincia")
 @AllArgsConstructor
 public class ColeccionProvincia {
     @Id

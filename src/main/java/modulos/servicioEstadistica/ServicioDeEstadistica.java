@@ -33,13 +33,26 @@ public class ServicioDeEstadistica {
     @Async
     @Scheduled(cron = "${miapp.cron}")//tiempo en properties
     public void generarEstadistica(){
-        CantSolicitudesEliminacionSpam cantidadDeSpam = datosQuery.cantSolicitudesEliminacionSpam();
-        CategoriaCantidad categoriaCantidad = datosQuery.mayorCantHechosCategoria();
-        List<CategoriaHora> categoriaHoras = datosQuery.horaMayorCantHechos();
-        List<CategoriaProvincia> categoriaProvincias = datosQuery.obtenerMayorCantHechosProvincia();
+        // De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados?
         List<ColeccionProvincia> coleccionProvincias = datosQuery.obtenerMayorCantHechosProvinciaEnColeccion();
+
+        // Corregido
+        // ¿Cuál es la categoría con mayor cantidad de hechos reportados?
+        CategoriaCantidad categoriaCantidad = datosQuery.categoriaMayorCantHechos();
+
+        // ¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
+        List<CategoriaProvincia> categoriaProvincias = datosQuery.mayorCantHechosCategoriaXProvincia();
+
+        // Corregido
+        // ¿A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría?
+        List<CategoriaHora> categoriaHoras = datosQuery.horaMayorCantHechos();
+
+        // ¿Cuántas solicitudes de eliminación son spam?
+        CantSolicitudesEliminacionSpam cantidadDeSpam = datosQuery.cantSolicitudesEliminacionSpam();
         Estadisticas estadisticas = new Estadisticas(cantidadDeSpam,
             categoriaCantidad, categoriaHoras, categoriaProvincias, coleccionProvincias);
+
+
 
         this.estadisticasActuales = estadisticas;
         this.estadisticasRepository.save(estadisticas);

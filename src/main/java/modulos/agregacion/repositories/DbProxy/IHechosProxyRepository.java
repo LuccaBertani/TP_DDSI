@@ -1,6 +1,8 @@
 package modulos.agregacion.repositories.DbProxy;
 
 import modulos.agregacion.entities.DbMain.Hecho;
+import modulos.agregacion.entities.DbMain.projections.CategoriaCantidadProjection;
+import modulos.agregacion.entities.DbMain.projections.HoraCategoriaProjection;
 import modulos.agregacion.entities.DbProxy.HechoProxy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -26,4 +28,37 @@ WHERE REPLACE(LOWER(h.atributosHecho.titulo), ' ', '') =
       REPLACE(LOWER(:nombre), ' ', '')
 """)
     Optional<HechoProxy> findByNombreNormalizado(@Param("nombre") String nombre);
+
+
+    // ¿Cuál es la categoría con mayor cantidad de hechos reportados?
+    @Query(value = """
+        select categoria_id as categoriaId, count(h.id) as cantHechos
+        from hecho_proxy h
+        group by categoria_id
+        order by cantHechos desc
+""", nativeQuery = true)
+
+    Optional<List<CategoriaCantidadProjection>> categoriaMayorCantHechos();
+
+
+    @Query(value = """
+SELECT
+  IF(
+    h.fecha_acontecimiento IS NULL,
+    NULL,
+    HOUR(
+      STR_TO_DATE(
+        REPLACE(SUBSTRING(h.fecha_acontecimiento,1,19),'T',' '),
+        '%Y-%m-%d %H:%i:%s'
+      )
+    )
+  ) AS horaDelDia,
+  COUNT(h.id) AS totalHechos,
+  h.categoria_id        AS idCategoria
+FROM hecho_proxy h
+GROUP BY horaDelDia, h.categoria_id
+ORDER BY totalHechos DESC
+""", nativeQuery = true)
+    Optional<List<HoraCategoriaProjection>> horaMayorCantHechos();
+
 }

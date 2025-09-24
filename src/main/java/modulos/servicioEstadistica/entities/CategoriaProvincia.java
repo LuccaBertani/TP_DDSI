@@ -8,7 +8,7 @@ import java.time.Instant;
 
 @Data
 @Entity
-@Table(name = "categoriaProvincia")
+@Table(name = "categoria_provincia")
 @AllArgsConstructor
 public class CategoriaProvincia {
     @Id

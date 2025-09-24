@@ -14,6 +14,7 @@ import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
 import modulos.agregacion.repositories.DbEstatica.IDatasetsRepository;
 import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
 import modulos.agregacion.repositories.DbMain.IColeccionRepository;
+import modulos.agregacion.repositories.DbMain.IHechoRefRepository;
 import modulos.agregacion.repositories.DbMain.IUsuarioRepository;
 import modulos.agregacion.repositories.DbProxy.IHechosProxyRepository;
 import modulos.shared.utils.FormateadorHecho;
@@ -44,6 +45,7 @@ public class ColeccionService  {
     private final IHechosEstaticaRepository hechosEstaticaRepository;
     private final IHechosDinamicaRepository hechosDinamicaRepository;
     private final IHechosProxyRepository hechosProxyRepository;
+    private final IHechoRefRepository hechoRefRepository;
 
     public ColeccionService(IColeccionRepository coleccionesRepo,
                             IUsuarioRepository usuariosRepo,
@@ -51,7 +53,8 @@ public class ColeccionService  {
                             IHechosEstaticaRepository hechosEstaticaRepository,
                             IHechosDinamicaRepository hechosDinamicaRepository,
                             IHechosProxyRepository hechosProxyRepository,
-                            BuscadoresRegistry buscadores) {
+                            BuscadoresRegistry buscadores,
+                            IHechoRefRepository hechoRefRepository) {
         this.coleccionesRepo = coleccionesRepo;
         this.usuariosRepo = usuariosRepo;
         this.datasetsRepo = datasetsRepo;
@@ -59,6 +62,7 @@ public class ColeccionService  {
         this.hechosDinamicaRepository = hechosDinamicaRepository;
         this.hechosEstaticaRepository = hechosEstaticaRepository;
         this.hechosProxyRepository = hechosProxyRepository;
+        this.hechoRefRepository = hechoRefRepository;
     }
 
 
@@ -255,11 +259,19 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        List<HechoRef> hechosRef =
 
-        List<HechoEstatica> hechosDeFuente = hechosEstaticaRepository.findHechosByColeccionAndDataset(coleccion.getId(),id_dataset);
+        List<Long> idsHechosEstaticaFuente = hechosEstaticaRepository.findHechosByDataset(id_dataset).stream().map(Hecho::getId).toList();
+        List<HechoRef> hechosEstaticaRef = hechoRefRepository.findByFuente(Fuente.ESTATICA.codigoEnString());
 
-        coleccion.getHechos().removeAll(hechosDeFuente);
+        List<HechoRef> hechosFiltrados = new ArrayList<>();
+
+        for (HechoRef hr : hechosEstaticaRef){
+            if (idsHechosEstaticaFuente.contains(hr.getKey().getId())){
+                hechosFiltrados.add(hr);
+            }
+        }
+
+        coleccion.getHechos().removeAll(hechosFiltrados);
 
         coleccionesRepo.save(coleccion);
 

@@ -14,6 +14,8 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableTransactionManagement
@@ -27,16 +29,28 @@ public class DbMainConfig {
     @Primary
     @Bean(name = "mainDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.db4")
-    public DataSource mainDataSource() { return DataSourceBuilder.create().build(); }
+    public DataSource mainDataSource() {
+        return DataSourceBuilder.create().build();
+    }
 
     @Primary
     @Bean(name = "mainEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean mainEntityManagerFactory(
             EntityManagerFactoryBuilder builder,
             @Qualifier("mainDataSource") DataSource ds) {
-        return builder.dataSource(ds)
-                .packages("modulos.agregacion.entities.DbMain","modulos.agregacion.entities.atributosHecho")
-                .persistenceUnit("db4").build();
+
+        Map<String, Object> jpaProps = new HashMap<>();
+        jpaProps.put("hibernate.hbm2ddl.auto", "update");          // <- CLAVE
+        jpaProps.put("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
+        jpaProps.put("hibernate.format_sql", true);
+        jpaProps.put("hibernate.show_sql", true);
+
+        return builder
+                .dataSource(ds)
+                .packages("modulos.agregacion.entities.DbMain", "modulos.agregacion.entities.atributosHecho")
+                .persistenceUnit("db4")
+                .properties(jpaProps)                                   // <- aplica al EMF
+                .build();
     }
 
     @Primary
@@ -46,5 +60,6 @@ public class DbMainConfig {
         return new JpaTransactionManager(emf);
     }
 }
+
 
 

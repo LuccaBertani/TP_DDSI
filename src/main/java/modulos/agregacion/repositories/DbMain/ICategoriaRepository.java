@@ -12,43 +12,6 @@ import java.util.Optional;
 
 public interface ICategoriaRepository extends JpaRepository<Categoria, Long> {
 
-    @Query(value = """
-    SELECT c.id AS categoriaId, 
-        count(h.id) AS cantHechos
-    FROM categoria c 
-    JOIN hecho h ON h.categoria_id = c.id
-    group by (c.id)
-    ORDER BY COUNT(h.id) DESC 
-    LIMIT 1
-        """, nativeQuery = true)
-    Optional<CategoriaCantidadProjection> obtenerColeccionMayorHechos();
-
-
-// ¿A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría?
-
-    @Query(value = """
-SELECT
-  IF(
-    h.fecha_acontecimiento IS NULL,
-    NULL,
-    HOUR(
-      STR_TO_DATE(
-        REPLACE(SUBSTRING(h.fecha_acontecimiento,1,19),'T',' '),
-        '%Y-%m-%d %H:%i:%s'
-      )
-    )
-  ) AS hora_del_dia,
-  COUNT(h.id) AS totalHechos,
-  c.id        AS idCategoria
-FROM hecho h
-JOIN categoria c ON c.id = h.categoria_id
-GROUP BY hora_del_dia, c.id
-ORDER BY totalHechos DESC
-LIMIT 1;
-""", nativeQuery = true)
-    Optional<List<HoraCategoriaProjection>> obtenerHoraMaxHechosCategoria();
-
-
 
     @Query("""
 SELECT c

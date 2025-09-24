@@ -1,7 +1,11 @@
 package modulos.agregacion.repositories.DbDinamica;
 
 import modulos.agregacion.entities.DbDinamica.HechoDinamica;
+import modulos.agregacion.entities.DbMain.Categoria;
 import modulos.agregacion.entities.DbMain.Hecho;
+import modulos.agregacion.entities.DbMain.projections.CategoriaCantidadProjection;
+import modulos.agregacion.entities.DbMain.projections.HoraCategoriaProjection;
+import modulos.servicioEstadistica.entities.CategoriaCantidad;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -48,5 +52,36 @@ WHERE REPLACE(LOWER(h.atributosHecho.titulo), ' ', '') =
       REPLACE(LOWER(:nombre), ' ', '')
 """)
     Optional<HechoDinamica> findByNombreNormalizado(@Param("nombre") String nombre);
+
+    // ¿Cuál es la categoría con mayor cantidad de hechos reportados?
+    @Query(value = """
+        select categoria_id as categoriaId, count(h.id) as cantHechos
+        from hecho_dinamica h
+        group by categoria_id
+        order by cantHechos desc
+""", nativeQuery = true)
+    Optional<List<CategoriaCantidadProjection>> categoriaMayorCantHechos();
+
+    @Query(value = """
+SELECT
+  IF(
+    h.fecha_acontecimiento IS NULL,
+    NULL,
+    HOUR(
+      STR_TO_DATE(
+        REPLACE(SUBSTRING(h.fecha_acontecimiento,1,19),'T',' '),
+        '%Y-%m-%d %H:%i:%s'
+      )
+    )
+  ) AS horaDelDia,
+  COUNT(h.id) AS totalHechos,
+  h.categoria_id        AS idCategoria
+FROM hecho_dinamica h
+GROUP BY horaDelDia, h.categoria_id
+ORDER BY totalHechos DESC
+LIMIT 1;
+""", nativeQuery = true)
+    Optional<List<HoraCategoriaProjection>> horaMayorCantHechos();
+
 
 }

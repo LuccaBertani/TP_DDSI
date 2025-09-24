@@ -10,7 +10,7 @@ import modulos.agregacion.entities.DbMain.usuario.Usuario;
 @Getter
 @Setter
 @Entity
-@Table(name = "solicitudHecho")
+@Table(name = "solicitud_hecho")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo_solicitud", discriminatorType = DiscriminatorType.STRING, length = 20)
 public abstract class SolicitudHecho {

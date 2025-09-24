@@ -17,6 +17,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableTransactionManagement
@@ -29,15 +31,30 @@ public class DbHechosEstaticaConfig {
 
     @Bean(name = "estaticaDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.db1")
-    public DataSource estaticaDataSource() { return DataSourceBuilder.create().build(); }
+    public DataSource estaticaDataSource() {
+        return DataSourceBuilder.create().build();
+    }
 
     @Bean(name = "estaticaEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean estaticaEntityManagerFactory(
             EntityManagerFactoryBuilder builder,
             @Qualifier("estaticaDataSource") DataSource ds) {
-        return builder.dataSource(ds)
-                .packages("modulos.agregacion.entities.DbEstatica","modulos.agregacion.entities.atributosHecho")
-                .persistenceUnit("db1").build();
+
+        Map<String, Object> jpaProps = new HashMap<>();
+        jpaProps.put("hibernate.hbm2ddl.auto", "update"); // o "create" la 1° vez
+        jpaProps.put("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
+        jpaProps.put("hibernate.show_sql", true);
+        jpaProps.put("hibernate.format_sql", true);
+
+        return builder
+                .dataSource(ds)
+                .packages(
+                        "modulos.agregacion.entities.DbEstatica",
+                        "modulos.agregacion.entities.atributosHecho"
+                )
+                .persistenceUnit("db1")
+                .properties(jpaProps) // <- CLAVE
+                .build();
     }
 
     @Bean(name = "estaticaTransactionManager")
