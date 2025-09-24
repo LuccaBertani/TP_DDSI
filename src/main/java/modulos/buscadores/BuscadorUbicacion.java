@@ -5,6 +5,7 @@ import modulos.agregacion.entities.DbMain.Provincia;
 import modulos.agregacion.entities.DbMain.Ubicacion;
 import modulos.agregacion.repositories.DbMain.IUbicacionRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class BuscadorUbicacion {
@@ -26,6 +27,7 @@ public class BuscadorUbicacion {
         return repoUbicacion.findById(idUbicacion).orElse(null);
     }
 
+    @Transactional
     public Ubicacion buscarOCrear(Pais pais, Provincia provincia){
 
         Long id_pais;
@@ -48,6 +50,7 @@ public class BuscadorUbicacion {
 
         if (ubicacion == null){
             if (pais != null && provincia != null){
+                System.out.println("");
                 if (provincia.getPais().getId().equals(pais.getId())){
                     ubicacion = new Ubicacion(pais, provincia);
                     repoUbicacion.save(ubicacion);

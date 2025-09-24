@@ -311,10 +311,15 @@ public class FormateadorHecho {
 
     if (dtoInput.getId_pais() != null){
         pais = buscadores.getBuscadorPais().buscar(dtoInput.getId_pais());
+        if (pais != null)
+            System.out.println("SOY UN PAIS FELIZ: " + pais.getPais());
     }
 
     if (dtoInput.getId_provincia() != null){
         provincia = buscadores.getBuscadorProvincia().buscar(dtoInput.getId_provincia());
+
+        if (pais != null)
+            System.out.println("SOY UNA PROVINCIA FELIZ: " + provincia.getProvincia());
     }
 
     if (dtoInput.getLatitud() != null){

@@ -18,6 +18,8 @@ public class BuscadorCategoria {
     }
 
     public Categoria buscar(Long id){
+        if (id == null)
+            return null;
         return this.categoriaRepository.findById(id).orElse(null);
     }
 

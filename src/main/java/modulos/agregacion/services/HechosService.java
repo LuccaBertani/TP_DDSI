@@ -30,6 +30,7 @@ import modulos.shared.dtos.input.ImportacionHechosInputDTO;
 import modulos.shared.dtos.input.SolicitudHechoInputDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -121,6 +122,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
 
     //lo sube un administrador (lo considero carga dinamica)
+    @Transactional
     public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO dtoInput) {
 
         if(dtoInput.getTitulo() == null){
@@ -138,6 +140,8 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
         HechoDinamica hecho = new HechoDinamica();
 
+        System.out.println("SOY UN ID PAIS CONTENTO: " + dtoInput.getId_pais());
+        System.out.println("SOY UN ID PROVINCIA CONTENTO: " + dtoInput.getId_provincia());
         AtributosHecho atributos = FormateadorHecho.formatearAtributosHecho(buscadores, dtoInput);
 
         hecho.setUsuario_id(usuario.getId());
