@@ -71,6 +71,10 @@ LIMIT 1;
 """, nativeQuery = true)
     Optional<List<HoraCategoriaProjection>> horaMayorCantHechos();
 
-
+    @Query(value = """
+    SELECT h FROM Hecho h join Dataset d ON 1=1
+        where h.
+    """, nativeQuery = true)
+    List<HechoEstatica> todasFuentesContienenMismoHecho();
 
 }

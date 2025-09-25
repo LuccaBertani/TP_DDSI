@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IUbicacionRepository extends JpaRepository<Ubicacion, Long> {
@@ -20,5 +21,14 @@ public interface IUbicacionRepository extends JpaRepository<Ubicacion, Long> {
     Optional<Ubicacion> findByPaisIdAndProvinciaId(@Param("paisId") Long paisId,
                                                    @Param("provinciaId") Long provinciaId);
 
+    @Query(value = """
+        select u.id from Ubicacion u where u.pais.id = :pais_id
+""")
+    List<Long> findAllUbicacionesIdByPaisId(@Param("pais_id") Long pais_id);
 
+
+    @Query(value = """
+    SELECT u.id FROM Ubicacion u where u.provincia.id = :provincia_id
+    """)
+    List<Long> findAllUbicacionesIdByProvinciaId(@Param ("provincia_id") Long provinciaId);
 }

@@ -8,10 +8,13 @@ import jakarta.persistence.criteria.Predicate;
 import lombok.Getter;
 import lombok.Setter;
 import modulos.agregacion.entities.DbMain.Hecho;
+import modulos.buscadores.Normalizador;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -46,7 +49,8 @@ public class FiltroFechaAcontecimiento extends Filtro {
         return !fechaHecho.isAfter(fechaInicial) && !fechaHecho.isBefore(fechaFinal);
     }
 
-    public Specification<Hecho> toSpecification(){
+    @Override
+    public <T> Specification<T> toSpecification(Class<T> clazz) {
         return ((root, query, criteriaBuilder) -> {
             Path<ZonedDateTime> pathFecha = root.get("atributosHecho").get("fechaAcontecimiento");
             Predicate predicado1 = criteriaBuilder.greaterThan(pathFecha, this.fechaInicial);

@@ -5,6 +5,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 public interface IFiltro {
     Boolean aprobarHecho(Hecho hecho);
-    Specification<Hecho> toSpecification();
+    <T> Specification<T> toSpecification(Class<T> clazz);
 }
 

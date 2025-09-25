@@ -44,7 +44,8 @@ public class FiltroFechaCarga extends Filtro {
 
     }
 
-    public Specification<Hecho> toSpecification(){
+    @Override
+    public <T> Specification<T> toSpecification(Class<T> clazz) {
         return ((root, query, criteriaBuilder) -> {
             Path<ZonedDateTime> pathFecha = root.get("atributosHecho").get("fechaCarga");
             Predicate predicado1 = criteriaBuilder.greaterThan(pathFecha, this.fechaInicial);

@@ -121,10 +121,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
         coleccion.setCriterios(FormateadorHecho.obtenerListaDeFiltros(filtros));
 
-        this.mapearHechosAColeccion(coleccion);
-
         return ResponseEntity.status(HttpStatus.CREATED).body("La colección se creó correctamente");
-
     }
 
     public ResponseEntity<?> obtenerTodasLasColecciones(){
@@ -303,8 +300,6 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
 
         coleccion.setCriterios(FormateadorHecho.obtenerListaDeFiltros(filtros));
 
-        this.mapearHechosAColeccion(coleccion);
-
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -355,7 +350,7 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    /*@Async
+    @Async
     @Scheduled(cron = "0 0 * * * *") // cada hora
     public void refrescarColeccionesCronjob() {
 
@@ -375,20 +370,40 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
             return cb.and(cb.isTrue(activo), cb.isTrue(cb.coalesce(modif, cb.literal(false))));
         };
 
+        Specification<HechoProxy> specs3 = (root, query, cb) -> {
+            if (query != null) query.distinct(true); // útil si después hay JOINs
+            // activo = true AND atributosHecho.modificado = true (null => false)
+            var activo = root.<Boolean>get("activo");
+            var modif  = root.get("atributosHecho").<Boolean>get("modificado");
+            return cb.and(cb.isTrue(activo), cb.isTrue(cb.coalesce(modif, cb.literal(false))));
+        };
+
 
         List<Coleccion> colecciones = coleccionesRepo.findByActivoTrue();
 
         for(Coleccion coleccion : colecciones){
-            Specification<Hecho> specs = crearSpecs(coleccion.getCriterios());
+            Specification<HechoEstatica> specsEstatica = crearSpecs(coleccion.getCriterios(), HechoEstatica.class);
+            Specification<HechoDinamica> specsDinamica = crearSpecs(coleccion.getCriterios(), HechoDinamica.class);
+            Specification<HechoProxy> specsProxy = crearSpecs(coleccion.getCriterios(), HechoProxy.class);
 
-            Specification<HechoEstatica> specFinal = Specification
-                    .where(DISTINCT)
+            Specification<HechoEstatica> specFinalEstatica = Specification
+                    .where(this.distinct(HechoEstatica.class))
                     .and(specs1)
-                    .and(specs);
+                    .and(specsEstatica);
 
-            List<HechoEstatica> hechosEstatica = hechosEstaticaRepository.findAll(specFinal);
-            List<HechoDinamica> hechosDinamica = hechosDinamicaRepository.findAll(specFinal);
-            List<HechoProxy> hechosProxy = hechosProxyRepository.findAll(specFinal);
+            Specification<HechoDinamica> specFinalDinamica = Specification
+                    .where(this.distinct(HechoDinamica.class))
+                    .and(specs2)
+                    .and(specsDinamica);
+
+            Specification<HechoProxy> specFinalProxy = Specification
+                    .where(this.distinct(HechoProxy.class))
+                    .and(specs3)
+                    .and(specsProxy);
+
+            List<HechoEstatica> hechosEstatica = hechosEstaticaRepository.findAll(specFinalEstatica);
+            List<HechoDinamica> hechosDinamica = hechosDinamicaRepository.findAll(specFinalDinamica);
+            List<HechoProxy> hechosProxy = hechosProxyRepository.findAll(specFinalProxy);
 
             List<Hecho> hechosFiltrados = new ArrayList<>();
             hechosFiltrados.addAll(hechosEstatica);
@@ -398,13 +413,12 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
             hechosFiltrados.forEach(hecho -> hecho.getAtributosHecho().setModificado(false));
 
             if(!hechosFiltrados.isEmpty()) {
-
                 coleccion.setModificado(false);
                 coleccion.setHechos(hechosFiltrados.stream().map(h->new HechoRef(h.getId(), h.getAtributosHecho().getFuente())).toList());
                 coleccionesRepo.save(coleccion);
             }
         }
-    }*/
+    }
 
     private ResponseEntity<?> checkeoAdmin(Long id_usuario){
 
@@ -430,43 +444,23 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
         if (respuesta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
             return respuesta;
         }
-        //this.refrescarColeccionesCronjob();
+        this.refrescarColeccionesCronjob();
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    public void mapearHechosAColeccion(Coleccion coleccion){
-
-        Specification<Hecho> specs = crearSpecs(coleccion.getCriterios());
-
-        Specification<Hecho> specFinal = Specification
-                .where(DISTINCT)
-                .and(specs);
-
-
-        //List<HechoEstatica> hechosEstatica = hechosEstaticaRepository.findAll(specFinal);
-        //List<HechoDinamica> hechosDinamica = hechosDinamicaRepository.findAll(specFinal);
-        List<Hecho> hechos = new ArrayList<>();
-
-        //hechos.addAll(hechosEstatica);
-        //hechos.addAll(hechosDinamica);
-
-        coleccion.setHechos(hechos.stream().map(h->new HechoRef(h.getId(), h.getAtributosHecho().getFuente())).toList());
-
-        coleccionesRepo.save(coleccion);
-    }
-
-    // TODO: REVISAR SPECS PORQUE OPERAN HECHOS CON FILTROS
-    private Specification<Hecho> crearSpecs(List<Filtro> filtros) {
+    private <T> Specification<T> crearSpecs(List<Filtro> filtros, Class<T> clazz) {
         return filtros.stream()
-                .map(Filtro::toSpecification)   // o IFiltro::toSpecification
+                .map(filtro->filtro.toSpecification(clazz))  // o IFiltro::toSpecification
                 .filter(Objects::nonNull)
-                .reduce(Specification.where(null), Specification::and); // null-safe
+                .reduce(Specification.where(null), Specification::and); // NO meter distinct acá
     }
 
-    private static final Specification<Hecho> DISTINCT = (root, query, cb) -> {
-        query.distinct(true);
-        return cb.conjunction();
-    };
+    private <T> Specification<T> distinct(Class <T> clazz) {
+        return (root, query, cb) -> {
+            query.distinct(true);
+            return cb.conjunction(); // no agrega condición extra
+        };
+    }
 
 }
 

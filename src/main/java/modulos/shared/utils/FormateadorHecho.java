@@ -417,7 +417,7 @@ public class FormateadorHecho {
             Pais pais = buscadores.getBuscadorPais().buscar(inputDTO.getPais());
             if (pais != null) {
                 var existente = buscadores.getBuscadorFiltro().buscarFiltroPaisPorPaisId(pais.getId());
-                filtros.setFiltroPais(existente.orElseGet(() -> new FiltroPais(pais)));
+                filtros.setFiltroPais(existente.orElseGet(() -> new FiltroPais(pais, buscadores.getBuscadorUbicacion().buscarUbicacionesConPais(pais.getId()))));
             }
         }
 
@@ -426,7 +426,8 @@ public class FormateadorHecho {
             Provincia provincia = buscadores.getBuscadorProvincia().buscar(inputDTO.getProvincia());
             if (provincia != null) {
                 var existente = buscadores.getBuscadorFiltro().buscarFiltroProvinciaPorProvinciaId(provincia.getId());
-                filtros.setFiltroProvincia(existente.orElseGet(() -> new FiltroProvincia(provincia)));
+                filtros.setFiltroProvincia(existente.orElseGet(() -> new FiltroProvincia(provincia,
+                        buscadores.getBuscadorUbicacion().buscarUbicacionesConProvincia(provincia.getId()))));
             }
         }
 
@@ -508,7 +509,7 @@ public class FormateadorHecho {
             Pais pais = buscadorPais.buscar(inputDTO.getPaisId());
             if (pais != null) {
                 var existente = buscadorFiltro.buscarFiltroPaisPorPaisId(pais.getId());
-                filtros.setFiltroPais(existente.orElseGet(() -> new FiltroPais(pais)));
+                filtros.setFiltroPais(existente.orElseGet(() -> new FiltroPais(pais, buscadores.getBuscadorUbicacion().buscarUbicacionesConPais(pais.getId()))));
             }
         }
 
@@ -517,7 +518,7 @@ public class FormateadorHecho {
             if (provincia != null) {
                 System.out.println("ENTRO ACA");
                 var existente = buscadorFiltro.buscarFiltroProvinciaPorProvinciaId(provincia.getId());
-                filtros.setFiltroProvincia(existente.orElseGet(() -> new FiltroProvincia(provincia)));
+                filtros.setFiltroProvincia(existente.orElseGet(() -> new FiltroProvincia(provincia, buscadores.getBuscadorUbicacion().buscarUbicacionesConPais(provincia.getId()))));
             }
         }
 

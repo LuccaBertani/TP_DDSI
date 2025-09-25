@@ -31,7 +31,7 @@ public class FiltroContenidoMultimedia extends Filtro {
     }
 
     @Override
-    public Specification<Hecho> toSpecification(){
+    public <T> Specification<T> toSpecification(Class<T> clazz) {
         return((root, query, cb) -> {
             Path<Long> pathId = root.get("atributosHecho").get("contenidoMultimedia");
             return cb.equal(pathId,this.tipoContenido);

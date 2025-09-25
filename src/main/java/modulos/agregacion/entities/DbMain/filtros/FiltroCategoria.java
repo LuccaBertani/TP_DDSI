@@ -4,8 +4,11 @@ import jakarta.persistence.*;
 import jakarta.persistence.criteria.Path;
 import lombok.Getter;
 import lombok.Setter;
+import modulos.agregacion.entities.DbDinamica.HechoDinamica;
+import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.Categoria;
 import modulos.agregacion.entities.DbMain.Hecho;
+import modulos.agregacion.entities.DbProxy.HechoProxy;
 import org.springframework.data.jpa.domain.Specification;
 
 @Getter
@@ -27,12 +30,11 @@ public class FiltroCategoria extends Filtro {
 
     }
 
-    @Override
-    public Specification<Hecho> toSpecification(){
-        return((root, query, cb) -> {
-            Path<Long> pathId = root.get("atributosHecho").get("categoria").get("id");
-            return cb.equal(pathId,this.categoria.getId());
-        });
+    public <T> Specification<T> toSpecification(Class<T> clazz) {
+        return (root, query, cb) -> {
+            Path<Long> pathId = root.get("atributosHecho").get("categoria_id");
+            return cb.equal(pathId, this.categoria.getId());
+        };
     }
 
     /*@Override

@@ -1,12 +1,15 @@
 package modulos.agregacion.entities.DbMain.filtros;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import lombok.Getter;
 import lombok.Setter;
 import modulos.agregacion.entities.DbMain.Hecho;
 import modulos.agregacion.entities.DbMain.Provincia;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,8 +21,13 @@ public class FiltroProvincia extends Filtro{
             foreignKey = @ForeignKey(name = "fk_filtro_provincia_provincia"))
     private Provincia provincia;
 
-    public FiltroProvincia(Provincia provincia) {
+    //TODO setear esto cuando se crea el filtro
+    @ElementCollection
+    private List<Long> ubicaciones_ids;
+
+    public FiltroProvincia(Provincia provincia, List<Long> ubicaciones_ids) {
         this.provincia = provincia;
+        this.ubicaciones_ids = ubicaciones_ids;
     }
 
     public FiltroProvincia() {
@@ -32,10 +40,16 @@ public class FiltroProvincia extends Filtro{
     }*/
 
     @Override
-    public Specification<Hecho> toSpecification() {
-        return((root, query, cb) -> {
-            Path<Long> pathId = root.get("atributosHecho").get("ubicacion").get("provincia").get("id");
-            return cb.equal(pathId,this.provincia.getId());
-        });
+    public <T> Specification<T> toSpecification(Class<T> clazz) {
+        return (root, query, cb) -> {
+            Path<Long> pathId = root.get("atributosHecho").get("ubicacion_id");
+            CriteriaBuilder.In<Long> inClause = cb.in(pathId);
+            for (Long id : this.ubicaciones_ids) {
+                inClause.value(id);
+            }
+            return inClause;
+        };
     }
+
+
 }

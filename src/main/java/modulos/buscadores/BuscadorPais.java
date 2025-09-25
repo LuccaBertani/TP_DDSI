@@ -26,7 +26,7 @@ public class BuscadorPais {
     }
 
     public Pais buscar(String elemento) {
-        return this.repoPais.findByNombreNormalizado(elemento).orElse(null);
+        return elemento != null ? this.repoPais.findByNombreNormalizado(elemento).orElse(null) : null;
     }
 
     public Pais buscar(Long id){

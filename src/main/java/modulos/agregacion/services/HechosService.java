@@ -8,6 +8,8 @@ import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
 import modulos.agregacion.entities.DbMain.filtros.*;
+import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
+import modulos.agregacion.entities.DbProxy.HechoProxy;
 import modulos.agregacion.entities.HechoMemoria;
 import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
 import modulos.agregacion.repositories.DbEstatica.IDatasetsRepository;
@@ -218,33 +220,48 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
         List<Filtro> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadores, criterios));
 
-        System.out.println("SIZE DE LA LISTA FILTROS: " + filtros.size());
-
-        for(Filtro filtro : filtros){
-            System.out.println(filtro.getClass());
-            if(filtro instanceof FiltroProvincia){
-                System.out.println("HOLA SOY UNA PROVINCIA MUY FELIZ!!: " + ((FiltroProvincia) filtro).getProvincia().getProvincia());
-            }
-        }
-
         Coleccion coleccion = coleccionRepo.findByIdAndActivoTrue(inputDTO.getId_coleccion()).orElse(null);
 
         if (coleccion == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la colección");
         }
 
-        Specification<Hecho> specColeccion =
-                this.perteneceAColeccionYesConsensuadoSiAplica(coleccion.getId(),inputDTO.getNavegacionCurada());
+        List<Long> hechosIds = new ArrayList<>(coleccion.getHechosConsensuados().stream().map(h -> h.getKey().getId()).toList());
 
-        Specification<Hecho> specs = this.crearSpecs(filtros);
+        Specification<HechoEstatica> specColeccionEstatica =
+                this.perteneceAColeccionYesConsensuadoSiAplica(hechosIds, HechoEstatica.class);
+        Specification<HechoDinamica> specColeccionDinamica =
+                this.perteneceAColeccionYesConsensuadoSiAplica(hechosIds, HechoDinamica.class);
+        Specification<HechoProxy> specColeccionProxy =
+                this.perteneceAColeccionYesConsensuadoSiAplica(hechosIds, HechoProxy.class);
 
-        Specification<Hecho> specFinal = Specification
-                .where(DISTINCT)
-                .and(specColeccion)
-                .and(specs);
-        // TODO CAMBIAAAAAAAAAR
+        Specification<HechoEstatica> specsEstatica = this.crearSpecs(filtros, HechoEstatica.class);
+        Specification<HechoDinamica> specsDinamica = this.crearSpecs(filtros, HechoDinamica.class);
+        Specification<HechoProxy> specsProxy = this.crearSpecs(filtros, HechoProxy.class);
 
-        /*List<Hecho> hechosFiltrados = hechoRepository.findAll(specFinal);
+        Specification<HechoEstatica> specFinalEstatica = Specification
+                .where(this.distinct(HechoEstatica.class))
+                .and(specColeccionEstatica)
+                .and(specsEstatica);
+
+        Specification<HechoDinamica> specFinalDinamica = Specification
+                .where(this.distinct(HechoDinamica.class))
+                .and(specColeccionDinamica)
+                .and(specsDinamica);
+
+        Specification<HechoProxy> specFinalProxy = Specification
+                .where(this.distinct(HechoProxy.class))
+                .and(specColeccionProxy)
+                .and(specsProxy);
+
+        List<HechoEstatica> hechosFiltradosEstatica = hechosEstaticaRepo.findAll(specFinalEstatica);
+        List<HechoDinamica> hechosFiltradosDinamica = hechosDinamicaRepo.findAll(specFinalDinamica);
+        List<HechoProxy> hechosFiltradosProxy = hechosProxyRepo.findAll(specFinalProxy);
+
+        List<Hecho> hechosFiltrados = new ArrayList<>();
+        hechosFiltrados.addAll(hechosFiltradosEstatica);
+        hechosFiltrados.addAll(hechosFiltradosDinamica);
+        hechosFiltrados.addAll(hechosFiltradosProxy);
 
         if(hechosFiltrados.isEmpty()){
             System.out.println("soy un estorbo");
@@ -254,8 +271,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 .map(this::crearHechoDto)
                 .toList();
 
-        return ResponseEntity.status(HttpStatus.OK).body(outputDTO);*/
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
     }
 
     private VisualizarHechosOutputDTO crearHechoDto(Hecho hecho){
@@ -311,32 +327,13 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
     }
 
-    private Specification<Hecho> perteneceAColeccionYesConsensuadoSiAplica(Long coleccionId, boolean navegacionCurada) {
-        if (coleccionId == null) {
-            // Podés devolver cb.conjunction() para no filtrar nada; con null Spring ignora esta spec.
-            return null;
+    private <T> Specification<T> perteneceAColeccionYesConsensuadoSiAplica(List<Long> idsHechosDeColeccionYConsensuados, Class<T> clazz) {
+        if (idsHechosDeColeccionYConsensuados == null || idsHechosDeColeccionYConsensuados.isEmpty()) {
+            // devuelve false siempre -> WHERE 1=0
+            return (root, query, cb) -> cb.disjunction();
         }
 
-        return (root, query, cb) -> {
-            query.distinct(true);
-
-            // subquery que devuelve los IDs de Hecho que pertenecen a la colección
-            Subquery<Long> sq = query.subquery(Long.class);
-            Root<Coleccion> c = sq.from(Coleccion.class);
-
-            // Elegimos la colección de hechos según el modo de navegación
-            // - "hechosConsensuados": navegación curada
-            // - "hechos": navegación irrestricta
-            Join<Coleccion, Hecho> hJoin = navegacionCurada
-                    ? c.join("hechosConsensuados", JoinType.INNER)
-                    : c.join("hechos", JoinType.INNER);
-
-            sq.select(hJoin.get("id"))
-                    .where(cb.equal(c.get("id"), coleccionId));
-
-            // h.id IN (subquery)
-            return cb.in(root.get("id")).value(sq);
-        };
+        return (root, query, cb) -> root.get("id").in(idsHechosDeColeccionYConsensuados);
     }
 
     public ResponseEntity<?> addCategoria(Long idUsuario, String categoriaStr, List<String> sinonimosString) {
@@ -446,16 +443,18 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    private Specification<Hecho> crearSpecs(List<Filtro> filtros) {
+    private <T> Specification<T> crearSpecs(List<Filtro> filtros, Class<T> clazz) {
         return filtros.stream()
-                .map(Filtro::toSpecification)   // o IFiltro::toSpecification
+                .map(filtro->filtro.toSpecification(clazz))  // o IFiltro::toSpecification
                 .filter(Objects::nonNull)
                 .reduce(Specification.where(null), Specification::and); // NO meter distinct acá
     }
 
-    private static final Specification<Hecho> DISTINCT = (root, query, cb) -> {
-        query.distinct(true);
-        return cb.conjunction();
-    };
+    private <T> Specification<T> distinct(Class <T> clazz) {
+        return (root, query, cb) -> {
+            query.distinct(true);
+            return cb.conjunction(); // no agrega condición extra
+        };
+    }
 
 }

@@ -3,6 +3,8 @@ package modulos.agregacion.entities.DbMain.filtros;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +41,7 @@ public class FiltroTitulo extends Filtro {
     }
 
     @Override
-    public Specification<Hecho> toSpecification() {
+    public <T> Specification<T> toSpecification(Class<T> clazz) {
         return (root, query, cb) -> {
             if (this.titulo == null || this.titulo.isBlank()) return cb.conjunction();
 
@@ -54,6 +56,5 @@ public class FiltroTitulo extends Filtro {
             return ands.isEmpty() ? cb.conjunction() : cb.and(ands.toArray(new Predicate[0]));
         };
     }
-
 
 }

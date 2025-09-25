@@ -5,11 +5,14 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 import lombok.Getter;
 import lombok.Setter;
 import modulos.agregacion.entities.DbMain.Hecho;
 import modulos.agregacion.entities.atributosHecho.Origen;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -33,10 +36,11 @@ public class FiltroOrigen extends Filtro {
     }
 
     @Override
-    public Specification<Hecho> toSpecification() {
+    public <T> Specification<T> toSpecification(Class<T> clazz) {
         return((root, query, cb) -> {
             Path<Long> pathId = root.get("atributosHecho").get("contenidoMultimedia");
             return cb.equal(pathId,this.origenDeseado);
         });
     }
+
 }

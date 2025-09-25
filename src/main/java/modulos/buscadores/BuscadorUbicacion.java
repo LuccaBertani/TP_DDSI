@@ -7,6 +7,8 @@ import modulos.agregacion.repositories.DbMain.IUbicacionRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Component
 public class BuscadorUbicacion {
 
@@ -25,6 +27,14 @@ public class BuscadorUbicacion {
         if (idUbicacion == null)
             return null;
         return repoUbicacion.findById(idUbicacion).orElse(null);
+    }
+
+    public List<Long> buscarUbicacionesConPais(Long pais_id){
+        return repoUbicacion.findAllUbicacionesIdByPaisId(pais_id);
+    }
+
+    public List<Long> buscarUbicacionesConProvincia(Long provincia_id){
+        return repoUbicacion.findAllUbicacionesIdByProvinciaId(provincia_id);
     }
 
     @Transactional
@@ -56,6 +66,7 @@ public class BuscadorUbicacion {
                     repoUbicacion.save(ubicacion);
                 }
             }
+
             else{
                 ubicacion = new Ubicacion(pais, provincia);
                 repoUbicacion.save(ubicacion);
