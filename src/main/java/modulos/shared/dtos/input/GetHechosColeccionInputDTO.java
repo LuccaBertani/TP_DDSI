@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class GetHechosColeccionInputDTO {
+    private String fuente;
     private Long categoriaId;
     private Integer contenidoMultimedia;
     private String descripcion;

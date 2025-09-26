@@ -203,7 +203,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
 
     public ResponseEntity<?> getHechosColeccion(GetHechosColeccionInputDTO inputDTO){
-
+        // TODO: Criterio de fuente
         CriteriosColeccionDTO criterios = new CriteriosColeccionDTO(
                 inputDTO.getCategoriaId(),
                 inputDTO.getContenidoMultimedia(),
@@ -227,45 +227,65 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la colección");
         }
 
-        List<Long> hechosIds = new ArrayList<>(coleccion.getHechosConsensuados().stream().map(h -> h.getKey().getId()).toList());
-
-        Specification<HechoEstatica> specColeccionEstatica =
-                this.perteneceAColeccionYesConsensuadoSiAplica(hechosIds, HechoEstatica.class);
-        Specification<HechoDinamica> specColeccionDinamica =
-                this.perteneceAColeccionYesConsensuadoSiAplica(hechosIds, HechoDinamica.class);
-        Specification<HechoProxy> specColeccionProxy =
-                this.perteneceAColeccionYesConsensuadoSiAplica(hechosIds, HechoProxy.class);
-
         Specification<HechoEstatica> specsEstatica = this.crearSpecs(filtros, HechoEstatica.class);
         Specification<HechoDinamica> specsDinamica = this.crearSpecs(filtros, HechoDinamica.class);
         Specification<HechoProxy> specsProxy = this.crearSpecs(filtros, HechoProxy.class);
-
-        Specification<HechoEstatica> specFinalEstatica = Specification
-                .where(this.distinct(HechoEstatica.class))
-                .and(specColeccionEstatica)
-                .and(specsEstatica);
-
-        Specification<HechoDinamica> specFinalDinamica = Specification
-                .where(this.distinct(HechoDinamica.class))
-                .and(specColeccionDinamica)
-                .and(specsDinamica);
-
-        Specification<HechoProxy> specFinalProxy = Specification
-                .where(this.distinct(HechoProxy.class))
-                .and(specColeccionProxy)
-                .and(specsProxy);
-
-        List<HechoEstatica> hechosFiltradosEstatica = hechosEstaticaRepo.findAll(specFinalEstatica);
-        List<HechoDinamica> hechosFiltradosDinamica = hechosDinamicaRepo.findAll(specFinalDinamica);
-        List<HechoProxy> hechosFiltradosProxy = hechosProxyRepo.findAll(specFinalProxy);
-
         List<Hecho> hechosFiltrados = new ArrayList<>();
-        hechosFiltrados.addAll(hechosFiltradosEstatica);
-        hechosFiltrados.addAll(hechosFiltradosDinamica);
-        hechosFiltrados.addAll(hechosFiltradosProxy);
+        if(inputDTO.getNavegacionCurada()) {
 
-        if(hechosFiltrados.isEmpty()){
-            System.out.println("soy un estorbo");
+            List<Long> hechosIds = new ArrayList<>(coleccion.getHechosConsensuados().stream().map(h -> h.getKey().getId()).toList());
+
+            Specification<HechoEstatica> specColeccionEstatica =
+                    this.perteneceAColeccionYesConsensuadoSiAplica(hechosIds, HechoEstatica.class);
+
+            Specification<HechoEstatica> specFinalEstatica = Specification
+                    .where(this.distinct(HechoEstatica.class))
+                    .and(specColeccionEstatica)
+                    .and(specsEstatica);
+
+            List<HechoEstatica> hechosFiltradosEstatica = hechosEstaticaRepo.findAll(specFinalEstatica);
+
+            hechosFiltrados.addAll(hechosFiltradosEstatica);
+
+        }else{
+            List<Long> hechosIdsEstatica = new ArrayList<>(coleccion.getHechos().stream().
+                    filter(h -> h.getKey().getFuente().equals(Fuente.ESTATICA)).map(h -> h.getKey().getId()).toList());
+            List<Long> hechosIdsDinamica = new ArrayList<>(coleccion.getHechos().stream().
+                    filter(h -> h.getKey().getFuente().equals(Fuente.DINAMICA)).map(h -> h.getKey().getId()).toList());
+            List<Long> hechosIdsProxy = new ArrayList<>(coleccion.getHechos().stream().
+                    filter(h -> h.getKey().getFuente().equals(Fuente.PROXY)).map(h -> h.getKey().getId()).toList());
+
+            Specification<HechoEstatica> specColeccionEstatica =
+                    this.perteneceAColeccionYesConsensuadoSiAplica(hechosIdsEstatica, HechoEstatica.class);
+            Specification<HechoDinamica> specColeccionDinamica =
+                    this.perteneceAColeccionYesConsensuadoSiAplica(hechosIdsDinamica, HechoDinamica.class);
+            Specification<HechoProxy> specColeccionProxy =
+                    this.perteneceAColeccionYesConsensuadoSiAplica(hechosIdsProxy, HechoProxy.class);
+
+            Specification<HechoEstatica> specFinalEstatica = Specification
+                    .where(this.distinct(HechoEstatica.class))
+                    .and(specColeccionEstatica)
+                    .and(specsEstatica);
+
+            Specification<HechoDinamica> specFinalDinamica = Specification
+                    .where(this.distinct(HechoDinamica.class))
+                    .and(specColeccionDinamica)
+                    .and(specsDinamica);
+
+            Specification<HechoProxy> specFinalProxy = Specification
+                    .where(this.distinct(HechoProxy.class))
+                    .and(specColeccionProxy)
+                    .and(specsProxy);
+
+            List<HechoEstatica> hechosFiltradosEstatica = hechosEstaticaRepo.findAll(specFinalEstatica);
+            List<HechoDinamica> hechosFiltradosDinamica = hechosDinamicaRepo.findAll(specFinalDinamica);
+            List<HechoProxy> hechosFiltradosProxy = hechosProxyRepo.findAll(specFinalProxy);
+
+
+            hechosFiltrados.addAll(hechosFiltradosEstatica);
+            hechosFiltrados.addAll(hechosFiltradosDinamica);
+            hechosFiltrados.addAll(hechosFiltradosProxy);
+
         }
 
         List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream()

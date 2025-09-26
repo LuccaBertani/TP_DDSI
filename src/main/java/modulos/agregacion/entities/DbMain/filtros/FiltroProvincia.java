@@ -21,7 +21,6 @@ public class FiltroProvincia extends Filtro{
             foreignKey = @ForeignKey(name = "fk_filtro_provincia_provincia"))
     private Provincia provincia;
 
-    //TODO setear esto cuando se crea el filtro
     @ElementCollection
     private List<Long> ubicaciones_ids;
 

@@ -23,7 +23,7 @@ public class AlgoritmoConsensoMayoriaSimple implements IAlgoritmoConsenso {
         List<HechoRef> nuevosHechosConsensuados = new ArrayList<>();
 
         for (HechoRef hechoRef: hechosRefEstaticos){
-            if (datasets.size() >= buscadorHecho.findCantDatasetsHecho(hechoRef.getKey().getId()) / 2){
+            if (datasets.size()/2 <= buscadorHecho.findCantDatasetsHecho(hechoRef.getKey().getId())){
                 //coleccion.getHechosConsensuados().add(hechoRef);
                 nuevosHechosConsensuados.add(hechoRef);
             }

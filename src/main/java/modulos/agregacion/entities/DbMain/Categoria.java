@@ -29,6 +29,5 @@ public class Categoria {
 }
 
 // TODO: Testear algoritmos consenso
-// TODO: Arreglar querys busqueda normalizada -> testear importar hechos
 // TODO: Arreglar querys de servicio de estadistica
 // TODO: HACER EL PUNTO EXTRA!!
