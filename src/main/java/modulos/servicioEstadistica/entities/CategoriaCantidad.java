@@ -6,6 +6,8 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.Instant;
+
 @Data
 @Entity
 @Table(name = "categoria_cantidad")
@@ -22,10 +24,13 @@ public class CategoriaCantidad {
     @Column(name = "cantidad_hechos")
     private Integer cantidad;
 
+    @Column(name = "timestamp")
+    private Instant timestamp;
 
     public CategoriaCantidad(Long categoria_id, Integer cantidad) {
         this.categoria_id = categoria_id;
         this.cantidad = cantidad;
+        this.timestamp = Instant.now();
     }
 
 

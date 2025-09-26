@@ -7,6 +7,7 @@ import lombok.Setter;
 @Data
 public class VisualizarHechosOutputDTO {
     private Long id;
+    private String fuente;
     private String titulo;
     private String descripcion;
     private String categoria;

@@ -1,9 +1,11 @@
 package modulos.apis;
 
+import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
 import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
 import modulos.agregacion.entities.DbMain.projections.*;
+import modulos.agregacion.entities.DbProxy.HechoProxy;
 import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
 import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
 import modulos.agregacion.repositories.DbMain.ICategoriaRepository;
@@ -122,7 +124,7 @@ public class DatosQuery implements IDatosQuery{
                             Long provincia_id = provincia.getId();
                             ProvinciaCantidad cantidadProvincia = cantidadesXProvincia.stream()
                                     .filter(cp -> cp.getProvincia_id().equals(provincia_id))
-                                    .findAny()
+                                    .findFirst()
                                     .orElse(null);
 
                             if (cantidadProvincia == null){
@@ -142,8 +144,12 @@ public class DatosQuery implements IDatosQuery{
             }
         }
 
+        if (coleccionProvincias.isEmpty())
+            return null;
+
         return coleccionProvincias;
     }
+
 
     @Override
     public CategoriaCantidad categoriaMayorCantHechos() {
@@ -169,63 +175,114 @@ public class DatosQuery implements IDatosQuery{
         return null;
     }
 
-    /*@Override
-    public List<CategoriaProvincia> obtenerMayorCantHechosProvincia() {
-
-        List<CategoriaProvinciaProjection> info = repoProvincia.obtenerCategoriaMayorHechosProvincia();
-
-        if (info!=null){
-            List<CategoriaProvincia> infos = new ArrayList<>();
-
-            for(CategoriaProvinciaProjection cpp : info){
-                if (cpp.getCategoriaId()!=null)
-                    System.out.println("categoria: " + cpp.getCategoriaId());
-                System.out.println("cant hechos: " + cpp.getCantHechos());
-                System.out.println("provincia id: " + cpp.getProvinciaId());
-                Categoria categoria = cpp.getCategoriaId() != null ? repoCategoria.findById(cpp.getCategoriaId()).orElse(null) : null;
-                Provincia provincia = cpp.getProvinciaId() != null ? repoProvincia.findById(cpp.getProvinciaId()).orElse(null) : null;
-
-                Long categoria_id = categoria != null ? categoria.getId() : null;
-                Long provincia_id = provincia != null ? provincia.getId() : null;
-
-                CategoriaProvincia categoriaProvincia = new CategoriaProvincia(categoria_id,provincia_id,cpp.getCantHechos());
-                infos.add(categoriaProvincia);
-            }
-            return infos;
-        }
-        return null;
-
-    }*/
 
     @Override
     public List<CategoriaProvincia> mayorCantHechosCategoriaXProvincia() {
+        // De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados?
 
-        //List<CategoriaProvinciaProjection> infoEstatica =
+        // ¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
 
+        // Primero, se parte de las categorias
+        List<Categoria> categorias = repoCategoria.findAll();
 
-        List<CategoriaProvinciaProjection> info = repoProvincia.obtenerCategoriaMayorHechosProvincia();
+        List<CategoriaProvincia> categoriaProvincias = new ArrayList<>();
 
-        if (info!=null){
-            List<CategoriaProvincia> infos = new ArrayList<>();
+        for (Categoria categoria : categorias){
+            if (!categorias.isEmpty()){
 
-            for(CategoriaProvinciaProjection cpp : info){
-                if (cpp.getCategoriaId()!=null)
-                    System.out.println("categoria: " + cpp.getCategoriaId());
-                System.out.println("cant hechos: " + cpp.getCantHechos());
-                System.out.println("provincia id: " + cpp.getProvinciaId());
-                Categoria categoria = cpp.getCategoriaId() != null ? repoCategoria.findById(cpp.getCategoriaId()).orElse(null) : null;
-                Provincia provincia = cpp.getProvinciaId() != null ? repoProvincia.findById(cpp.getProvinciaId()).orElse(null) : null;
+                List<HechoEstatica> hechosEstatica = hechosEstaticaRepository.findAllByCategoriaId(categoria.getId());
+                List<HechoDinamica> hechosDinamica = hechosDinamicaRepository.findAllByCategoriaId(categoria.getId());
+                List<HechoProxy> hechosProxy = hechosProxyRepository.findAllByCategoriaId(categoria.getId());
 
-                Long categoria_id = categoria != null ? categoria.getId() : null;
-                Long provincia_id = provincia != null ? provincia.getId() : null;
+                List<ProvinciaCantidad> cantidadesXProvincia = new ArrayList<>();
 
-                CategoriaProvincia categoriaProvincia = new CategoriaProvincia(categoria_id,provincia_id,cpp.getCantHechos());
-                infos.add(categoriaProvincia);
+                for (HechoEstatica hechoEstatica: hechosEstatica){
+                    Long ubicacion_id = hechoEstatica.getAtributosHecho().getUbicacion_id();
+                    if (ubicacion_id!=null){
+                        Ubicacion ubicacion = ubicacionRepository.findById(ubicacion_id).orElse(null);
+
+                        if (ubicacion != null){
+                            Provincia provincia = ubicacion.getProvincia();
+                            if (provincia != null){
+                                Long provincia_id = provincia.getId();
+                                ProvinciaCantidad cantidadProvincia = cantidadesXProvincia.stream()
+                                        .filter(cp -> cp.getProvincia_id().equals(provincia_id))
+                                        .findFirst()
+                                        .orElse(null);
+
+                                if (cantidadProvincia == null){
+                                    cantidadesXProvincia.add(new ProvinciaCantidad(provincia_id));
+                                }
+                                else{
+                                    cantidadProvincia.incrementarCantidad();
+                                }
+
+                            }
+                        }
+                    }
+                }
+
+                for (HechoDinamica hechoDinamica: hechosDinamica){
+                    Long ubicacion_id = hechoDinamica.getAtributosHecho().getUbicacion_id();
+                    if (ubicacion_id!=null){
+                        Ubicacion ubicacion = ubicacionRepository.findById(ubicacion_id).orElse(null);
+
+                        if (ubicacion != null){
+                            Provincia provincia = ubicacion.getProvincia();
+                            if (provincia != null){
+                                Long provincia_id = provincia.getId();
+                                ProvinciaCantidad cantidadProvincia = cantidadesXProvincia.stream()
+                                        .filter(cp -> cp.getProvincia_id().equals(provincia_id))
+                                        .findAny()
+                                        .orElse(null);
+
+                                if (cantidadProvincia == null){
+                                    cantidadesXProvincia.add(new ProvinciaCantidad(provincia_id));
+                                }
+                                else{
+                                    cantidadProvincia.incrementarCantidad();
+                                }
+
+                            }
+                        }
+                    }
+                }
+
+                for (HechoProxy hechoProxy: hechosProxy){
+                    Long ubicacion_id = hechoProxy.getAtributosHecho().getUbicacion_id();
+                    if (ubicacion_id!=null){
+                        Ubicacion ubicacion = ubicacionRepository.findById(ubicacion_id).orElse(null);
+
+                        if (ubicacion != null){
+                            Provincia provincia = ubicacion.getProvincia();
+                            if (provincia != null){
+                                Long provincia_id = provincia.getId();
+                                ProvinciaCantidad cantidadProvincia = cantidadesXProvincia.stream()
+                                        .filter(cp -> cp.getProvincia_id().equals(provincia_id))
+                                        .findAny()
+                                        .orElse(null);
+
+                                if (cantidadProvincia == null){
+                                    cantidadesXProvincia.add(new ProvinciaCantidad(provincia_id));
+                                }
+                                else{
+                                    cantidadProvincia.incrementarCantidad();
+                                }
+
+                            }
+                        }
+                    }
+                }
+                cantidadesXProvincia.sort(Comparator.comparing(ProvinciaCantidad::getCantidad).reversed());
+                ProvinciaCantidad resultadoFinalColeccion = cantidadesXProvincia.get(0);
+                categoriaProvincias.add(new CategoriaProvincia(categoria.getId(), resultadoFinalColeccion.getProvincia_id(), resultadoFinalColeccion.getCantidad()));
             }
-            return infos;
         }
-        return null;
 
+        if (categoriaProvincias.isEmpty())
+            return null;
+
+        return categoriaProvincias;
     }
 
 
@@ -264,6 +321,27 @@ public class DatosQuery implements IDatosQuery{
     @Override
     public Long cantSolicitudesEliminacionSpam() {
         return repoSoliElimHecho.obtenerCantSolicitudesEliminacionSpam();
+    }
+
+    @Override
+    public Categoria findCategoriaById(Long id){
+        if (id == null)
+            return null;
+        return this.repoCategoria.findById(id).orElse(null);
+    }
+
+    @Override
+    public Provincia findProvinciaById(Long id){
+        if (id == null)
+            return null;
+        return this.repoProvincia.findById(id).orElse(null);
+    }
+
+    @Override
+    public Coleccion findColeccionById(Long id){
+        if (id == null)
+            return null;
+        return this.repoColeccion.findById(id).orElse(null);
     }
 }
 

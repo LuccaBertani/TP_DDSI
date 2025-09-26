@@ -12,16 +12,19 @@ import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
 public class Reporte {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
     @Column(name = "motivo")
-    String motivo;
+    private String motivo;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumns({
             @JoinColumn(name = "hecho_id",     referencedColumnName = "id"),     // 1º id
             @JoinColumn(name = "hecho_fuente", referencedColumnName = "fuente")  // 2º fuente
     })
-    HechoRef hecho_asociado;
+    private HechoRef hecho_asociado;
+
+    @Column(name = "procesado")
+    private Boolean procesado;
 
     public Reporte(String motivo, HechoRef hecho_asociado){
         this.motivo = motivo;

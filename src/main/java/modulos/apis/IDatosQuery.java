@@ -19,5 +19,8 @@ public interface IDatosQuery {
     List<CategoriaHora> horaMayorCantHechos();
     //¿Cuántas solicitudes de eliminación son spam?
     Long cantSolicitudesEliminacionSpam();
+    Categoria findCategoriaById(Long categoria_id);
+    Provincia findProvinciaById(Long id);
+    Coleccion findColeccionById(Long id);
 }
 

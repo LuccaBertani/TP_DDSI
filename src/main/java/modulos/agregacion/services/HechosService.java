@@ -158,6 +158,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Transactional
     public ResponseEntity<?> importarHechos(ImportacionHechosInputDTO dtoInput, MultipartFile file) throws IOException {
         ResponseEntity<?> rta = checkeoAdmin(dtoInput.getId_usuario());
 
@@ -277,7 +278,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     private VisualizarHechosOutputDTO crearHechoDto(Hecho hecho){
         VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
         dto.setId(hecho.getId());
-
+        dto.setFuente(hecho.getAtributosHecho().getFuente().codigoEnString());
         HechoMemoria hechoMemoria = formateadorHechoMemoria.formatearHechoMemoria(hecho);
 
         Optional.ofNullable(hechoMemoria.getAtributosHecho().getUbicacion())

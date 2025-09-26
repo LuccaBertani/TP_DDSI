@@ -14,6 +14,6 @@ public class ProvinciaCantidad {
     }
 
     public void incrementarCantidad(){
-        this.cantidad += 1;
+        this.cantidad += 1L;
     }
 }

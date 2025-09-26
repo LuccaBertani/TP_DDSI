@@ -10,6 +10,6 @@ public interface ISolicitudEliminarHechoRepository extends JpaRepository<Solicit
     @Query(value = """
     SELECT COUNT(*) as total_spam
     FROM solicitud_hecho AS s
-    WHERE s.rechazada_por_spam = 1""",nativeQuery = true)
+    WHERE s.rechazadaPorSpam = 1""",nativeQuery = true)
     Long obtenerCantSolicitudesEliminacionSpam();
 }

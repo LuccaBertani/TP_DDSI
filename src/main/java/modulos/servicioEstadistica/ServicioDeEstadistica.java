@@ -27,7 +27,7 @@ public class ServicioDeEstadistica {
         this.datosQuery = datosQuery;
         this.estadisticasRepository = estadisticasRepository;
         // Si querés tener las estadísticas ni bien entrás -> this.generarEstadistica();
-        //this.generarEstadistica();
+        this.generarEstadistica();
     }
 
     @Async
@@ -42,6 +42,7 @@ public class ServicioDeEstadistica {
         // ¿Cuál es la categoría con mayor cantidad de hechos reportados?
         CategoriaCantidad categoriaCantidad = datosQuery.categoriaMayorCantHechos();
 
+        // Corregido
         // ¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
         List<CategoriaProvincia> categoriaProvincias = datosQuery.mayorCantHechosCategoriaXProvincia();
 
@@ -63,67 +64,151 @@ public class ServicioDeEstadistica {
 
 //id 1 : spam id 2 : categoria con mayor cant de hechos id 3: hora de mayor cantidad de hechos id 4: provincia con mayor cantidad de hechos de una categoria
 //id 5 : provincia con mayor cantidad de hechos de una coleccion
-public Path obtenerEstadistica(int id) {
-    if (estadisticasActuales == null) {
-        return null;
-    }
-
-    var snap = this.estadisticasActuales;
-
-    List<Object> valores = new ArrayList<>();
-    List<String> header;
-
-    switch (id) {
-        case 1: { // Spam total
-            String nombre = "estadisticaSpam.csv";
-            header = List.of("totalSpam");
-
-            Long total = snap.getCantidadDeSpam();
-
-            valores = List.of(total);
-            return LectorCSV.generarCsvDesdeListaLineal(valores, nombre, header);
+    public Path exportarEstadisticaSpam() {
+        if (this.estadisticasActuales == null || this.estadisticasActuales.getCantidadDeSpam() == null) {
+            return null;
         }
 
-        case 2: { // Categoría con más hechos
-            String nombre = "estadisticaCategoriaMasHechos.csv";
-            header = List.of("categoria", "cantidad");
+        List<Object> valores;
+        List<String> header;
+        String nombre = "estadisticaSpam.csv";
+        header = List.of("totalSpam");
+        Long total = this.estadisticasActuales.getCantidadDeSpam();
 
-           /* var cc = snap.getCategoriaCantidad();
-            String categoria = Optional.ofNullable(cc)
-                    .map(CategoriaCantidad::getCategoria)
-                    .map(Categoria::getTitulo)
+        valores = List.of(total);
+        return LectorCSV.generarCsvDesdeListaLineal(valores, nombre, header);
+    }
+
+    public Path exportarEstadisticaCategoriaMayorCantidadHechos() {
+        if (this.estadisticasActuales == null || this.estadisticasActuales.getCategoriaCantidad() == null) {
+            return null;
+        }
+        List<Object> valores = new ArrayList<>();
+        List<String> header;
+        String nombre = "estadisticaCategoriaMasHechos.csv";
+        header = List.of("categoria_id", "categoria_titulo", "cantidad");
+
+            var cc = this.estadisticasActuales.getCategoriaCantidad();
+            Long categoria_id = Optional.ofNullable(cc)
+                    .map(CategoriaCantidad::getCategoria_id)
                     .orElse(null);
+            Categoria categoria = datosQuery.findCategoriaById(categoria_id);
+            String categoriaStr = categoria != null ? categoria.getTitulo() : null;
+
             Integer cantidad = Optional.ofNullable(cc)
                     .map(CategoriaCantidad::getCantidad)
                     .orElse(0);
 
-            valores.add(categoria);
-            valores.add(cantidad);*/
+            valores.add(categoria_id);
+            valores.add(categoriaStr);
+            valores.add(cantidad);
             return LectorCSV.generarCsvDesdeListaLineal(valores, nombre, header);
+
+
+    }
+
+    public Path exportarEstadisticaHoraMayorCantidadHechosCategorias(){
+        if (this.estadisticasActuales == null || this.estadisticasActuales.getCategoriaHoras() == null) {
+            return null;
         }
+        List<Object> valores = new ArrayList<>();
+        List<String> header;
 
-        case 3: { // Hora con más hechos por categoría (múltiples filas)
-            String nombre = "estadisticaHoraMasHechosXCategoria.csv";
-            header = List.of("categoria", "hora", "cantidad");
+        String nombre = "estadisticaHoraMasHechosXCategoria.csv";
+        header = List.of("categoria_id", "categoria_titulo", "hora", "cantidad");
 
-            List<CategoriaHora> lista = Optional.ofNullable(snap.getCategoriaHoras())
-                    .orElse(List.of());
+        List<CategoriaHora> lista = Optional.ofNullable(this.estadisticasActuales.getCategoriaHoras())
+                .orElse(List.of());
 
-            /*for (var v : lista) {
+            for (var v : lista) {
                 if (v == null) continue;
-                String categoria = Optional.ofNullable(v.getCategoria())
-                        .map(Categoria::getTitulo)
-                        .orElse(null);
+                Long categoria_id = v.getCategoria_id();
+                Categoria categoria = datosQuery.findCategoriaById(categoria_id);
+                String categoriaStr = categoria != null ? categoria.getTitulo() : null;
+
                 Integer hora = v.getHora();
                 Integer cant = Optional.ofNullable(v.getCantidad()).orElse(0);
 
-                valores.add(categoria);
+                valores.add(categoria_id);
+                valores.add(categoriaStr);
                 valores.add(hora);
                 valores.add(cant);
-            }*/
+            }
 
             return LectorCSV.generarCsvDesdeListaLineal(valores, nombre, header);
+    }
+
+
+    public Path exportarEstadisticaMayorCantidadHechosCategoriasProvincias(){
+        if (this.estadisticasActuales == null || this.estadisticasActuales.getCategoriaProvincias() == null) {
+            return null;
         }
+        List<Object> valores = new ArrayList<>();
+        List<String> header;
+
+        String nombre = "estadisticaProvinciaMasHechosXCategoria.csv";
+        header = List.of("categoria_id", "categoria_titulo", "provincia_id", "provincia_nombre", "cantidad");
+
+        List<CategoriaProvincia> lista = Optional.ofNullable(this.estadisticasActuales.getCategoriaProvincias())
+                .orElse(List.of());
+
+            for (var v : lista) {
+                if (v == null) continue;
+                Long categoria_id = v.getCategoria_id();
+                Categoria categoria = datosQuery.findCategoriaById(categoria_id);
+                String categoriaStr = categoria != null ? categoria.getTitulo() : null;
+                Long provincia_id = v.getProvincia_id();
+                Provincia provincia = datosQuery.findProvinciaById(provincia_id);
+                String provinciaStr = provincia!=null ? provincia.getProvincia() : null;
+                Long cant = v.getCantidad();
+
+                valores.add(categoria_id);
+                valores.add(categoriaStr);
+                valores.add(provincia_id);
+                valores.add(provinciaStr);
+                valores.add(cant);
+            }
+
+            return LectorCSV.generarCsvDesdeListaLineal(valores, nombre, header);
+    }
+
+    public Path exportarEstadisticaProvinciaMayorCantidadHechosColecciones(){
+        if (this.estadisticasActuales == null || this.estadisticasActuales.getColeccionProvincias() == null) {
+            return null;
+        }
+        List<Object> valores = new ArrayList<>();
+        List<String> header;
+        String nombre = "estadisticaProvinciaMasHechosXCategoria.csv";
+        header = List.of("coleccion_id", "coleccion_titulo", "provincia_id", "provincia_nombre", "cantidad");
+
+        List<ColeccionProvincia> lista = Optional.ofNullable(this.estadisticasActuales.getColeccionProvincias())
+                .orElse(List.of());
+
+            for (var v : lista) {
+                if (v == null) continue;
+                Long coleccion_id = v.getColeccion_id();
+                Coleccion coleccion = datosQuery.findColeccionById(coleccion_id);
+                String coleccionStr = coleccion!=null?coleccion.getTitulo():null;
+                Long provincia_id = v.getProvincia_id();
+                Provincia provincia = datosQuery.findProvinciaById(provincia_id);
+                String provinciaStr = provincia!=null ? provincia.getProvincia() : null;
+                Long cant = v.getCantidad();
+
+                valores.add(coleccion_id);
+                valores.add(coleccionStr);
+                valores.add(provincia_id);
+                valores.add(provinciaStr);
+                valores.add(cant);
+            }
+
+            return LectorCSV.generarCsvDesdeListaLineal(valores, nombre, header);
+    }
+
+    /*switch (id) {
+
+
+
+
 
         case 4: { // Provincia con más hechos por categoría
             String nombre = "estadisticaProvinciaMasHechosXCategoria.csv";
@@ -145,7 +230,7 @@ public Path obtenerEstadistica(int id) {
                 valores.add(categoria);
                 valores.add(cant);
                 valores.add(provincia);
-            }*/
+            }
 
             return LectorCSV.generarCsvDesdeListaLineal(valores, nombre, header);
         }
@@ -170,14 +255,14 @@ public Path obtenerEstadistica(int id) {
                 valores.add(coleccion);
                 valores.add(provincia);
                 valores.add(cant);
-            }*/
+            }
 
             return LectorCSV.generarCsvDesdeListaLineal(valores, nombre, header);
         }
 
         default:
             return null;
-    }
+    }*/
 }
 
 
@@ -185,7 +270,7 @@ public Path obtenerEstadistica(int id) {
 
 
 
-}
+
 
 /*
                 Categoria catInc = new Categoria();

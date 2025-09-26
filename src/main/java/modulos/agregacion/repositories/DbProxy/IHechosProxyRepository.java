@@ -1,5 +1,7 @@
 package modulos.agregacion.repositories.DbProxy;
 
+import modulos.agregacion.entities.DbDinamica.HechoDinamica;
+import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.Hecho;
 import modulos.agregacion.entities.DbMain.projections.CategoriaCantidadProjection;
 import modulos.agregacion.entities.DbMain.projections.HoraCategoriaProjection;
@@ -44,11 +46,11 @@ WHERE REPLACE(LOWER(h.atributosHecho.titulo), ' ', '') =
     @Query(value = """
 SELECT
   IF(
-    h.fecha_acontecimiento IS NULL,
+    h.fechaAcontecimiento IS NULL,
     NULL,
     HOUR(
       STR_TO_DATE(
-        REPLACE(SUBSTRING(h.fecha_acontecimiento,1,19),'T',' '),
+        REPLACE(SUBSTRING(h.fechaAcontecimiento,1,19),'T',' '),
         '%Y-%m-%d %H:%i:%s'
       )
     )
@@ -65,5 +67,11 @@ ORDER BY totalHechos DESC
         select h.atributosHecho.ubicacion_id from HechoProxy h where h.id = :hecho_id
 """)
     Long findUbicacionIdByHechoId(@Param("hecho_id") Long hecho_id);
+
+
+    @Query(value = """
+        select h from HechoProxy h where h.atributosHecho.categoria_id = :categoria_id
+""")
+    List<HechoProxy> findAllByCategoriaId(@Param("categoria_id") Long categoria_id);
 
 }

@@ -17,11 +17,9 @@ import modulos.agregacion.repositories.DbProxy.IHechosProxyRepository;
 import modulos.buscadores.BuscadorPais;
 import modulos.buscadores.BuscadorProvincia;
 import modulos.buscadores.BuscadorUbicacion;
-import modulos.shared.dtos.input.SolicitudHechoEliminarInputDTO;
-import modulos.shared.dtos.input.SolicitudHechoEvaluarInputDTO;
-import modulos.shared.dtos.input.SolicitudHechoInputDTO;
-import modulos.shared.dtos.input.SolicitudHechoModificarInputDTO;
+import modulos.shared.dtos.input.*;
 import modulos.shared.dtos.output.MensajeOutputDTO;
+import modulos.shared.dtos.output.ReporteHechoOutputDTO;
 import modulos.shared.dtos.output.SolicitudHechoOutputDTO;
 import modulos.shared.utils.DetectorDeSpam;
 import modulos.shared.utils.FechaParser;
@@ -306,6 +304,7 @@ public class SolicitudHechoService {
         if (dtoInput.getRespuesta()) {
             // No va a haber null pointer exception porque sí o sí hay un usuario asociado al hecho que se solicita eliminar
             solicitud.getHecho().getAtributosHecho().setModificado(true);
+            solicitud.getHecho().setActivo(false);
             Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
             // El usuario va a existir si o si porque ya se verificó cuando solicitó eliminar un hecho, pero x si pide borrar la cuenta hago el chequeo antes
             if (usuario != null){
@@ -426,45 +425,29 @@ public class SolicitudHechoService {
         return ResponseEntity.status(HttpStatus.OK).body(solicitudHechoOutputDTOS);
     }
 
+    @Transactional
     public ResponseEntity<?> reportarHecho(String motivo, Long id_hecho, String fuente) {
 
+        Hecho hecho = null;
 
         if (fuente.equals(Fuente.DINAMICA.codigoEnString())){
-            HechoDinamica hecho = hechosDinamicaRepository.findById(id_hecho).orElse(null);
-
-            if(hecho == null){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el hecho");
-            }
-            HechoRef hechoRef = new HechoRef(hecho.getId(), hecho.getAtributosHecho().getFuente());
-            Reporte reporte = new Reporte(motivo, hechoRef);
-            reportesHechoRepository.save(reporte);
-            return ResponseEntity.ok().build();
+            hecho = hechosDinamicaRepository.findById(id_hecho).orElse(null);
         }
         else if (fuente.equals(Fuente.ESTATICA.codigoEnString())){
-            HechoEstatica hecho = hechosEstaticaRepository.findById(id_hecho).orElse(null);
-
-            if(hecho == null){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el hecho");
-            }
-            HechoRef hechoRef = new HechoRef(hecho.getId(), hecho.getAtributosHecho().getFuente());
-            Reporte reporte = new Reporte(motivo, hechoRef);
-            reportesHechoRepository.save(reporte);
-            return ResponseEntity.ok().build();
+            hecho = hechosEstaticaRepository.findById(id_hecho).orElse(null);
         }
 
         else if (fuente.equals(Fuente.PROXY.codigoEnString())){
-            HechoProxy hecho = hechosProxyRepository.findById(id_hecho).orElse(null);
-
-            if(hecho == null){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el hecho");
-            }
-            HechoRef hechoRef = new HechoRef(hecho.getId(), hecho.getAtributosHecho().getFuente());
-            Reporte reporte = new Reporte(motivo, hechoRef);
-            reportesHechoRepository.save(reporte);
-            return ResponseEntity.ok().build();
+            hecho = hechosProxyRepository.findById(id_hecho).orElse(null);
         }
 
-        return ResponseEntity.badRequest().build();
+        if(hecho == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el hecho");
+        }
+        HechoRef hechoRef = new HechoRef(hecho.getId(), hecho.getAtributosHecho().getFuente());
+        Reporte reporte = new Reporte(motivo, hechoRef);
+        reportesHechoRepository.save(reporte);
+        return ResponseEntity.ok().build();
     }
 
     public ResponseEntity<?> obtenerMensajes(Long id_receptor) {
@@ -487,6 +470,83 @@ public class SolicitudHechoService {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(mensajesOutputDTOS);
+
+    }
+
+    // Para buscar bien el hecho despues con un boton rápido agrego un endpoint en HechoController para obtener hecho por id y fuente
+    public ResponseEntity<?> getAllReportes(Long id_usuario) {
+        ResponseEntity<?> rta = checkeoAdmin(id_usuario);
+
+        if (!rta.getStatusCode().equals(HttpStatus.OK)) {
+            return rta;
+        }
+
+        List<Reporte> reportes = reportesHechoRepository.findAllByProcesadoFalse();
+        List<ReporteHechoOutputDTO> outputDTOS = new ArrayList<>();
+
+        for (Reporte reporte : reportes){
+            ReporteHechoOutputDTO outputDTO = ReporteHechoOutputDTO.builder()
+                    .id(reporte.getId())
+                    .id_hecho(reporte.getHecho_asociado().getKey().getId())
+                    .fuente(reporte.getHecho_asociado().getKey().getFuente().codigoEnString())
+                    .motivo(reporte.getMotivo())
+                    .build();
+            outputDTOS.add(outputDTO);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(outputDTOS);
+    }
+
+    @Transactional
+    public ResponseEntity<?> evaluarReporte(EvaluarReporteInputDTO inputDTO) {
+        ResponseEntity<?> rta = checkeoAdmin(inputDTO.getUsuario_id());
+
+        if (!rta.getStatusCode().equals(HttpStatus.OK)) {
+            return rta;
+        }
+        // Al pedo pq ya está con jakarta en el dto pero bue
+        if (inputDTO.getReporte_id() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Reporte reporte = reportesHechoRepository.findById(inputDTO.getReporte_id()).orElse(null);
+
+        if (reporte == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        reporte.setProcesado(true);
+        if (inputDTO.getRespuesta()) {
+            Fuente fuente = reporte.getHecho_asociado().getKey().getFuente();
+            Long id = reporte.getHecho_asociado().getKey().getId();
+            Hecho hecho = null;
+            if (fuente.equals(Fuente.ESTATICA)) {
+                hecho = hechosEstaticaRepository.findById(id).orElse(null);
+            }
+            else if (fuente.equals(Fuente.DINAMICA)) {
+                hecho = hechosDinamicaRepository.findById(id).orElse(null);
+            }
+            else if (fuente.equals(Fuente.PROXY)) {
+                hecho = hechosProxyRepository.findById(id).orElse(null);
+            }
+            if (hecho == null)
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el hecho");
+            hecho.setActivo(false);
+            hecho.getAtributosHecho().setModificado(true);
+            Usuario usuario = usuariosRepository.findById(hecho.getUsuario_id()).orElse(null);
+            // x si pide borrar la cuenta hago el chequeo antes
+            if (usuario != null) {
+                usuario.disminuirHechosSubidos();
+                if (usuario.getCantHechosSubidos() == 0) {
+                    GestorRoles.ContribuyenteAVisualizador(usuario);
+                }
+            }
+        }
+
+
+        return ResponseEntity.ok().build();
+
+
 
     }
 }

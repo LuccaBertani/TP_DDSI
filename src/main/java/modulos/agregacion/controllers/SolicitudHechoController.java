@@ -2,10 +2,7 @@ package modulos.agregacion.controllers;
 
 import jakarta.validation.Valid;
 import modulos.agregacion.services.SolicitudHechoService;
-import modulos.shared.dtos.input.SolicitudHechoEliminarInputDTO;
-import modulos.shared.dtos.input.SolicitudHechoEvaluarInputDTO;
-import modulos.shared.dtos.input.SolicitudHechoInputDTO;
-import modulos.shared.dtos.input.SolicitudHechoModificarInputDTO;
+import modulos.shared.dtos.input.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,12 +59,20 @@ public class SolicitudHechoController {
     }
 
     // Anda
-    @PostMapping("/reportar")
+    @PostMapping("/reportes/reportar")
     public ResponseEntity<?> reportar(@Valid @RequestParam Long id_hecho, @Valid @RequestParam String fuente, @Valid @RequestParam String motivo){
         return solicitudHechoService.reportarHecho(motivo, id_hecho, fuente);
     }
 
-    // TODO get y evaluacion de reportes
+    @GetMapping("/reportes/get/all")
+    public ResponseEntity<?> getAllReportes(@Valid @RequestParam Long id_usuario){
+        return solicitudHechoService.getAllReportes(id_usuario);
+    }
+
+    @GetMapping("/reportes/evaluar")
+    public ResponseEntity<?> evaluarReporte(@Valid @RequestBody EvaluarReporteInputDTO dtoInput){
+        return solicitudHechoService.evaluarReporte(dtoInput);
+    }
 
     // Anda
     @GetMapping("/get/all")

@@ -20,12 +20,12 @@ public class CategoriaProvincia {
     @Column(name = "provincia_id")
     private Long provincia_id;
     @Column(name = "cantidad_hechos")
-    private Integer cantidad;
+    private Long cantidad;
 
     @Column(name = "timestamp")
     private Instant timestamp;
 
-    public CategoriaProvincia(Long categoria_id, Long provincia_id, Integer cantidad) {
+    public CategoriaProvincia(Long categoria_id, Long provincia_id, Long cantidad) {
         this.categoria_id = categoria_id;
         this.provincia_id = provincia_id;
         this.cantidad = cantidad;

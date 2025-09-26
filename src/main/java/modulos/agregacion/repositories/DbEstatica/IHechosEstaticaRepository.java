@@ -54,11 +54,11 @@ WHERE REPLACE(LOWER(h.atributosHecho.titulo), ' ', '') =
     @Query(value = """
 SELECT
   IF(
-    h.fecha_acontecimiento IS NULL,
+    h.fechaAcontecimiento IS NULL,
     NULL,
     HOUR(
       STR_TO_DATE(
-        REPLACE(SUBSTRING(h.fecha_acontecimiento,1,19),'T',' '),
+        REPLACE(SUBSTRING(h.fechaAcontecimiento,1,19),'T',' '),
         '%Y-%m-%d %H:%i:%s'
       )
     )
@@ -114,5 +114,10 @@ LIMIT 1;
         select h.atributosHecho.ubicacion_id from HechoEstatica h where h.id = :hecho_id
 """)
     Long findUbicacionIdByHechoId(@Param("hecho_id") Long hecho_id);
+
+    @Query(value = """
+        select h from HechoEstatica h where h.atributosHecho.categoria_id = :categoria_id
+""")
+    List<HechoEstatica> findAllByCategoriaId(@Param("categoria_id") Long categoria_id);
 
 }
