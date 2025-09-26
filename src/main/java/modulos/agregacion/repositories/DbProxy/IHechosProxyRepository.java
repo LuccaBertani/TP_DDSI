@@ -61,4 +61,9 @@ ORDER BY totalHechos DESC
 """, nativeQuery = true)
     Optional<List<HoraCategoriaProjection>> horaMayorCantHechos();
 
+    @Query(value = """
+        select h.atributosHecho.ubicacion_id from HechoProxy h where h.id = :hecho_id
+""")
+    Long findUbicacionIdByHechoId(@Param("hecho_id") Long hecho_id);
+
 }

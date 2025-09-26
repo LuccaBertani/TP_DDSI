@@ -16,8 +16,8 @@ public class Estadisticas {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Embedded
-    private CantSolicitudesEliminacionSpam cantidadDeSpam;
+    @Column(name = "cantSolicitudesEliminacionSpam")
+    private Long cantidadDeSpam;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "categoriaCantidad_id", referencedColumnName = "id")
@@ -39,7 +39,7 @@ public class Estadisticas {
     @Column(name = "timestamp")
     private Instant timestamp;
 
-    public Estadisticas(CantSolicitudesEliminacionSpam cantidadDeSpam, CategoriaCantidad categoriaCantidad, List<CategoriaHora> categoriaHoras, List<CategoriaProvincia> categoriaProvincias, List<ColeccionProvincia> coleccionProvincias) {
+    public Estadisticas(Long cantidadDeSpam, CategoriaCantidad categoriaCantidad, List<CategoriaHora> categoriaHoras, List<CategoriaProvincia> categoriaProvincias, List<ColeccionProvincia> coleccionProvincias) {
         this.cantidadDeSpam = cantidadDeSpam;
         this.categoriaCantidad = categoriaCantidad;
         this.categoriaHoras = categoriaHoras;

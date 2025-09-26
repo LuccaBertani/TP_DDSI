@@ -33,6 +33,8 @@ public class ServicioDeEstadistica {
     @Async
     @Scheduled(cron = "${miapp.cron}")//tiempo en properties
     public void generarEstadistica(){
+
+        // Corregido
         // De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados?
         List<ColeccionProvincia> coleccionProvincias = datosQuery.obtenerMayorCantHechosProvinciaEnColeccion();
 
@@ -47,8 +49,9 @@ public class ServicioDeEstadistica {
         // ¿A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría?
         List<CategoriaHora> categoriaHoras = datosQuery.horaMayorCantHechos();
 
+        // Corregido
         // ¿Cuántas solicitudes de eliminación son spam?
-        CantSolicitudesEliminacionSpam cantidadDeSpam = datosQuery.cantSolicitudesEliminacionSpam();
+        Long cantidadDeSpam = datosQuery.cantSolicitudesEliminacionSpam();
         Estadisticas estadisticas = new Estadisticas(cantidadDeSpam,
             categoriaCantidad, categoriaHoras, categoriaProvincias, coleccionProvincias);
 
@@ -75,9 +78,7 @@ public Path obtenerEstadistica(int id) {
             String nombre = "estadisticaSpam.csv";
             header = List.of("totalSpam");
 
-            Integer total = Optional.ofNullable(snap.getCantidadDeSpam())
-                    .map(CantSolicitudesEliminacionSpam::getCantSolicitudesEliminacionSpam)
-                    .orElse(0);
+            Long total = snap.getCantidadDeSpam();
 
             valores = List.of(total);
             return LectorCSV.generarCsvDesdeListaLineal(valores, nombre, header);

@@ -10,11 +10,9 @@ import modulos.agregacion.repositories.DbMain.ICategoriaRepository;
 import modulos.agregacion.repositories.DbMain.IColeccionRepository;
 import modulos.agregacion.repositories.DbMain.IProvinciaRepository;
 import modulos.agregacion.repositories.DbDinamica.ISolicitudEliminarHechoRepository;
+import modulos.agregacion.repositories.DbMain.IUbicacionRepository;
 import modulos.agregacion.repositories.DbProxy.IHechosProxyRepository;
-import modulos.servicioEstadistica.entities.CategoriaCantidad;
-import modulos.servicioEstadistica.entities.CategoriaHora;
-import modulos.servicioEstadistica.entities.CategoriaProvincia;
-import modulos.servicioEstadistica.entities.ColeccionProvincia;
+import modulos.servicioEstadistica.entities.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -29,8 +27,9 @@ public class DatosQuery implements IDatosQuery{
     IHechosDinamicaRepository hechosDinamicaRepository;
     IHechosEstaticaRepository hechosEstaticaRepository;
     IHechosProxyRepository hechosProxyRepository;
+    IUbicacionRepository ubicacionRepository;
 
-    public DatosQuery(IColeccionRepository repoColeccion, IProvinciaRepository repoProvincia, ICategoriaRepository repoCategoria, ISolicitudEliminarHechoRepository repoSoliElimHecho, IHechosDinamicaRepository hechosDinamicaRepository, IHechosEstaticaRepository hechosEstaticaRepository, IHechosProxyRepository hechosProxyRepository) {
+    public DatosQuery(IUbicacionRepository ubicacionRepository, IColeccionRepository repoColeccion, IProvinciaRepository repoProvincia, ICategoriaRepository repoCategoria, ISolicitudEliminarHechoRepository repoSoliElimHecho, IHechosDinamicaRepository hechosDinamicaRepository, IHechosEstaticaRepository hechosEstaticaRepository, IHechosProxyRepository hechosProxyRepository) {
         this.repoColeccion = repoColeccion;
         this.repoProvincia = repoProvincia;
         this.repoCategoria = repoCategoria;
@@ -38,31 +37,112 @@ public class DatosQuery implements IDatosQuery{
         this.hechosDinamicaRepository = hechosDinamicaRepository;
         this.hechosEstaticaRepository = hechosEstaticaRepository;
         this.hechosProxyRepository = hechosProxyRepository;
+        this.ubicacionRepository = ubicacionRepository;
     }
 
     @Override
     public List<ColeccionProvincia> obtenerMayorCantHechosProvinciaEnColeccion() {
+        // De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados?
 
-        List<ColeccionProvinciaProjection> info = new ArrayList<>();
-        //List<ColeccionProvinciaProjection> info = repoColeccion.obtenerMayorCantHechosProvinciaEnColeccion().orElse(null);
-        if (info != null){
-            List<ColeccionProvincia> infos = new ArrayList<>();
+        List<Coleccion> colecciones = repoColeccion.findAllByActivoTrue();
 
-            for(ColeccionProvinciaProjection cpp : info){
+        List<ColeccionProvincia> coleccionProvincias = new ArrayList<>();
 
-                Coleccion coleccion = cpp.getColeccionId() != null ? repoColeccion.findById(cpp.getColeccionId()).orElse(null) : null;
-                Provincia provincia = cpp.getProvinciaId() != null ? repoProvincia.findById(cpp.getProvinciaId()).orElse(null) : null;
+        for (Coleccion coleccion : colecciones){
+            if (!coleccion.getHechos().isEmpty()){
+                List<Long> idsHechosEstatica = coleccion.getHechos().stream().
+                        filter(h->h.getKey().getFuente().equals(Fuente.ESTATICA))
+                        .map(h->h.getKey().getId()).toList();
+                List<Long> idsHechosDinamica = coleccion.getHechos().stream().
+                        filter(h->h.getKey().getFuente().equals(Fuente.DINAMICA))
+                        .map(h->h.getKey().getId()).toList();
+                List<Long> idsHechosProxy = coleccion.getHechos().stream().
+                        filter(h->h.getKey().getFuente().equals(Fuente.PROXY))
+                        .map(h->h.getKey().getId()).toList();
 
-                Long coleccion_id = coleccion != null ? coleccion.getId() : null;
-                Long provincia_id = provincia != null ? provincia.getId() : null;
+                List<ProvinciaCantidad> cantidadesXProvincia = new ArrayList<>();
 
-                ColeccionProvincia coleccionProvincia = new ColeccionProvincia(coleccion_id, provincia_id, cpp.getTotalHechos());
-                infos.add(coleccionProvincia);
+                for (Long idHechoEstatica: idsHechosEstatica){
+                    Long ubicacion_id = hechosEstaticaRepository.findUbicacionIdByHechoId(idHechoEstatica);
+
+                    Ubicacion ubicacion = ubicacionRepository.findById(ubicacion_id).orElse(null);
+                    if (ubicacion != null){
+                        Provincia provincia = ubicacion.getProvincia();
+                        if (provincia != null){
+                            Long provincia_id = provincia.getId();
+                           ProvinciaCantidad cantidadProvincia = cantidadesXProvincia.stream()
+                                    .filter(cp -> cp.getProvincia_id().equals(provincia_id))
+                                    .findAny()
+                                   .orElse(null);
+
+                            if (cantidadProvincia == null){
+                                cantidadesXProvincia.add(new ProvinciaCantidad(provincia_id));
+                            }
+                            else{
+                                cantidadProvincia.incrementarCantidad();
+                            }
+
+                        }
+                    }
+
+                }
+
+                for (Long idHechoDinamica: idsHechosDinamica){
+                    Long ubicacion_id = hechosDinamicaRepository.findUbicacionIdByHechoId(idHechoDinamica);
+
+                    Ubicacion ubicacion = ubicacionRepository.findById(ubicacion_id).orElse(null);
+                    if (ubicacion != null){
+                        Provincia provincia = ubicacion.getProvincia();
+                        if (provincia != null){
+                            Long provincia_id = provincia.getId();
+                            ProvinciaCantidad cantidadProvincia = cantidadesXProvincia.stream()
+                                    .filter(cp -> cp.getProvincia_id().equals(provincia_id))
+                                    .findAny()
+                                    .orElse(null);
+
+                            if (cantidadProvincia == null){
+                                cantidadesXProvincia.add(new ProvinciaCantidad(provincia_id));
+                            }
+                            else{
+                                cantidadProvincia.incrementarCantidad();
+                            }
+
+                        }
+                    }
+
+                }
+
+                for (Long idHechoProxy: idsHechosProxy){
+                    Long ubicacion_id = hechosProxyRepository.findUbicacionIdByHechoId(idHechoProxy);
+
+                    Ubicacion ubicacion = ubicacionRepository.findById(ubicacion_id).orElse(null);
+                    if (ubicacion != null){
+                        Provincia provincia = ubicacion.getProvincia();
+                        if (provincia != null){
+                            Long provincia_id = provincia.getId();
+                            ProvinciaCantidad cantidadProvincia = cantidadesXProvincia.stream()
+                                    .filter(cp -> cp.getProvincia_id().equals(provincia_id))
+                                    .findAny()
+                                    .orElse(null);
+
+                            if (cantidadProvincia == null){
+                                cantidadesXProvincia.add(new ProvinciaCantidad(provincia_id));
+                            }
+                            else{
+                                cantidadProvincia.incrementarCantidad();
+                            }
+
+                        }
+                    }
+
+                }
+                cantidadesXProvincia.sort(Comparator.comparing(ProvinciaCantidad::getCantidad).reversed());
+                ProvinciaCantidad resultadoFinalColeccion = cantidadesXProvincia.get(0);
+                coleccionProvincias.add(new ColeccionProvincia(coleccion.getId(), resultadoFinalColeccion.getProvincia_id(), resultadoFinalColeccion.getCantidad()));
             }
-
-            return infos;
         }
-        return null;
+
+        return coleccionProvincias;
     }
 
     @Override
@@ -182,9 +262,8 @@ public class DatosQuery implements IDatosQuery{
     }
 
     @Override
-    public CantSolicitudesEliminacionSpam cantSolicitudesEliminacionSpam() {
-        CantSolicitudesSpamProjection info = repoSoliElimHecho.obtenerCantSolicitudesEliminacionSpam();
-        return new CantSolicitudesEliminacionSpam(info.getTotalSpam());
+    public Long cantSolicitudesEliminacionSpam() {
+        return repoSoliElimHecho.obtenerCantSolicitudesEliminacionSpam();
     }
 }
 

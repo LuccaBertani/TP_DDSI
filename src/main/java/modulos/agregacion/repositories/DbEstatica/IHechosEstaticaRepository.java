@@ -5,6 +5,7 @@ import modulos.agregacion.entities.DbMain.Hecho;
 import modulos.agregacion.entities.DbMain.projections.CategoriaCantidadProjection;
 import modulos.agregacion.entities.DbMain.projections.CategoriaProvinciaProjection;
 import modulos.agregacion.entities.DbMain.projections.HoraCategoriaProjection;
+import modulos.servicioEstadistica.entities.ProvinciaCantidad;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -107,5 +108,11 @@ LIMIT 1;
     """, nativeQuery = true)
     Long findCantHechosIgualTituloDiferentesAtributos(@Param("hecho_id") Long hechoId);
 
+
+
+    @Query(value = """
+        select h.atributosHecho.ubicacion_id from HechoEstatica h where h.id = :hecho_id
+""")
+    Long findUbicacionIdByHechoId(@Param("hecho_id") Long hecho_id);
 
 }
