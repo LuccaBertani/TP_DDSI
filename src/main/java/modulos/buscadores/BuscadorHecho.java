@@ -85,6 +85,14 @@ public class BuscadorHecho {
         return this.hechoRepoProxy.findAllByNombreNormalizado(elemento);
     }
 
+    public Long findCantDatasetsHecho(Long hecho_id){
+        return this.hechoRepoEstatica.findCantDatasetsHecho(hecho_id);
+    }
+
+    public Long findCantHechosIgualTituloDiferentesAtributos(Long hecho_id){
+        return this.hechoRepoEstatica.findCantHechosIgualTituloDiferentesAtributos(hecho_id);
+    }
+
 
     private static boolean normEq(String a, String b) {
         // Evita NPE dentro del normalizador

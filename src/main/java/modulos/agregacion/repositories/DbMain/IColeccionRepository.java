@@ -20,6 +20,11 @@ public interface IColeccionRepository extends JpaRepository<Coleccion, Long> {
     List<Coleccion> findAllByActivoTrue();
 
     @Query("""
+    SELECT c FROM Coleccion c where c.activo = true and c.modificado = true
+    """)
+    List<Coleccion> findAllByActivoTrueAndModificadoTrue();
+
+    @Query("""
     SELECT c FROM Coleccion c where c.id = :id_coleccion
     """)
     Optional<Coleccion> findByIdAndActivoTrue(@Param("id_coleccion") Long idColeccion);

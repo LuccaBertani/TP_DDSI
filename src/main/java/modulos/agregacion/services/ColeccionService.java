@@ -54,7 +54,8 @@ public class ColeccionService  {
                             IHechosDinamicaRepository hechosDinamicaRepository,
                             IHechosProxyRepository hechosProxyRepository,
                             BuscadoresRegistry buscadores,
-                            IHechoRefRepository hechoRefRepository) {
+                            IHechoRefRepository hechoRefRepository,
+                            IDatasetsRepository datasetsRepository) {
         this.coleccionesRepo = coleccionesRepo;
         this.usuariosRepo = usuariosRepo;
         this.datasetsRepo = datasetsRepo;
@@ -304,14 +305,10 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
     }
 
     @Scheduled(cron = "0 0 3 * * *")
-    public void setearHechosConsensuados(){
+    public void ejecutarAlgoritmoConsenso(){
         List<Coleccion> colecciones = coleccionesRepo.findAllByActivoTrue();
         List<Dataset> datasets = datasetsRepo.findAll();
-        this.ejecutarAlgoritmoConsenso(colecciones, datasets);
-    }
-
-    private void ejecutarAlgoritmoConsenso(List<Coleccion> colecciones, List<Dataset> datasets){
-        colecciones.forEach(coleccion->coleccion.getAlgoritmoConsenso().ejecutarAlgoritmoConsenso(datasets, coleccion));
+        colecciones.forEach(coleccion->coleccion.getAlgoritmoConsenso().ejecutarAlgoritmoConsenso(buscadores.getBuscadorHecho(), datasets, coleccion));
     }
 
     public ResponseEntity<?> modificarAlgoritmoConsenso(ModificarConsensoInputDTO input) {
