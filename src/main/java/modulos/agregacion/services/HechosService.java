@@ -1,15 +1,10 @@
 package modulos.agregacion.services;
 
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Subquery;
 import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
-import modulos.agregacion.entities.DbMain.contenidoMultimedia.ContenidoMultimedia;
+import modulos.agregacion.entities.atributosHecho.ContenidoMultimedia;
 import modulos.agregacion.entities.DbMain.filtros.*;
-import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
 import modulos.agregacion.entities.DbProxy.HechoProxy;
 import modulos.agregacion.entities.HechoMemoria;
 import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;

@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import modulos.agregacion.entities.DbMain.Fuente;
-import modulos.agregacion.entities.DbMain.contenidoMultimedia.ContenidoMultimedia;
 
 import java.time.ZonedDateTime;
 import java.util.List;

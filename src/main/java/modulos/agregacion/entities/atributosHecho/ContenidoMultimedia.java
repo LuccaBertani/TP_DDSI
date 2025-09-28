@@ -1,9 +1,7 @@
-package modulos.agregacion.entities.DbMain.contenidoMultimedia;
+package modulos.agregacion.entities.atributosHecho;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
-import modulos.agregacion.entities.atributosHecho.TipoContenido;
 
 @Embeddable
 @Data
