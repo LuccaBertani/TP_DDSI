@@ -7,6 +7,7 @@ import jakarta.persistence.criteria.Subquery;
 import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
+import modulos.agregacion.entities.DbMain.contenidoMultimedia.ContenidoMultimedia;
 import modulos.agregacion.entities.DbMain.filtros.*;
 import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
 import modulos.agregacion.entities.DbProxy.HechoProxy;
@@ -21,6 +22,7 @@ import modulos.agregacion.entities.DbEstatica.Dataset;
 import modulos.buscadores.*;
 import modulos.shared.dtos.input.*;
 import modulos.shared.utils.FormateadorHechoMemoria;
+import modulos.shared.utils.GestorArchivos;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
@@ -478,4 +480,28 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         };
     }
 
+    public ResponseEntity<?> subirArchivo(MultipartFile file, Long idHecho, Long idUsuario) throws IOException {
+
+        HechoDinamica hecho = hechosDinamicaRepo.findById(idHecho).orElse(null);
+
+        if(hecho == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        if (!Objects.equals(hecho.getUsuario_id(), idUsuario)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String url = GestorArchivos.guardarArchivo(file);
+
+        ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
+
+        contenidoMultimedia.setUrl(url);
+        contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
+        hecho.getAtributosHecho().getContenidosMultimedia().add(contenidoMultimedia);
+
+        hechosDinamicaRepo.save(hecho);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(contenidoMultimedia.getId());
+    }
 }

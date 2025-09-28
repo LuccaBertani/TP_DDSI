@@ -6,8 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import modulos.agregacion.entities.DbMain.Fuente;
+import modulos.agregacion.entities.DbMain.contenidoMultimedia.ContenidoMultimedia;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Data
 @Embeddable
@@ -27,9 +29,9 @@ public class AtributosHecho {
     @Column(name = "fechaAcontecimiento")
     private ZonedDateTime fechaAcontecimiento;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipoContenidoMultimedia", length = 20)
-    private TipoContenido contenidoMultimedia;
+    @ElementCollection
+    @CollectionTable(name = "contenidoMultimedia", joinColumns = @JoinColumn(name = "hecho_id"))
+    private List<ContenidoMultimedia> contenidosMultimedia;
 
     @Column(name = "categoria_id")
     private Long categoria_id;

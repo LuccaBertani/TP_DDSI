@@ -1,6 +1,7 @@
 package modulos.agregacion.controllers;
 
 import jakarta.validation.Valid;
+import modulos.agregacion.entities.DbMain.Fuente;
 import modulos.agregacion.services.HechosService;
 import modulos.shared.dtos.input.*;
 import org.springframework.http.MediaType;
@@ -36,6 +37,12 @@ public class HechosController {
             @RequestPart("file") MultipartFile file) throws IOException {
         return hechosService.importarHechos(dtoInput, file);
     }
+    //TODO supongo que es solo fuente dinamica
+    @PostMapping("/subir")
+    public ResponseEntity<?> subirArchivo(@RequestParam("file") MultipartFile file, @RequestParam Long id_hecho, @RequestParam Long id_usuario, @RequestParam Fuente fuente) throws IOException {
+        return hechosService.subirArchivo(file, id_hecho, id_usuario);
+    }
+
 
     //anda
     // todos los hechos del sistema
