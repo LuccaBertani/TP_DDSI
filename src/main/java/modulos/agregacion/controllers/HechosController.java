@@ -24,7 +24,7 @@ public class HechosController {
 
     //anda
     @PostMapping("/subir")
-    public ResponseEntity<?> subirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput){
+    public ResponseEntity<?> subirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput) throws IOException {
         return hechosService.subirHecho(dtoInput); // 201 o 401
     }
 

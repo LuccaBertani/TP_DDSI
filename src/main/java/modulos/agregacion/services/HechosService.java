@@ -122,7 +122,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
     //lo sube un administrador (lo considero carga dinamica)
     @Transactional
-    public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO dtoInput) {
+    public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO dtoInput) throws IOException {
 
         if(dtoInput.getTitulo() == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -150,9 +150,24 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         hecho.getAtributosHecho().setFuente(Fuente.DINAMICA);
         hecho.getAtributosHecho().setFechaCarga(ZonedDateTime.now());
         hecho.getAtributosHecho().setFechaUltimaActualizacion(hecho.getAtributosHecho().getFechaCarga());
+
+        for(MultipartFile contenidoMultimedia : dtoInput.getContenidosMultimedia()){
+            this.guardarContenidoMultimedia(contenidoMultimedia, hecho);
+        }
+
         hechosDinamicaRepo.save(hecho);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    private void guardarContenidoMultimedia(MultipartFile file, Hecho hecho) throws IOException {
+        String url = GestorArchivos.guardarArchivo(file);
+
+        ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
+
+        contenidoMultimedia.setUrl(url);
+        contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
+        hecho.getAtributosHecho().getContenidosMultimedia().add(contenidoMultimedia);
     }
 
     @Transactional
@@ -487,16 +502,10 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        String url = GestorArchivos.guardarArchivo(file);
-
-        ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
-
-        contenidoMultimedia.setUrl(url);
-        contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
-        hecho.getAtributosHecho().getContenidosMultimedia().add(contenidoMultimedia);
+        this.guardarContenidoMultimedia(file, hecho);
 
         hechosDinamicaRepo.save(hecho);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(contenidoMultimedia.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(hecho.getAtributosHecho().getContenidosMultimedia().get(hecho.getAtributosHecho().getContenidosMultimedia().size() - 1).getId());
     }
 }
