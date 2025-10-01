@@ -1,9 +1,11 @@
 package modulos.agregacion.entities.DbMain.filtros;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
 import lombok.Getter;
 import modulos.agregacion.entities.DbMain.Hecho;
+import modulos.agregacion.entities.atributosHecho.ContenidoMultimedia;
 import modulos.agregacion.entities.atributosHecho.TipoContenido;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -27,15 +29,19 @@ public class FiltroContenidoMultimedia extends Filtro {
 
     @Override
     public Boolean aprobarHecho(Hecho hecho) {
-        return tipoContenido.equals(hecho.getAtributosHecho().getContenidoMultimedia());
+        return hecho.getAtributosHecho().getContenidosMultimedia().stream().anyMatch(contenidoMultimedia -> contenidoMultimedia.getTipo().equals(this.tipoContenido));
     }
 
     @Override
     public <T> Specification<T> toSpecification(Class<T> clazz) {
-        return((root, query, cb) -> {
-            Path<Long> pathId = root.get("atributosHecho").get("contenidoMultimedia");
-            return cb.equal(pathId,this.tipoContenido);
-        });
+        return (root, query, cb) -> {
+            // join a la lista de contenidos
+            Join<Object, Object> joinContenidos = root
+                    .join("atributosHecho")
+                    .join("contenidosMultimedia");
+            // condicion: tipo == this.tipoContenido
+            return cb.equal(joinContenidos.get("tipo"), this.tipoContenido);
+        };
     }
 
 }

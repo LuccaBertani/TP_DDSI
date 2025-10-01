@@ -24,7 +24,7 @@ public class HechoMemoria {
 
     private AtributosHechoMemoria atributosHecho;
 
-    private List<AtributosHechoModificarMemoria> atributosHechoAModificar;
+    private List<AtributosHechoModificar> atributosHechoAModificar;
 
     private List<Dataset> datasets;
 

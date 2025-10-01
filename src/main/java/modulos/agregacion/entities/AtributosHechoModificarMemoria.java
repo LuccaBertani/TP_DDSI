@@ -1,14 +1,17 @@
 package modulos.agregacion.entities;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import modulos.agregacion.entities.DbMain.Categoria;
 import modulos.agregacion.entities.DbMain.Ubicacion;
+import modulos.agregacion.entities.atributosHecho.ContenidoMultimedia;
 import modulos.agregacion.entities.atributosHecho.TipoContenido;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Builder
 @Data
@@ -21,8 +24,9 @@ public class AtributosHechoModificarMemoria {
 
     private String descripcion;
 
-    private TipoContenido contenidoMultimedia;
+    private List<ContenidoMultimedia> contenidoMultimediaAgregar;
 
+    private List<Long> contenidoMultimediaEliminar;
 
     private ZonedDateTime fechaAcontecimiento;
 

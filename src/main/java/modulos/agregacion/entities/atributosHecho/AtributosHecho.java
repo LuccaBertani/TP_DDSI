@@ -28,8 +28,8 @@ public class AtributosHecho {
     @Column(name = "fechaAcontecimiento")
     private ZonedDateTime fechaAcontecimiento;
 
-    @ElementCollection
-    @CollectionTable(name = "contenidoMultimedia", joinColumns = @JoinColumn(name = "hecho_id"))
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @JoinColumn(name = "id_hecho")
     private List<ContenidoMultimedia> contenidosMultimedia;
 
     @Column(name = "categoria_id")

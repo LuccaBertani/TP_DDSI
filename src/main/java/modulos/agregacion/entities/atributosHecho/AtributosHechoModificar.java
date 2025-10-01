@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 
 @Data
@@ -25,9 +26,12 @@ public class AtributosHechoModificar {
     @Column(name = "descripcion")
     private String descripcion;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipoContenidoMultimedia", length = 20)
-    private TipoContenido contenidoMultimedia;
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @JoinColumn(name = "id_hechoModificar")
+    private List<ContenidoMultimedia> contenidoMultimediaAgregar;
+
+    @ElementCollection
+    private List<Long> contenidoMultimediaEliminar;
 
     @Column(name = "fechaAcontecimiento")
     private ZonedDateTime fechaAcontecimiento;

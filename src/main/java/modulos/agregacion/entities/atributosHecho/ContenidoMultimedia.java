@@ -3,7 +3,7 @@ package modulos.agregacion.entities.atributosHecho;
 import jakarta.persistence.*;
 import lombok.Data;
 
-@Embeddable
+@Entity
 @Data
 public class ContenidoMultimedia {
 

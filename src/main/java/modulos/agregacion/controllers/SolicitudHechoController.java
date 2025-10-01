@@ -6,6 +6,8 @@ import modulos.shared.dtos.input.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/solicitud-hecho")
 public class SolicitudHechoController {
@@ -36,7 +38,7 @@ public class SolicitudHechoController {
 
     // Anda
     @PostMapping("/subir-hecho")
-    public ResponseEntity<?> enviarSolicitudSubirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput){
+    public ResponseEntity<?> enviarSolicitudSubirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput) throws IOException {
         return solicitudHechoService.solicitarSubirHecho(dtoInput); // 200 o 401
     }
 
@@ -48,7 +50,7 @@ public class SolicitudHechoController {
 
     // Anda
     @PostMapping("/modificar-hecho")
-    public ResponseEntity<?> enviarSolicitudModificarHecho(@Valid @RequestBody SolicitudHechoModificarInputDTO dtoInput){
+    public ResponseEntity<?> enviarSolicitudModificarHecho(@Valid @RequestBody SolicitudHechoModificarInputDTO dtoInput) throws IOException {
         return solicitudHechoService.solicitarModificacionHecho(dtoInput); // 200, 401 o 409 (recurso ya modificado)
     }
 

@@ -9,6 +9,7 @@ import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
 import modulos.agregacion.entities.DbProxy.HechoProxy;
 import modulos.agregacion.entities.atributosHecho.AtributosHechoModificar;
 import modulos.agregacion.entities.DbMain.projections.SolicitudHechoProjection;
+import modulos.agregacion.entities.atributosHecho.ContenidoMultimedia;
 import modulos.agregacion.entities.atributosHecho.TipoContenido;
 import modulos.agregacion.repositories.DbDinamica.*;
 import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
@@ -24,12 +25,16 @@ import modulos.shared.dtos.output.SolicitudHechoOutputDTO;
 import modulos.shared.utils.DetectorDeSpam;
 import modulos.shared.utils.FechaParser;
 import modulos.agregacion.entities.fuentes.FuenteDinamica;
+import modulos.shared.utils.GestorArchivos;
 import modulos.shared.utils.GestorRoles;
 import modulos.agregacion.entities.DbMain.usuario.Rol;
 import modulos.agregacion.entities.DbMain.usuario.Usuario;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -103,7 +108,7 @@ public class SolicitudHechoService {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
     }
 
-    public ResponseEntity<?> solicitarSubirHecho(SolicitudHechoInputDTO dto) {
+    public ResponseEntity<?> solicitarSubirHecho(SolicitudHechoInputDTO dto) throws IOException {
 
         // Los visualizadores o contribuyentes llaman al metodo, no los admins
         ResponseEntity<?> rta = this.checkeoNoAdmin(dto.getId_usuario());
@@ -119,11 +124,21 @@ public class SolicitudHechoService {
         Ubicacion ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
         Long ubicacion_id = ubicacion != null ? ubicacion.getId() : null;
 
-        HechosData hechosData = new HechosData(dto.getTitulo(), dto.getDescripcion(), dto.getFechaAcontecimiento(),dto.getTipoContenido(), categoria_id, ubicacion_id,
-                dto.getLatitud(), dto.getLongitud());
+        List<ContenidoMultimedia> contenidosMultimedia = new ArrayList<>();
+
+        for(MultipartFile file : dto.getContenidosMultimedia()) {
+
+            String url = GestorArchivos.guardarArchivo(file);
+
+            ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
+
+            contenidoMultimedia.setUrl(url);
+            contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
+            contenidosMultimedia.add(contenidoMultimedia);
+        }
 
         FuenteDinamica fuenteDinamica = new FuenteDinamica();
-        HechoDinamica hecho = fuenteDinamica.crearHecho(hechosData);
+        HechoDinamica hecho = fuenteDinamica.crearHecho(dto, contenidosMultimedia, categoria_id, ubicacion_id);
 
         Usuario usuario = (Usuario)rta.getBody();
         SolicitudSubirHecho solicitudHecho = new SolicitudSubirHecho(usuario.getId(), hecho);
@@ -174,7 +189,7 @@ public class SolicitudHechoService {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    public ResponseEntity<?> solicitarModificacionHecho(SolicitudHechoModificarInputDTO dto){
+    public ResponseEntity<?> solicitarModificacionHecho(SolicitudHechoModificarInputDTO dto) throws IOException {
 
         ResponseEntity<?> rta = checkeoContribuyente(dto.getId_usuario());
 
@@ -232,10 +247,24 @@ public class SolicitudHechoService {
             atributos.setFechaAcontecimiento(FechaParser.parsearFecha(fechaStr));
         });
 
-        Optional.ofNullable(dto.getTipoContenido()).ifPresent(contenido -> {
-           atributos.setContenidoMultimedia(TipoContenido.fromCodigo(dto.getTipoContenido()));
-        });
+        List<ContenidoMultimedia> contenidosMultimediaParaAgregar = new ArrayList<>();
 
+        if(dto.getContenidosMultimediaParaAgregar() != null) {
+            for (MultipartFile file : dto.getContenidosMultimediaParaAgregar()) {
+
+                String url = GestorArchivos.guardarArchivo(file);
+
+                ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
+
+                contenidoMultimedia.setUrl(url);
+                contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
+                contenidosMultimediaParaAgregar.add(contenidoMultimedia);
+            }
+
+            atributos.setContenidoMultimediaAgregar(contenidosMultimediaParaAgregar);
+
+        }
+        Optional.ofNullable(dto.getContenidosMultimediaAEliminar()).ifPresent(atributos::setContenidoMultimediaEliminar);
         Optional.ofNullable(dto.getDescripcion()).ifPresent(atributos::setDescripcion);
         hecho.getAtributosHechoAModificar().add(atributos);
         solicitud.setAtributosAshei(atributos);
@@ -359,7 +388,19 @@ public class SolicitudHechoService {
         Optional.ofNullable(atributos.getFechaAcontecimiento()).ifPresent(hecho.getAtributosHecho()::setFechaAcontecimiento);
         Optional.ofNullable(atributos.getTitulo()).ifPresent(hecho.getAtributosHecho()::setTitulo);
         Optional.ofNullable(atributos.getUbicacion_id()).ifPresent(hecho.getAtributosHecho()::setUbicacion_id);
-        Optional.ofNullable(atributos.getContenidoMultimedia()).ifPresent(hecho.getAtributosHecho()::setContenidoMultimedia);
+
+        if(atributos.getContenidoMultimediaAgregar() != null){
+            hecho.getAtributosHecho().getContenidosMultimedia().addAll(atributos.getContenidoMultimediaAgregar());
+        }
+        if (atributos.getContenidoMultimediaEliminar() != null){
+            hecho.getAtributosHecho().getContenidosMultimedia()
+                    .removeIf(contenidoMultimedia ->
+                            atributos.getContenidoMultimediaEliminar()
+                                    .contains(contenidoMultimedia.getId())
+                    );
+        }
+
+
         Optional.ofNullable(atributos.getLatitud()).ifPresent(hecho.getAtributosHecho()::setLatitud);
         Optional.ofNullable(atributos.getLongitud()).ifPresent(hecho.getAtributosHecho()::setLongitud);
     }

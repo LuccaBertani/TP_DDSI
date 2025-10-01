@@ -3,6 +3,9 @@ package modulos.shared.dtos.input;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Data
 public class SolicitudHechoModificarInputDTO { //datos del hecho y el id del usuario
@@ -12,7 +15,8 @@ public class SolicitudHechoModificarInputDTO { //datos del hecho y el id del usu
     private Long id_hecho; // Id del hecho que se quiere modificar
     private String titulo;
     private String descripcion;
-    private Integer tipoContenido;
+    private List<MultipartFile> contenidosMultimediaParaAgregar;
+    private List<Long> contenidosMultimediaAEliminar;
     private String fechaAcontecimiento;
     private Double latitud;
     private Double longitud;

@@ -26,7 +26,7 @@ import java.util.List;
 
 public class FormateadorHecho {
 
-
+/* FUNCIONES ÑOQUI
     public static <T extends Hecho> T formatearHechoBDD(HechoMemoria hecho, Class<T> tipo){
         AtributosHecho atributos = AtributosHecho.builder()
                 .categoria_id(hecho.getAtributosHecho().getCategoria().getId())
@@ -38,7 +38,7 @@ public class FormateadorHecho {
                 .origen(hecho.getAtributosHecho().getOrigen())
                 .fechaAcontecimiento(hecho.getAtributosHecho().getFechaAcontecimiento())
                 .fechaUltimaActualizacion(hecho.getAtributosHecho().getFechaUltimaActualizacion())
-                .contenidoMultimedia(hecho.getAtributosHecho().getContenidoMultimedia())
+                .contenidosMultimedia(hecho.getAtributosHecho().getContenidoMultimedia())
                 .titulo(hecho.getAtributosHecho().getTitulo())
                 .ubicacion_id(hecho.getAtributosHecho().getUbicacion().getId())
                 .build();
@@ -110,7 +110,7 @@ public class FormateadorHecho {
                 .origen(hecho.getAtributosHecho().getOrigen())
                 .fechaAcontecimiento(hecho.getAtributosHecho().getFechaAcontecimiento())
                 .fechaUltimaActualizacion(hecho.getAtributosHecho().getFechaUltimaActualizacion())
-                .contenidoMultimedia(hecho.getAtributosHecho().getContenidoMultimedia())
+                .contenidosMultimedia(hecho.getAtributosHecho().getContenidoMultimedia())
                 .titulo(hecho.getAtributosHecho().getTitulo())
                 .ubicacion_id(hecho.getAtributosHecho().getUbicacion().getId())
                 .build();
@@ -184,7 +184,7 @@ public class FormateadorHecho {
                 .origen(hecho.getAtributosHecho().getOrigen())
                 .fechaAcontecimiento(hecho.getAtributosHecho().getFechaAcontecimiento())
                 .fechaUltimaActualizacion(hecho.getAtributosHecho().getFechaUltimaActualizacion())
-                .contenidoMultimedia(hecho.getAtributosHecho().getContenidoMultimedia())
+                .contenidosMultimedia(hecho.getAtributosHecho().getContenidoMultimedia())
                 .titulo(hecho.getAtributosHecho().getTitulo())
                 .ubicacion_id(hecho.getAtributosHecho().getUbicacion().getId())
                 .build();
@@ -227,7 +227,7 @@ public class FormateadorHecho {
                 .origen(hecho.getAtributosHecho().getOrigen())
                 .fechaAcontecimiento(hecho.getAtributosHecho().getFechaAcontecimiento())
                 .fechaUltimaActualizacion(hecho.getAtributosHecho().getFechaUltimaActualizacion())
-                .contenidoMultimedia(hecho.getAtributosHecho().getContenidoMultimedia())
+                .contenidosMultimedia(hecho.getAtributosHecho().getContenidoMultimedia())
                 .titulo(hecho.getAtributosHecho().getTitulo())
                 .ubicacion_id(hecho.getAtributosHecho().getUbicacion().getId())
                 .build();
@@ -269,7 +269,7 @@ public class FormateadorHecho {
                 .origen(hecho.getAtributosHecho().getOrigen())
                 .fechaAcontecimiento(hecho.getAtributosHecho().getFechaAcontecimiento())
                 .fechaUltimaActualizacion(hecho.getAtributosHecho().getFechaUltimaActualizacion())
-                .contenidoMultimedia(hecho.getAtributosHecho().getContenidoMultimedia())
+                .contenidosMultimedia(hecho.getAtributosHecho().getContenidoMultimedia())
                 .titulo(hecho.getAtributosHecho().getTitulo())
                 .ubicacion_id(hecho.getAtributosHecho().getUbicacion().getId())
                 .build();
@@ -300,7 +300,7 @@ public class FormateadorHecho {
                 .build();
     }
 
-
+*/
 
     public static AtributosHecho formatearAtributosHecho(BuscadoresRegistry buscadores, SolicitudHechoInputDTO dtoInput){
 
@@ -347,11 +347,6 @@ public class FormateadorHecho {
         atributos.setFechaAcontecimiento(FechaParser.parsearFecha(dtoInput.getFechaAcontecimiento()));
     }else{
         atributos.setFechaAcontecimiento(null);
-    }
-    if(dtoInput.getTipoContenido() != null){
-        atributos.setContenidoMultimedia(TipoContenido.fromCodigo(dtoInput.getTipoContenido()));
-    }else{
-        atributos.setContenidoMultimedia(TipoContenido.INVALIDO);
     }
 
     atributos.setOrigen(Origen.CARGA_MANUAL);

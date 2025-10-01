@@ -30,26 +30,12 @@ public class FormateadorHechoMemoria {
                 .origen(hecho.getAtributosHecho().getOrigen())
                 .fechaAcontecimiento(hecho.getAtributosHecho().getFechaAcontecimiento())
                 .fechaUltimaActualizacion(hecho.getAtributosHecho().getFechaUltimaActualizacion())
-                .contenidoMultimedia(hecho.getAtributosHecho().getContenidoMultimedia())
+                .contenidoMultimedia(hecho.getAtributosHecho().getContenidosMultimedia())
                 .titulo(hecho.getAtributosHecho().getTitulo())
                 .ubicacion(buscadores.getBuscadorUbicacion().buscarUbicacion(hecho.getAtributosHecho().getUbicacion_id()))
                 .build();
 
-        List<AtributosHechoModificarMemoria> listaAtributosHechoModificar = new ArrayList<>();
-
-        for (AtributosHechoModificar atributosModificar : hecho.getAtributosHechoAModificar()){
-                AtributosHechoModificarMemoria atributos123 = AtributosHechoModificarMemoria.builder().
-                        id(atributosModificar.getId()).
-                        latitud(atributosModificar.getLatitud()).longitud(atributosModificar.getLongitud())
-                        .categoria(buscadores.getBuscadorCategoria().buscar(atributosModificar.getCategoria_id()))
-                        .titulo(atributosModificar.getTitulo())
-                        .contenidoMultimedia(atributosModificar.getContenidoMultimedia()).descripcion(atributosModificar.getDescripcion())
-                        .fechaAcontecimiento(atributosModificar.getFechaAcontecimiento())
-                        .ubicacion(buscadores.getBuscadorUbicacion().buscarUbicacion(atributosModificar.getUbicacion_id()))
-                        .build();
-
-            listaAtributosHechoModificar.add(atributos123);
-        }
+        List<AtributosHechoModificar> listaAtributosHechoModificar = hecho.getAtributosHechoAModificar();
 
         HechoMemoria hecho123 = HechoMemoria.builder().
                 id(hecho.getId()).
