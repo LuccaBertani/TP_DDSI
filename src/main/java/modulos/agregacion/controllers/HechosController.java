@@ -38,7 +38,7 @@ public class HechosController {
         return hechosService.importarHechos(dtoInput, file);
     }
     //TODO supongo que es solo fuente dinamica
-    @PostMapping("/subir")
+    @PostMapping("/subir-archivo")
     public ResponseEntity<?> subirArchivo(@RequestParam("file") MultipartFile file, @RequestParam Long id_hecho, @RequestParam Long id_usuario, @RequestParam Fuente fuente) throws IOException {
         return hechosService.subirArchivo(file, id_hecho, id_usuario);
     }
