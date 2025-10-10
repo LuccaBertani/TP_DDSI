@@ -5,5 +5,6 @@ import lombok.Data;
 @Data
 public class LoginResponse {
     private String token;
-    private
+    // TODO lucca deforme
+    //private
 }

@@ -125,16 +125,18 @@ public class FuenteProxy {
                         coleccion.setDescripcion(coleccionResponse.getDescripcion());
                         coleccion.setActivo(true);
                         coleccion.setModificado(true);
-                        coleccion.setCriterios(FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccion(buscadores, coleccionResponse.getCriterios())));
+                        // TODO lucca deforme
+                        //coleccion.setCriterios(FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccion(buscadores, coleccionResponse.getCriterios())));
 
-                        List<Hecho> hechos = this.getHechosDeColeccionMetaMapa(coleccionResponse.getCriterios(), buscadores);
-                        List<HechoRef> hechosRef = new ArrayList<>();
+                        
+                        //List<Hecho> hechos = this.getHechosDeColeccionMetaMapa(coleccionResponse.getCriterios(), buscadores);
+                        /*List<HechoRef> hechosRef = new ArrayList<>();
                         for (Hecho h : hechos){
                             h.getAtributosHecho().setFuente(Fuente.PROXY);
                             hechosRef.add(new HechoRef(h.getId(), Fuente.PROXY));
                         }
                         coleccion.setHechos(hechosRef);
-                        colecciones.add(coleccion);
+                        colecciones.add(coleccion);*/
                     }
                     return colecciones;
                 });
