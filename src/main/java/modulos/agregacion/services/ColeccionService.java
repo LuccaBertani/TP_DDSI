@@ -136,7 +136,6 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             dto.setId(coleccion.getId());
             dto.setTitulo(coleccion.getTitulo());
             dto.setDescripcion(coleccion.getDescripcion());
-
             ProxyDTO criterios = FormateadorHecho.filtrosColeccionToString(coleccion.getCriterios());
             dto.setCriterios(criterios);
             listaDTO.add(dto);

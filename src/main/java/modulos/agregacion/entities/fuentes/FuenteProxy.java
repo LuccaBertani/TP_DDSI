@@ -4,9 +4,12 @@ import modulos.agregacion.entities.DbMain.*;
 import modulos.agregacion.entities.DbMain.filtros.*;
 import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
 import modulos.agregacion.entities.DbProxy.HechoProxy;
+import modulos.agregacion.entities.atributosHecho.AtributosHecho;
 import modulos.agregacion.entities.atributosHecho.ContenidoMultimedia;
 import modulos.agregacion.entities.atributosHecho.Origen;
 import modulos.agregacion.entities.fuentes.Requests.*;
+import modulos.shared.dtos.output.ColeccionOutputDTO;
+import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.shared.utils.FormateadorHecho;
 import modulos.buscadores.*;
 import modulos.shared.dtos.input.*;
@@ -23,6 +26,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpHeaders;
@@ -30,6 +34,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 public class FuenteProxy {
@@ -59,7 +64,7 @@ public class FuenteProxy {
     }
 
         public Mono<List<Hecho>> getHechos(BuscadoresRegistry buscadores, String token) {
-
+        //TODO no se si esta bien que el token vaya en el query param
             List<Hecho> hechos = new ArrayList<>();
 
                 return webClient.get()
@@ -115,177 +120,132 @@ public class FuenteProxy {
 
         List<Coleccion> colecciones = new ArrayList<>();
 
-        return webClientMetaMapa.get().uri("/get-all")
+        return webClientMetaMapa.get().uri("/api/coleccion/get-all")
                 .retrieve()
                 .bodyToMono(ColeccionesResponse.class)
                 .map(coleccionesResponse -> {
-                    for(ColeccionResponse coleccionResponse : coleccionesResponse.getColecciones()){
+                    for(ColeccionOutputDTO coleccionResponse : coleccionesResponse.getColecciones()){
                         Coleccion coleccion = new Coleccion();
                         coleccion.setTitulo(coleccionResponse.getTitulo());
                         coleccion.setDescripcion(coleccionResponse.getDescripcion());
                         coleccion.setActivo(true);
                         coleccion.setModificado(true);
                         coleccion.setCriterios(FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccion(buscadores, coleccionResponse.getCriterios())));
-
-                        List<Hecho> hechos = this.getHechosDeColeccionMetaMapa(coleccionResponse.getCriterios(), buscadores);
-                        List<HechoRef> hechosRef = new ArrayList<>();
-                        for (Hecho h : hechos){
-                            h.getAtributosHecho().setFuente(Fuente.PROXY);
-                            hechosRef.add(new HechoRef(h.getId(), Fuente.PROXY));
-                        }
-                        coleccion.setHechos(hechosRef);
-                        colecciones.add(coleccion);
+                        //TODO falta ver como verga se recibe lo de navegacion curada, me dio paja y lo hardcodee en true
+                        Mono<List<HechoRef>> hechosRefMono = this.getHechosDeColeccionMetaMapa(
+                                coleccionResponse.getCriterios(),
+                                true,
+                                coleccionResponse.getId(),
+                                buscadores
+                        ).map(hechosList -> {
+                            List<HechoRef> hechosRef = new ArrayList<>();
+                            for (Hecho h : hechosList) {
+                                h.getAtributosHecho().setFuente(Fuente.PROXY);
+                                hechosRef.add(new HechoRef(h.getId(), Fuente.PROXY));
+                            }
+                            coleccion.setHechos(hechosRef);
+                            colecciones.add(coleccion);
+                            return hechosRef;
+                        });
                     }
                     return colecciones;
                 });
     }
 
-    public List<Hecho> getHechosMetaMapa(String url_1, FiltroHechosDTO filtros, BuscadoresRegistry buscadores){
+    public Mono<List<Hecho>> getHechosMetaMapa(BuscadoresRegistry buscadores){
 
-        try {
-            String urlStr = url_1 + "/get";
-            URL url = new URL(urlStr);
-            HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
-            conexion.setRequestMethod("GET");
+        List<Hecho> hechos = new ArrayList<>();
 
-            conexion.setRequestProperty("Content-Type", "application/json");
+        return webClientMetaMapa.get().uri("/api/hechos/get-all")
+                .retrieve()
+                .bodyToMono(HechosMetamapaResponse.class)
+                .map(hechosResponse -> {
+                            for (VisualizarHechosOutputDTO hechoDto : hechosResponse.getHechos()) {
+                                Hecho hecho = new HechoProxy();
+                                hecho.setAtributosHecho(new AtributosHecho());
+                                hecho.getAtributosHecho().setFuente(Fuente.valueOf(hechoDto.getFuente()));
+                                //hecho.setContenidoMultimedia(dto.getContenidoMultimedia()); TODO
 
-            JSONObject jsonBody = new JSONObject();
-            jsonBody.put("categoria", filtros.getCriterios().getCategoriaId());
-            jsonBody.put("fecha_reporte_desde",filtros.getCriterios().getFechaCargaInicial());
-            jsonBody.put("fecha_reporte_hasta", filtros.getCriterios().getFechaCargaFinal());
-            jsonBody.put("fecha_acontecimiento_desde", filtros.getCriterios().getFechaAcontecimientoInicial());
-            jsonBody.put("fecha_acontecimiento_hasta", filtros.getCriterios().getFechaAcontecimientoFinal());
-            jsonBody.put("pais", filtros.getCriterios().getPaisId());
-            jsonBody.put("provincia",filtros.getCriterios().getProvinciaId());
-            try(OutputStream os = conexion.getOutputStream()){
-                byte[] input = jsonBody.toString().getBytes(StandardCharsets.UTF_8);
-                os.write(input, 0, input.length);
-            }
+                                // Crear y setear atributosHecho
+                                AtributosHecho atributos = new AtributosHecho();
+                                atributos.setTitulo(hechoDto.getTitulo());
+                                atributos.setDescripcion(hechoDto.getDescripcion());
+                                atributos.setCategoria_id(buscadores.getBuscadorCategoria().buscar(hechoDto.getCategoria()).getId());
 
-            int status = conexion.getResponseCode();
+                                Pais pais = buscadores.getBuscadorPais().buscar(hechoDto.getPais());
+                                Provincia provincia = buscadores.getBuscadorProvincia().buscar(hechoDto.getProvincia());
 
-            if (status == 200) {
-                String responseBody = new Scanner(conexion.getInputStream()).useDelimiter("\\A").next();
+                                if(pais != null && provincia != null){
+                                    Ubicacion ubicacion = buscadores.getBuscadorUbicacion().buscar(pais.getId(), provincia.getId());
+                                    if(ubicacion != null){
+                                        atributos.setUbicacion_id(ubicacion.getId());
+                                    }
+                                }
 
-                JSONArray array = new JSONArray(responseBody);
-
-                List<Hecho> hechos = new ArrayList<>();
-
-                for (int i = 0; i < array.length(); i++) {
-                    JSONObject obj = array.getJSONObject(i);
-
-                    // Asignar datos a un nuevo objeto Hecho
-                    HechoProxy hecho = new HechoProxy();
-                    hecho.setId(obj.getLong("id"));
-                    hecho.getAtributosHecho().setTitulo(obj.getString("titulo"));
-                    hecho.getAtributosHecho().setDescripcion(obj.getString("descripcion"));
-                    Categoria categoria = buscadores.getBuscadorCategoria().buscar(obj.getString("categoria"));
-                    hecho.getAtributosHecho().setCategoria_id(categoria != null ? categoria.getId() : null);
-                    UbicacionString ubicacionString = Geocodificador.obtenerUbicacion(obj.getDouble("latitud"),obj.getDouble("longitud"));
-                    if(ubicacionString != null) {
-                        Pais pais = buscadores.getBuscadorPais().buscar(ubicacionString.getPais());
-                        Provincia provincia = buscadores.getBuscadorProvincia().buscar(ubicacionString.getProvincia());
-                        Ubicacion ubicacion = buscadores.getBuscadorUbicacion().buscarOCrear(pais, provincia);
-                        hecho.getAtributosHecho().setUbicacion_id(ubicacion != null ? ubicacion.getId() : null);
-                        hecho.getAtributosHecho().setLatitud(obj.getDouble("latitud"));
-                        hecho.getAtributosHecho().setLatitud(obj.getDouble("longitud"));
-                    }
-                    hecho.getAtributosHecho().setOrigen(Origen.FUENTE_PROXY_METAMAPA);
-                    hecho.getAtributosHecho().setFuente(Fuente.PROXY);
-                    hecho.getAtributosHecho().setFechaAcontecimiento(FechaParser.parsearFecha(obj.getString("fechaAcontecimiento")));
-                    hecho.getAtributosHecho().setModificado(true);
-                    hechos.add(hecho);
-                }
-                return hechos;
-            } else {
-                System.out.println("Error al consultar con código: " + status);
-                String errorMsg = new Scanner(conexion.getErrorStream()).useDelimiter("\\A").next();
-                System.out.println("Mensaje: " + errorMsg);
-            }
-
-
-
-        } catch (Exception e) {
-            System.out.println("Excepción al consultar hecho por ID: " + e.getMessage());
-        }
-
-        return null;
+                                atributos.setCategoria_id(buscadores.getBuscadorCategoria().buscar(hechoDto.getCategoria()).getId());
+                                atributos.setFechaAcontecimiento(FechaParser.parsearFecha(hechoDto.getFechaAcontecimiento()));
+                                atributos.setLatitud(hechoDto.getLatitud());
+                                atributos.setLongitud(hechoDto.getLongitud());
+                                hechos.add(hecho);
+                            }
+                            return hechos;
+                        }
+                );
     }
 
 
-    public List<Hecho> getHechosDeColeccionMetaMapa(ProxyDTO atributos, String url_1, BuscadoresRegistry buscadores){
-        try {
+    public Mono<List<Hecho>> getHechosDeColeccionMetaMapa(CriteriosColeccionProxyDTO atributos, Boolean navegacionCurada, Long id_coleccion, BuscadoresRegistry buscadores) {
 
-            String url_concatenada = url_1 + "get/filtrar";
-            URL url = new URL(url_concatenada);
-            HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
-            conexion.setRequestMethod("POST");
-            conexion.setDoOutput(true); // Muy importante para POST
+        GetHechosColeccionInputDTO request = new GetHechosColeccionInputDTO();
+        request.setId_coleccion(id_coleccion);
+        request.setNavegacionCurada(navegacionCurada);
+        request.setOrigen(Origen.valueOf(atributos.getOrigen()).getCodigo());
+        request.setDescripcion(atributos.getDescripcion());
+        request.setTitulo(atributos.getTitulo());
+        request.setFechaAcontecimientoInicial(atributos.getFechaAcontecimientoInicial());
+        request.setFechaAcontecimientoFinal(atributos.getFechaAcontecimientoFinal());
+        request.setFechaCargaInicial(atributos.getFechaCargaInicial());
+        request.setFechaCargaFinal(atributos.getFechaCargaFinal());
+        request.setPaisId(buscadores.getBuscadorPais().buscar(atributos.getPais()).getId());
+        request.setProvinciaId(buscadores.getBuscadorProvincia().buscar(atributos.getProvincia()).getId());
 
-            conexion.setRequestProperty("Content-Type", "application/json");
+        List<Hecho> hechos = new ArrayList<>();
 
-// Serializa el DTO a JSON
-            ObjectMapper mapper = new ObjectMapper();
-            String jsonInputString = mapper.writeValueAsString(atributos);
+        return webClientMetaMapa.post().uri("/api/hechos/get-all")
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(HechosSkibidi.class)
+                .map(hechosSkibidi -> {
+                    for (VisualizarHechosOutputDTO dto : hechosSkibidi.getHechos()) {
+                        Hecho hecho = new HechoProxy();
+                        hecho.setId(dto.getId());
 
-// Escribe el JSON en el body
-            try (OutputStream os = conexion.getOutputStream()) {
-                byte[] input = jsonInputString.getBytes("utf-8");
-                os.write(input, 0, input.length);
-            }
+                        hecho.getAtributosHecho().setTitulo(dto.getTitulo());
+                        hecho.getAtributosHecho().setDescripcion(dto.getDescripcion());
 
-            int status = conexion.getResponseCode();
+                        Categoria categoria = buscadores.getBuscadorCategoria().buscar(dto.getCategoria());
+                        hecho.getAtributosHecho().setCategoria_id(categoria != null ? categoria.getId() : null);
 
-            if (status == 200) {
-                String responseBody = new Scanner(conexion.getInputStream()).useDelimiter("\\A").next();
+                        if (dto.getLatitud() != null && dto.getLongitud() != null) {
+                            UbicacionString ubicacionString = Geocodificador.obtenerUbicacion(dto.getLatitud(), dto.getLongitud());
+                            if (ubicacionString != null) {
+                                Pais pais = buscadores.getBuscadorPais().buscar(ubicacionString.getPais());
+                                Provincia provincia = buscadores.getBuscadorProvincia().buscar(ubicacionString.getProvincia());
+                                Ubicacion ubicacion = buscadores.getBuscadorUbicacion().buscarOCrear(pais, provincia);
 
-                JSONArray array = new JSONArray(responseBody);
+                                hecho.getAtributosHecho().setUbicacion_id(ubicacion != null ? ubicacion.getId() : null);
+                                hecho.getAtributosHecho().setLatitud(dto.getLatitud());
+                                hecho.getAtributosHecho().setLongitud(dto.getLongitud());
+                            }
+                        }
 
-                List<Hecho> hechos = new ArrayList<>();
-                for (int i = 0; i < array.length(); i++) {
-                    JSONObject obj = array.getJSONObject(i);
-
-                    HechoProxy hecho = new HechoProxy();
-                    hecho.setId(obj.getLong("id"));
-                    hecho.getAtributosHecho().setTitulo(obj.getString("titulo"));
-                    hecho.getAtributosHecho().setDescripcion(obj.getString("descripcion"));
-                    Categoria categoria = buscadores.getBuscadorCategoria().buscar(obj.getString("categoria"));
-                    hecho.getAtributosHecho().setCategoria_id(categoria != null ? categoria.getId() : null);
-                    UbicacionString ubicacionString = Geocodificador.obtenerUbicacion(obj.getDouble("latitud"),obj.getDouble("longitud"));
-                    if(ubicacionString != null) {
-                        Pais pais = buscadores.getBuscadorPais().buscar(ubicacionString.getPais());
-                        Provincia provincia = buscadores.getBuscadorProvincia().buscar(ubicacionString.getProvincia());
-                        Ubicacion ubicacion = buscadores.getBuscadorUbicacion().buscarOCrear(pais, provincia);
-                        hecho.getAtributosHecho().setUbicacion_id(ubicacion != null ? ubicacion.getId() : null);
-                        hecho.getAtributosHecho().setLatitud(obj.getDouble("latitud"));
-                        hecho.getAtributosHecho().setLatitud(obj.getDouble("longitud"));
+                        hecho.getAtributosHecho().setOrigen(Origen.FUENTE_PROXY_METAMAPA);
+                        hecho.getAtributosHecho().setFuente(Fuente.PROXY);
+                        hechos.add(hecho);
                     }
-                    hecho.getAtributosHecho().setOrigen(Origen.FUENTE_PROXY_METAMAPA);
-                    hecho.getAtributosHecho().setFuente(Fuente.PROXY);
-                    hecho.getAtributosHecho().setFechaAcontecimiento(FechaParser.parsearFecha(obj.getString("fechaAcontecimiento")));
-                    hecho.getAtributosHecho().setModificado(true);
-                    hechos.add(hecho);
-
-                }
-                return hechos;
-            } if (status != 200) {
-                System.out.println("Error al consultar con código: " + status);
-                InputStream errorStream = conexion.getErrorStream();
-                if (errorStream != null) {
-                    String errorMsg = new Scanner(errorStream).useDelimiter("\\A").next();
-                    System.out.println("Mensaje: " + errorMsg);
-                } else {
-                    System.out.println("No hay mensaje de error disponible.");
-                }
-            }
-
-        } catch (Exception e) {
-            System.out.println("Excepción al consultar hechos de coleccion: " + e.getMessage());
-        }
-
-        return null;
-
+                    return hechos;
+                });
     }
 
     public void enviarReporte(String url_1, Long id_hecho, String motivo){
