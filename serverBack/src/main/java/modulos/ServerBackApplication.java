@@ -9,8 +9,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAsync
 @EnableScheduling
 
-public class MetaMapaApplication {
+public class ServerBackApplication {
     public static void main(String[] args) {
-        SpringApplication.run(MetaMapaApplication.class, args);
+        SpringApplication.run(ServerBackApplication.class, args);
     }
 }

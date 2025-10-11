@@ -1,4 +1,4 @@
-package modulos.Front.controller;
+package modulos.Front.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

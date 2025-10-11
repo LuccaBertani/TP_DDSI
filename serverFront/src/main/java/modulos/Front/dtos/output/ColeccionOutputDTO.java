@@ -1,0 +1,13 @@
+package modulos.Front.dtos.output;
+
+import lombok.Data;
+import modulos.Front.dtos.input.ProxyDTO;
+
+@Data
+public class ColeccionOutputDTO {
+    private Long id;
+    private String titulo;
+    private String descripcion;
+
+    private ProxyDTO criterios;
+}

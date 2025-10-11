@@ -52,7 +52,6 @@ modulos\agregacion\entities\fuentes\LectorCSV.class
 modulos\agregacion\entities\DbDinamica\solicitudes\SolicitudSubirHecho.class
 modulos\agregacion\entities\DbMain\filtros\FiltroCategoria.class
 modulos\agregacion\entities\DbDinamica\HechoDinamica$HechoDinamicaBuilder.class
-modulos\MetaMapaApplication.class
 modulos\agregacion\entities\DbMain\Hecho$HechoBuilder.class
 modulos\agregacion\entities\DbMain\RespuestaHttp.class
 modulos\agregacion\entities\DbEstatica\HechoEstatica$HechoEstaticaBuilder.class
@@ -168,6 +167,7 @@ modulos\shared\dtos\output\UsuarioOutputDto.class
 modulos\shared\utils\GestorArchivos.class
 modulos\shared\dtos\input\MensajesHechosUsuarioInputDTO.class
 modulos\shared\utils\Geocodificador$PaisIso2.class
+modulos\ServerBackApplication.class
 modulos\shared\dtos\input\UsuarioInputDTO.class
 modulos\agregacion\config\DbHechosDinamicaConfig.class
 modulos\buscadores\BuscadorProvincia.class
