@@ -9,6 +9,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
+
 
 @Controller
 @RequestMapping("/colecciones")
@@ -17,7 +19,8 @@ public class ColeccionController {
 
     private final ColeccionService coleccionService;
 
-    @GetMapping("/get-all")
+    // TODO VISTA
+    /*@GetMapping("/get-all")
     public String obtenerTodasLasColecciones(Model model){
         ResponseEntity<?> rta = coleccionService.obtenerTodasLasColecciones();
         ColeccionOutputDTO dto = (ColeccionOutputDTO)rta.getBody();
@@ -26,6 +29,12 @@ public class ColeccionController {
         else
             System.out.println("SOY UNA MIERDA DE PERSONA");
         return "PINGA";
+    }*/
+
+    // Prueba de conexión entre el server front y el server back
+    @GetMapping("/get-all")
+    public ResponseEntity<?> obtenerTodasLasColecciones(){
+        return coleccionService.obtenerTodasLasColecciones();
     }
 
 }

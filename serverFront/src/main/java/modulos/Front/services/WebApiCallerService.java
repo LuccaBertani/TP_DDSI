@@ -67,35 +67,22 @@ public class WebApiCallerService {
         String refreshToken = getRefreshTokenFromSession();
 
         if (accessToken == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            // TODO como no tenemos manejo de tokens lo dejo comentado
+            //return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         return apiCall.apply(accessToken)
                 .onErrorResume(WebClientResponseException.class, e -> {
-                    // Si el error es UNAUTHORIZED o FORBIDDEN, intento refrescar
-                    if ((e.getStatusCode() == HttpStatus.UNAUTHORIZED || e.getStatusCode() == HttpStatus.FORBIDDEN)
-                            && refreshToken != null) {
-                        return Mono.defer(() -> {
-                            AuthResponseDTO newTokens = refreshToken(refreshToken);
-                            return apiCall.apply(newTokens.getAccessToken());
-                        });
-                    }
-
-                    // Si es NOT_FOUND, devuelvo un 404 explícito
-                    if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                        return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-                    }
-
-                    // Cualquier otro error: response 500 con mensaje
-                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .body(null));
+                    // Para cualquier otro error
+                    return Mono.just(ResponseEntity.status(e.getStatusCode()).build());
                 })
                 .onErrorResume(Throwable.class, ex ->
                         Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()))
                 .block(); // mantiene comportamiento bloqueante final
     }
 
-
+    // Entiendo que el refreshToken es algo que lo deberia hacer serverBack, ya que el se encarga de los tokens. Lo dejo comentado acá
+    /*
     private AuthResponseDTO refreshToken(String refreshToken) {
         return webClient.post()
                 .uri("/api/auth/refresh") // endpoint del backend
@@ -111,7 +98,7 @@ public class WebApiCallerService {
                 })
                 .blockOptional() // devuelve Optional<AuthResponseDTO>
                 .orElse(null);   // si vacío → null
-    }
+    }*/
 
 
 
@@ -151,10 +138,11 @@ public class WebApiCallerService {
     }*/
 
     public <T> ResponseEntity<List<T>> getList(String url, Class<T> elementType) {
+        // TODO el header está comentado porque falta lógica de tokens
         return executeWithTokenRetry(token ->
                 webClient.get()
                         .uri(url)
-                        .header("Authorization", "Bearer " + token)
+                        //.header("Authorization", "Bearer " + token)
                         .retrieve()
                         .toEntityList(elementType) // Mono<ResponseEntity<List<T>>>
         );

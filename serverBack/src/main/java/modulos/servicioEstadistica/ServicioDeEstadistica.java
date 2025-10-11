@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-// TODO cambiar estadisticas
 public class ServicioDeEstadistica {
 
     private final IDatosQuery datosQuery;
@@ -27,7 +26,7 @@ public class ServicioDeEstadistica {
         this.datosQuery = datosQuery;
         this.estadisticasRepository = estadisticasRepository;
         // Si querés tener las estadísticas ni bien entrás -> this.generarEstadistica();
-        this.generarEstadistica();
+        //this.generarEstadistica();
     }
 
     @Async

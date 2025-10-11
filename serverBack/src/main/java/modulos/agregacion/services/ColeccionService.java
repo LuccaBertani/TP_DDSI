@@ -1,6 +1,7 @@
 package modulos.agregacion.services;
 
 
+import jakarta.transaction.Transactional;
 import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
@@ -81,7 +82,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 0:00 y el 31 de diciembre de 20205 a las 23:59.
 
     */
-
+    @Transactional
     public ResponseEntity<?> crearColeccion(ColeccionInputDTO dtoInput) {
 
         if(dtoInput.getTitulo() == null){
@@ -121,7 +122,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         }
 
         coleccion.setCriterios(FormateadorHecho.obtenerListaDeFiltros(filtros));
-
+        coleccionesRepo.save(coleccion);
         return ResponseEntity.status(HttpStatus.CREATED).body("La colección se creó correctamente");
     }
 
