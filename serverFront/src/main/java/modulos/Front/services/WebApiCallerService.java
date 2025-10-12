@@ -148,5 +148,16 @@ public class WebApiCallerService {
         );
     }
 
+    public <T> ResponseEntity<T> getEntity(String url, Class<T> elementType){
+        // TODO el header está comentado porque falta lógica de tokens
+        return executeWithTokenRetry(token ->
+                webClient.get()
+                        .uri(url)
+                        //.header("Authorization", "Bearer " + token)
+                        .retrieve()
+                        .toEntity(elementType)
+        );
+    }
+
 
 }
