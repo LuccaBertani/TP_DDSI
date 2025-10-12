@@ -15,6 +15,8 @@ public class CriteriosColeccionProxyDTO {
     private String pais;
     private String provincia;
     private String titulo;
+    private Double latitud;
+    private Double longitud;
 
     public CriteriosColeccionProxyDTO(){
     }
