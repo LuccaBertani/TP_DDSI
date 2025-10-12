@@ -1,21 +1,19 @@
-package modulos.shared.dtos.output;
-
+package modulos.agregacion.entities.fuentes.Requests;
 
 import lombok.Data;
-import lombok.Setter;
 import modulos.agregacion.entities.atributosHecho.ContenidoMultimedia;
 
 import java.util.List;
 
 @Data
-public class VisualizarHechosOutputDTO {
+public class HechoResponseMetamapa {
     private Long id;
     private String fuente;
     private String titulo;
     private String descripcion;
-    private Long id_categoria;
-    private Long id_pais;
-    private Long id_provincia;
+    private String categoria;
+    private String pais;
+    private String provincia;
     private String fechaAcontecimiento;
     private Double latitud;
     private Double longitud;

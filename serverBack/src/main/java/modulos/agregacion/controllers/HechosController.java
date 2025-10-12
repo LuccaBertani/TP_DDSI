@@ -2,6 +2,7 @@ package modulos.agregacion.controllers;
 
 import jakarta.validation.Valid;
 import modulos.agregacion.entities.DbMain.Fuente;
+import modulos.agregacion.entities.atributosHecho.OrigenConexion;
 import modulos.agregacion.services.HechosService;
 import modulos.shared.dtos.input.*;
 import org.springframework.http.MediaType;
@@ -47,8 +48,8 @@ public class HechosController {
     //anda
     // todos los hechos del sistema
     @GetMapping("/get-all")
-    public ResponseEntity<?> visualizarHechos(){
-        return hechosService.getAllHechos();
+    public ResponseEntity<?> visualizarHechos(@RequestParam OrigenConexion origen){
+        return hechosService.getAllHechos(origen);
     }
 
     // Anda
@@ -58,6 +59,8 @@ public class HechosController {
     {
         return hechosService.getHechosColeccion(inputDTO);
     }
+
+
 
 
     /*

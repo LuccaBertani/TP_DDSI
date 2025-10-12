@@ -7,6 +7,9 @@ import modulos.agregacion.entities.atributosHecho.ContenidoMultimedia;
 import modulos.agregacion.entities.DbMain.filtros.*;
 import modulos.agregacion.entities.DbProxy.HechoProxy;
 import modulos.agregacion.entities.HechoMemoria;
+import modulos.agregacion.entities.atributosHecho.OrigenConexion;
+import modulos.agregacion.entities.fuentes.HechosMetamapaResponse;
+import modulos.agregacion.entities.fuentes.Requests.HechoResponseMetamapa;
 import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
 import modulos.agregacion.repositories.DbEstatica.IDatasetsRepository;
 import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
@@ -19,6 +22,7 @@ import modulos.shared.dtos.input.*;
 import modulos.shared.utils.FormateadorHechoMemoria;
 import modulos.shared.utils.GestorArchivos;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.agregacion.entities.fuentes.FuenteEstatica;
@@ -55,7 +59,7 @@ public class HechosService {
     private final BuscadoresRegistry buscadores;
     private final ICategoriaRepository categoriaRepository;
     private final ISinonimoRepository repoSinonimo;
-    private final FormateadorHechoMemoria formateadorHechoMemoria;
+    private FormateadorHechoMemoria formateadorHechoMemoria;
 
     public HechosService(IHechosEstaticaRepository hechosEstaticaRepo,
                          IHechosDinamicaRepository hechosDinamicaRepo,
@@ -216,18 +220,38 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
     public ResponseEntity<?> getHechosColeccion(GetHechosColeccionInputDTO inputDTO){
         // TODO: Criterio de fuente
-        CriteriosColeccionDTO criterios = new CriteriosColeccionDTO(
-                inputDTO.getCategoriaId(),
-                inputDTO.getContenidoMultimedia(),
-                inputDTO.getDescripcion(),
-                inputDTO.getFechaAcontecimientoInicial(),
-                inputDTO.getFechaAcontecimientoFinal(),
-                inputDTO.getFechaCargaInicial(),
-                inputDTO.getFechaCargaFinal(),
-                inputDTO.getOrigen(),
-                inputDTO.getPaisId(),
-                inputDTO.getTitulo(),
-                inputDTO.getProvinciaId());
+
+        CriteriosColeccionDTO criterios;
+
+        if(inputDTO.getOrigenConexion().equals(OrigenConexion.FRONT)) {
+            criterios = new CriteriosColeccionDTO(
+                    inputDTO.getCategoriaId(),
+                    inputDTO.getContenidoMultimedia(),
+                    inputDTO.getDescripcion(),
+                    inputDTO.getFechaAcontecimientoInicial(),
+                    inputDTO.getFechaAcontecimientoFinal(),
+                    inputDTO.getFechaCargaInicial(),
+                    inputDTO.getFechaCargaFinal(),
+                    inputDTO.getOrigen(),
+                    inputDTO.getPaisId(),
+                    inputDTO.getTitulo(),
+                    inputDTO.getProvinciaId());
+        } else if (inputDTO.getOrigenConexion().equals(OrigenConexion.PROXY)){
+            criterios = new CriteriosColeccionDTO(
+                    buscadores.getBuscadorCategoria().buscar(inputDTO.getCategoria()).getId(),
+                    inputDTO.getContenidoMultimedia(),
+                    inputDTO.getDescripcion(),
+                    inputDTO.getFechaAcontecimientoInicial(),
+                    inputDTO.getFechaAcontecimientoFinal(),
+                    inputDTO.getFechaCargaInicial(),
+                    inputDTO.getFechaCargaFinal(),
+                    inputDTO.getOrigen(),
+                    buscadores.getBuscadorPais().buscar(inputDTO.getPais()).getId(),
+                    inputDTO.getTitulo(),
+                    buscadores.getBuscadorProvincia().buscar(inputDTO.getProvincia()).getId());
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
 
         System.out.println(inputDTO.getCategoriaId());
 
@@ -300,64 +324,105 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
         }
 
-        List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream()
-                .map(this::crearHechoDto)
-                .toList();
-
-        return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
+        if (inputDTO.getOrigenConexion().equals(OrigenConexion.FRONT)) {
+            List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream()
+                    .map(hecho -> crearHechoDto(hecho, VisualizarHechosOutputDTO.class))
+                    .toList();
+            return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
+        } else if (inputDTO.getOrigenConexion().equals(OrigenConexion.PROXY)) {
+            List<HechoResponseMetamapa> outputDTO = hechosFiltrados.stream()
+                    .map(hecho -> crearHechoDto(hecho, HechoResponseMetamapa.class))
+                    .toList();
+            return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    private VisualizarHechosOutputDTO crearHechoDto(Hecho hecho){
-        VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
-        dto.setId(hecho.getId());
-        dto.setFuente(hecho.getAtributosHecho().getFuente().codigoEnString());
+    private <T> T crearHechoDto(Hecho hecho, Class<T> tipo) {
         HechoMemoria hechoMemoria = formateadorHechoMemoria.formatearHechoMemoria(hecho);
 
-        Optional.ofNullable(hechoMemoria.getAtributosHecho().getUbicacion())
-                .ifPresent(ubicacion -> {
-                    Optional.ofNullable(ubicacion.getPais())
-                            .ifPresent(pais -> {
-                                dto.setPais(pais.getPais());
-                                dto.setId_pais(pais.getId());
-                            });
-                    Optional.ofNullable(ubicacion.getProvincia())
-                            .ifPresent(provincia -> {
-                                dto.setProvincia(provincia.getProvincia());
-                                dto.setId_provincia(provincia.getId());
-                            });
-                    // TODO DEBERIA haber una ubicacion seteada para la latitud y la longitud
-                    Optional.ofNullable(hecho.getAtributosHecho().getLatitud())
-                            .ifPresent(dto::setLatitud);
-                    Optional.ofNullable(hecho.getAtributosHecho().getLongitud())
-                            .ifPresent(dto::setLongitud);
-                });
+        if (tipo.equals(VisualizarHechosOutputDTO.class)) {
+            VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
+            dto.setId(hecho.getId());
+            dto.setFuente(hecho.getAtributosHecho().getFuente().codigoEnString());
 
-        dto.setTitulo(hecho.getAtributosHecho().getTitulo());
-        dto.setDescripcion(hecho.getAtributosHecho().getDescripcion());
-        Optional.ofNullable(hecho.getAtributosHecho().getFechaAcontecimiento())
-                .map(Object::toString)
-                .ifPresent(dto::setFechaAcontecimiento);
+            Optional.ofNullable(hechoMemoria.getAtributosHecho().getUbicacion())
+                    .ifPresent(ubicacion -> {
+                        Optional.ofNullable(ubicacion.getPais())
+                                .ifPresent(pais -> dto.setId_pais(pais.getId()));
+                        Optional.ofNullable(ubicacion.getProvincia())
+                                .ifPresent(provincia -> dto.setId_provincia(provincia.getId()));
+                        Optional.ofNullable(hecho.getAtributosHecho().getLatitud())
+                                .ifPresent(dto::setLatitud);
+                        Optional.ofNullable(hecho.getAtributosHecho().getLongitud())
+                                .ifPresent(dto::setLongitud);
+                    });
 
-        Optional.ofNullable(hechoMemoria.getAtributosHecho().getCategoria()).ifPresent(categoria -> {
-            dto.setCategoria(categoria.getTitulo());
-            dto.setId_categoria(categoria.getId());
-        });
-        return dto;
+            dto.setTitulo(hecho.getAtributosHecho().getTitulo());
+            dto.setDescripcion(hecho.getAtributosHecho().getDescripcion());
+            Optional.ofNullable(hecho.getAtributosHecho().getFechaAcontecimiento())
+                    .map(Object::toString)
+                    .ifPresent(dto::setFechaAcontecimiento);
+
+            Optional.ofNullable(hechoMemoria.getAtributosHecho().getCategoria())
+                    .ifPresent(categoria -> dto.setId_categoria(categoria.getId()));
+            dto.setContenido(hecho.getAtributosHecho().getContenidosMultimedia());
+            return (T) dto;
+
+        } else if (tipo.equals(HechoResponseMetamapa.class)) {
+            HechoResponseMetamapa dto = new HechoResponseMetamapa();
+            dto.setId(hecho.getId());
+            dto.setFuente(hecho.getAtributosHecho().getFuente().codigoEnString());
+
+            Optional.ofNullable(hechoMemoria.getAtributosHecho().getUbicacion())
+                    .ifPresent(ubicacion -> {
+                        Optional.ofNullable(ubicacion.getPais())
+                                .ifPresent(pais -> dto.setPais(pais.getPais()));
+                        Optional.ofNullable(ubicacion.getProvincia())
+                                .ifPresent(provincia -> dto.setProvincia(provincia.getProvincia()));
+                        Optional.ofNullable(hecho.getAtributosHecho().getLatitud())
+                                .ifPresent(dto::setLatitud);
+                        Optional.ofNullable(hecho.getAtributosHecho().getLongitud())
+                                .ifPresent(dto::setLongitud);
+                    });
+
+            dto.setTitulo(hecho.getAtributosHecho().getTitulo());
+            dto.setDescripcion(hecho.getAtributosHecho().getDescripcion());
+            Optional.ofNullable(hecho.getAtributosHecho().getFechaAcontecimiento())
+                    .map(Object::toString)
+                    .ifPresent(dto::setFechaAcontecimiento);
+
+            Optional.ofNullable(hechoMemoria.getAtributosHecho().getCategoria())
+                    .ifPresent(categoria -> dto.setCategoria(categoria.getTitulo()));
+
+            dto.setContenido(hecho.getAtributosHecho().getContenidosMultimedia());
+
+            return (T) dto;
+        }
+
+        throw new IllegalArgumentException("Tipo DTO no soportado: " + tipo);
     }
 
-    public ResponseEntity<?> getAllHechos() {
-
+    public ResponseEntity<?> getAllHechos(OrigenConexion origen) {
 
         List<Hecho> hechosTotales = new ArrayList<>();
         hechosTotales.addAll(hechosEstaticaRepo.findAll());
         hechosTotales.addAll(hechosDinamicaRepo.findAll());
         hechosTotales.addAll(hechosProxyRepo.findAll());
 
-        List<VisualizarHechosOutputDTO> outputDTO = hechosTotales.stream()
-                .map(this::crearHechoDto)
-                .toList();
+        if (origen.equals(OrigenConexion.FRONT)) {
+            List<VisualizarHechosOutputDTO> outputDTO = hechosTotales.stream()
+                    .map(hecho -> crearHechoDto(hecho, VisualizarHechosOutputDTO.class))
+                    .toList();
+            return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
+        } else if (origen.equals(OrigenConexion.PROXY)) {
+            List<HechoResponseMetamapa> outputDTO = hechosTotales.stream()
+                    .map(hecho -> crearHechoDto(hecho, HechoResponseMetamapa.class))
+                    .toList();
+            return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
+        }
 
-        return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     private <T> Specification<T> perteneceAColeccionYesConsensuadoSiAplica(List<Long> idsHechosDeColeccionYConsensuados, Class<T> clazz) {
@@ -508,4 +573,5 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
         return ResponseEntity.status(HttpStatus.CREATED).body(hecho.getAtributosHecho().getContenidosMultimedia().get(hecho.getAtributosHecho().getContenidosMultimedia().size() - 1).getId());
     }
+
 }

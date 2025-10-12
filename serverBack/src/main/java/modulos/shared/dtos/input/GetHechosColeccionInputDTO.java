@@ -2,6 +2,7 @@ package modulos.shared.dtos.input;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import modulos.agregacion.entities.atributosHecho.OrigenConexion;
 
 @Data
 public class GetHechosColeccionInputDTO {
@@ -17,6 +18,11 @@ public class GetHechosColeccionInputDTO {
     private Long paisId;
     private String titulo;
     private Long provinciaId;
+    private OrigenConexion origenConexion;
+
+    private String categoria;
+    private String pais;
+    private String provincia;
 
 
     @NotNull(message = "La forma de navegación debe ser especificada")

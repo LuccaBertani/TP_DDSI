@@ -137,8 +137,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             dto.setId(coleccion.getId());
             dto.setTitulo(coleccion.getTitulo());
             dto.setDescripcion(coleccion.getDescripcion());
-            ProxyDTO criterios = FormateadorHecho.filtrosColeccionToString(coleccion.getCriterios());
-            dto.setCriterios(criterios);
+            dto.setCriterios(FormateadorHecho.filtrosColeccionToString(coleccion.getCriterios()));
             listaDTO.add(dto);
         }
         return ResponseEntity.status(HttpStatus.OK).body(listaDTO);
@@ -158,9 +157,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         dto.setTitulo(coleccion.getTitulo());
         dto.setDescripcion(coleccion.getDescripcion());
 
-        ProxyDTO criterios = FormateadorHecho.filtrosColeccionToString(coleccion.getCriterios());
-
-        dto.setCriterios(criterios);
+        dto.setCriterios(FormateadorHecho.filtrosColeccionToString(coleccion.getCriterios()));
 
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }

@@ -16,6 +16,10 @@ public class CriteriosColeccionDTO {
     private Long provinciaId;
     private String titulo;
 
+    private String categoria;
+    private String pais;
+    private String provincia;
+
     public CriteriosColeccionDTO(){
     }
 

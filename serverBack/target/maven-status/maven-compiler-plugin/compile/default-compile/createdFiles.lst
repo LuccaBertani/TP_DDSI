@@ -20,14 +20,15 @@ modulos\agregacion\entities\DbMain\hechoRef\HechoRef.class
 modulos\agregacion\repositories\DbDinamica\ISolicitudAgregarHechoRepository.class
 modulos\shared\dtos\input\GetHechosColeccionInputDTO.class
 modulos\agregacion\entities\DbMain\filtros\FiltroContenidoMultimedia.class
-modulos\agregacion\entities\fuentes\Requests\CriteriosResponse.class
 modulos\AtributosHechoMemoria.class
 modulos\AtributosHechoMemoria$AtributosHechoMemoriaBuilder.class
 modulos\shared\dtos\input\SolicitudHechoEliminarInputDTO.class
 modulos\agregacion\entities\DbMain\projections\CantSolicitudesSpamProjection.class
+modulos\agregacion\entities\fuentes\Requests\HechoResponseMetamapa.class
 modulos\servicioEstadistica\repositories\ICategoriaHoraRepository.class
 modulos\agregacion\entities\DbMain\algoritmosConsenso\AlgoritmoConsensoMayoriaAbsoluta.class
 modulos\shared\dtos\input\ModificarConsensoInputDTO.class
+modulos\agregacion\entities\atributosHecho\OrigenConexion.class
 modulos\agregacion\repositories\DbDinamica\ISolicitudModificarHechoRepository.class
 modulos\agregacion\entities\AtributosHechoModificarMemoria.class
 modulos\agregacion\entities\DbMain\Mensaje.class
@@ -44,7 +45,6 @@ modulos\agregacion\entities\DbProxy\HechoProxy$HechoProxyBuilderImpl.class
 modulos\agregacion\entities\AtributosHechoModificarMemoria$AtributosHechoModificarMemoriaBuilder.class
 modulos\agregacion\entities\DbMain\filtros\FiltroPais.class
 modulos\shared\dtos\input\LoginDtoInput.class
-modulos\shared\dtos\input\ProxyDTO.class
 modulos\agregacion\entities\DbMain\Coleccion.class
 modulos\servicioEstadistica\controller\EstadisticasController.class
 modulos\agregacion\entities\DbMain\filtros\FiltroFechaCarga.class
@@ -62,11 +62,9 @@ modulos\agregacion\config\DbMainConfig.class
 modulos\apis\DatosQuery.class
 modulos\shared\dtos\input\EditarNombreDeUsuarioDtoInput.class
 modulos\shared\utils\Geocodificador.class
-modulos\agregacion\entities\fuentes\ColeccionesResponse.class
 modulos\shared\dtos\input\EditarUsuarioDtoInput.class
 modulos\shared\dtos\output\ReporteHechoOutputDTO$ReporteHechoOutputDTOBuilder.class
 modulos\agregacion\entities\DbDinamica\solicitudes\SolicitudHecho.class
-modulos\agregacion\entities\fuentes\Requests\ColeccionResponse.class
 modulos\agregacion\entities\DbMain\filtros\FiltroDescripcion.class
 modulos\agregacion\entities\DbMain\projections\HoraCategoriaProjection.class
 modulos\agregacion\repositories\DbMain\ICategoriaRepository.class
@@ -90,6 +88,7 @@ modulos\agregacion\entities\DbMain\Hecho.class
 modulos\apis\IDatosQuery.class
 modulos\agregacion\entities\DbMain\filtros\FiltroFechaAcontecimiento.class
 modulos\shared\utils\GestorRoles.class
+modulos\agregacion\entities\fuentes\HechosMetamapaResponse.class
 modulos\agregacion\controllers\HechosController.class
 modulos\agregacion\repositories\DbDinamica\ISolicitudRepository.class
 modulos\agregacion\services\UsuarioService.class
@@ -124,6 +123,7 @@ modulos\agregacion\entities\DbMain\projections\CategoriaProvinciaProjection.clas
 modulos\agregacion\entities\DbMain\hechoRef\HechoRefKey.class
 modulos\agregacion\entities\atributosHecho\Origen.class
 modulos\agregacion\entities\DbMain\DatosColeccion.class
+modulos\agregacion\entities\fuentes\Requests\ColeccionesResponse.class
 modulos\agregacion\controllers\SolicitudHechoController.class
 modulos\servicioEstadistica\repositories\ICategoriaProvinciaRepository.class
 modulos\agregacion\entities\DbMain\algoritmosConsenso\AlgoritmoConsensoMultiplesMenciones.class
@@ -160,7 +160,6 @@ modulos\agregacion\repositories\DbMain\IColeccionRepository.class
 modulos\agregacion\entities\DbProxy\HechoProxy$HechoProxyBuilder.class
 modulos\agregacion\services\SolicitudHechoService.class
 modulos\servicioEstadistica\entities\Estadisticas.class
-modulos\shared\dtos\input\CriteriosColeccionProxyDTO.class
 modulos\shared\dtos\input\ImportacionHechosInputDTO.class
 modulos\agregacion\entities\atributosHecho\TipoContenido.class
 modulos\shared\dtos\output\UsuarioOutputDto.class

@@ -60,6 +60,7 @@ public class WebApiCallerService {
         }
     }*/
 
+    // Falta lógica de refresh token
     public <T> ResponseEntity<T> executeWithTokenRetry(
             java.util.function.Function<String, reactor.core.publisher.Mono<ResponseEntity<T>>> apiCall) {
 
@@ -67,19 +68,23 @@ public class WebApiCallerService {
         String refreshToken = getRefreshTokenFromSession();
 
         if (accessToken == null) {
-            // TODO como no tenemos manejo de tokens lo dejo comentado
-            //return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         return apiCall.apply(accessToken)
                 .onErrorResume(WebClientResponseException.class, e -> {
                     // Para cualquier otro error
+
                     return Mono.just(ResponseEntity.status(e.getStatusCode()).build());
                 })
                 .onErrorResume(Throwable.class, ex ->
                         Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()))
                 .block(); // mantiene comportamiento bloqueante final
     }
+
+
+
+
 
     // Entiendo que el refreshToken es algo que lo deberia hacer serverBack, ya que el se encarga de los tokens. Lo dejo comentado acá
     /*
@@ -142,7 +147,7 @@ public class WebApiCallerService {
         return executeWithTokenRetry(token ->
                 webClient.get()
                         .uri(url)
-                        //.header("Authorization", "Bearer " + token)
+                        .header("Authorization", "Bearer " + token)
                         .retrieve()
                         .toEntityList(elementType) // Mono<ResponseEntity<List<T>>>
         );
@@ -153,11 +158,37 @@ public class WebApiCallerService {
         return executeWithTokenRetry(token ->
                 webClient.get()
                         .uri(url)
-                        //.header("Authorization", "Bearer " + token)
+                        .header("Authorization", "Bearer " + token)
                         .retrieve()
                         .toEntity(elementType)
         );
     }
+
+    public <T> ResponseEntity<T> postEntity(String url, Object body, Class<T> elementType){
+        // TODO el header está comentado porque falta lógica de tokens
+        return executeWithTokenRetry(token ->
+                webClient.post()
+                        .uri(url)
+                        .header("Authorization", "Bearer " + token)
+                        .bodyValue(body)
+                        .retrieve()
+                        .toEntity(elementType)
+        );
+    }
+
+    public <T> ResponseEntity<T> postEntity(String url, Class<T> elementType){
+        // TODO el header está comentado porque falta lógica de tokens
+        return executeWithTokenRetry(token ->
+                webClient.post()
+                        .uri(url)
+                        .header("Authorization", "Bearer " + token)
+                        .retrieve()
+                        .toEntity(elementType)
+        );
+    }
+
+
+
 
 
 }

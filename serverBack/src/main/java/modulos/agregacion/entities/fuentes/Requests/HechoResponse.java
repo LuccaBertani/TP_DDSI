@@ -8,7 +8,7 @@ public class HechoResponse {
     private String descripcion;
     private String categoria;
     private Double latitud;
-    private double longitud;
+    private Double longitud;
     private String fecha_hecho;
     private String created_at;
     private String updated_at;
