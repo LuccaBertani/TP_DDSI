@@ -3,18 +3,18 @@ package modulos.agregacion.entities.DbMain;
 import lombok.Data;
 import modulos.agregacion.entities.DbMain.filtros.*;
 
+import java.util.List;
+
 
 @Data
 public class FiltrosColeccion {
-
-    FiltroCategoria filtroCategoria;
-    FiltroPais filtroPais;
-    FiltroDescripcion filtroDescripcion;
-    FiltroContenidoMultimedia filtroContenidoMultimedia;
-    FiltroFechaAcontecimiento filtroFechaAcontecimiento;
-    FiltroFechaCarga filtroFechaCarga;
-    FiltroOrigen filtroOrigen;
-    FiltroTitulo filtroTitulo;
-    FiltroProvincia filtroProvincia;
-
+    private List<FiltroCategoria> filtroCategoria;
+    private List<FiltroPais> filtroPais;
+    private FiltroDescripcion filtroDescripcion;
+    private List<FiltroContenidoMultimedia> filtroContenidoMultimedia;
+    private FiltroFechaAcontecimiento filtroFechaAcontecimiento;
+    private FiltroFechaCarga filtroFechaCarga;
+    private List<FiltroOrigen> filtroOrigen;
+    private FiltroTitulo filtroTitulo;
+    private List<FiltroProvincia> filtroProvincia;
 }

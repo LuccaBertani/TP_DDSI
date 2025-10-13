@@ -4,8 +4,10 @@ modulos\Front\controllers\ColeccionController.class
 modulos\Front\dtos\output\DatosPersonalesOutputDTO.class
 modulos\Front\services\WebApiCallerService.class
 modulos\Front\controllers\SolicitudHechoController.class
+modulos\Front\usuario\Rol.class
 modulos\Front\dtos\output\VisualizarHechosOutputDTO.class
 modulos\Front\dtos\output\SolicitudHechoOutputDTO.class
+modulos\Front\services\UsuarioService.class
 modulos\Front\dtos\input\SolicitudHechoEvaluarInputDTO.class
 modulos\Front\dtos\output\SolicitudHechoOutputDTO$SolicitudHechoOutputDTOBuilder.class
 modulos\Front\dtos\input\EditarNombreDeUsuarioDtoInput.class
@@ -14,7 +16,9 @@ modulos\Front\dtos\input\CambiarContraseniaDtoInput.class
 modulos\Front\dtos\input\SolicitudHechoInputDTO.class
 modulos\Front\dtos\input\SolicitudHechoModificarInputDTO.class
 modulos\Front\dtos\input\FiltroHechosDTO.class
+modulos\Front\usuario\DatosPersonalesPublicador.class
 modulos\Front\dtos\input\GetHechosColeccionInputDTO.class
+modulos\Front\usuario\Usuario.class
 modulos\Front\dtos\output\MensajeOutputDTO$MensajeOutputDTOBuilder.class
 modulos\Front\dtos\input\EditarUsuarioDtoInput.class
 modulos\Front\dtos\output\ReporteHechoOutputDTO.class
@@ -22,10 +26,10 @@ modulos\Front\services\ColeccionService.class
 modulos\Front\dtos\input\SolicitudHechoEliminarInputDTO.class
 modulos\Front\BodyToListConverter.class
 modulos\Front\dtos\output\ReporteHechoOutputDTO$ReporteHechoOutputDTOBuilder.class
+modulos\Front\controllers\LoginController.class
 modulos\Front\dtos\output\AuthResponseDTO.class
 modulos\Front\dtos\input\EvaluarReporteInputDTO.class
 modulos\Front\controllers\HechosController.class
-modulos\Front\controllers\IndexController.class
 modulos\Front\dtos\input\ImportacionHechosInputDTO.class
 modulos\Front\dtos\input\ColeccionInputDTO.class
 modulos\Front\dtos\output\ColeccionOutputDTO.class
@@ -34,6 +38,7 @@ modulos\Front\dtos\input\ColeccionUpdateInputDTO.class
 modulos\Front\dtos\output\MensajeOutputDTO.class
 modulos\Front\dtos\input\LoginDtoInput.class
 modulos\Front\dtos\input\ModificarConsensoInputDTO.class
+modulos\Front\controllers\HomeController.class
 modulos\Front\services\HechosService.class
 modulos\Front\dtos\output\UsuarioOutputDto.class
 modulos\Front\dtos\input\MensajesHechosUsuarioInputDTO.class

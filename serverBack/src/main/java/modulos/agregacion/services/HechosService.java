@@ -224,38 +224,62 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         CriteriosColeccionDTO criterios;
 
         if(inputDTO.getOrigenConexion().equals(OrigenConexion.FRONT)) {
-            criterios = new CriteriosColeccionDTO(
-                    inputDTO.getCategoriaId(),
-                    inputDTO.getContenidoMultimedia(),
-                    inputDTO.getDescripcion(),
-                    inputDTO.getFechaAcontecimientoInicial(),
-                    inputDTO.getFechaAcontecimientoFinal(),
-                    inputDTO.getFechaCargaInicial(),
-                    inputDTO.getFechaCargaFinal(),
-                    inputDTO.getOrigen(),
-                    inputDTO.getPaisId(),
-                    inputDTO.getTitulo(),
-                    inputDTO.getProvinciaId());
+            criterios = CriteriosColeccionDTO.builder()
+                    .categoriaId(inputDTO.getCategoriaId())
+                    .contenidoMultimedia(inputDTO.getContenidoMultimedia())
+                    .descripcion(inputDTO.getDescripcion())
+                    .fechaAcontecimientoInicial(inputDTO.getFechaAcontecimientoInicial())
+                    .fechaAcontecimientoFinal(inputDTO.getFechaAcontecimientoFinal())
+                    .fechaCargaInicial(inputDTO.getFechaCargaInicial())
+                    .fechaCargaFinal(inputDTO.getFechaCargaFinal())
+                    .origen(inputDTO.getOrigen())
+                    .paisId(inputDTO.getPaisId())
+                    .titulo(inputDTO.getTitulo())
+                    .provinciaId(inputDTO.getProvinciaId())
+                    .build();
         } else if (inputDTO.getOrigenConexion().equals(OrigenConexion.PROXY)){
-            criterios = new CriteriosColeccionDTO(
-                    buscadores.getBuscadorCategoria().buscar(inputDTO.getCategoria()).getId(),
-                    inputDTO.getContenidoMultimedia(),
-                    inputDTO.getDescripcion(),
-                    inputDTO.getFechaAcontecimientoInicial(),
-                    inputDTO.getFechaAcontecimientoFinal(),
-                    inputDTO.getFechaCargaInicial(),
-                    inputDTO.getFechaCargaFinal(),
-                    inputDTO.getOrigen(),
-                    buscadores.getBuscadorPais().buscar(inputDTO.getPais()).getId(),
-                    inputDTO.getTitulo(),
-                    buscadores.getBuscadorProvincia().buscar(inputDTO.getProvincia()).getId());
+
+            List<Long> categoriasId = new ArrayList<>();
+            List<Long> paisesId = new ArrayList<>();
+            List<Long> provinciasId = new ArrayList<>();
+
+            inputDTO.getCategoria().stream()
+                    .map(buscadores.getBuscadorCategoria()::buscar)
+                    .filter(Objects::nonNull)
+                    .map(Categoria::getId)
+                    .forEach(categoriasId::add);
+
+            inputDTO.getPais().stream()
+                    .map(buscadores.getBuscadorPais()::buscar)
+                    .filter(Objects::nonNull)
+                    .map(Pais::getId)
+                    .forEach(paisesId::add);
+
+            inputDTO.getProvincia().stream()
+                    .map(buscadores.getBuscadorProvincia()::buscar)
+                    .filter(Objects::nonNull)
+                    .map(Provincia::getId)
+                    .forEach(provinciasId::add);
+
+            criterios = CriteriosColeccionDTO.builder()
+                    .contenidoMultimedia(inputDTO.getContenidoMultimedia())
+                    .descripcion(inputDTO.getDescripcion())
+                    .fechaAcontecimientoInicial(inputDTO.getFechaAcontecimientoInicial())
+                    .fechaAcontecimientoFinal(inputDTO.getFechaAcontecimientoFinal())
+                    .fechaCargaInicial(inputDTO.getFechaCargaInicial())
+                    .fechaCargaFinal(inputDTO.getFechaCargaFinal())
+                    .origen(inputDTO.getOrigen())
+                    .titulo(inputDTO.getTitulo())
+                    .categoriaId(categoriasId)
+                    .paisId(paisesId)
+                    .provinciaId(provinciasId)
+                    .build();
+
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        System.out.println(inputDTO.getCategoriaId());
-
-        List<Filtro> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadores, criterios));
+        List<List<IFiltro>> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadores, criterios));
 
         Coleccion coleccion = coleccionRepo.findByIdAndActivoTrue(inputDTO.getId_coleccion()).orElse(null);
 
@@ -541,11 +565,24 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    private <T> Specification<T> crearSpecs(List<Filtro> filtros, Class<T> clazz) {
-        return filtros.stream()
-                .map(filtro->filtro.toSpecification(clazz))  // o IFiltro::toSpecification
-                .filter(Objects::nonNull)
-                .reduce(Specification.where(null), Specification::and); // NO meter distinct acá
+    private <T> Specification<T> crearSpecs(List<List<IFiltro>> filtrosXCategoria, Class<T> clazz) {
+        Specification<T> specFinal = null;
+
+        for (List<IFiltro> categoria : filtrosXCategoria) {
+            // Combina los filtros de una misma categoría con OR
+            Specification<T> specCategoria = categoria.stream()
+                    .map(filtro -> filtro.toSpecification(clazz))
+                    .filter(Objects::nonNull)
+                    .reduce(Specification::or)
+                    .orElse(null);
+
+            if (specCategoria == null) continue;
+
+            // Combina las categorías entre sí con AND
+            specFinal = (specFinal == null) ? specCategoria : specFinal.and(specCategoria);
+        }
+
+        return specFinal;
     }
 
     private <T> Specification<T> distinct(Class <T> clazz) {

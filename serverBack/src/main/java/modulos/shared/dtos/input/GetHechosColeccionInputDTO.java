@@ -1,29 +1,36 @@
 package modulos.shared.dtos.input;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import modulos.agregacion.entities.atributosHecho.OrigenConexion;
 
+import java.util.List;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Data
 public class GetHechosColeccionInputDTO {
-    private String fuente;
-    private Long categoriaId;
-    private Integer contenidoMultimedia;
+
+    private List<Long> categoriaId;
+    private List<Integer> contenidoMultimedia;
     private String descripcion;
     private String fechaAcontecimientoInicial;
     private String fechaAcontecimientoFinal;
     private String fechaCargaInicial;
     private String fechaCargaFinal;
-    private Integer origen;
-    private Long paisId;
+    private List<Integer> origen;
+    private List<Long> paisId;
     private String titulo;
-    private Long provinciaId;
+    private List<Long> provinciaId;
     private OrigenConexion origenConexion;
 
-    private String categoria;
-    private String pais;
-    private String provincia;
-
+    private List<String> categoria;
+    private List<String> pais;
+    private List<String> provincia;
 
     @NotNull(message = "La forma de navegación debe ser especificada")
     private Boolean navegacionCurada;

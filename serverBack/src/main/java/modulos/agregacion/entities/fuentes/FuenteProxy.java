@@ -1,6 +1,8 @@
 package modulos.agregacion.entities.fuentes;
 
 import modulos.agregacion.entities.DbMain.*;
+import modulos.agregacion.entities.DbMain.filtros.Filtro;
+import modulos.agregacion.entities.DbMain.filtros.IFiltro;
 import modulos.agregacion.entities.DbProxy.HechoProxy;
 import modulos.agregacion.entities.atributosHecho.AtributosHecho;
 import modulos.agregacion.entities.atributosHecho.Origen;
@@ -118,7 +120,10 @@ public class FuenteProxy {
                         coleccion.setDescripcion(coleccionResponse.getDescripcion());
                         coleccion.setActivo(true);
                         coleccion.setModificado(true);
-                        coleccion.setCriterios(FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccion(buscadores, coleccionResponse.getCriterios())));
+                        List<List<IFiltro>> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccion(buscadores, coleccionResponse.getCriterios()));
+                        List<Filtro> filtrosJuntos = new ArrayList<>();
+                        filtros.forEach(f -> filtrosJuntos.add((Filtro) f));
+                        coleccion.setCriterios(filtrosJuntos);
                     }
                     return colecciones;
                 });
@@ -172,29 +177,31 @@ public class FuenteProxy {
         atributos.setFechaAcontecimiento(FechaParser.parsearFecha(hechoDto.getFechaAcontecimiento()));
         atributos.setLatitud(hechoDto.getLatitud());
         atributos.setLongitud(hechoDto.getLongitud());
+        atributos.setOrigen(Origen.FUENTE_PROXY_METAMAPA);
+        atributos.setFuente(Fuente.PROXY);
 
-        hecho.getAtributosHecho().setOrigen(Origen.FUENTE_PROXY_METAMAPA);
-        hecho.getAtributosHecho().setFuente(Fuente.PROXY);
+        hecho.setAtributosHecho(atributos);
 
         return hecho;
     }
 
     public Mono<List<Hecho>> getHechosDeColeccionMetaMapa(CriteriosColeccionDTO atributos, Boolean navegacionCurada, Long id_coleccion, BuscadoresRegistry buscadores) {
 
-        GetHechosColeccionInputDTO request = new GetHechosColeccionInputDTO();
-        request.setId_coleccion(id_coleccion);
-        request.setNavegacionCurada(navegacionCurada);
-        request.setOrigen(atributos.getOrigen());
-        request.setDescripcion(atributos.getDescripcion());
-        request.setTitulo(atributos.getTitulo());
-        request.setFechaAcontecimientoInicial(atributos.getFechaAcontecimientoInicial());
-        request.setFechaAcontecimientoFinal(atributos.getFechaAcontecimientoFinal());
-        request.setFechaCargaInicial(atributos.getFechaCargaInicial());
-        request.setFechaCargaFinal(atributos.getFechaCargaFinal());
-        request.setPais(atributos.getPais());
-        request.setProvincia(atributos.getProvincia());
-        request.setCategoria(atributos.getCategoria());
-        request.setOrigenConexion(OrigenConexion.PROXY);
+        GetHechosColeccionInputDTO request = GetHechosColeccionInputDTO.builder()
+                .id_coleccion(id_coleccion)
+                .navegacionCurada(navegacionCurada)
+                .origen(atributos.getOrigen())
+                .descripcion(atributos.getDescripcion())
+                .titulo(atributos.getTitulo())
+                .fechaAcontecimientoInicial(atributos.getFechaAcontecimientoInicial())
+                .fechaAcontecimientoFinal(atributos.getFechaAcontecimientoFinal())
+                .fechaCargaInicial(atributos.getFechaCargaInicial())
+                .fechaCargaFinal(atributos.getFechaCargaFinal())
+                .pais(atributos.getPais())
+                .provincia(atributos.getProvincia())
+                .categoria(atributos.getCategoria())
+                .origenConexion(OrigenConexion.PROXY)
+                .build();
 
         List<Hecho> hechos = new ArrayList<>();
 

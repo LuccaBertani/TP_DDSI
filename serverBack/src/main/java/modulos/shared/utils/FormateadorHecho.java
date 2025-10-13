@@ -11,6 +11,8 @@ import modulos.agregacion.entities.DbMain.filtros.*;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 
 public class FormateadorHecho {
@@ -351,166 +353,209 @@ public class FormateadorHecho {
 
         FiltrosColeccion filtros = new FiltrosColeccion();
 
-        // ---------- CATEGORIA ----------
-        if (inputDTO.getCategoriaId() != null) {
-            Categoria categoria = buscadores.getBuscadorCategoria().buscar(inputDTO.getCategoriaId());
-            if (categoria != null) {
-                var existente = buscadores.getBuscadorFiltro().buscarFiltroCategoriaPorCategoriaId(categoria.getId());
-                filtros.setFiltroCategoria(existente.orElseGet(() -> new FiltroCategoria(categoria)));
-            }
+        BuscadorCategoria buscadorCategoria = buscadores.getBuscadorCategoria();
+        BuscadorPais buscadorPais = buscadores.getBuscadorPais();
+        BuscadorProvincia buscadorProvincia = buscadores.getBuscadorProvincia();
+        BuscadorFiltro buscadorFiltro = buscadores.getBuscadorFiltro();
+        BuscadorUbicacion buscadorUbicacion = buscadores.getBuscadorUbicacion();
+
+        // ---------- CATEGORÍAS (por nombre) ----------
+        if (inputDTO.getCategoria() != null && !inputDTO.getCategoria().isEmpty()) {
+            List<FiltroCategoria> filtrosCategoria = inputDTO.getCategoria().stream()
+                    .map(buscadorCategoria::buscar) // busca por nombre
+                    .filter(Objects::nonNull)
+                    .map(cat -> buscadorFiltro.buscarFiltroCategoriaPorCategoriaId(cat.getId())
+                            .orElseGet(() -> new FiltroCategoria(cat)))
+                    .toList();
+            filtros.setFiltroCategoria(filtrosCategoria);
         }
 
         // ---------- CONTENIDO MULTIMEDIA ----------
-        if (inputDTO.getContenidoMultimedia() != null) {
-            var existente = buscadores.getBuscadorFiltro().buscarFiltroContenidoMultimediaPorTipo(TipoContenido.fromCodigo(inputDTO.getContenidoMultimedia()).codigoEnString());
-            filtros.setFiltroContenidoMultimedia(existente.orElseGet(() -> new FiltroContenidoMultimedia(TipoContenido.fromCodigo(inputDTO.getContenidoMultimedia()))));
+        if (inputDTO.getContenidoMultimedia() != null && !inputDTO.getContenidoMultimedia().isEmpty()) {
+            List<FiltroContenidoMultimedia> filtrosMultimedia = inputDTO.getContenidoMultimedia().stream()
+                    .map(TipoContenido::fromCodigo)
+                    .map(tipo -> buscadorFiltro.buscarFiltroContenidoMultimediaPorTipo(tipo.codigoEnString())
+                            .orElseGet(() -> new FiltroContenidoMultimedia(tipo)))
+                    .toList();
+            filtros.setFiltroContenidoMultimedia(filtrosMultimedia);
         }
 
-        // ---------- DESCRIPCION ----------
-        if (inputDTO.getDescripcion() != null) {
-            String descripcion = inputDTO.getDescripcion();
-            var existente = buscadores.getBuscadorFiltro().buscarFiltroDescripcionExacta(descripcion);
-            filtros.setFiltroDescripcion(existente.orElseGet(() -> new FiltroDescripcion(descripcion)));
+        // ---------- DESCRIPCIÓN ----------
+        if (inputDTO.getDescripcion() != null && !inputDTO.getDescripcion().isBlank()) {
+            FiltroDescripcion filtro = buscadorFiltro.buscarFiltroDescripcionExacta(inputDTO.getDescripcion())
+                    .orElseGet(() -> new FiltroDescripcion(inputDTO.getDescripcion()));
+            filtros.setFiltroDescripcion(filtro);
         }
 
         // ---------- FECHA ACONTECIMIENTO ----------
         ZonedDateTime faIni = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoInicial());
         ZonedDateTime faFin = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoFinal());
         if (faIni != null && faFin != null) {
-            var existente = buscadores.getBuscadorFiltro().buscarFiltroFechaAcontecimientoPorRango(faIni.toLocalDate(), faFin.toLocalDate());
-            filtros.setFiltroFechaAcontecimiento(existente.orElseGet(() -> new FiltroFechaAcontecimiento(faIni, faFin)));
+            FiltroFechaAcontecimiento filtro = buscadorFiltro
+                    .buscarFiltroFechaAcontecimientoPorRango(faIni.toLocalDate(), faFin.toLocalDate())
+                    .orElseGet(() -> new FiltroFechaAcontecimiento(faIni, faFin));
+            filtros.setFiltroFechaAcontecimiento(filtro);
         }
 
         // ---------- FECHA CARGA ----------
         ZonedDateTime fcIni = FechaParser.parsearFecha(inputDTO.getFechaCargaInicial());
         ZonedDateTime fcFin = FechaParser.parsearFecha(inputDTO.getFechaCargaFinal());
         if (fcIni != null && fcFin != null) {
-            var existente = buscadores.getBuscadorFiltro().buscarFiltroFechaCargaPorRango(fcIni.toLocalDate(), fcFin.toLocalDate());
-            filtros.setFiltroFechaCarga(existente.orElseGet(() -> new FiltroFechaCarga(fcIni, fcFin)));
+            FiltroFechaCarga filtro = buscadorFiltro
+                    .buscarFiltroFechaCargaPorRango(fcIni.toLocalDate(), fcFin.toLocalDate())
+                    .orElseGet(() -> new FiltroFechaCarga(fcIni, fcFin));
+            filtros.setFiltroFechaCarga(filtro);
         }
 
         // ---------- ORIGEN ----------
-        if (inputDTO.getOrigen() != null) {
-            Origen origen = Origen.fromCodigo(inputDTO.getOrigen());
-            var existente = buscadores.getBuscadorFiltro().buscarFiltroOrigenPorValor(origen.getCodigo());
-            filtros.setFiltroOrigen(existente.orElseGet(() -> new FiltroOrigen(origen)));
+        if (inputDTO.getOrigen() != null && !inputDTO.getOrigen().isEmpty()) {
+            List<FiltroOrigen> filtrosOrigen = inputDTO.getOrigen().stream()
+                    .map(Origen::fromCodigo)
+                    .map(origen -> buscadorFiltro.buscarFiltroOrigenPorValor(origen.getCodigo())
+                            .orElseGet(() -> new FiltroOrigen(origen)))
+                    .toList();
+            filtros.setFiltroOrigen(filtrosOrigen);
         }
 
-        // ---------- PAIS ----------
-        if (inputDTO.getPaisId() != null) {
-            Pais pais = buscadores.getBuscadorPais().buscar(inputDTO.getPaisId());
-            if (pais != null) {
-                var existente = buscadores.getBuscadorFiltro().buscarFiltroPaisPorPaisId(pais.getId());
-                filtros.setFiltroPais(existente.orElseGet(() -> new FiltroPais(pais, buscadores.getBuscadorUbicacion().buscarUbicacionesConPais(pais.getId()))));
-            }
+        // ---------- PAÍSES (por nombre) ----------
+        if (inputDTO.getPais() != null && !inputDTO.getPais().isEmpty()) {
+            List<FiltroPais> filtrosPais = inputDTO.getPais().stream()
+                    .map(buscadorPais::buscar) // busca por nombre
+                    .filter(Objects::nonNull)
+                    .map(pais -> buscadorFiltro.buscarFiltroPaisPorPaisId(pais.getId())
+                            .orElseGet(() -> new FiltroPais(
+                                    pais,
+                                    buscadorUbicacion.buscarUbicacionesConPais(pais.getId()))))
+                    .toList();
+            filtros.setFiltroPais(filtrosPais);
         }
 
-        // ---------- PROVINCIA ----------
-        if (inputDTO.getProvinciaId() != null) {
-            Provincia provincia = buscadores.getBuscadorProvincia().buscar(inputDTO.getProvinciaId());
-            if (provincia != null) {
-                var existente = buscadores.getBuscadorFiltro().buscarFiltroProvinciaPorProvinciaId(provincia.getId());
-                filtros.setFiltroProvincia(existente.orElseGet(() -> new FiltroProvincia(provincia,
-                        buscadores.getBuscadorUbicacion().buscarUbicacionesConProvincia(provincia.getId()))));
-            }
+        // ---------- PROVINCIAS (por nombre) ----------
+        if (inputDTO.getProvincia() != null && !inputDTO.getProvincia().isEmpty()) {
+            List<FiltroProvincia> filtrosProvincia = inputDTO.getProvincia().stream()
+                    .map(buscadorProvincia::buscar) // busca por nombre
+                    .filter(Objects::nonNull)
+                    .map(provincia -> buscadorFiltro.buscarFiltroProvinciaPorProvinciaId(provincia.getId())
+                            .orElseGet(() -> new FiltroProvincia(
+                                    provincia,
+                                    buscadorUbicacion.buscarUbicacionesConProvincia(provincia.getId()))))
+                    .toList();
+            filtros.setFiltroProvincia(filtrosProvincia);
         }
 
-        // ---------- TITULO ----------
-        if (inputDTO.getTitulo() != null) {
-            String titulo = inputDTO.getTitulo();
-            var existente = buscadores.getBuscadorFiltro().buscarFiltroTituloExacto(titulo);
-            filtros.setFiltroTitulo(existente.orElseGet(() -> new FiltroTitulo(titulo)));
+        // ---------- TÍTULO ----------
+        if (inputDTO.getTitulo() != null && !inputDTO.getTitulo().isBlank()) {
+            FiltroTitulo filtro = buscadorFiltro.buscarFiltroTituloExacto(inputDTO.getTitulo())
+                    .orElseGet(() -> new FiltroTitulo(inputDTO.getTitulo()));
+            filtros.setFiltroTitulo(filtro);
         }
 
         return filtros;
     }
+
+
     //TODO interface formateador ?)
     public static FiltrosColeccion formatearFiltrosColeccionDinamica(
             BuscadoresRegistry buscadores,
             CriteriosColeccionDTO inputDTO) {
+
+        FiltrosColeccion filtros = new FiltrosColeccion();
+
         BuscadorCategoria buscadorCategoria = buscadores.getBuscadorCategoria();
         BuscadorFiltro buscadorFiltro = buscadores.getBuscadorFiltro();
         BuscadorPais buscadorPais = buscadores.getBuscadorPais();
         BuscadorProvincia buscadorProvincia = buscadores.getBuscadorProvincia();
+        BuscadorUbicacion buscadorUbicacion = buscadores.getBuscadorUbicacion();
 
-        FiltrosColeccion filtros = new FiltrosColeccion();
-
-        // ---------- CATEGORIA (Long id) ----------
-        if (inputDTO.getCategoriaId() != null) {
-            Categoria categoria = buscadorCategoria.buscar(inputDTO.getCategoriaId());
-            if (categoria != null) {
-                var existente = buscadorFiltro.buscarFiltroCategoriaPorCategoriaId(categoria.getId());
-                filtros.setFiltroCategoria(existente.orElseGet(() -> new FiltroCategoria(categoria)));
-            }
+        // ---------- CATEGORÍAS ----------
+        if (inputDTO.getCategoriaId() != null && !inputDTO.getCategoriaId().isEmpty()) {
+            List<FiltroCategoria> filtrosCategoria = inputDTO.getCategoriaId().stream()
+                    .map(buscadorCategoria::buscar)
+                    .filter(Objects::nonNull)
+                    .map(categoria -> buscadorFiltro.buscarFiltroCategoriaPorCategoriaId(categoria.getId())
+                            .orElseGet(() -> new FiltroCategoria(categoria)))
+                    .toList();
+            filtros.setFiltroCategoria(filtrosCategoria);
         }
 
-        // ---------- CONTENIDO MULTIMEDIA (Integer código) ----------
-        if (inputDTO.getContenidoMultimedia() != null) {
-            // si tu buscador acepta Integer (código):
-            TipoContenido contenido = TipoContenido.fromCodigo(inputDTO.getContenidoMultimedia());
-
-            var existente = buscadorFiltro.buscarFiltroContenidoMultimediaPorTipo(contenido.codigoEnString());
-
-            filtros.setFiltroContenidoMultimedia(existente.orElseGet(() -> new FiltroContenidoMultimedia(contenido)));
+        // ---------- CONTENIDO MULTIMEDIA ----------
+        if (inputDTO.getContenidoMultimedia() != null && !inputDTO.getContenidoMultimedia().isEmpty()) {
+            List<FiltroContenidoMultimedia> filtrosMultimedia = inputDTO.getContenidoMultimedia().stream()
+                    .map(TipoContenido::fromCodigo)
+                    .map(tipo -> buscadorFiltro.buscarFiltroContenidoMultimediaPorTipo(tipo.codigoEnString())
+                            .orElseGet(() -> new FiltroContenidoMultimedia(tipo)))
+                    .toList();
+            filtros.setFiltroContenidoMultimedia(filtrosMultimedia);
         }
 
-        // ---------- DESCRIPCION (String) ----------
-        if (inputDTO.getDescripcion() != null) {
-            String descripcion = inputDTO.getDescripcion();
-            var existente = buscadorFiltro.buscarFiltroDescripcionExacta(descripcion);
-            filtros.setFiltroDescripcion(existente.orElseGet(() -> new FiltroDescripcion(descripcion)));
+        // ---------- ORIGEN ----------
+        if (inputDTO.getOrigen() != null && !inputDTO.getOrigen().isEmpty()) {
+            List<FiltroOrigen> filtrosOrigen = inputDTO.getOrigen().stream()
+                    .map(Origen::fromCodigo)
+                    .map(origen -> buscadorFiltro.buscarFiltroOrigenPorValor(origen.getCodigo())
+                            .orElseGet(() -> new FiltroOrigen(origen)))
+                    .toList();
+            filtros.setFiltroOrigen(filtrosOrigen);
         }
 
-        // ---------- FECHA ACONTECIMIENTO (String -> ZonedDateTime) ----------
+        // ---------- PAÍSES ----------
+        if (inputDTO.getPaisId() != null && !inputDTO.getPaisId().isEmpty()) {
+            List<FiltroPais> filtrosPais = inputDTO.getPaisId().stream()
+                    .map(buscadorPais::buscar)
+                    .filter(Objects::nonNull)
+                    .map(pais -> buscadorFiltro.buscarFiltroPaisPorPaisId(pais.getId())
+                            .orElseGet(() -> new FiltroPais(
+                                    pais,
+                                    buscadorUbicacion.buscarUbicacionesConPais(pais.getId()))))
+                    .toList();
+            filtros.setFiltroPais(filtrosPais);
+        }
+
+        // ---------- PROVINCIAS ----------
+        if (inputDTO.getProvinciaId() != null && !inputDTO.getProvinciaId().isEmpty()) {
+            List<FiltroProvincia> filtrosProvincia = inputDTO.getProvinciaId().stream()
+                    .map(buscadorProvincia::buscar)
+                    .filter(Objects::nonNull)
+                    .map(provincia -> buscadorFiltro.buscarFiltroProvinciaPorProvinciaId(provincia.getId())
+                            .orElseGet(() -> new FiltroProvincia(
+                                    provincia,
+                                    buscadorUbicacion.buscarUbicacionesConPais(provincia.getId()))))
+                    .toList();
+            filtros.setFiltroProvincia(filtrosProvincia);
+        }
+
+        // ---------- DESCRIPCIÓN ----------
+        if (inputDTO.getDescripcion() != null && !inputDTO.getDescripcion().isBlank()) {
+            FiltroDescripcion filtro = buscadorFiltro.buscarFiltroDescripcionExacta(inputDTO.getDescripcion())
+                    .orElseGet(() -> new FiltroDescripcion(inputDTO.getDescripcion()));
+            filtros.setFiltroDescripcion(filtro);
+        }
+
+        // ---------- FECHA ACONTECIMIENTO ----------
         ZonedDateTime faIni = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoInicial());
         ZonedDateTime faFin = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoFinal());
         if (faIni != null && faFin != null) {
-            // el buscador trabaja con LocalDate para la búsqueda
-            var existente = buscadorFiltro.buscarFiltroFechaAcontecimientoPorRango(
-                    faIni.toLocalDate(), faFin.toLocalDate());
-            filtros.setFiltroFechaAcontecimiento(existente.orElseGet(() -> new FiltroFechaAcontecimiento(faIni, faFin)));
+            FiltroFechaAcontecimiento filtro = buscadorFiltro
+                    .buscarFiltroFechaAcontecimientoPorRango(faIni.toLocalDate(), faFin.toLocalDate())
+                    .orElseGet(() -> new FiltroFechaAcontecimiento(faIni, faFin));
+            filtros.setFiltroFechaAcontecimiento(filtro);
         }
 
-        // ---------- FECHA CARGA (String -> ZonedDateTime) ----------
+        // ---------- FECHA CARGA ----------
         ZonedDateTime fcIni = FechaParser.parsearFecha(inputDTO.getFechaCargaInicial());
         ZonedDateTime fcFin = FechaParser.parsearFecha(inputDTO.getFechaCargaFinal());
         if (fcIni != null && fcFin != null) {
-            var existente = buscadorFiltro.buscarFiltroFechaCargaPorRango(
-                    fcIni.toLocalDate(), fcFin.toLocalDate());
-            filtros.setFiltroFechaCarga(existente.orElseGet(() -> new FiltroFechaCarga(fcIni, fcFin)));
+            FiltroFechaCarga filtro = buscadorFiltro
+                    .buscarFiltroFechaCargaPorRango(fcIni.toLocalDate(), fcFin.toLocalDate())
+                    .orElseGet(() -> new FiltroFechaCarga(fcIni, fcFin));
+            filtros.setFiltroFechaCarga(filtro);
         }
 
-        // ---------- ORIGEN (Integer código) ----------
-        if (inputDTO.getOrigen() != null) {
-            Origen origen = Origen.fromCodigo(inputDTO.getOrigen());
-            // si tu buscador recibe el código (Integer):
-            var existente = buscadorFiltro.buscarFiltroOrigenPorValor(origen.getCodigo());
-            filtros.setFiltroOrigen(existente.orElseGet(() -> new FiltroOrigen(origen)));
-        }
-
-        // ---------- PAIS (Long id) ----------
-        if (inputDTO.getPaisId() != null) {
-            Pais pais = buscadorPais.buscar(inputDTO.getPaisId());
-            if (pais != null) {
-                var existente = buscadorFiltro.buscarFiltroPaisPorPaisId(pais.getId());
-                filtros.setFiltroPais(existente.orElseGet(() -> new FiltroPais(pais, buscadores.getBuscadorUbicacion().buscarUbicacionesConPais(pais.getId()))));
-            }
-        }
-
-        if (inputDTO.getProvinciaId() != null) {
-            Provincia provincia = buscadorProvincia.buscar(inputDTO.getProvinciaId());
-            if (provincia != null) {
-                System.out.println("ENTRO ACA");
-                var existente = buscadorFiltro.buscarFiltroProvinciaPorProvinciaId(provincia.getId());
-                filtros.setFiltroProvincia(existente.orElseGet(() -> new FiltroProvincia(provincia, buscadores.getBuscadorUbicacion().buscarUbicacionesConPais(provincia.getId()))));
-            }
-        }
-
-        // ---------- TITULO (String) ----------
-        if (inputDTO.getTitulo() != null) {
-            String titulo = inputDTO.getTitulo();
-            var existente = buscadorFiltro.buscarFiltroTituloExacto(titulo);
-            filtros.setFiltroTitulo(existente.orElseGet(() -> new FiltroTitulo(titulo)));
+        // ---------- TÍTULO ----------
+        if (inputDTO.getTitulo() != null && !inputDTO.getTitulo().isBlank()) {
+            FiltroTitulo filtro = buscadorFiltro.buscarFiltroTituloExacto(inputDTO.getTitulo())
+                    .orElseGet(() -> new FiltroTitulo(inputDTO.getTitulo()));
+            filtros.setFiltroTitulo(filtro);
         }
 
         return filtros;
@@ -520,29 +565,70 @@ public class FormateadorHecho {
     public static CriteriosColeccionDTO filtrosColeccionToString(List<Filtro> filtros) {
         CriteriosColeccionDTO criterios = new CriteriosColeccionDTO();
 
+        // Inicializamos las listas vacías
+        criterios.setCategoria(new ArrayList<>());
+        criterios.setPais(new ArrayList<>());
+        criterios.setProvincia(new ArrayList<>());
+        criterios.setOrigen(new ArrayList<>());
+        criterios.setContenidoMultimedia(new ArrayList<>());
+
         for (Filtro filtro : filtros) {
-            if (filtro instanceof FiltroCategoria) {
-                Categoria categoriaObj = ((FiltroCategoria) filtro).getCategoria();
-                criterios.setCategoriaId(categoriaObj.getId());
-            } else if (filtro instanceof FiltroContenidoMultimedia) {
-                TipoContenido contenido = ((FiltroContenidoMultimedia) filtro).getTipoContenido();
-                criterios.setContenidoMultimedia(contenido.getCodigo());
-            } else if (filtro instanceof FiltroDescripcion) {
-                criterios.setDescripcion(((FiltroDescripcion) filtro).getDescripcion());
-            } else if (filtro instanceof FiltroFechaAcontecimiento) {
-                criterios.setFechaAcontecimientoInicial(((FiltroFechaAcontecimiento) filtro).getFechaInicial().toString());
-                criterios.setFechaAcontecimientoFinal(((FiltroFechaAcontecimiento) filtro).getFechaFinal().toString());
-            } else if (filtro instanceof FiltroFechaCarga) {
-                criterios.setFechaCargaInicial(((FiltroFechaCarga) filtro).getFechaInicial().toString());
-                criterios.setFechaCargaFinal(((FiltroFechaCarga) filtro).getFechaFinal().toString());
-            } else if (filtro instanceof FiltroOrigen) {
-                Origen origen = ((FiltroOrigen) filtro).getOrigenDeseado();
-                criterios.setOrigen(origen.getCodigo());
-            } else if (filtro instanceof FiltroPais) {
-                Pais pais = ((FiltroPais) filtro).getPais();
-                criterios.setPaisId(pais.getId());
-            } else if (filtro instanceof FiltroTitulo) {
-                criterios.setTitulo(((FiltroTitulo) filtro).getTitulo());
+
+            // ---------- CATEGORÍA ----------
+            if (filtro instanceof FiltroCategoria filtroCategoria) {
+                Categoria categoriaObj = filtroCategoria.getCategoria();
+                if (categoriaObj != null)
+                    criterios.getCategoria().add(categoriaObj.getTitulo());
+            }
+
+            // ---------- CONTENIDO MULTIMEDIA ----------
+            else if (filtro instanceof FiltroContenidoMultimedia filtroContenido) {
+                TipoContenido contenido = filtroContenido.getTipoContenido();
+                if (contenido != null)
+                    criterios.getContenidoMultimedia().add(contenido.getCodigo());
+            }
+
+            // ---------- DESCRIPCIÓN ----------
+            else if (filtro instanceof FiltroDescripcion filtroDescripcion) {
+                criterios.setDescripcion(filtroDescripcion.getDescripcion());
+            }
+
+            // ---------- FECHA ACONTECIMIENTO ----------
+            else if (filtro instanceof FiltroFechaAcontecimiento filtroFecha) {
+                criterios.setFechaAcontecimientoInicial(filtroFecha.getFechaInicial().toString());
+                criterios.setFechaAcontecimientoFinal(filtroFecha.getFechaFinal().toString());
+            }
+
+            // ---------- FECHA CARGA ----------
+            else if (filtro instanceof FiltroFechaCarga filtroFechaCarga) {
+                criterios.setFechaCargaInicial(filtroFechaCarga.getFechaInicial().toString());
+                criterios.setFechaCargaFinal(filtroFechaCarga.getFechaFinal().toString());
+            }
+
+            // ---------- ORIGEN ----------
+            else if (filtro instanceof FiltroOrigen filtroOrigen) {
+                Origen origen = filtroOrigen.getOrigenDeseado();
+                if (origen != null)
+                    criterios.getOrigen().add(origen.getCodigo());
+            }
+
+            // ---------- PAÍS ----------
+            else if (filtro instanceof FiltroPais filtroPais) {
+                Pais pais = filtroPais.getPais();
+                if (pais != null)
+                    criterios.getPais().add(pais.getPais());
+            }
+
+            // ---------- PROVINCIA ----------
+            else if (filtro instanceof FiltroProvincia filtroProvincia) {
+                Provincia provincia = filtroProvincia.getProvincia();
+                if (provincia != null)
+                    criterios.getProvincia().add(provincia.getProvincia());
+            }
+
+            // ---------- TÍTULO ----------
+            else if (filtro instanceof FiltroTitulo filtroTitulo) {
+                criterios.setTitulo(filtroTitulo.getTitulo());
             }
         }
 
@@ -551,38 +637,32 @@ public class FormateadorHecho {
 
 
 
+    private static <T extends IFiltro> void agregarSiNoVacia(
+            List<List<IFiltro>> filtrosPorCategoria,
+            List<T> filtros) {
 
-    public static List<Filtro> obtenerListaDeFiltros(FiltrosColeccion filtrosColeccion) {
-       List<Filtro> filtros = new ArrayList<>();
-
-        if (filtrosColeccion.getFiltroCategoria() != null)
-            filtros.add(filtrosColeccion.getFiltroCategoria());
-
-        if (filtrosColeccion.getFiltroPais() != null)
-            filtros.add(filtrosColeccion.getFiltroPais());
-
-        if (filtrosColeccion.getFiltroDescripcion() != null)
-            filtros.add(filtrosColeccion.getFiltroDescripcion());
-
-        if (filtrosColeccion.getFiltroContenidoMultimedia() != null)
-            filtros.add(filtrosColeccion.getFiltroContenidoMultimedia());
-
-        if (filtrosColeccion.getFiltroFechaAcontecimiento() != null)
-            filtros.add(filtrosColeccion.getFiltroFechaAcontecimiento());
-
-        if (filtrosColeccion.getFiltroFechaCarga() != null)
-            filtros.add(filtrosColeccion.getFiltroFechaCarga());
-
-        if (filtrosColeccion.getFiltroOrigen() != null)
-            filtros.add(filtrosColeccion.getFiltroOrigen());
-
-        if (filtrosColeccion.getFiltroTitulo() != null)
-            filtros.add(filtrosColeccion.getFiltroTitulo());
-
-        if (filtrosColeccion.getFiltroProvincia() != null)
-            filtros.add(filtrosColeccion.getFiltroProvincia());
-
-        return filtros;
+        if (filtros != null && !filtros.isEmpty()) {
+            List<IFiltro> lista = filtros.stream()
+                    .map(f -> (IFiltro) f)
+                    .toList();
+            filtrosPorCategoria.add(lista);
+        }
     }
 
+
+    public static List<List<IFiltro>> obtenerListaDeFiltros(FiltrosColeccion filtrosColeccion) {
+        List<List<IFiltro>> filtrosPorCategoria = new ArrayList<>();
+
+        agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroCategoria());
+        agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroPais());
+        agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroProvincia());
+        agregarSiNoVacia(filtrosPorCategoria, List.of(filtrosColeccion.getFiltroDescripcion()));
+        agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroContenidoMultimedia());
+        agregarSiNoVacia(filtrosPorCategoria, List.of(filtrosColeccion.getFiltroFechaAcontecimiento()));
+        agregarSiNoVacia(filtrosPorCategoria, List.of(filtrosColeccion.getFiltroFechaCarga()));
+        agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroOrigen());
+        agregarSiNoVacia(filtrosPorCategoria, List.of(filtrosColeccion.getFiltroTitulo()));
+
+        return filtrosPorCategoria;
+    }
 }

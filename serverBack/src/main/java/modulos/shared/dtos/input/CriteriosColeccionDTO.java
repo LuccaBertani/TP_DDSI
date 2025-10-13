@@ -1,39 +1,31 @@
 package modulos.shared.dtos.input;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.util.List;
+
+@Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CriteriosColeccionDTO {
-    private Long categoriaId;
-    private Integer contenidoMultimedia;
+
+    private List<Long> categoriaId;
+    private List<Integer> contenidoMultimedia;
     private String descripcion;
     private String fechaAcontecimientoInicial;
     private String fechaAcontecimientoFinal;
     private String fechaCargaInicial;
     private String fechaCargaFinal;
-    private Integer origen;
-    private Long paisId;
-    private Long provinciaId;
+    private List<Integer> origen;
+    private List<Long> paisId;
     private String titulo;
+    private List<Long> provinciaId;
 
-    private String categoria;
-    private String pais;
-    private String provincia;
-
-    public CriteriosColeccionDTO(){
-    }
-
-    public CriteriosColeccionDTO(Long categoriaId, Integer contenidoMultimedia, String descripcion, String fechaAcontecimientoInicial, String fechaAcontecimientoFinal, String fechaCargaInicial, String fechaCargaFinal, Integer origen, Long paisId, String titulo, Long provinciaId) {
-        this.categoriaId = categoriaId;
-        this.contenidoMultimedia = contenidoMultimedia;
-        this.descripcion = descripcion;
-        this.fechaAcontecimientoInicial = fechaAcontecimientoInicial;
-        this.fechaAcontecimientoFinal = fechaAcontecimientoFinal;
-        this.fechaCargaInicial = fechaCargaInicial;
-        this.fechaCargaFinal = fechaCargaFinal;
-        this.origen = origen;
-        this.paisId = paisId;
-        this.titulo = titulo;
-        this.provinciaId = provinciaId;
-    }
+    private List<String> categoria;
+    private List<String> pais;
+    private List<String> provincia;
 }

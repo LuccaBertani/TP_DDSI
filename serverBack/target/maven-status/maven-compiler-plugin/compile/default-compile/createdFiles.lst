@@ -11,6 +11,7 @@ modulos\servicioEstadistica\ServicioDeEstadistica.class
 modulos\agregacion\entities\DbMain\Filtrador.class
 modulos\agregacion\entities\fuentes\FuenteEstatica.class
 modulos\agregacion\entities\atributosHecho\AtributosHechoModificar$AtributosHechoModificarBuilder.class
+modulos\shared\dtos\input\GetHechosColeccionInputDTO$GetHechosColeccionInputDTOBuilder.class
 modulos\agregacion\entities\DbMain\usuario\Usuario.class
 modulos\buscadores\BuscadoresRegistry.class
 modulos\agregacion\repositories\DbEstatica\IDatasetsRepository.class
@@ -33,6 +34,7 @@ modulos\agregacion\repositories\DbDinamica\ISolicitudModificarHechoRepository.cl
 modulos\agregacion\entities\AtributosHechoModificarMemoria.class
 modulos\agregacion\entities\DbMain\Mensaje.class
 modulos\agregacion\entities\DbMain\Reporte.class
+modulos\shared\dtos\input\CriteriosColeccionDTO$CriteriosColeccionDTOBuilder.class
 modulos\agregacion\repositories\DbMain\IUbicacionRepository.class
 modulos\shared\dtos\input\ColeccionUpdateInputDTO.class
 modulos\agregacion\repositories\DbMain\IHechoRefRepository.class
