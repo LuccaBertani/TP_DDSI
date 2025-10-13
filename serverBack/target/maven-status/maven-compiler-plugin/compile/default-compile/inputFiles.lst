@@ -5,9 +5,11 @@ C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\se
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\DbMain\Pais.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\servicioEstadistica\entities\ProvinciaCantidad.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\services\SolicitudHechoService.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\utils\JwtUtil.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\dtos\input\EditarUsuarioDtoInput.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\dtos\output\VisualizarHechosOutputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\dtos\input\ColeccionInputDTO.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\dtos\output\AuthResponseDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\fuentes\Requests\LoginRequest.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\buscadores\Normalizador.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\dtos\input\SolicitudHechoEliminarInputDTO.java
@@ -33,6 +35,7 @@ C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\se
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\controllers\UsuarioController.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\DbMain\Hecho.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\atributosHecho\AtributosHechoModificar.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\dtos\input\TokenResponse.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\DbMain\filtros\FiltroContenidoMultimedia.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\repositories\DbMain\ISinonimoRepository.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\dtos\input\CriteriosColeccionDTO.java
@@ -122,6 +125,7 @@ C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\se
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\fuentes\HechosMetamapaResponse.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\servicioEstadistica\entities\CategoriaCantidad.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\dtos\input\RefrescarColeccionesInputDTO.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\config\SecurityConfig.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\servicioEstadistica\repositories\IColeccionProvinciaRepository.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\DbMain\usuario\Usuario.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\utils\FormateadorHechoMemoria.java
@@ -130,6 +134,7 @@ C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\se
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\servicioEstadistica\entities\CategoriaHora.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\DbMain\Filtrador.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\repositories\DbDinamica\ISolicitudModificarHechoRepository.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\filters\JwtAuthenticationFilter.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\ServerBackApplication.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\DbDinamica\HechoDinamica.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\config\DbHechosProxyConfig.java

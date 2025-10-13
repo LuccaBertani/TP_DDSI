@@ -1,9 +1,10 @@
-package modulos.Front.dtos.output;
+package modulos.shared.dtos.output;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import modulos.agregacion.entities.DbMain.usuario.Rol;
 
 @Data
 @Builder
@@ -12,5 +13,6 @@ import lombok.NoArgsConstructor;
 public class AuthResponseDTO {
     private String accessToken;
     private String refreshToken;
+    private Rol rol;
 }
 

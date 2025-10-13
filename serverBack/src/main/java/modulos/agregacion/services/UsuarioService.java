@@ -47,12 +47,12 @@ public class UsuarioService {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    public ResponseEntity<?> iniciarSesion(LoginDtoInput login) {
-        Usuario usuario = usuarioRepo.findByNombreDeUsuario(login.getNombreDeUsuario()).orElse(null);
+    public ResponseEntity<?> iniciarSesion(String username, String password) {
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(username).orElse(null);
 
-        if (usuario == null || !passwordEncoder.matches(login.getContrasenia(), usuario.getContrasenia())) {
+        if (usuario == null || !passwordEncoder.matches(password, usuario.getContrasenia())) {
             return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
+                    .status(HttpStatus.NOT_FOUND)
                     .body("Nombre de usuario o contraseña incorrecto");
         }
 

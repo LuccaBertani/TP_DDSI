@@ -10,6 +10,22 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 
 // TODO: 401 UNAUTHORIZED CUANDO EL USUARIO NO ESTÁ AUTENTICADO. 403 FORBIDDEN CUANDO EL USUARIO ESTÁ AUTENTICADO PERO NO TIENE PERMISOS
+
+
+/* Definimos como sesiones mixtas a la implementación que realizamos cuando nuestro frontend está implementado con un cliente liviano desacoplado
+
+- Sesiones en cookies desde el usuario final hasta el servidor frontend
+- Tokens de autorización desde el servidor frontend hasta el servidor de aplicación (server back, donde reside logica de negocio)
+
+cliente -> cookie -> server front -> token auth -> server back
+
+- Se usan tokens auth porque el server back es stateless. No recuerda al cliente. En cambio, el server front es stateful. Recuerda al cliente por la sesión
+- Por esa mezcla, se considera que se usan sesiones mixtas
+
+- Los roles del usuario pueden viajar en el token
+
+*/
+
 public class ServerBackApplication {
     public static void main(String[] args) {
         SpringApplication.run(ServerBackApplication.class, args);

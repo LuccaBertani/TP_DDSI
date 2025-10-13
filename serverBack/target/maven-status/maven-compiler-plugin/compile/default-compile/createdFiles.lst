@@ -6,6 +6,7 @@ modulos\agregacion\entities\DbMain\filtros\IFiltro.class
 modulos\agregacion\repositories\DbMain\IFiltroRepository.class
 modulos\agregacion\entities\fuentes\Requests\LoginResponse.class
 modulos\shared\dtos\input\ColeccionInputDTO.class
+modulos\shared\dtos\input\TokenResponse$TokenResponseBuilder.class
 modulos\shared\dtos\input\SolicitudHechoInputDTO.class
 modulos\servicioEstadistica\ServicioDeEstadistica.class
 modulos\agregacion\entities\DbMain\Filtrador.class
@@ -42,6 +43,7 @@ modulos\agregacion\entities\DbMain\Sinonimo.class
 modulos\shared\dtos\input\SolicitudHechoModificarInputDTO.class
 modulos\agregacion\repositories\DbDinamica\IHechosDinamicaRepository.class
 modulos\agregacion\entities\DbProxy\HechoProxy$HechoProxyBuilderImpl.class
+modulos\shared\dtos\input\TokenResponse.class
 modulos\agregacion\entities\AtributosHechoModificarMemoria$AtributosHechoModificarMemoriaBuilder.class
 modulos\agregacion\entities\DbMain\filtros\FiltroPais.class
 modulos\shared\dtos\input\LoginDtoInput.class
@@ -53,6 +55,7 @@ modulos\agregacion\entities\DbDinamica\solicitudes\SolicitudSubirHecho.class
 modulos\agregacion\entities\DbMain\filtros\FiltroCategoria.class
 modulos\agregacion\entities\DbDinamica\HechoDinamica$HechoDinamicaBuilder.class
 modulos\agregacion\entities\DbMain\Hecho$HechoBuilder.class
+modulos\config\SecurityConfig.class
 modulos\agregacion\entities\DbMain\RespuestaHttp.class
 modulos\agregacion\entities\DbEstatica\HechoEstatica$HechoEstaticaBuilder.class
 modulos\agregacion\repositories\DbMain\IAtributosHechoModificarRepository.class
@@ -62,6 +65,7 @@ modulos\agregacion\config\DbMainConfig.class
 modulos\apis\DatosQuery.class
 modulos\shared\dtos\input\EditarNombreDeUsuarioDtoInput.class
 modulos\shared\utils\Geocodificador.class
+modulos\shared\dtos\output\AuthResponseDTO$AuthResponseDTOBuilder.class
 modulos\shared\dtos\input\EditarUsuarioDtoInput.class
 modulos\shared\dtos\output\ReporteHechoOutputDTO$ReporteHechoOutputDTOBuilder.class
 modulos\agregacion\entities\DbDinamica\solicitudes\SolicitudHecho.class
@@ -82,6 +86,7 @@ modulos\buscadores\BuscadorCategoria.class
 modulos\agregacion\converters\ZonedDateTimeConverter.class
 modulos\agregacion\entities\DbMain\UbicacionString.class
 modulos\agregacion\entities\HechoMemoria.class
+modulos\filters\JwtAuthenticationFilter.class
 modulos\servicioEstadistica\entities\CategoriaHora.class
 modulos\servicioEstadistica\repositories\IColeccionProvinciaRepository.class
 modulos\agregacion\entities\DbMain\Hecho.class
@@ -107,6 +112,7 @@ modulos\agregacion\entities\DbMain\FiltrosColeccion.class
 modulos\agregacion\entities\DbMain\PaisProvincias.class
 modulos\shared\utils\FormateadorHecho.class
 modulos\agregacion\entities\fuentes\FuenteDinamica.class
+modulos\shared\dtos\output\AuthResponseDTO.class
 modulos\agregacion\repositories\DbMain\IPaisRepository.class
 modulos\shared\utils\FormateadorHechoMemoria.class
 modulos\agregacion\entities\fuentes\FuenteProxy.class
@@ -134,6 +140,7 @@ modulos\buscadores\Normalizador.class
 modulos\servicioEstadistica\entities\ColeccionProvincia.class
 modulos\agregacion\entities\DbMain\Hash.class
 modulos\agregacion\entities\DbMain\projections\CategoriaCantidadProjection.class
+modulos\shared\utils\JwtUtil.class
 modulos\agregacion\repositories\DbProxy\IHechosProxyRepository.class
 modulos\servicioEstadistica\repositories\ICategoriaCantidadRepository.class
 modulos\agregacion\entities\DbMain\projections\ColeccionProvinciaProjection.class
