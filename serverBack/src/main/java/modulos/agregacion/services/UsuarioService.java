@@ -1,6 +1,5 @@
 package modulos.agregacion.services;
 
-import modulos.agregacion.entities.DbMain.Hash;
 import modulos.agregacion.entities.DbMain.usuario.Rol;
 import modulos.agregacion.repositories.DbMain.IUsuarioRepository;
 import modulos.shared.dtos.input.*;
@@ -8,6 +7,8 @@ import modulos.agregacion.entities.DbMain.usuario.Usuario;
 import modulos.shared.dtos.output.UsuarioOutputDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,8 +21,11 @@ public class UsuarioService {
 
     private final IUsuarioRepository usuarioRepo;
 
+    private final PasswordEncoder passwordEncoder;
+
     public UsuarioService(IUsuarioRepository usuarioRepo) {
         this.usuarioRepo = usuarioRepo;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
     //Momento en el que un usuario se registra y guarda datos personales (NO LLAMAR A ESTE METODO SI ES ANONIMO)
     public ResponseEntity<?> crearUsuario(UsuarioInputDTO inputDTO){
@@ -38,7 +42,7 @@ public class UsuarioService {
         usuario.setNombreDeUsuario(inputDTO.getNombreUsuario());
         usuario.getDatosPersonales().setApellido(inputDTO.getApellido());
         usuario.getDatosPersonales().setEdad(inputDTO.getEdad());
-        usuario.setContrasenia(Hash.generarHash(inputDTO.getContrasenia()));
+        usuario.setContrasenia(passwordEncoder.encode(inputDTO.getContrasenia()));
         usuarioRepo.save(usuario);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -46,7 +50,7 @@ public class UsuarioService {
     public ResponseEntity<?> iniciarSesion(LoginDtoInput login) {
         Usuario usuario = usuarioRepo.findByNombreDeUsuario(login.getNombreDeUsuario()).orElse(null);
 
-        if (usuario == null || !Hash.verificarPassword(login.getContrasenia(), usuario.getContrasenia())) {
+        if (usuario == null || !passwordEncoder.matches(login.getContrasenia(), usuario.getContrasenia())) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body("Nombre de usuario o contraseña incorrecto");
@@ -59,13 +63,13 @@ public class UsuarioService {
 
         Usuario usuario = usuarioRepo.findById(dtoImput.getId_usuario()).orElse(null);
 
-        if (usuario == null || !Hash.verificarPassword(dtoImput.getContrasenia_actual(), usuario.getContrasenia())) {
+        if (usuario == null || !passwordEncoder.matches(dtoImput.getContrasenia_actual(), usuario.getContrasenia())) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body("Nombre de usuario o contraseña incorrecto");
         }
 
-        String contraseniaNuevaHash = Hash.generarHash(dtoImput.getContrasenia_nueva());
+        String contraseniaNuevaHash = passwordEncoder.encode(dtoImput.getContrasenia_nueva());
         usuario.setContrasenia(contraseniaNuevaHash);
         usuarioRepo.save(usuario);
 
@@ -103,7 +107,7 @@ public class UsuarioService {
                     .body(Map.of("message", "Usuario no encontrado"));
         }
 
-        if (!Hash.verificarPassword(dtoImput.getContrasenia(), usuario.getContrasenia())) {
+        if (!passwordEncoder.matches(dtoImput.getContrasenia(), usuario.getContrasenia())) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Contraseña incorrecta"));
@@ -144,5 +148,13 @@ public class UsuarioService {
         }
 
         return ResponseEntity.ok(usuariosDto);
+    }
+
+    public ResponseEntity<?> getUsuarioByNombreUsuario(String nombre_usuario){
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(nombre_usuario).orElse(null);
+        if (usuario != null){
+            return ResponseEntity.ok(usuario);
+        }
+        return ResponseEntity.notFound().build();
     }
 }

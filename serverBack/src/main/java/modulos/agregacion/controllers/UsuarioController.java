@@ -56,4 +56,9 @@ public class UsuarioController {
         return usuarioService.getAll(id);
     }
 
+    @GetMapping("/get/usuario/{nombre_usuario}")
+    public ResponseEntity<?> getUsuarioByNombreUsuario(@RequestParam String nombre_usuario){
+        return usuarioService.getUsuarioByNombreUsuario(nombre_usuario);
+    }
+
 }
