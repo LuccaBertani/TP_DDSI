@@ -3,6 +3,7 @@ package modulos.agregacion.controllers;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.validation.Valid;
+import modulos.agregacion.entities.DbMain.usuario.Rol;
 import modulos.agregacion.entities.DbMain.usuario.Usuario;
 import modulos.agregacion.services.UsuarioService;
 import modulos.shared.dtos.input.TokenResponse;
@@ -83,8 +84,8 @@ public class UsuarioController {
         Usuario usuario = (Usuario)rta.getBody();
 
         // Generar tokens
-        String accessToken = JwtUtil.generarAccessToken(username, usuario.getRol().name());
-        String refreshToken = JwtUtil.generarRefreshToken(username, usuario.getRol().name());
+        String accessToken = JwtUtil.generarAccessToken(username, usuario.getRol());
+        String refreshToken = JwtUtil.generarRefreshToken(username, usuario.getRol());
 
         AuthResponseDTO response = AuthResponseDTO.builder()
                 .accessToken(accessToken)
@@ -119,12 +120,12 @@ public class UsuarioController {
             }
 
             // OJO CON LOS CASOS DE CAMBIO DE ROL VISUALIZADOR <-> CONTRIBUYENTE: Yo asumo que se modifica antes al rol del usuario y que se guarda en la bdd
-            Usuario usuario = (Usuario) rta.getBody();
-            String newAccessToken = JwtUtil.generarAccessToken(claimsRequest.getSubject(), claims.get("rol", String.class));
+            Rol rol = claims.get("rol", Rol.class);
+            String newAccessToken = JwtUtil.generarAccessToken(claimsRequest.getSubject(), rol);
             AuthResponseDTO response = AuthResponseDTO.builder()
                     .accessToken(newAccessToken)
                     .refreshToken(request.getRefreshToken())
-                    .rol(usuario.getRol())
+                    .rol(rol)
                     .build();
 
             return ResponseEntity.ok(response);
