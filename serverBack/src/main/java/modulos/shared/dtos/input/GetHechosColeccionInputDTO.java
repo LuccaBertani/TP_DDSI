@@ -26,7 +26,7 @@ public class GetHechosColeccionInputDTO {
     private List<Long> paisId;
     private String titulo;
     private List<Long> provinciaId;
-    private OrigenConexion origenConexion;
+    private Integer origenConexion;
 
     private List<String> categoria;
     private List<String> pais;

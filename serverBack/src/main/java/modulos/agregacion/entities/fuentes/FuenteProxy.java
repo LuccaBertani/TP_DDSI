@@ -134,7 +134,7 @@ public class FuenteProxy {
         List<Hecho> hechos = new ArrayList<>();
 
         return webClientMetaMapa.get().uri(UriBuilder -> UriBuilder.path("/api/hechos/get-all")
-                        .queryParam("origenConexion", OrigenConexion.PROXY)
+                        .queryParam("origenConexion", OrigenConexion.PROXY.getCodigo())
                         .build())
                 .retrieve()
                 .bodyToMono(HechosMetamapaResponse.class)
@@ -200,7 +200,7 @@ public class FuenteProxy {
                 .pais(atributos.getPais())
                 .provincia(atributos.getProvincia())
                 .categoria(atributos.getCategoria())
-                .origenConexion(OrigenConexion.PROXY)
+                .origenConexion(OrigenConexion.PROXY.getCodigo())
                 .build();
 
         List<Hecho> hechos = new ArrayList<>();

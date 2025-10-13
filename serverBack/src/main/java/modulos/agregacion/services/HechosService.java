@@ -223,7 +223,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
         CriteriosColeccionDTO criterios;
 
-        if(inputDTO.getOrigenConexion().equals(OrigenConexion.FRONT)) {
+        if(OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.FRONT)) {
             criterios = CriteriosColeccionDTO.builder()
                     .categoriaId(inputDTO.getCategoriaId())
                     .contenidoMultimedia(inputDTO.getContenidoMultimedia())
@@ -237,7 +237,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                     .titulo(inputDTO.getTitulo())
                     .provinciaId(inputDTO.getProvinciaId())
                     .build();
-        } else if (inputDTO.getOrigenConexion().equals(OrigenConexion.PROXY)){
+        } else if (OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.PROXY)){
 
             List<Long> categoriasId = new ArrayList<>();
             List<Long> paisesId = new ArrayList<>();
@@ -348,12 +348,12 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
         }
 
-        if (inputDTO.getOrigenConexion().equals(OrigenConexion.FRONT)) {
+        if (OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.FRONT)) {
             List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream()
                     .map(hecho -> crearHechoDto(hecho, VisualizarHechosOutputDTO.class))
                     .toList();
             return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
-        } else if (inputDTO.getOrigenConexion().equals(OrigenConexion.PROXY)) {
+        } else if (OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.PROXY)) {
             List<HechoResponseMetamapa> outputDTO = hechosFiltrados.stream()
                     .map(hecho -> crearHechoDto(hecho, HechoResponseMetamapa.class))
                     .toList();
@@ -427,19 +427,19 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         throw new IllegalArgumentException("Tipo DTO no soportado: " + tipo);
     }
 
-    public ResponseEntity<?> getAllHechos(OrigenConexion origen) {
+    public ResponseEntity<?> getAllHechos(Integer origen) {
 
         List<Hecho> hechosTotales = new ArrayList<>();
         hechosTotales.addAll(hechosEstaticaRepo.findAll());
         hechosTotales.addAll(hechosDinamicaRepo.findAll());
         hechosTotales.addAll(hechosProxyRepo.findAll());
 
-        if (origen.equals(OrigenConexion.FRONT)) {
+        if (OrigenConexion.fromCodigo(origen).equals(OrigenConexion.FRONT)) {
             List<VisualizarHechosOutputDTO> outputDTO = hechosTotales.stream()
                     .map(hecho -> crearHechoDto(hecho, VisualizarHechosOutputDTO.class))
                     .toList();
             return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
-        } else if (origen.equals(OrigenConexion.PROXY)) {
+        } else if (OrigenConexion.fromCodigo(origen).equals(OrigenConexion.PROXY)) {
             List<HechoResponseMetamapa> outputDTO = hechosTotales.stream()
                     .map(hecho -> crearHechoDto(hecho, HechoResponseMetamapa.class))
                     .toList();
