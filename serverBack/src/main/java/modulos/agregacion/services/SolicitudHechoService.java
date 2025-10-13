@@ -303,6 +303,7 @@ public class SolicitudHechoService {
                 if (usuario != null){
                     usuario.incrementarHechosSubidos();
                     if (usuario.getRol().equals(Rol.VISUALIZADOR)){
+                        // TODO actualizar token + sesion
                         GestorRoles.VisualizadorAContribuyente(usuario);
                     }
                 }
@@ -339,6 +340,7 @@ public class SolicitudHechoService {
             if (usuario != null){
                 usuario.disminuirHechosSubidos();
                 if (usuario.getCantHechosSubidos() == 0){
+                    // TODO actualizar token + sesion
                     GestorRoles.ContribuyenteAVisualizador(usuario);
                 }
             }
@@ -579,6 +581,7 @@ public class SolicitudHechoService {
             if (usuario != null) {
                 usuario.disminuirHechosSubidos();
                 if (usuario.getCantHechosSubidos() == 0) {
+                    // TODO actualizar token + sesion
                     GestorRoles.ContribuyenteAVisualizador(usuario);
                 }
             }
