@@ -14,8 +14,11 @@ public class VisualizarHechosOutputDTO {
     private String titulo;
     private String descripcion;
     private Long id_categoria;
+    private String categoria;
     private Long id_pais;
+    private String pais;
     private Long id_provincia;
+    private String provincia;
     private String fechaAcontecimiento;
     private Double latitud;
     private Double longitud;

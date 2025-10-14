@@ -1,6 +1,5 @@
 package modulos.Front.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import modulos.Front.BodyToListConverter;
@@ -9,14 +8,10 @@ import modulos.Front.dtos.input.ModificarConsensoInputDTO;
 import modulos.Front.dtos.input.RefrescarColeccionesInputDTO;
 import modulos.Front.dtos.output.ColeccionOutputDTO;
 import modulos.Front.services.ColeccionService;
-import org.apache.catalina.Authenticator;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -36,10 +31,11 @@ public class ColeccionController {
         return coleccionService.obtenerTodasLasColecciones();
     }*/
 
+    // http://localhost:8082/colecciones/get-all
+
     @PostMapping("/crear")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public String crearColeccion(@Valid @ModelAttribute ColeccionInputDTO inputDTO,
-                                 Model model,
                                  RedirectAttributes ra) {
 
         ResponseEntity<?> rta = coleccionService.crearColeccion(inputDTO);
@@ -48,7 +44,7 @@ public class ColeccionController {
             ra.addFlashAttribute("mensaje", "Se creó correctamente la colección");
             ra.addFlashAttribute("tipo", "success");
             // TODO revisar redirecciones
-            return "redirect:/crear";
+            return "redirect:coleccion/crear";
         }
         // TODO una única vista cambiando el nro de error o una vista x cada error?
         return "redirect:/" + rta.getStatusCode().value();
@@ -63,7 +59,7 @@ public class ColeccionController {
             List<ColeccionOutputDTO> colecciones = BodyToListConverter.bodyToList(rta, ColeccionOutputDTO.class);
             model.addAttribute("colecciones", colecciones);
             model.addAttribute("titulo", "Listado de colecciones");
-            return "colecciones/all";
+            return "coleccion/colecciones";
         }
         return "redirect:/" + rta.getStatusCode().value();
     }
@@ -76,7 +72,7 @@ public class ColeccionController {
         if (rta.getStatusCode().is2xxSuccessful() && rta.getBody() != null){
             ColeccionOutputDTO coleccion = (ColeccionOutputDTO) rta.getBody();
             model.addAttribute("coleccion", coleccion);
-            return "colecciones/"+coleccion.getId();
+            return "coleccion/coleccion";
         }
         return "redirect:/" + rta.getStatusCode().value();
     }
@@ -89,7 +85,7 @@ public class ColeccionController {
         if (rta.getStatusCode().is2xxSuccessful()){
             ra.addFlashAttribute("mensaje", "Se eliminó correctamente la colección");
             ra.addFlashAttribute("tipo", "success");
-            return "redirect:/delete";
+            return "redirect:/coleccion/delete";
         }
         return "redirect:/" + rta.getStatusCode().value();
     }
@@ -102,7 +98,7 @@ public class ColeccionController {
         if (rta.getStatusCode().is2xxSuccessful()){
             ra.addFlashAttribute("mensaje", "Se actualizó correctamente la colección");
             ra.addFlashAttribute("tipo", "success");
-            return "redirect:/update";
+            return "redirect:/coleccion/update";
         }
         return "redirect:/" + rta.getStatusCode().value();
     }
@@ -115,7 +111,7 @@ public class ColeccionController {
         if (rta.getStatusCode().is2xxSuccessful()){
             ra.addFlashAttribute("mensaje", "Se agregó correctamente la fuente");
             ra.addFlashAttribute("tipo", "success");
-            return "redirect:/add/fuente";
+            return "redirect:/coleccion/add/fuente";
         }
         return "redirect:/" + rta.getStatusCode().value();
     }
@@ -127,7 +123,7 @@ public class ColeccionController {
         if (rta.getStatusCode().is2xxSuccessful()){
             ra.addFlashAttribute("mensaje", "Se eliminó correctamente la fuente");
             ra.addFlashAttribute("tipo", "success");
-            return "redirect:/delete/fuente";
+            return "redirect:/coleccion/delete/fuente";
         }
         return "redirect:/" + rta.getStatusCode().value();
     }
@@ -140,7 +136,7 @@ public class ColeccionController {
         if (rta.getStatusCode().is2xxSuccessful()){
             ra.addFlashAttribute("mensaje", "Se modificó correctamente el algoritmo de consenso asociado a la colección " + input.getIdColeccion());
             ra.addFlashAttribute("tipo", "success");
-            return "redirect:/modificar-consenso";
+            return "redirect:/coleccion/modificar-consenso";
         }
         return "redirect:/" + rta.getStatusCode().value();
     }
@@ -153,11 +149,9 @@ public class ColeccionController {
         if (rta.getStatusCode().is2xxSuccessful()){
             ra.addFlashAttribute("mensaje", "Se refrescaron las colecciones correctamente ");
             ra.addFlashAttribute("tipo", "success");
-            return "redirect:/modificar-consenso";
+            return "redirect:/coleccion/modificar-consenso";
         }
         return "redirect:/" + rta.getStatusCode().value();
     }
-
-
 
 }

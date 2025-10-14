@@ -38,6 +38,7 @@ modulos\Front\dtos\input\ImportacionHechosInputDTO.class
 modulos\Front\dtos\input\ColeccionInputDTO.class
 modulos\Front\dtos\output\ColeccionOutputDTO.class
 modulos\Front\services\SolicitudHechoService.class
+modulos\Front\dtos\output\HechosResponse.class
 modulos\Front\dtos\input\ColeccionUpdateInputDTO.class
 modulos\Front\dtos\output\MensajeOutputDTO.class
 modulos\Front\dtos\input\LoginDtoInput.class

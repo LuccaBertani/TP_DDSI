@@ -253,7 +253,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        System.out.println(inputDTO.getCategoriaId());
 
         List<Filtro> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadores, criterios));
 
@@ -349,9 +348,15 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             Optional.ofNullable(hechoMemoria.getAtributosHecho().getUbicacion())
                     .ifPresent(ubicacion -> {
                         Optional.ofNullable(ubicacion.getPais())
-                                .ifPresent(pais -> dto.setId_pais(pais.getId()));
+                                .ifPresent(pais -> {
+                                    dto.setId_pais(pais.getId());
+                                    dto.setPais(pais.getPais());
+                                });
                         Optional.ofNullable(ubicacion.getProvincia())
-                                .ifPresent(provincia -> dto.setId_provincia(provincia.getId()));
+                                .ifPresent(provincia -> {
+                                    dto.setId_provincia(provincia.getId());
+                                    dto.setProvincia(provincia.getProvincia());
+                                });
                         Optional.ofNullable(hecho.getAtributosHecho().getLatitud())
                                 .ifPresent(dto::setLatitud);
                         Optional.ofNullable(hecho.getAtributosHecho().getLongitud())
@@ -365,7 +370,10 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                     .ifPresent(dto::setFechaAcontecimiento);
 
             Optional.ofNullable(hechoMemoria.getAtributosHecho().getCategoria())
-                    .ifPresent(categoria -> dto.setId_categoria(categoria.getId()));
+                    .ifPresent(categoria -> {
+                        dto.setId_categoria(categoria.getId());
+                        dto.setCategoria(categoria.getTitulo());
+                    });
             dto.setContenido(hecho.getAtributosHecho().getContenidosMultimedia());
             return (T) dto;
 

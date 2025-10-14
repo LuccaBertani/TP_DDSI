@@ -3,13 +3,20 @@ package modulos.Front.services;
 import jakarta.servlet.http.HttpServletRequest;
 import modulos.Front.ApiCall;
 import modulos.Front.dtos.input.AuthResponseDTO;
+import modulos.Front.dtos.input.ImportacionHechosInputDTO;
 import modulos.Front.dtos.input.LoginDtoInput;
 import modulos.Front.dtos.input.TokenResponse;
+import modulos.Front.dtos.output.HechosResponse;
+import modulos.Front.dtos.output.VisualizarHechosOutputDTO;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
@@ -21,9 +28,7 @@ import java.util.Map;
 @Service
 public class WebApiCallerService {
 
-    private final WebClient webClient = WebClient.create("http://localhost:8083");
-
-    private String urlBase = "http://localhost:8080";
+    private final WebClient webClient = WebClient.create("http://localhost:8080");
 
 
     // Method de ezequiel
@@ -88,6 +93,14 @@ public class WebApiCallerService {
         }
     }
 
+    public ResponseEntity<?> getHechos(Integer origen){
+        return webClient.get().uri(uriBuilder -> uriBuilder.path("/api/hechos/get-all")
+                .queryParam("origen", origen).build())
+                .retrieve()
+                .toEntity(Void.class)
+                .block();
+    }
+
 
 
 
@@ -126,7 +139,7 @@ public class WebApiCallerService {
 
             AuthResponseDTO response = webClient
                     .post()
-                    .uri(urlBase + "/auth/refresh")
+                    .uri("/auth/refresh")
                     .bodyValue(tokenResponse)
                     .retrieve()
                     .bodyToMono(AuthResponseDTO.class)
@@ -207,6 +220,8 @@ public class WebApiCallerService {
         );
     }
 
+
+
     public <T> ResponseEntity<T> getEntity(String url, Class<T> elementType){
         return executeWithTokenRetry(token ->
                 webClient.get()
@@ -238,13 +253,24 @@ public class WebApiCallerService {
         );
     }
 
+    public <T> ResponseEntity<List<T>> postList(String url, Object body, Class<T> elementType){
+        return executeWithTokenRetry(token ->
+                webClient.post()
+                        .uri(url)
+                        .header("Authorization", "Bearer " + token)
+                        .bodyValue(body)
+                        .retrieve()
+                        .toEntityList(elementType)
+        );
+    }
+
 
 
     public <T> ResponseEntity<T> login(Object body, Class<T> elementType) {
         try {
             return webClient
                 .post()
-                .uri(urlBase + "/auth")
+                .uri( "/auth")
                 .bodyValue(body)
                 .retrieve()
                 .toEntity(elementType)
@@ -263,6 +289,23 @@ public class WebApiCallerService {
         } catch (Exception e) {
             throw new RuntimeException("Error de conexión con el servicio de autenticación: " + e.getMessage(), e);
         }
+    }
+
+    public ResponseEntity<Void> importarHecho(MultipartFile file, ImportacionHechosInputDTO dto){
+        MultipartBodyBuilder builder = new MultipartBodyBuilder();
+
+        builder.part("meta", dto).contentType(MediaType.APPLICATION_JSON);
+        builder.part("file", file.getResource())
+                .header("Content-Disposition", "form-data; name=\"file\"; filename=\"" + file.getOriginalFilename() + "\"");
+
+        return webClient.post()
+                .uri("/api/hechos/importar")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(builder.build()))
+                .retrieve()
+                .toEntity(Void.class)
+                .block();
+
     }
 
 

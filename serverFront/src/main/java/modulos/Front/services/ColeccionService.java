@@ -15,7 +15,7 @@ public class ColeccionService {
 
 
     private final WebApiCallerService webApiCallerService;
-    private String coleccionServiceUrl = "http://localhost:8080/api/coleccion";
+    private String coleccionServiceUrl = "/api/coleccion";
 
     public ColeccionService(WebApiCallerService webApiCallerService) {
         this.webApiCallerService = webApiCallerService;
