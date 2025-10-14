@@ -10,6 +10,5 @@ import modulos.agregacion.entities.DbMain.Hecho;
 @Table(name = "hecho_proxy")
 public class HechoProxy extends Hecho {
     public HechoProxy() {
-
     }
 }

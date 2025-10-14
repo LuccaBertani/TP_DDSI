@@ -48,7 +48,7 @@ public class HechosController {
     //anda
     // todos los hechos del sistema
     @GetMapping("/get-all")
-    public ResponseEntity<?> visualizarHechos(@RequestParam OrigenConexion origen){
+    public ResponseEntity<?> visualizarHechos(@RequestParam Integer origen){
         return hechosService.getAllHechos(origen);
     }
 

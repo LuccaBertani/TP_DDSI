@@ -1,13 +1,15 @@
 package modulos.agregacion.entities.fuentes;
 
 import modulos.agregacion.entities.DbMain.*;
+import modulos.agregacion.entities.DbMain.filtros.Filtro;
+import modulos.agregacion.entities.DbMain.filtros.IFiltro;
 import modulos.agregacion.entities.DbProxy.HechoProxy;
 import modulos.agregacion.entities.atributosHecho.AtributosHecho;
 import modulos.agregacion.entities.atributosHecho.Origen;
 import modulos.agregacion.entities.atributosHecho.OrigenConexion;
 import modulos.agregacion.entities.fuentes.Requests.*;
+import modulos.agregacion.entities.fuentes.Responses.*;
 import modulos.shared.dtos.output.ColeccionOutputDTO;
-import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.shared.utils.FormateadorHecho;
 import modulos.buscadores.*;
 import modulos.shared.dtos.input.*;
@@ -21,7 +23,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 public class FuenteProxy {
@@ -118,7 +119,10 @@ public class FuenteProxy {
                         coleccion.setDescripcion(coleccionResponse.getDescripcion());
                         coleccion.setActivo(true);
                         coleccion.setModificado(true);
-                        coleccion.setCriterios(FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccion(buscadores, coleccionResponse.getCriterios())));
+                        List<List<IFiltro>> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccion(buscadores, coleccionResponse.getCriterios()));
+                        List<Filtro> filtrosJuntos = new ArrayList<>();
+                        filtros.forEach(f -> filtrosJuntos.add((Filtro) f));
+                        coleccion.setCriterios(filtrosJuntos);
                     }
                     return colecciones;
                 });
@@ -129,12 +133,12 @@ public class FuenteProxy {
         List<Hecho> hechos = new ArrayList<>();
 
         return webClientMetaMapa.get().uri(UriBuilder -> UriBuilder.path("/api/hechos/get-all")
-                        .queryParam("origenConexion", OrigenConexion.PROXY)
+                        .queryParam("origenConexion", OrigenConexion.PROXY.getCodigo())
                         .build())
                 .retrieve()
                 .bodyToMono(HechosMetamapaResponse.class)
                 .map(hechosResponse -> {
-                            for (HechoResponseMetamapa hechoDto : hechosResponse.getHechos()) {
+                            for (HechoMetamapaResponse hechoDto : hechosResponse.getHechos()) {
                                 hechos.add(this.setearHechoMetamapa(hechoDto, buscadores));
                             }
                             return hechos;
@@ -142,7 +146,7 @@ public class FuenteProxy {
                 );
     }
 
-    private Hecho setearHechoMetamapa(HechoResponseMetamapa hechoDto, BuscadoresRegistry buscadores){
+    private Hecho setearHechoMetamapa(HechoMetamapaResponse hechoDto, BuscadoresRegistry buscadores){
         Hecho hecho = new HechoProxy();
         hecho.setAtributosHecho(new AtributosHecho());
         hecho.getAtributosHecho().setFuente(Fuente.valueOf(hechoDto.getFuente()));
@@ -172,29 +176,31 @@ public class FuenteProxy {
         atributos.setFechaAcontecimiento(FechaParser.parsearFecha(hechoDto.getFechaAcontecimiento()));
         atributos.setLatitud(hechoDto.getLatitud());
         atributos.setLongitud(hechoDto.getLongitud());
+        atributos.setOrigen(Origen.FUENTE_PROXY_METAMAPA);
+        atributos.setFuente(Fuente.PROXY);
 
-        hecho.getAtributosHecho().setOrigen(Origen.FUENTE_PROXY_METAMAPA);
-        hecho.getAtributosHecho().setFuente(Fuente.PROXY);
+        hecho.setAtributosHecho(atributos);
 
         return hecho;
     }
 
     public Mono<List<Hecho>> getHechosDeColeccionMetaMapa(CriteriosColeccionDTO atributos, Boolean navegacionCurada, Long id_coleccion, BuscadoresRegistry buscadores) {
 
-        GetHechosColeccionInputDTO request = new GetHechosColeccionInputDTO();
-        request.setId_coleccion(id_coleccion);
-        request.setNavegacionCurada(navegacionCurada);
-        request.setOrigen(atributos.getOrigen());
-        request.setDescripcion(atributos.getDescripcion());
-        request.setTitulo(atributos.getTitulo());
-        request.setFechaAcontecimientoInicial(atributos.getFechaAcontecimientoInicial());
-        request.setFechaAcontecimientoFinal(atributos.getFechaAcontecimientoFinal());
-        request.setFechaCargaInicial(atributos.getFechaCargaInicial());
-        request.setFechaCargaFinal(atributos.getFechaCargaFinal());
-        request.setPais(atributos.getPais());
-        request.setProvincia(atributos.getProvincia());
-        request.setCategoria(atributos.getCategoria());
-        request.setOrigenConexion(OrigenConexion.PROXY);
+        GetHechosColeccionInputDTO request = GetHechosColeccionInputDTO.builder()
+                .id_coleccion(id_coleccion)
+                .navegacionCurada(navegacionCurada)
+                .origen(atributos.getOrigen())
+                .descripcion(atributos.getDescripcion())
+                .titulo(atributos.getTitulo())
+                .fechaAcontecimientoInicial(atributos.getFechaAcontecimientoInicial())
+                .fechaAcontecimientoFinal(atributos.getFechaAcontecimientoFinal())
+                .fechaCargaInicial(atributos.getFechaCargaInicial())
+                .fechaCargaFinal(atributos.getFechaCargaFinal())
+                .pais(atributos.getPais())
+                .provincia(atributos.getProvincia())
+                .categoria(atributos.getCategoria())
+                .origenConexion(OrigenConexion.PROXY.getCodigo())
+                .build();
 
         List<Hecho> hechos = new ArrayList<>();
 
@@ -204,7 +210,7 @@ public class FuenteProxy {
                 .retrieve()
                 .bodyToMono(HechosMetamapaResponse.class)
                 .map(hechosResponse -> {
-                    for (HechoResponseMetamapa dto : hechosResponse.getHechos()) {
+                    for (HechoMetamapaResponse dto : hechosResponse.getHechos()) {
                         hechos.add(this.setearHechoMetamapa(dto, buscadores));
                     }
                     return hechos;

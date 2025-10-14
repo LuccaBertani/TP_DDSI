@@ -8,8 +8,7 @@ import modulos.agregacion.entities.DbMain.filtros.*;
 import modulos.agregacion.entities.DbProxy.HechoProxy;
 import modulos.agregacion.entities.HechoMemoria;
 import modulos.agregacion.entities.atributosHecho.OrigenConexion;
-import modulos.agregacion.entities.fuentes.HechosMetamapaResponse;
-import modulos.agregacion.entities.fuentes.Requests.HechoResponseMetamapa;
+import modulos.agregacion.entities.fuentes.Responses.HechoMetamapaResponse;
 import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
 import modulos.agregacion.repositories.DbEstatica.IDatasetsRepository;
 import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
@@ -22,7 +21,6 @@ import modulos.shared.dtos.input.*;
 import modulos.shared.utils.FormateadorHechoMemoria;
 import modulos.shared.utils.GestorArchivos;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.agregacion.entities.fuentes.FuenteEstatica;
@@ -223,38 +221,63 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
         CriteriosColeccionDTO criterios;
 
-        if(inputDTO.getOrigenConexion().equals(OrigenConexion.FRONT)) {
-            criterios = new CriteriosColeccionDTO(
-                    inputDTO.getCategoriaId(),
-                    inputDTO.getContenidoMultimedia(),
-                    inputDTO.getDescripcion(),
-                    inputDTO.getFechaAcontecimientoInicial(),
-                    inputDTO.getFechaAcontecimientoFinal(),
-                    inputDTO.getFechaCargaInicial(),
-                    inputDTO.getFechaCargaFinal(),
-                    inputDTO.getOrigen(),
-                    inputDTO.getPaisId(),
-                    inputDTO.getTitulo(),
-                    inputDTO.getProvinciaId());
-        } else if (inputDTO.getOrigenConexion().equals(OrigenConexion.PROXY)){
-            criterios = new CriteriosColeccionDTO(
-                    buscadores.getBuscadorCategoria().buscar(inputDTO.getCategoria()).getId(),
-                    inputDTO.getContenidoMultimedia(),
-                    inputDTO.getDescripcion(),
-                    inputDTO.getFechaAcontecimientoInicial(),
-                    inputDTO.getFechaAcontecimientoFinal(),
-                    inputDTO.getFechaCargaInicial(),
-                    inputDTO.getFechaCargaFinal(),
-                    inputDTO.getOrigen(),
-                    buscadores.getBuscadorPais().buscar(inputDTO.getPais()).getId(),
-                    inputDTO.getTitulo(),
-                    buscadores.getBuscadorProvincia().buscar(inputDTO.getProvincia()).getId());
+        if(OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.FRONT)) {
+            criterios = CriteriosColeccionDTO.builder()
+                    .categoriaId(inputDTO.getCategoriaId())
+                    .contenidoMultimedia(inputDTO.getContenidoMultimedia())
+                    .descripcion(inputDTO.getDescripcion())
+                    .fechaAcontecimientoInicial(inputDTO.getFechaAcontecimientoInicial())
+                    .fechaAcontecimientoFinal(inputDTO.getFechaAcontecimientoFinal())
+                    .fechaCargaInicial(inputDTO.getFechaCargaInicial())
+                    .fechaCargaFinal(inputDTO.getFechaCargaFinal())
+                    .origen(inputDTO.getOrigen())
+                    .paisId(inputDTO.getPaisId())
+                    .titulo(inputDTO.getTitulo())
+                    .provinciaId(inputDTO.getProvinciaId())
+                    .build();
+        } else if (OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.PROXY)){
+
+            List<Long> categoriasId = new ArrayList<>();
+            List<Long> paisesId = new ArrayList<>();
+            List<Long> provinciasId = new ArrayList<>();
+
+            inputDTO.getCategoria().stream()
+                    .map(buscadores.getBuscadorCategoria()::buscar)
+                    .filter(Objects::nonNull)
+                    .map(Categoria::getId)
+                    .forEach(categoriasId::add);
+
+            inputDTO.getPais().stream()
+                    .map(buscadores.getBuscadorPais()::buscar)
+                    .filter(Objects::nonNull)
+                    .map(Pais::getId)
+                    .forEach(paisesId::add);
+
+            inputDTO.getProvincia().stream()
+                    .map(buscadores.getBuscadorProvincia()::buscar)
+                    .filter(Objects::nonNull)
+                    .map(Provincia::getId)
+                    .forEach(provinciasId::add);
+
+            criterios = CriteriosColeccionDTO.builder()
+                    .contenidoMultimedia(inputDTO.getContenidoMultimedia())
+                    .descripcion(inputDTO.getDescripcion())
+                    .fechaAcontecimientoInicial(inputDTO.getFechaAcontecimientoInicial())
+                    .fechaAcontecimientoFinal(inputDTO.getFechaAcontecimientoFinal())
+                    .fechaCargaInicial(inputDTO.getFechaCargaInicial())
+                    .fechaCargaFinal(inputDTO.getFechaCargaFinal())
+                    .origen(inputDTO.getOrigen())
+                    .titulo(inputDTO.getTitulo())
+                    .categoriaId(categoriasId)
+                    .paisId(paisesId)
+                    .provinciaId(provinciasId)
+                    .build();
+
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-
-        List<Filtro> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadores, criterios));
+        List<List<IFiltro>> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadores, criterios));
 
         Coleccion coleccion = coleccionRepo.findByIdAndActivoTrue(inputDTO.getId_coleccion()).orElse(null);
 
@@ -323,14 +346,14 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
         }
 
-        if (inputDTO.getOrigenConexion().equals(OrigenConexion.FRONT)) {
+        if (OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.FRONT)) {
             List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream()
                     .map(hecho -> crearHechoDto(hecho, VisualizarHechosOutputDTO.class))
                     .toList();
             return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
-        } else if (inputDTO.getOrigenConexion().equals(OrigenConexion.PROXY)) {
-            List<HechoResponseMetamapa> outputDTO = hechosFiltrados.stream()
-                    .map(hecho -> crearHechoDto(hecho, HechoResponseMetamapa.class))
+        } else if (OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.PROXY)) {
+            List<HechoMetamapaResponse> outputDTO = hechosFiltrados.stream()
+                    .map(hecho -> crearHechoDto(hecho, HechoMetamapaResponse.class))
                     .toList();
             return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
         }
@@ -377,8 +400,8 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             dto.setContenido(hecho.getAtributosHecho().getContenidosMultimedia());
             return (T) dto;
 
-        } else if (tipo.equals(HechoResponseMetamapa.class)) {
-            HechoResponseMetamapa dto = new HechoResponseMetamapa();
+        } else if (tipo.equals(HechoMetamapaResponse.class)) {
+            HechoMetamapaResponse dto = new HechoMetamapaResponse();
             dto.setId(hecho.getId());
             dto.setFuente(hecho.getAtributosHecho().getFuente().codigoEnString());
 
@@ -411,21 +434,21 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         throw new IllegalArgumentException("Tipo DTO no soportado: " + tipo);
     }
 
-    public ResponseEntity<?> getAllHechos(OrigenConexion origen) {
+    public ResponseEntity<?> getAllHechos(Integer origen) {
 
         List<Hecho> hechosTotales = new ArrayList<>();
         hechosTotales.addAll(hechosEstaticaRepo.findAll());
         hechosTotales.addAll(hechosDinamicaRepo.findAll());
         hechosTotales.addAll(hechosProxyRepo.findAll());
 
-        if (origen.equals(OrigenConexion.FRONT)) {
+        if (OrigenConexion.fromCodigo(origen).equals(OrigenConexion.FRONT)) {
             List<VisualizarHechosOutputDTO> outputDTO = hechosTotales.stream()
                     .map(hecho -> crearHechoDto(hecho, VisualizarHechosOutputDTO.class))
                     .toList();
             return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
-        } else if (origen.equals(OrigenConexion.PROXY)) {
-            List<HechoResponseMetamapa> outputDTO = hechosTotales.stream()
-                    .map(hecho -> crearHechoDto(hecho, HechoResponseMetamapa.class))
+        } else if (OrigenConexion.fromCodigo(origen).equals(OrigenConexion.PROXY)) {
+            List<HechoMetamapaResponse> outputDTO = hechosTotales.stream()
+                    .map(hecho -> crearHechoDto(hecho, HechoMetamapaResponse.class))
                     .toList();
             return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
         }
@@ -549,11 +572,24 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    private <T> Specification<T> crearSpecs(List<Filtro> filtros, Class<T> clazz) {
-        return filtros.stream()
-                .map(filtro->filtro.toSpecification(clazz))  // o IFiltro::toSpecification
-                .filter(Objects::nonNull)
-                .reduce(Specification.where(null), Specification::and); // NO meter distinct acá
+    private <T> Specification<T> crearSpecs(List<List<IFiltro>> filtrosXCategoria, Class<T> clazz) {
+        Specification<T> specFinal = null;
+
+        for (List<IFiltro> categoria : filtrosXCategoria) {
+            // Combina los filtros de una misma categoría con OR
+            Specification<T> specCategoria = categoria.stream()
+                    .map(filtro -> filtro.toSpecification(clazz))
+                    .filter(Objects::nonNull)
+                    .reduce(Specification::or)
+                    .orElse(null);
+
+            if (specCategoria == null) continue;
+
+            // Combina las categorías entre sí con AND
+            specFinal = (specFinal == null) ? specCategoria : specFinal.and(specCategoria);
+        }
+
+        return specFinal;
     }
 
     private <T> Specification<T> distinct(Class <T> clazz) {

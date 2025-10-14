@@ -20,6 +20,7 @@ modulos\Front\dtos\input\FiltroHechosDTO.class
 modulos\Front\usuario\DatosPersonalesPublicador.class
 modulos\Front\dtos\input\GetHechosColeccionInputDTO.class
 modulos\Front\usuario\Usuario.class
+modulos\Front\usuario\Usuario.class
 modulos\Front\dtos\input\TokenResponse.class
 modulos\Front\dtos\input\LoginDtoInput$LoginDtoInputBuilder.class
 modulos\Front\dtos\output\MensajeOutputDTO$MensajeOutputDTOBuilder.class
@@ -29,6 +30,8 @@ modulos\Front\services\ColeccionService.class
 modulos\Front\dtos\input\SolicitudHechoEliminarInputDTO.class
 modulos\Front\BodyToListConverter.class
 modulos\Front\dtos\output\ReporteHechoOutputDTO$ReporteHechoOutputDTOBuilder.class
+modulos\Front\controllers\LoginController.class
+modulos\Front\dtos\output\AuthResponseDTO.class
 modulos\Front\controllers\LoginController.class
 modulos\Front\dtos\input\AuthResponseDTO.class
 modulos\Front\dtos\input\AuthResponseDTO$AuthResponseDTOBuilder.class

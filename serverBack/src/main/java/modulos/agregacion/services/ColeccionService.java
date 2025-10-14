@@ -9,6 +9,7 @@ import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMa
 import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMayoriaSimple;
 import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMultiplesMenciones;
 import modulos.agregacion.entities.DbMain.filtros.Filtro;
+import modulos.agregacion.entities.DbMain.filtros.IFiltro;
 import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
 import modulos.agregacion.entities.DbProxy.HechoProxy;
 import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
@@ -102,8 +103,6 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         coleccion.setActivo(true);
         coleccion.setModificado(false);
 
-        FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccionDinamica(buscadores, dtoInput.getCriterios());
-
 //todo endpoint get all algoritmo consenso con (nombre)
         if (dtoInput.getAlgoritmoConsenso() != null){
             switch (dtoInput.getAlgoritmoConsenso()) {
@@ -121,7 +120,10 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             }
         }
 
-        coleccion.setCriterios(FormateadorHecho.obtenerListaDeFiltros(filtros));
+        List<List<IFiltro>> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccion(buscadores, dtoInput.getCriterios()));
+        List<Filtro> filtrosJuntos = new ArrayList<>();
+        filtros.forEach(f -> filtrosJuntos.add((Filtro) f));
+        coleccion.setCriterios(filtrosJuntos);
         coleccionesRepo.save(coleccion);
         return ResponseEntity.status(HttpStatus.CREATED).body("La colección se creó correctamente");
     }
@@ -294,9 +296,10 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
             coleccion.setDescripcion(dto.getDescripcion());
         }
 
-        FiltrosColeccion filtros = FormateadorHecho.formatearFiltrosColeccionDinamica(buscadores, dto.getCriterios());
-
-        coleccion.setCriterios(FormateadorHecho.obtenerListaDeFiltros(filtros));
+        List<List<IFiltro>> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccion(buscadores, dto.getCriterios()));
+        List<Filtro> filtrosJuntos = new ArrayList<>();
+        filtros.forEach(f -> filtrosJuntos.add((Filtro) f));
+        coleccion.setCriterios(filtrosJuntos);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

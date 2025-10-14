@@ -14,6 +14,7 @@ public class ColeccionUpdateInputDTO {
     private Long id_usuario;
 
     private String titulo;
+
     private String descripcion;
 
     private CriteriosColeccionDTO criterios;
