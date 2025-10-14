@@ -1,4 +1,4 @@
-package modulos.agregacion.entities.fuentes.Requests;
+package modulos.agregacion.entities.fuentes.Responses;
 
 import lombok.Data;
 import modulos.agregacion.entities.atributosHecho.ContenidoMultimedia;
@@ -6,7 +6,7 @@ import modulos.agregacion.entities.atributosHecho.ContenidoMultimedia;
 import java.util.List;
 
 @Data
-public class HechoResponseMetamapa {
+public class HechoMetamapaResponse {
     private Long id;
     private String fuente;
     private String titulo;

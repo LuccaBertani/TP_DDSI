@@ -5,7 +5,6 @@ import modulos.agregacion.services.ColeccionService;
 import modulos.shared.dtos.input.ColeccionInputDTO;
 import modulos.shared.dtos.input.ColeccionUpdateInputDTO;
 import modulos.shared.dtos.input.ModificarConsensoInputDTO;
-import modulos.shared.dtos.input.RefrescarColeccionesInputDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +20,7 @@ public class ColeccionController {
 
     //anda
     @PostMapping("/crear")
-    public ResponseEntity<?> crearColeccion(@RequestBody ColeccionInputDTO inputDTO){
+    public ResponseEntity<?> crearColeccion(@Valid @RequestBody ColeccionInputDTO inputDTO){
         return coleccionService.crearColeccion(inputDTO); // 201 o 401
     }
 
@@ -63,8 +62,8 @@ public class ColeccionController {
     }
 
     @PostMapping("/colecciones/refrescar")
-    public ResponseEntity<?> refrescarColecciones(@Valid @RequestBody RefrescarColeccionesInputDTO inputDTO){
-        return coleccionService.refrescarColecciones(inputDTO.getIdUsuario());
+    public ResponseEntity<?> refrescarColecciones(@Valid @RequestParam Long id_usuario){
+        return coleccionService.refrescarColecciones(id_usuario);
     }
 
 }

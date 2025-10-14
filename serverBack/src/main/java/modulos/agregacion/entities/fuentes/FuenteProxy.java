@@ -8,8 +8,8 @@ import modulos.agregacion.entities.atributosHecho.AtributosHecho;
 import modulos.agregacion.entities.atributosHecho.Origen;
 import modulos.agregacion.entities.atributosHecho.OrigenConexion;
 import modulos.agregacion.entities.fuentes.Requests.*;
+import modulos.agregacion.entities.fuentes.Responses.*;
 import modulos.shared.dtos.output.ColeccionOutputDTO;
-import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.shared.utils.FormateadorHecho;
 import modulos.buscadores.*;
 import modulos.shared.dtos.input.*;
@@ -23,7 +23,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 public class FuenteProxy {
@@ -139,7 +138,7 @@ public class FuenteProxy {
                 .retrieve()
                 .bodyToMono(HechosMetamapaResponse.class)
                 .map(hechosResponse -> {
-                            for (HechoResponseMetamapa hechoDto : hechosResponse.getHechos()) {
+                            for (HechoMetamapaResponse hechoDto : hechosResponse.getHechos()) {
                                 hechos.add(this.setearHechoMetamapa(hechoDto, buscadores));
                             }
                             return hechos;
@@ -147,7 +146,7 @@ public class FuenteProxy {
                 );
     }
 
-    private Hecho setearHechoMetamapa(HechoResponseMetamapa hechoDto, BuscadoresRegistry buscadores){
+    private Hecho setearHechoMetamapa(HechoMetamapaResponse hechoDto, BuscadoresRegistry buscadores){
         Hecho hecho = new HechoProxy();
         hecho.setAtributosHecho(new AtributosHecho());
         hecho.getAtributosHecho().setFuente(Fuente.valueOf(hechoDto.getFuente()));
@@ -211,7 +210,7 @@ public class FuenteProxy {
                 .retrieve()
                 .bodyToMono(HechosMetamapaResponse.class)
                 .map(hechosResponse -> {
-                    for (HechoResponseMetamapa dto : hechosResponse.getHechos()) {
+                    for (HechoMetamapaResponse dto : hechosResponse.getHechos()) {
                         hechos.add(this.setearHechoMetamapa(dto, buscadores));
                     }
                     return hechos;

@@ -1,7 +1,6 @@
-package modulos.agregacion.entities.fuentes.Requests;
+package modulos.agregacion.entities.fuentes.Responses;
 
 import lombok.Data;
-import modulos.agregacion.entities.DbMain.Hecho;
 
 import java.util.List;
 

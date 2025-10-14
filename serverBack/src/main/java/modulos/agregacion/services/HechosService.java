@@ -8,8 +8,7 @@ import modulos.agregacion.entities.DbMain.filtros.*;
 import modulos.agregacion.entities.DbProxy.HechoProxy;
 import modulos.agregacion.entities.HechoMemoria;
 import modulos.agregacion.entities.atributosHecho.OrigenConexion;
-import modulos.agregacion.entities.fuentes.HechosMetamapaResponse;
-import modulos.agregacion.entities.fuentes.Requests.HechoResponseMetamapa;
+import modulos.agregacion.entities.fuentes.Responses.HechoMetamapaResponse;
 import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
 import modulos.agregacion.repositories.DbEstatica.IDatasetsRepository;
 import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
@@ -22,7 +21,6 @@ import modulos.shared.dtos.input.*;
 import modulos.shared.utils.FormateadorHechoMemoria;
 import modulos.shared.utils.GestorArchivos;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.agregacion.entities.fuentes.FuenteEstatica;
@@ -354,8 +352,8 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                     .toList();
             return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
         } else if (OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.PROXY)) {
-            List<HechoResponseMetamapa> outputDTO = hechosFiltrados.stream()
-                    .map(hecho -> crearHechoDto(hecho, HechoResponseMetamapa.class))
+            List<HechoMetamapaResponse> outputDTO = hechosFiltrados.stream()
+                    .map(hecho -> crearHechoDto(hecho, HechoMetamapaResponse.class))
                     .toList();
             return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
         }
@@ -393,8 +391,8 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             dto.setContenido(hecho.getAtributosHecho().getContenidosMultimedia());
             return (T) dto;
 
-        } else if (tipo.equals(HechoResponseMetamapa.class)) {
-            HechoResponseMetamapa dto = new HechoResponseMetamapa();
+        } else if (tipo.equals(HechoMetamapaResponse.class)) {
+            HechoMetamapaResponse dto = new HechoMetamapaResponse();
             dto.setId(hecho.getId());
             dto.setFuente(hecho.getAtributosHecho().getFuente().codigoEnString());
 
@@ -440,8 +438,8 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                     .toList();
             return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
         } else if (OrigenConexion.fromCodigo(origen).equals(OrigenConexion.PROXY)) {
-            List<HechoResponseMetamapa> outputDTO = hechosTotales.stream()
-                    .map(hecho -> crearHechoDto(hecho, HechoResponseMetamapa.class))
+            List<HechoMetamapaResponse> outputDTO = hechosTotales.stream()
+                    .map(hecho -> crearHechoDto(hecho, HechoMetamapaResponse.class))
                     .toList();
             return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
         }

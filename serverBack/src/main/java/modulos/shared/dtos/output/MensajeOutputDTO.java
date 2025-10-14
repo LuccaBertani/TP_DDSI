@@ -6,8 +6,8 @@ import lombok.Data;
 @Data
 @Builder
 public class MensajeOutputDTO {
-     Long id_usuario;
-     Long id_solicitud_hecho;
-     Long id_mensaje;
-     String mensaje;
+     private Long id_usuario;
+     private Long id_solicitud_hecho;
+     private Long id_mensaje;
+     private String mensaje;
  }
