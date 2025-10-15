@@ -13,12 +13,15 @@ C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\se
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\providers\CustomAuthProvider.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\BodyToListConverter.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\controllers\HomeController.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\controllers\UsuarioController.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\ColeccionInputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\ColeccionUpdateInputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\AuthResponseDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\FiltroHechosDTO.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\output\RolCambiadoDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\controllers\SolicitudHechoController.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\GetHechosColeccionInputDTO.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\sessionHandlers\ActiveSessionTracker.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\ImportacionHechosInputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\ModificarConsensoInputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\EditarNombreDeUsuarioDtoInput.java

@@ -54,7 +54,6 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
             request.getSession().setAttribute("accessToken", authResponse.getAccessToken());
             request.getSession().setAttribute("refreshToken", authResponse.getRefreshToken());
-            request.getSession().setAttribute("rol", authResponse.getRol());
             request.getSession().setAttribute("username", username);
 
             List<GrantedAuthority> authorities = new ArrayList<>();

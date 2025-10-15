@@ -11,6 +11,7 @@ import modulos.Front.dtos.input.UsuarioInputDTO;
 import modulos.Front.dtos.output.UsuarioOutputDto;
 import modulos.Front.services.UsuarioService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class UsuarioController {
 
     private UsuarioService usuarioService;
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @PostMapping("/crear")
     public String crearUsuario(@Valid @ModelAttribute UsuarioInputDTO dtoInput, RedirectAttributes ra) {
         ResponseEntity<?> rta = this.usuarioService.crearUsuario(dtoInput);
@@ -38,6 +40,7 @@ public class UsuarioController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @PostMapping("/editar/contrasenia")
     public String cambiarContrasenia(@Valid @ModelAttribute CambiarContraseniaDtoInput dto, RedirectAttributes ra){
         ResponseEntity<?> rta = this.usuarioService.cambiarContrasenia(dto);
@@ -51,7 +54,7 @@ public class UsuarioController {
         return "redirect:/" + rta.getStatusCode().value();
 
     }
-
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @PostMapping("/editar/campos-escalares")
     public String editarUsuario(@Valid @ModelAttribute EditarUsuarioDtoInput dto, RedirectAttributes ra){
         ResponseEntity<?> rta = this.usuarioService.editarUsuario(dto);
@@ -66,6 +69,7 @@ public class UsuarioController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @PostMapping("/editar/nombre-usuario")
     public String editarNombreDeUsuario(@Valid @ModelAttribute EditarNombreDeUsuarioDtoInput dto, RedirectAttributes ra){
         ResponseEntity<?> rta = this.usuarioService.editarNombreDeUsuario(dto);
@@ -80,6 +84,7 @@ public class UsuarioController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping("/get-all")
     public String getAll(@Valid @ModelAttribute Long id, Model model, RedirectAttributes ra){
         ResponseEntity<?> rta = usuarioService.getAll(id);
@@ -96,6 +101,7 @@ public class UsuarioController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @GetMapping("/get/usuario")
     public String getUsuarioByNombreUsuario(@Valid String nombre_usuario, Model model, RedirectAttributes ra){
         ResponseEntity<?> rta =  usuarioService.getUsuarioByNombreUsuario(nombre_usuario);

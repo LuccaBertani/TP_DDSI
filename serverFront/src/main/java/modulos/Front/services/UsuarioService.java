@@ -22,8 +22,11 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+
+// implements UserDetailsService
+
 @Service
-public class UsuarioService implements UserDetailsService {
+public class UsuarioService {
 
     private final WebApiCallerService webApiCallerService;
     private String usuarioServiceUrl = "/api/usuario";
@@ -32,7 +35,7 @@ public class UsuarioService implements UserDetailsService {
         this.webApiCallerService = webApiCallerService;
     }
 
-    @Override
+    /*@Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         ResponseEntity<?> rta = webApiCallerService.getEntity(usuarioServiceUrl + "/" + username, Usuario.class);
 
@@ -57,7 +60,7 @@ public class UsuarioService implements UserDetailsService {
         // Se van a guardar cosas del usuario
 
         // Spring boot recupera el contexto para el usuario y recien ahi llama al controlador
-    }
+    }*/
 
     @Bean
     public PasswordEncoder passwordEncoder(){

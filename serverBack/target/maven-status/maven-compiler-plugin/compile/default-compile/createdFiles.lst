@@ -114,6 +114,7 @@ modulos\shared\utils\FormateadorHecho.class
 modulos\agregacion\entities\fuentes\FuenteDinamica.class
 modulos\shared\dtos\output\AuthResponseDTO.class
 modulos\agregacion\repositories\DbMain\IPaisRepository.class
+modulos\shared\dtos\output\RolCambiadoDTO.class
 modulos\shared\utils\FormateadorHechoMemoria.class
 modulos\agregacion\entities\fuentes\FuenteProxy.class
 modulos\agregacion\entities\HechoMemoria$HechoMemoriaBuilder.class

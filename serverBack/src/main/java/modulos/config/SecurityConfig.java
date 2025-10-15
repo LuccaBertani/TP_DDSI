@@ -1,6 +1,9 @@
 package modulos.config;
 
+import lombok.AllArgsConstructor;
+import modulos.agregacion.repositories.DbMain.IUsuarioRepository;
 import modulos.filters.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,10 +12,14 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 @Configuration
 @EnableWebSecurity
+@AllArgsConstructor
 public class SecurityConfig {
+
+    private IUsuarioRepository usuarioRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -27,7 +34,7 @@ public class SecurityConfig {
                     auth.anyRequest().authenticated();
                 })
                 // Todas las request que no sean de rutas públicas, pasa por este middleware (el filtro personalizado nuestro)
-                .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(usuarioRepository), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -21,6 +21,7 @@ import modulos.buscadores.BuscadorUbicacion;
 import modulos.shared.dtos.input.*;
 import modulos.shared.dtos.output.MensajeOutputDTO;
 import modulos.shared.dtos.output.ReporteHechoOutputDTO;
+import modulos.shared.dtos.output.RolCambiadoDTO;
 import modulos.shared.dtos.output.SolicitudHechoOutputDTO;
 import modulos.shared.utils.DetectorDeSpam;
 import modulos.shared.utils.FechaParser;
@@ -277,6 +278,9 @@ public class SolicitudHechoService {
     @Transactional
     public ResponseEntity<?> evaluarSolicitudSubirHecho(SolicitudHechoEvaluarInputDTO dtoInput) {
 
+        RolCambiadoDTO dto = new RolCambiadoDTO();
+        dto.setRolModificado(false);
+
         SolicitudHecho solicitud = solicitudRepository.findByIdAndProcesadaFalse(dtoInput.getId_solicitud()).orElse(null);
 
         if (solicitud == null) {
@@ -303,7 +307,9 @@ public class SolicitudHechoService {
                 if (usuario != null){
                     usuario.incrementarHechosSubidos();
                     if (usuario.getRol().equals(Rol.VISUALIZADOR)){
-                        // TODO actualizar token + sesion
+                        dto.setRol(Rol.CONTRIBUYENTE);
+                        dto.setRolModificado(true);
+                        dto.setUsername(usuario.getNombreDeUsuario());
                         GestorRoles.VisualizadorAContribuyente(usuario);
                     }
                 }
@@ -312,11 +318,14 @@ public class SolicitudHechoService {
 
         }
 
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
     @Transactional
     public ResponseEntity<?> evaluarEliminacionHecho(SolicitudHechoEvaluarInputDTO dtoInput) {
+
+        RolCambiadoDTO dto = new RolCambiadoDTO();
+        dto.setRolModificado(false);
 
         ResponseEntity<?> rta = checkeoAdmin(dtoInput.getId_usuario());
 
@@ -340,13 +349,15 @@ public class SolicitudHechoService {
             if (usuario != null){
                 usuario.disminuirHechosSubidos();
                 if (usuario.getCantHechosSubidos() == 0){
-                    // TODO actualizar token + sesion
+                    dto.setRolModificado(true);
+                    dto.setRol(Rol.VISUALIZADOR);
+                    dto.setUsername(usuario.getNombreDeUsuario());
                     GestorRoles.ContribuyenteAVisualizador(usuario);
                 }
             }
         }
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(dto);
     }
 
     @Transactional
@@ -542,6 +553,10 @@ public class SolicitudHechoService {
 
     @Transactional
     public ResponseEntity<?> evaluarReporte(EvaluarReporteInputDTO inputDTO) {
+
+        RolCambiadoDTO dto = new RolCambiadoDTO();
+        dto.setRolModificado(false);
+
         ResponseEntity<?> rta = checkeoAdmin(inputDTO.getUsuario_id());
 
         if (!rta.getStatusCode().equals(HttpStatus.OK)) {
@@ -581,16 +596,15 @@ public class SolicitudHechoService {
             if (usuario != null) {
                 usuario.disminuirHechosSubidos();
                 if (usuario.getCantHechosSubidos() == 0) {
-                    // TODO actualizar token + sesion
+                    dto.setRolModificado(true);
+                    dto.setRol(Rol.VISUALIZADOR);
+                    dto.setUsername(usuario.getNombreDeUsuario());
                     GestorRoles.ContribuyenteAVisualizador(usuario);
                 }
             }
         }
 
-
-        return ResponseEntity.ok().build();
-
-
+        return ResponseEntity.ok().body(dto);
 
     }
 }

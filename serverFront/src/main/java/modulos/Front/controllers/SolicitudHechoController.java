@@ -8,6 +8,7 @@ import modulos.Front.dtos.output.MensajeOutputDTO;
 import modulos.Front.dtos.output.SolicitudHechoOutputDTO;
 import modulos.Front.services.SolicitudHechoService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ import java.util.List;
 public class SolicitudHechoController {
     private final SolicitudHechoService solicitudHechoService;
 
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/evaluar/subir")
     public String evaluarSolicitudSubida(@Valid SolicitudHechoEvaluarInputDTO dtoInput, RedirectAttributes ra){
         ResponseEntity<?> rta = solicitudHechoService.evaluarSolicitudSubida(dtoInput);
@@ -33,6 +35,7 @@ public class SolicitudHechoController {
 
     }
 
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/evaluar/eliminar")
     public String evaluarSolicitudEliminacion(@Valid @ModelAttribute SolicitudHechoEvaluarInputDTO dto, RedirectAttributes ra){
         ResponseEntity<?> rta = solicitudHechoService.evaluarSolicitudEliminacion(dto);
@@ -46,6 +49,7 @@ public class SolicitudHechoController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/evaluar/modificar")
     public String evaluarSolicitudModificacion(@Valid @ModelAttribute SolicitudHechoModificarInputDTO dto, RedirectAttributes ra){
         ResponseEntity<?> rta = solicitudHechoService.evaluarSolicitudModificacion(dto);
@@ -59,6 +63,7 @@ public class SolicitudHechoController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @PostMapping("/subir-hecho")
     public String enviarSolicitudSubirHecho(@Valid @ModelAttribute SolicitudHechoInputDTO dto, RedirectAttributes ra){
         ResponseEntity<?> rta = this.solicitudHechoService.enviarSolicitudSubirHecho(dto);
@@ -72,6 +77,7 @@ public class SolicitudHechoController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @GetMapping("/get-mensajes")
     public String getMensajesUsuario(@Valid @ModelAttribute Long id_receptor, Model model, RedirectAttributes ra){
         ResponseEntity<?> rta = solicitudHechoService.obtenerMensajes(id_receptor);
@@ -87,6 +93,7 @@ public class SolicitudHechoController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @PostMapping("/reportes/reportar")
     public String reportar(@Valid @RequestParam Long id_hecho, @Valid @RequestParam String fuente, @Valid @RequestParam String motivo, RedirectAttributes ra){
 
@@ -102,7 +109,7 @@ public class SolicitudHechoController {
     }
 
 
-
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @PostMapping("/eliminar-hecho")
     public String enviarSolicitudEliminarHecho(@Valid @ModelAttribute SolicitudHechoEliminarInputDTO dto, RedirectAttributes ra){
         ResponseEntity<?> rta = this.solicitudHechoService.enviarSolicitudEliminarHecho(dto);
@@ -116,6 +123,7 @@ public class SolicitudHechoController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @PostMapping("/eliminar-hecho")
     public String enviarSolicitudModificarHecho(@Valid @ModelAttribute SolicitudHechoEliminarInputDTO dto, RedirectAttributes ra){
         ResponseEntity<?> rta = this.solicitudHechoService.enviarSolicitudModificarHecho(dto);
@@ -129,7 +137,7 @@ public class SolicitudHechoController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
-
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping("/reportes/get/all")
     public String getAllReportes(@RequestParam Long id_usuario, Model model, RedirectAttributes ra) {
         ResponseEntity<?> rta = this.solicitudHechoService.getAllReportes(id_usuario);
@@ -143,7 +151,7 @@ public class SolicitudHechoController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
-
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping("/reportes/evaluar")
     public String evaluarReporte(@Valid @ModelAttribute EvaluarReporteInputDTO dtoInput, RedirectAttributes ra){
         ResponseEntity<?> rta = solicitudHechoService.evaluarReporte(dtoInput);
@@ -158,6 +166,7 @@ public class SolicitudHechoController {
     }
 
     // Anda
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping("/get/all")
     public String getAllSolicitudes(@RequestParam Long id_usuario, Model model, RedirectAttributes ra){
         ResponseEntity<?> rta = solicitudHechoService.getAllSolicitudes(id_usuario);
@@ -173,6 +182,7 @@ public class SolicitudHechoController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping("/get/pendientes")
     public String getSolicitudesPendientes(@Valid @RequestParam Long id_usuario, Model model, RedirectAttributes ra) {
         ResponseEntity<?> rta = solicitudHechoService.getSolicitudesPendientes(id_usuario);

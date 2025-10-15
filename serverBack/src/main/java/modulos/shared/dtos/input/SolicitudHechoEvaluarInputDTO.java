@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import modulos.shared.dtos.output.RolCambiadoDTO;
 
 
 @Data

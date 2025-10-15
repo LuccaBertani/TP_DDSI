@@ -136,6 +136,7 @@ C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\se
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\ServerBackApplication.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\DbDinamica\HechoDinamica.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\config\DbHechosProxyConfig.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\dtos\output\RolCambiadoDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\fuentes\FuenteDinamica.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\servicioEstadistica\repositories\ICategoriaHoraRepository.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\dtos\output\UsuarioOutputDto.java

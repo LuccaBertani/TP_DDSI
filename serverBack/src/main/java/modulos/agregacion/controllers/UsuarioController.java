@@ -100,28 +100,21 @@ public class UsuarioController {
     @PostMapping("/auth/refresh")
     public ResponseEntity<?> refresh(@RequestBody TokenResponse request) {
         try {
-            Claims claimsRequest = JwtUtil.parseClaims(request.getRefreshToken());
+            Claims claims = JwtUtil.parseClaims(request.getRefreshToken());
 
-            // Validar que el token sea de tipo refresh
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(JwtUtil.getKey())
-                    .build()
-                    .parseClaimsJws(request.getRefreshToken())
-                    .getBody();
 
             if (!"refresh".equals(claims.get("type"))) {
                 return ResponseEntity.badRequest().build();
             }
 
-            ResponseEntity<?> rta = usuarioService.getUsuarioByNombreUsuario(claimsRequest.getSubject());
+            ResponseEntity<?> rta = usuarioService.getUsuarioByNombreUsuario(claims.getSubject());
 
             if (!rta.getStatusCode().is2xxSuccessful()){
                 return rta;
             }
-
-            // OJO CON LOS CASOS DE CAMBIO DE ROL VISUALIZADOR <-> CONTRIBUYENTE: Yo asumo que se modifica antes al rol del usuario y que se guarda en la bdd
-            Rol rol = claims.get("rol", Rol.class);
-            String newAccessToken = JwtUtil.generarAccessToken(claimsRequest.getSubject(), rol);
+            Usuario usuario = (Usuario) rta.getBody();
+            Rol rol = usuario.getRol();
+            String newAccessToken = JwtUtil.generarAccessToken(claims.getSubject(), rol);
             AuthResponseDTO response = AuthResponseDTO.builder()
                     .accessToken(newAccessToken)
                     .refreshToken(request.getRefreshToken())

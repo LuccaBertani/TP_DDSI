@@ -10,6 +10,7 @@ import modulos.Front.dtos.output.HechosResponse;
 import modulos.Front.dtos.output.VisualizarHechosOutputDTO;
 import modulos.Front.services.HechosService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
@@ -24,6 +25,7 @@ import java.util.List;
 public class HechosController {
     private final HechosService hechosService;
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @PostMapping("/crear")
     public String crearHecho(RedirectAttributes ra, @Valid @ModelAttribute SolicitudHechoInputDTO hechoInputDTO){
         ResponseEntity<?> rtaDto = this.hechosService.crearHecho(hechoInputDTO);
@@ -37,7 +39,7 @@ public class HechosController {
         }
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
-
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/importar")
     public String importarHechos(@Valid @RequestPart("meta") ImportacionHechosInputDTO dtoInput,
                                  @RequestPart("file") MultipartFile file, RedirectAttributes ra){
@@ -53,6 +55,7 @@ public class HechosController {
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @GetMapping("/get-all")
     public String getHechos(Model model){
         ResponseEntity<?> rtaDto = this.hechosService.getHechos();
@@ -68,6 +71,7 @@ public class HechosController {
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @PostMapping("/get/filtrar")
     public String getHechosFiltradosColeccion(@Valid @ModelAttribute GetHechosColeccionInputDTO inputDTO, Model model){
         ResponseEntity<?> rtaDto = this.hechosService.getHechosFiltradosColeccion(inputDTO);
