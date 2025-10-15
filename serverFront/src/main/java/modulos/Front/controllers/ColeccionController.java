@@ -85,7 +85,7 @@ public class ColeccionController {
         if (rta.getStatusCode().is2xxSuccessful()){
             ra.addFlashAttribute("mensaje", "Se eliminó correctamente la colección");
             ra.addFlashAttribute("tipo", "success");
-            return "redirect:/coleccion/delete";
+            return this.obtenerTodasLasColecciones(model); //TODO medio dudoso esto: La idea es q cuando se borre una coleccion, redirigir a la lista de colecciones
         }
         return "redirect:/" + rta.getStatusCode().value();
     }
@@ -98,7 +98,7 @@ public class ColeccionController {
         if (rta.getStatusCode().is2xxSuccessful()){
             ra.addFlashAttribute("mensaje", "Se actualizó correctamente la colección");
             ra.addFlashAttribute("tipo", "success");
-            return "redirect:/coleccion/update";
+            return "redirect:/coleccion/coleccion"; //TODO actualizar los datos al redirigir
         }
         return "redirect:/" + rta.getStatusCode().value();
     }
@@ -111,7 +111,7 @@ public class ColeccionController {
         if (rta.getStatusCode().is2xxSuccessful()){
             ra.addFlashAttribute("mensaje", "Se agregó correctamente la fuente");
             ra.addFlashAttribute("tipo", "success");
-            return "redirect:/coleccion/add/fuente";
+            return "redirect:/coleccion/coleccion";
         }
         return "redirect:/" + rta.getStatusCode().value();
     }
@@ -123,7 +123,7 @@ public class ColeccionController {
         if (rta.getStatusCode().is2xxSuccessful()){
             ra.addFlashAttribute("mensaje", "Se eliminó correctamente la fuente");
             ra.addFlashAttribute("tipo", "success");
-            return "redirect:/coleccion/delete/fuente";
+            return "redirect:/coleccion/coleccion";
         }
         return "redirect:/" + rta.getStatusCode().value();
     }
@@ -136,7 +136,7 @@ public class ColeccionController {
         if (rta.getStatusCode().is2xxSuccessful()){
             ra.addFlashAttribute("mensaje", "Se modificó correctamente el algoritmo de consenso asociado a la colección " + input.getIdColeccion());
             ra.addFlashAttribute("tipo", "success");
-            return "redirect:/coleccion/modificar-consenso";
+            return "redirect:/coleccion/coleccion";
         }
         return "redirect:/" + rta.getStatusCode().value();
     }
@@ -149,7 +149,7 @@ public class ColeccionController {
         if (rta.getStatusCode().is2xxSuccessful()){
             ra.addFlashAttribute("mensaje", "Se refrescaron las colecciones correctamente ");
             ra.addFlashAttribute("tipo", "success");
-            return "redirect:/coleccion/modificar-consenso";
+            return "redirect:/coleccion/coleccion";
         }
         return "redirect:/" + rta.getStatusCode().value();
     }

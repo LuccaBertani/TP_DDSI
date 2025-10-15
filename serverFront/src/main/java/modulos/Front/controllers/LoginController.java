@@ -19,5 +19,4 @@ public class LoginController {
     // En cada request que haga ese cliente (user a traves del cliente), va a venir con esa cookie que va a tener un id de sesion
     // Con el id de sesion, buscamos si existe un id de sesion asi y asi podemos identificar al usuario
     // Al hacer logout, la sesion se destruye y se invalida la cookie
-
 }
