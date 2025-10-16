@@ -1,5 +1,6 @@
 package modulos.agregacion.controllers;
 
+import io.jsonwebtoken.Jwt;
 import jakarta.validation.Valid;
 import modulos.agregacion.entities.DbMain.Fuente;
 import modulos.agregacion.entities.atributosHecho.OrigenConexion;
@@ -7,12 +8,14 @@ import modulos.agregacion.services.HechosService;
 import modulos.shared.dtos.input.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/hechos")
@@ -25,8 +28,8 @@ public class HechosController {
 
     //anda
     @PostMapping("/subir")
-    public ResponseEntity<?> subirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput) throws IOException {
-        return hechosService.subirHecho(dtoInput); // 201 o 401
+    public ResponseEntity<?> subirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput, @AuthenticationPrincipal Jwt principal){
+        return hechosService.subirHecho(dtoInput, principal); // 201 o 401
     }
 
     @PostMapping(
@@ -35,13 +38,14 @@ public class HechosController {
     )
     public ResponseEntity<?> importarHechos(
             @Valid @RequestPart("meta") ImportacionHechosInputDTO dtoInput,
-            @RequestPart("file") MultipartFile file) throws IOException {
-        return hechosService.importarHechos(dtoInput, file);
+            @RequestPart("file") MultipartFile file,
+            @AuthenticationPrincipal Jwt principal){
+        return hechosService.importarHechos(dtoInput, file, principal);
     }
     //TODO supongo que es solo fuente dinamica
     @PostMapping("/subir-archivo")
-    public ResponseEntity<?> subirArchivo(@RequestParam("file") MultipartFile file, @RequestParam Long id_hecho, @RequestParam Long id_usuario, @RequestParam Fuente fuente) throws IOException {
-        return hechosService.subirArchivo(file, id_hecho, id_usuario);
+    public ResponseEntity<?> subirArchivo(@RequestParam("file") MultipartFile file, @RequestParam Long id_hecho, @AuthenticationPrincipal Jwt principal,@RequestParam Fuente fuente) throws IOException {
+        return hechosService.subirArchivo(file, id_hecho, principal);
     }
 
 
@@ -89,26 +93,26 @@ fecha_acontecimiento_desde, fecha_acontecimiento_hasta, ubicacion BARBARO!!.
 
     // Anda
     @PostMapping("/add/categoria")
-    public ResponseEntity<?> addCategoria(@RequestParam Long id_usuario, @RequestParam String categoriaStr, @RequestParam(required = false) List<String> sinonimos){
-        return hechosService.addCategoria(id_usuario, categoriaStr, sinonimos);
+    public ResponseEntity<?> addCategoria(@AuthenticationPrincipal Jwt principal, @RequestParam String categoriaStr, @RequestParam(required = false) List<String> sinonimos){
+        return hechosService.addCategoria(principal, categoriaStr, sinonimos);
     }
 
     // Anda
     @PostMapping("/add/sinonimo/categoria")
-    public ResponseEntity<?> addSinonimoCategoria(@RequestParam Long id_usuario, @RequestParam Long id_categoria, @RequestParam String sinonimo){
-        return hechosService.addSinonimoCategoria(id_usuario, id_categoria, sinonimo);
+    public ResponseEntity<?> addSinonimoCategoria(@AuthenticationPrincipal Jwt principal, @RequestParam Long id_categoria, @RequestParam String sinonimo){
+        return hechosService.addSinonimoCategoria(principal, id_categoria, sinonimo);
     }
 
     // Anda
     @PostMapping("/add/sinonimo/pais")
-    public ResponseEntity<?> addSinonimoPais(@RequestParam Long id_usuario, @RequestParam Long id_pais, @RequestParam String sinonimo){
-        return hechosService.addSinonimoPais(id_usuario, id_pais, sinonimo);
+    public ResponseEntity<?> addSinonimoPais(@AuthenticationPrincipal Jwt principal, @RequestParam Long id_pais, @RequestParam String sinonimo){
+        return hechosService.addSinonimoPais(principal, id_pais, sinonimo);
     }
 
     // Anda
     @PostMapping("/add/sinonimo/provincia")
-    public ResponseEntity<?> addSinonimoProvincia(@RequestParam Long id_usuario, @RequestParam Long id_provincia, @RequestParam String sinonimo){
-        return hechosService.addSinonimoProvincia(id_usuario, id_provincia, sinonimo);
+    public ResponseEntity<?> addSinonimoProvincia(@AuthenticationPrincipal Jwt principal, @RequestParam Long id_provincia, @RequestParam String sinonimo){
+        return hechosService.addSinonimoProvincia(principal, id_provincia, sinonimo);
     }
 
 }

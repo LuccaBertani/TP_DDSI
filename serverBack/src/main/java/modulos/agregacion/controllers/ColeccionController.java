@@ -1,12 +1,16 @@
 package modulos.agregacion.controllers;
 
+import io.jsonwebtoken.Jwt;
 import jakarta.validation.Valid;
 import modulos.agregacion.services.ColeccionService;
 import modulos.shared.dtos.input.ColeccionInputDTO;
 import modulos.shared.dtos.input.ColeccionUpdateInputDTO;
 import modulos.shared.dtos.input.ModificarConsensoInputDTO;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/coleccion")
@@ -20,8 +24,8 @@ public class ColeccionController {
 
     //anda
     @PostMapping("/crear")
-    public ResponseEntity<?> crearColeccion(@Valid @RequestBody ColeccionInputDTO inputDTO){
-        return coleccionService.crearColeccion(inputDTO); // 201 o 401
+    public ResponseEntity<?> crearColeccion(@Valid @RequestBody ColeccionInputDTO inputDTO, @AuthenticationPrincipal Jwt principal){
+            return coleccionService.crearColeccion(inputDTO, principal); // 201 o 401
     }
 
     //anda
@@ -37,33 +41,33 @@ public class ColeccionController {
     }
     //anda
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteColeccion(@Valid @RequestParam Long id_coleccion, @Valid @RequestParam Long id_usuario){
-        return coleccionService.deleteColeccion(id_coleccion, id_usuario);
+    public ResponseEntity<?> deleteColeccion(@Valid @RequestParam Long id_coleccion, @AuthenticationPrincipal Jwt principal){
+        return coleccionService.deleteColeccion(id_coleccion, principal);
     }
     //anda
     @PostMapping("/update")
-    public ResponseEntity<?> updateColeccion(@Valid @RequestBody ColeccionUpdateInputDTO dto){
-        return coleccionService.updateColeccion(dto);
+    public ResponseEntity<?> updateColeccion(@Valid @RequestBody ColeccionUpdateInputDTO dto, @AuthenticationPrincipal Jwt principal){
+        return coleccionService.updateColeccion(dto, principal);
     }
 
     @PostMapping("/add/fuente")
-    public ResponseEntity<?> agregarFuente(@Valid @RequestParam Long id_usuario, @Valid @RequestParam Long id_coleccion, @Valid @RequestParam String dataSet){
-        return coleccionService.agregarFuente(id_usuario, id_coleccion,dataSet);
+    public ResponseEntity<?> agregarFuente(@Valid @RequestParam Long id_coleccion, @Valid @RequestParam String dataSet, @AuthenticationPrincipal Jwt principal){
+        return coleccionService.agregarFuente(id_coleccion,dataSet, principal);
     }
 
     @PostMapping("/delete/fuente")
-    public ResponseEntity<?> eliminarFuente(@Valid @RequestParam Long id_usuario, @Valid @RequestParam Long id_coleccion, @Valid @RequestParam Long id_dataset){
-        return coleccionService.eliminarFuente(id_usuario, id_coleccion, id_dataset);
+    public ResponseEntity<?> eliminarFuente(@Valid @RequestParam Long id_coleccion, @Valid @RequestParam Long id_dataset, @AuthenticationPrincipal Jwt principal){
+        return coleccionService.eliminarFuente(id_coleccion, id_dataset, principal);
     }
 
     @PostMapping("/colecciones/modificar-consenso")
-    public ResponseEntity<?> modificarAlgoritmoConsenso(@RequestBody ModificarConsensoInputDTO input) {
-        return coleccionService.modificarAlgoritmoConsenso(input);
+    public ResponseEntity<?> modificarAlgoritmoConsenso(@RequestBody ModificarConsensoInputDTO input, @AuthenticationPrincipal Jwt principal) {
+        return coleccionService.modificarAlgoritmoConsenso(input, principal);
     }
 
     @PostMapping("/colecciones/refrescar")
-    public ResponseEntity<?> refrescarColecciones(@Valid @RequestParam Long id_usuario){
-        return coleccionService.refrescarColecciones(id_usuario);
+    public ResponseEntity<?> refrescarColecciones(@AuthenticationPrincipal  Jwt principal){
+        return coleccionService.refrescarColecciones(principal);
     }
 
 }

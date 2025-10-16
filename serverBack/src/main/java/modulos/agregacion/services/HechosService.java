@@ -1,5 +1,7 @@
 package modulos.agregacion.services;
 
+import io.jsonwebtoken.Jwt;
+import modulos.JwtClaimExtractor;
 import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
@@ -103,13 +105,13 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     // MODIFICADO -> TRUE SI HAY QUE EVALUARLO
     // MODIFICADO -> FALSE SI NO!!!!
 
-    private ResponseEntity<?> checkeoAdmin(Long id_usuario){
+    private ResponseEntity<?> checkeoAdmin(String username){
 
-        if (id_usuario == null){
+        if (username == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        Usuario usuario = usuariosRepo.findById(id_usuario).orElse(null);
+        Usuario usuario = usuariosRepo.findByNombreDeUsuario(username).orElse(null);
 
         if (usuario == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró el usuario");
@@ -124,13 +126,13 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
     //lo sube un administrador (lo considero carga dinamica)
     @Transactional
-    public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO dtoInput) throws IOException {
+    public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO dtoInput, Jwt principal){
 
         if(dtoInput.getTitulo() == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        ResponseEntity<?> rta = checkeoAdmin(dtoInput.getId_usuario());
+        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if (!rta.getStatusCode().equals(HttpStatus.OK)){
             return rta;
@@ -162,57 +164,64 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    private void guardarContenidoMultimedia(MultipartFile file, Hecho hecho) throws IOException {
-        String url = GestorArchivos.guardarArchivo(file);
+    private void guardarContenidoMultimedia(MultipartFile file, Hecho hecho) {
+        try {
+            String url = GestorArchivos.guardarArchivo(file);
 
-        ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
+            ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
 
-        contenidoMultimedia.setUrl(url);
-        contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
-        hecho.getAtributosHecho().getContenidosMultimedia().add(contenidoMultimedia);
+            contenidoMultimedia.setUrl(url);
+            contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
+            hecho.getAtributosHecho().getContenidosMultimedia().add(contenidoMultimedia);
+        } catch (IOException ignored) {
+        }
     }
 
     @Transactional
-    public ResponseEntity<?> importarHechos(ImportacionHechosInputDTO dtoInput, MultipartFile file) throws IOException {
-        ResponseEntity<?> rta = checkeoAdmin(dtoInput.getId_usuario());
+    public ResponseEntity<?> importarHechos(ImportacionHechosInputDTO dtoInput, MultipartFile file, Jwt principal) {
+        try {
+            ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
-        if (!rta.getStatusCode().equals(HttpStatus.OK)){
-            return rta;
+            if (!rta.getStatusCode().equals(HttpStatus.OK)) {
+                return rta;
+            }
+
+            // 1) Validaciones básicas
+            if (file == null || file.isEmpty()) {
+                return ResponseEntity.badRequest().body("Debés adjuntar un archivo CSV");
+            }
+            if (!Objects.equals(file.getContentType(), "text/csv") && !Objects.requireNonNull(file.getOriginalFilename()).toLowerCase().endsWith(".csv")) {
+                return ResponseEntity.badRequest().body("El archivo debe ser CSV");
+            }
+
+            // === Opción A: guardar en disco ===
+            Path base = Paths.get("uploads/datasets").toAbsolutePath().normalize();
+            Files.createDirectories(base);
+            String storedName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Path destino = base.resolve(storedName);
+            Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+
+
+            FuenteEstatica fuente = new FuenteEstatica();
+            Dataset dataset = new Dataset(dtoInput.getFuenteString());
+            dataset.setStoragePath(destino.toString());
+            datasetsRepo.save(dataset);
+            fuente.setDataSet(dataset);
+
+            List<HechoEstatica> hechos = fuente.leerFuente((Usuario) rta.getBody(), buscadores);
+
+            for (HechoEstatica hecho : hechos) {
+                hecho.setActivo(true);
+                ZonedDateTime fechaActual = ZonedDateTime.now();
+                hecho.getAtributosHecho().setFechaCarga(fechaActual);
+                hecho.getAtributosHecho().setFechaUltimaActualizacion(fechaActual);
+                hechosEstaticaRepo.save(hecho);
+            }
+
+            return ResponseEntity.status(HttpStatus.CREATED).body("Se importaron los hechos correctamente");
+        } catch (IOException io) {
+            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo debe ser CSV");
         }
-
-        // 1) Validaciones básicas
-        if (file == null || file.isEmpty()) {
-            return ResponseEntity.badRequest().body("Debés adjuntar un archivo CSV");
-        }
-        if (!Objects.equals(file.getContentType(), "text/csv") && !Objects.requireNonNull(file.getOriginalFilename()).toLowerCase().endsWith(".csv")) {
-            return ResponseEntity.badRequest().body("El archivo debe ser CSV");
-        }
-
-        // === Opción A: guardar en disco ===
-        Path base = Paths.get("uploads/datasets").toAbsolutePath().normalize();
-        Files.createDirectories(base);
-        String storedName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        Path destino = base.resolve(storedName);
-        Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
-
-
-        FuenteEstatica fuente = new FuenteEstatica();
-        Dataset dataset = new Dataset(dtoInput.getFuenteString());
-        dataset.setStoragePath(destino.toString());
-        datasetsRepo.save(dataset);
-        fuente.setDataSet(dataset);
-
-        List<HechoEstatica> hechos = fuente.leerFuente((Usuario)rta.getBody(),buscadores);
-
-        for (HechoEstatica hecho : hechos){
-            hecho.setActivo(true);
-            ZonedDateTime fechaActual = ZonedDateTime.now();
-            hecho.getAtributosHecho().setFechaCarga(fechaActual);
-            hecho.getAtributosHecho().setFechaUltimaActualizacion(fechaActual);
-            hechosEstaticaRepo.save(hecho);
-        }
-
-        return ResponseEntity.status(HttpStatus.CREATED).body("Se importaron los hechos correctamente");
     }
 
 
@@ -465,9 +474,9 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return (root, query, cb) -> root.get("id").in(idsHechosDeColeccionYConsensuados);
     }
 
-    public ResponseEntity<?> addCategoria(Long idUsuario, String categoriaStr, List<String> sinonimosString) {
+    public ResponseEntity<?> addCategoria(Jwt principal, String categoriaStr, List<String> sinonimosString) {
 
-        ResponseEntity<?> rta = checkeoAdmin(idUsuario);
+        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if (!rta.getStatusCode().equals(HttpStatus.OK)){
             return rta;
@@ -485,9 +494,9 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return ResponseEntity.status(HttpStatus.CREATED).body("Se creó la categoría correctamente");
     }
 
-    public ResponseEntity<?> addSinonimoCategoria(Long idUsuario, Long idCategoria, String sinonimo_str) {
+    public ResponseEntity<?> addSinonimoCategoria(Jwt principal, Long idCategoria, String sinonimo_str) {
 
-        ResponseEntity<?> respuesta = checkeoAdmin(idUsuario);
+        ResponseEntity<?> respuesta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if (!respuesta.getStatusCode().equals(HttpStatus.OK)){
             return respuesta;
@@ -514,9 +523,9 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    public ResponseEntity<?> addSinonimoPais(Long idUsuario, Long idPais, String sinonimo_str) {
+    public ResponseEntity<?> addSinonimoPais(Jwt principal, Long idPais, String sinonimo_str) {
 
-        ResponseEntity<?> respuesta = checkeoAdmin(idUsuario);
+        ResponseEntity<?> respuesta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if (!respuesta.getStatusCode().equals(HttpStatus.OK)){
             return respuesta;
@@ -543,9 +552,9 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    public ResponseEntity<?> addSinonimoProvincia(Long idUsuario, Long idProvincia, String sinonimo_str) {
+    public ResponseEntity<?> addSinonimoProvincia(Jwt principal, Long idProvincia, String sinonimo_str) {
 
-        ResponseEntity<?> respuesta = checkeoAdmin(idUsuario);
+        ResponseEntity<?> respuesta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if (!respuesta.getStatusCode().equals(HttpStatus.OK)){
             return respuesta;
@@ -599,7 +608,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         };
     }
 
-    public ResponseEntity<?> subirArchivo(MultipartFile file, Long idHecho, Long idUsuario) throws IOException {
+    public ResponseEntity<?> subirArchivo(MultipartFile file, Long idHecho, Jwt principal){
 
         HechoDinamica hecho = hechosDinamicaRepo.findById(idHecho).orElse(null);
 
@@ -607,7 +616,13 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        if (!Objects.equals(hecho.getUsuario_id(), idUsuario)){
+        Usuario usuario = usuariosRepo.findByNombreDeUsuario(JwtClaimExtractor.getUsernameFromToken(principal)).orElse(null);
+        Long id_usuario = null;
+        if(usuario != null){
+            id_usuario = usuario.getId();
+        }
+
+        if (!Objects.equals(hecho.getUsuario_id(), id_usuario)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 

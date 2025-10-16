@@ -1,6 +1,8 @@
 package modulos.agregacion.services;
 
+import io.jsonwebtoken.Jwt;
 import jakarta.transaction.Transactional;
+import modulos.JwtClaimExtractor;
 import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import modulos.agregacion.entities.DbDinamica.solicitudes.*;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
@@ -81,8 +83,8 @@ public class SolicitudHechoService {
         this.hechosProxyRepository = hechosProxyRepository;
     }
 
-    private ResponseEntity<?> checkeoAdmin(Long id_usuario){
-        Usuario usuario = id_usuario != null ? usuariosRepository.findById(id_usuario).orElse(null) : null;
+    private ResponseEntity<?> checkeoAdmin(String username){
+        Usuario usuario = username != null ? usuariosRepository.findByNombreDeUsuario(username).orElse(null) : null;
 
         if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
@@ -99,9 +101,9 @@ public class SolicitudHechoService {
         return ResponseEntity.ok(usuario);
     }
 
-    private ResponseEntity<?> checkeoNoAdmin(Long id_usuario){
+    private ResponseEntity<?> checkeoNoAdmin(String username){
 
-        Usuario usuario = id_usuario != null ? usuariosRepository.findById(id_usuario).orElse(null) : null;
+        Usuario usuario = username != null ? usuariosRepository.findByNombreDeUsuario(username).orElse(null) : null;
 
         if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
             return ResponseEntity.ok(usuario);
@@ -109,13 +111,16 @@ public class SolicitudHechoService {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
     }
 
-    public ResponseEntity<?> solicitarSubirHecho(SolicitudHechoInputDTO dto) throws IOException {
+    public ResponseEntity<?> solicitarSubirHecho(SolicitudHechoInputDTO dto, Optional<Jwt> principal){
 
+        Usuario usuario = null;
         // Los visualizadores o contribuyentes llaman al metodo, no los admins
-        ResponseEntity<?> rta = this.checkeoNoAdmin(dto.getId_usuario());
-
-        if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
-            return rta;
+        if(principal.isPresent()){
+            ResponseEntity<?> rta = this.checkeoNoAdmin(JwtClaimExtractor.getUsernameFromToken(principal.orElse(null)));
+            usuario = (Usuario) rta.getBody();
+            if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+                return rta;
+            }
         }
 
         Pais pais = dto.getId_pais() != null ? paisRepository.findById(dto.getId_pais()).orElse(null) : null;
@@ -128,22 +133,31 @@ public class SolicitudHechoService {
         List<ContenidoMultimedia> contenidosMultimedia = new ArrayList<>();
 
         for(MultipartFile file : dto.getContenidosMultimedia()) {
+            try {
+                String url = GestorArchivos.guardarArchivo(file);
 
-            String url = GestorArchivos.guardarArchivo(file);
+                ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
 
-            ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
-
-            contenidoMultimedia.setUrl(url);
-            contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
-            contenidosMultimedia.add(contenidoMultimedia);
+                contenidoMultimedia.setUrl(url);
+                contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
+                contenidosMultimedia.add(contenidoMultimedia);
+            } catch (IOException ignore) {
+            }
         }
 
         FuenteDinamica fuenteDinamica = new FuenteDinamica();
         HechoDinamica hecho = fuenteDinamica.crearHecho(dto, contenidosMultimedia, categoria_id, ubicacion_id);
 
-        Usuario usuario = (Usuario)rta.getBody();
-        SolicitudSubirHecho solicitudHecho = new SolicitudSubirHecho(usuario.getId(), hecho);
+        SolicitudSubirHecho solicitudHecho = new SolicitudSubirHecho();
 
+        if(principal.isPresent()) {
+            solicitudHecho.setUsuario_id(usuario.getId());
+            hecho.setUsuario_id(usuario.getId());
+        } else{
+            solicitudHecho.setUsuario_id(null);
+            solicitudHecho.setHecho(hecho);
+            hecho.setUsuario_id(null);
+        }
         if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion())) {
             solicitudHecho.setProcesada(true);
             solicitudHecho.setRechazadaPorSpam(true);
@@ -152,7 +166,6 @@ public class SolicitudHechoService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Se detectó spam");
         }
 
-        hecho.setUsuario_id(usuario.getId());
         hecho.getAtributosHecho().setFuente(Fuente.DINAMICA);
         hechosDinamicaRepository.save(hecho);
         solicitudAgregarHechoRepo.save(solicitudHecho);
@@ -161,22 +174,22 @@ public class SolicitudHechoService {
     }
 
     //El usuario manda una solicitud para eliminar un hecho -> guardar la solicitud en la base de datos
-    public ResponseEntity<?> solicitarEliminacionHecho(SolicitudHechoEliminarInputDTO dto){
+    public ResponseEntity<?> solicitarEliminacionHecho(SolicitudHechoEliminarInputDTO dto, Jwt principal){
         // Un admin no debería solicitar eliminar, los elimina directamente
-        ResponseEntity<?> rta = checkeoContribuyente(dto.getId_usuario());
 
-        if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
-            return rta;
-        }
+            ResponseEntity<?> rta = this.checkeoNoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
+            Usuario usuario = (Usuario) rta.getBody();
+            if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+                return rta;
+            }
 
         // El hecho debe estar asociado al usuario
-        HechoDinamica hecho = hechosDinamicaRepository.findByIdAndUsuario(dto.getId_hecho(), dto.getId_usuario()).orElse(null);
+        HechoDinamica hecho = hechosDinamicaRepository.findByIdAndUsuario(dto.getId_hecho(), usuario.getId()).orElse(null);
         if (hecho == null){
             // Puede ser que se haya encontrado el hecho pero que el usuario no esté asociado al hecho
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
         }
 
-        Usuario usuario = (Usuario)rta.getBody();
         SolicitudEliminarHecho solicitud = new SolicitudEliminarHecho(usuario.getId(), hecho, dto.getJustificacion());
 
         if (DetectorDeSpam.esSpam(dto.getJustificacion())) {
@@ -190,8 +203,9 @@ public class SolicitudHechoService {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    public ResponseEntity<?> solicitarModificacionHecho(SolicitudHechoModificarInputDTO dto) throws IOException {
+    public ResponseEntity<?> solicitarModificacionHecho(SolicitudHechoModificarInputDTO dto, Jwt principal){
 
+        
         ResponseEntity<?> rta = checkeoContribuyente(dto.getId_usuario());
 
         if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
@@ -322,12 +336,12 @@ public class SolicitudHechoService {
     }
 
     @Transactional
-    public ResponseEntity<?> evaluarEliminacionHecho(SolicitudHechoEvaluarInputDTO dtoInput) {
+    public ResponseEntity<?> evaluarEliminacionHecho(SolicitudHechoEvaluarInputDTO dtoInput, Jwt principal) {
 
         RolCambiadoDTO dto = new RolCambiadoDTO();
         dto.setRolModificado(false);
 
-        ResponseEntity<?> rta = checkeoAdmin(dtoInput.getId_usuario());
+        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
             return rta;
@@ -361,9 +375,9 @@ public class SolicitudHechoService {
     }
 
     @Transactional
-    public ResponseEntity<?> evaluarModificacionHecho(SolicitudHechoEvaluarInputDTO dtoInput) {
+    public ResponseEntity<?> evaluarModificacionHecho(SolicitudHechoEvaluarInputDTO dtoInput, Jwt principal) {
 
-        ResponseEntity<?> rta = checkeoAdmin(dtoInput.getId_usuario());
+        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
             return rta;

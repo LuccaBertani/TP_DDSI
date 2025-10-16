@@ -9,8 +9,7 @@ import java.util.List;
 
 @Data
 public class SolicitudHechoModificarInputDTO { //datos del hecho y el id del usuario
-    @NotNull(message = "El id_usuario es obligatorio")
-    private Long id_usuario; //el que ejecuta la acción
+
     @NotNull(message = "El id_hecho es obligatorio")
     private Long id_hecho; // Id del hecho que se quiere modificar
     private String titulo;

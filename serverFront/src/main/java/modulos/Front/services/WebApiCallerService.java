@@ -93,43 +93,6 @@ public class WebApiCallerService {
         }
     }
 
-    public ResponseEntity<?> getHechos(Integer origen){
-        return webClient.get().uri(uriBuilder -> uriBuilder.path("/api/hechos/get-all")
-                .queryParam("origen", origen).build())
-                .retrieve()
-                .toEntity(Void.class)
-                .block();
-    }
-
-
-
-
-    // Falta lógica de refresh token
-    /*public <T> ResponseEntity<T> executeWithTokenRetry(
-            java.util.function.Function<String, reactor.core.publisher.Mono<ResponseEntity<T>>> apiCall) {
-
-        String accessToken = getAccessTokenFromSession();
-        String refreshToken = getRefreshTokenFromSession();
-
-        if (accessToken == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        return apiCall.apply(accessToken)
-                .onErrorResume(WebClientResponseException.class, e -> {
-                    // Para cualquier otro error
-
-                    return Mono.just(ResponseEntity.status(e.getStatusCode()).build());
-                })
-                .onErrorResume(Throwable.class, ex ->
-                        Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()))
-                .block(); // mantiene comportamiento bloqueante final
-    }*/
-
-
-
-
-
     /**
      * Refresca el access token usando el refresh token
      */

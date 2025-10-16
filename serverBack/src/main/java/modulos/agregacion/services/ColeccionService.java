@@ -1,7 +1,11 @@
 package modulos.agregacion.services;
 
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.Jwts;
 import jakarta.transaction.Transactional;
+import modulos.JwtClaimExtractor;
 import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
@@ -31,11 +35,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import modulos.shared.dtos.output.ColeccionOutputDTO;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+
+import static modulos.JwtClaimExtractor.getUsernameFromToken;
 
 @Service
 public class ColeccionService  {
@@ -83,16 +91,14 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 0:00 y el 31 de diciembre de 20205 a las 23:59.
 
     */
+
+
     @Transactional
-    public ResponseEntity<?> crearColeccion(ColeccionInputDTO dtoInput) {
+    public ResponseEntity<?> crearColeccion(ColeccionInputDTO dtoInput, Jwt principal) {
 
-        if(dtoInput.getTitulo() == null){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Campos obligatorios no ingresados");
-        }
+        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
-        ResponseEntity<?> rta = checkeoAdmin(dtoInput.getId_usuario());
-
-        if (!rta.getStatusCode().equals(HttpStatus.OK)){
+        if (!rta.getStatusCode().is2xxSuccessful()){
             return rta;
         }
 
@@ -164,11 +170,11 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
-    public ResponseEntity<?> deleteColeccion(Long id_coleccion, Long id_usuario) {
+    public ResponseEntity<?> deleteColeccion(Long id_coleccion, Jwt principal) {
 
-        ResponseEntity<?> rta = checkeoAdmin(id_usuario);
+        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
-        if (!rta.getStatusCode().equals(HttpStatus.OK)){
+        if (!rta.getStatusCode().is2xxSuccessful()){
             return rta;
         }
 
@@ -184,9 +190,9 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     }
 
 
-    public ResponseEntity<?> agregarFuente(Long id_usuario, Long idColeccion, String dataSet) {
+    public ResponseEntity<?> agregarFuente(Long idColeccion, String dataSet, Jwt principal) {
 
-        ResponseEntity<?> respuesta = checkeoAdmin(id_usuario);
+        ResponseEntity<?> respuesta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if(!respuesta.getStatusCode().equals(HttpStatus.OK)){
             return respuesta;
@@ -240,9 +246,9 @@ Por lo tanto, todos los hechos que provienen de esa fuente deben eliminarse de l
 
 Esto asegura que la colección refleje solo los hechos de las fuentes actualmente asociadas*/
 
-    public ResponseEntity<?> eliminarFuente(Long id_usuario, Long idColeccion, Long id_dataset) {
+    public ResponseEntity<?> eliminarFuente(Long idColeccion, Long id_dataset, Jwt principal) {
 
-        ResponseEntity<?> respuesta = checkeoAdmin(id_usuario);
+        ResponseEntity<?> respuesta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if(respuesta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
             return respuesta;
@@ -275,8 +281,9 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    public ResponseEntity<?> updateColeccion(ColeccionUpdateInputDTO dto) {
-        ResponseEntity<?> respuesta = checkeoAdmin(dto.getId_usuario());
+    public ResponseEntity<?> updateColeccion(ColeccionUpdateInputDTO dto, Jwt principal) {
+
+        ResponseEntity<?> respuesta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if(!respuesta.getStatusCode().equals(HttpStatus.OK)){
             return respuesta;
@@ -311,9 +318,9 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
         colecciones.forEach(coleccion->coleccion.getAlgoritmoConsenso().ejecutarAlgoritmoConsenso(buscadores.getBuscadorHecho(), datasets, coleccion));
     }
 
-    public ResponseEntity<?> modificarAlgoritmoConsenso(ModificarConsensoInputDTO input) {
+    public ResponseEntity<?> modificarAlgoritmoConsenso(ModificarConsensoInputDTO input, Jwt principal) {
 
-        ResponseEntity<?> rta = checkeoAdmin(input.getIdUsuario());
+        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if (!rta.getStatusCode().equals(HttpStatus.OK)){
             return rta;
@@ -417,13 +424,13 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
         }
     }
 
-    private ResponseEntity<?> checkeoAdmin(Long id_usuario){
+    private ResponseEntity<?> checkeoAdmin(String username){
 
-        if (id_usuario == null){
+        if (username == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        Usuario usuario = usuariosRepo.findById(id_usuario).orElse(null);
+        Usuario usuario = usuariosRepo.findByNombreDeUsuario(username).orElse(null);
 
         if (usuario == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró el usuario");
@@ -435,8 +442,9 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
         return ResponseEntity.ok(usuario);
     }
 
-    public ResponseEntity<?> refrescarColecciones(Long id_usuario){
-        ResponseEntity<?> respuesta = this.checkeoAdmin(id_usuario);
+    public ResponseEntity<?> refrescarColecciones(Jwt principal){
+
+        ResponseEntity<?> respuesta = this.checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if (respuesta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
             return respuesta;

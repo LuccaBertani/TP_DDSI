@@ -1,12 +1,15 @@
 package modulos.agregacion.controllers;
 
+import io.jsonwebtoken.Jwt;
 import jakarta.validation.Valid;
 import modulos.agregacion.services.SolicitudHechoService;
 import modulos.shared.dtos.input.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/solicitud-hecho")
@@ -26,32 +29,32 @@ public class SolicitudHechoController {
 
     // Anda
     @PostMapping("/evaluar/eliminar")
-    public ResponseEntity<?> evaluarSolicitudEliminacion(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
-        return solicitudHechoService.evaluarEliminacionHecho(dtoInput); // 200, 401
+    public ResponseEntity<?> evaluarSolicitudEliminacion(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput, @AuthenticationPrincipal Jwt principal){
+        return solicitudHechoService.evaluarEliminacionHecho(dtoInput, principal); // 200, 401
     }
 
 
     @PostMapping("/evaluar/modificar")
-    public ResponseEntity<?> evaluarSolicitudModificacion(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
-        return solicitudHechoService.evaluarModificacionHecho(dtoInput); // 200, 401
+    public ResponseEntity<?> evaluarSolicitudModificacion(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput, @AuthenticationPrincipal Jwt principal){
+        return solicitudHechoService.evaluarModificacionHecho(dtoInput, principal); // 200, 401
     }
 
     // Anda
     @PostMapping("/subir-hecho")
-    public ResponseEntity<?> enviarSolicitudSubirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput) throws IOException {
-        return solicitudHechoService.solicitarSubirHecho(dtoInput); // 200 o 401
+    public ResponseEntity<?> enviarSolicitudSubirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput, @AuthenticationPrincipal Optional<Jwt> principal){
+        return solicitudHechoService.solicitarSubirHecho(dtoInput, principal); // 200 o 401
     }
 
     // Anda
     @PostMapping("/eliminar-hecho")
-    public ResponseEntity<?> enviarSolicitudEliminarHecho(@Valid @RequestBody SolicitudHechoEliminarInputDTO dtoInput){
-        return solicitudHechoService.solicitarEliminacionHecho(dtoInput); // 200 o 401
+    public ResponseEntity<?> enviarSolicitudEliminarHecho(@Valid @RequestBody SolicitudHechoEliminarInputDTO dtoInput, @AuthenticationPrincipal Jwt principal){
+        return solicitudHechoService.solicitarEliminacionHecho(dtoInput, principal); // 200 o 401
     }
 
     // Anda
     @PostMapping("/modificar-hecho")
-    public ResponseEntity<?> enviarSolicitudModificarHecho(@Valid @RequestBody SolicitudHechoModificarInputDTO dtoInput) throws IOException {
-        return solicitudHechoService.solicitarModificacionHecho(dtoInput); // 200, 401 o 409 (recurso ya modificado)
+    public ResponseEntity<?> enviarSolicitudModificarHecho(@Valid @RequestBody SolicitudHechoModificarInputDTO dtoInput, @AuthenticationPrincipal Jwt principal){
+        return solicitudHechoService.solicitarModificacionHecho(dtoInput, principal); // 200, 401 o 409 (recurso ya modificado)
     }
 
     // Anda

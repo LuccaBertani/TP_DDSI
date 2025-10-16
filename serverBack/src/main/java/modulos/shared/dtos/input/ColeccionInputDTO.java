@@ -6,8 +6,7 @@ import lombok.Getter;
 
 @Data
 public class ColeccionInputDTO {
-    @NotNull(message = "El id_usuario es obligatorio")
-    private Long id_usuario;
+
     @NotNull(message = "El campo titulo es obligatorio")
     private String titulo;
     @NotNull(message = "La descripción es obligatoria")
