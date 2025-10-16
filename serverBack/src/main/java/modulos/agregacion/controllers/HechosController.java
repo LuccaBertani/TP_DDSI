@@ -44,20 +44,19 @@ public class HechosController {
     }
     //TODO supongo que es solo fuente dinamica
     @PostMapping("/subir-archivo")
-    public ResponseEntity<?> subirArchivo(@RequestParam("file") MultipartFile file, @RequestParam Long id_hecho, @AuthenticationPrincipal Jwt principal,@RequestParam Fuente fuente) throws IOException {
+    public ResponseEntity<?> subirArchivo(@RequestParam("file") MultipartFile file, @RequestParam Long id_hecho, @AuthenticationPrincipal Jwt principal){
         return hechosService.subirArchivo(file, id_hecho, principal);
     }
 
-
     //anda
     // todos los hechos del sistema
-    @GetMapping("/get-all")
+    @GetMapping("/public/get-all")
     public ResponseEntity<?> visualizarHechos(@RequestParam Integer origen){
         return hechosService.getAllHechos(origen);
     }
 
     // Anda
-    @PostMapping("/get/filtrar")
+    @PostMapping("/public/get/filtrar")
     public ResponseEntity<?> getHechosFiltradosColeccion(
             @RequestBody GetHechosColeccionInputDTO inputDTO)
     {

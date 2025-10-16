@@ -40,7 +40,7 @@ public class SolicitudHechoController {
     }
 
     // Anda
-    @PostMapping("/subir-hecho")
+    @PostMapping("/public/subir-hecho")
     public ResponseEntity<?> enviarSolicitudSubirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput, @AuthenticationPrincipal Optional<Jwt> principal){
         return solicitudHechoService.solicitarSubirHecho(dtoInput, principal); // 200 o 401
     }

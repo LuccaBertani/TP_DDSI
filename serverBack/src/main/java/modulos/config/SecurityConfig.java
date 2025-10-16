@@ -30,7 +30,7 @@ public class SecurityConfig {
                 // Establezco a mi server stateless. No maneja sesiones. Se maneja con tokens
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/api/auth", "/api/auth/refresh").permitAll();
+                    auth.requestMatchers("/api/auth", "/api/auth/refresh", "/api/public").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 // Todas las request que no sean de rutas públicas, pasa por este middleware (el filtro personalizado nuestro)

@@ -29,13 +29,13 @@ public class ColeccionController {
     }
 
     //anda
-    @GetMapping("/get-all")
+    @GetMapping("/public/get-all")
     public ResponseEntity<?> obtenerTodasLasColecciones() {
         return coleccionService.obtenerTodasLasColecciones();
     }
 
     //anda
-    @GetMapping("/get/{id_coleccion}")
+    @GetMapping("/public/get/{id_coleccion}")
     public ResponseEntity<?> getColeccion(@PathVariable Long id_coleccion){
         return coleccionService.getColeccion(id_coleccion);
     }
