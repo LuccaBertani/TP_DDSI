@@ -1,5 +1,7 @@
 package modulos.agregacion.services;
 
+import io.jsonwebtoken.Jwt;
+import modulos.JwtClaimExtractor;
 import modulos.agregacion.entities.DbMain.usuario.Rol;
 import modulos.agregacion.repositories.DbMain.IUsuarioRepository;
 import modulos.shared.dtos.input.*;
@@ -59,9 +61,10 @@ public class UsuarioService {
         return ResponseEntity.ok(usuario.getId());
     }
 
-    public ResponseEntity<?> cambiarContrasenia(CambiarContraseniaDtoInput dtoImput) {
+    public ResponseEntity<?> cambiarContrasenia(CambiarContraseniaDtoInput dtoImput, Jwt principal) {
 
-        Usuario usuario = usuarioRepo.findById(dtoImput.getId_usuario()).orElse(null);
+
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(JwtClaimExtractor.getUsernameFromToken(principal)).orElse(null);
 
         if (usuario == null || !passwordEncoder.matches(dtoImput.getContrasenia_actual(), usuario.getContrasenia())) {
             return ResponseEntity
@@ -77,9 +80,9 @@ public class UsuarioService {
 
     }
 
-    public ResponseEntity<?> editarUsuario(EditarUsuarioDtoInput dtoImput) {
+    public ResponseEntity<?> editarUsuario(EditarUsuarioDtoInput dtoImput, Jwt principal) {
 
-        Usuario usuario = usuarioRepo.findById(dtoImput.getId()).orElse(null);
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(JwtClaimExtractor.getUsernameFromToken(principal)).orElse(null);
 
         if (usuario == null) {
             return ResponseEntity
@@ -97,9 +100,9 @@ public class UsuarioService {
     }
 
 
-    public ResponseEntity<?> editarNombreDeUsuario(EditarNombreDeUsuarioDtoInput dtoImput) {
+    public ResponseEntity<?> editarNombreDeUsuario(EditarNombreDeUsuarioDtoInput dtoImput, Jwt principal) {
 
-        Usuario usuario = usuarioRepo.findById(dtoImput.getId()).orElse(null);
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(JwtClaimExtractor.getUsernameFromToken(principal)).orElse(null);
 
         if (usuario == null) {
             return ResponseEntity
@@ -120,9 +123,9 @@ public class UsuarioService {
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> getAll(Long id) {
+    public ResponseEntity<?> getAll(Jwt principal) {
 
-        Usuario usuario = usuarioRepo.findById(id).orElse(null);
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(JwtClaimExtractor.getUsernameFromToken(principal)).orElse(null);
 
         if (usuario == null) {
             return ResponseEntity

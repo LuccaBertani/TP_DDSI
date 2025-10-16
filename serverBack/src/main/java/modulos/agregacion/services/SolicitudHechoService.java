@@ -92,8 +92,8 @@ public class SolicitudHechoService {
         return ResponseEntity.ok(usuario);
     }
 
-    private ResponseEntity<?> checkeoContribuyente(Long id_usuario){
-        Usuario usuario = id_usuario != null ? usuariosRepository.findById(id_usuario).orElse(null) : null;
+    private ResponseEntity<?> checkeoContribuyente(String username){
+        Usuario usuario = username != null ? usuariosRepository.findByNombreDeUsuario(username).orElse(null) : null;
 
         if (usuario == null || !usuario.getRol().equals(Rol.CONTRIBUYENTE)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
@@ -206,7 +206,7 @@ public class SolicitudHechoService {
     public ResponseEntity<?> solicitarModificacionHecho(SolicitudHechoModificarInputDTO dto, Jwt principal){
 
         
-        ResponseEntity<?> rta = checkeoContribuyente(dto.getId_usuario());
+        ResponseEntity<?> rta = checkeoContribuyente(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
             return rta;
@@ -266,14 +266,16 @@ public class SolicitudHechoService {
 
         if(dto.getContenidosMultimediaParaAgregar() != null) {
             for (MultipartFile file : dto.getContenidosMultimediaParaAgregar()) {
+                try {
+                    String url = GestorArchivos.guardarArchivo(file);
 
-                String url = GestorArchivos.guardarArchivo(file);
+                    ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
 
-                ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
-
-                contenidoMultimedia.setUrl(url);
-                contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
-                contenidosMultimediaParaAgregar.add(contenidoMultimedia);
+                    contenidoMultimedia.setUrl(url);
+                    contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
+                    contenidosMultimediaParaAgregar.add(contenidoMultimedia);
+                } catch(IOException ignore){
+                }
             }
 
             atributos.setContenidoMultimediaAgregar(contenidosMultimediaParaAgregar);
@@ -290,7 +292,7 @@ public class SolicitudHechoService {
     // Así, la SolicitudHecho que traés con findById queda managed durante el method y all lo que le modifiques
     //  (y a sus asociaciones cargadas) se hace UPDATE al hacer commit, sin llamar a save(...).
     @Transactional
-    public ResponseEntity<?> evaluarSolicitudSubirHecho(SolicitudHechoEvaluarInputDTO dtoInput) {
+    public ResponseEntity<?> evaluarSolicitudSubirHecho(SolicitudHechoEvaluarInputDTO dtoInput, Jwt principal) {
 
         RolCambiadoDTO dto = new RolCambiadoDTO();
         dto.setRolModificado(false);
@@ -301,7 +303,7 @@ public class SolicitudHechoService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la solicitud");
         }
 
-        ResponseEntity<?> rta = checkeoAdmin(dtoInput.getId_usuario());
+        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
             return rta;
@@ -432,7 +434,7 @@ public class SolicitudHechoService {
         Optional.ofNullable(atributos.getLongitud()).ifPresent(hecho.getAtributosHecho()::setLongitud);
     }
 
-    public ResponseEntity<?> enviarMensaje(Usuario usuario, SolicitudHecho solicitudHecho, String texto){
+    private ResponseEntity<?> enviarMensaje(Usuario usuario, SolicitudHecho solicitudHecho, String texto){
 
         Mensaje mensaje = new Mensaje();
         mensaje.setSolicitud_hecho_id(solicitudHecho.getId());
@@ -442,9 +444,9 @@ public class SolicitudHechoService {
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> getAllSolicitudes(Long id_usuario) {
+    public ResponseEntity<?> getAllSolicitudes(Jwt principal) {
 
-        ResponseEntity<?> rta = checkeoAdmin(id_usuario);
+        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
             return rta;
@@ -468,8 +470,8 @@ public class SolicitudHechoService {
         return ResponseEntity.status(HttpStatus.OK).body(solicitudHechoOutputDTOS);
     }
 
-    public ResponseEntity<?> obtenerSolicitudesPendientes(Long id_usuario) {
-        ResponseEntity<?> rta = checkeoAdmin(id_usuario);
+    public ResponseEntity<?> obtenerSolicitudesPendientes(Jwt principal) {
+        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
             return rta;
@@ -542,8 +544,8 @@ public class SolicitudHechoService {
     }
 
     // Para buscar bien el hecho despues con un boton rápido agrego un endpoint en HechoController para obtener hecho por id y fuente
-    public ResponseEntity<?> getAllReportes(Long id_usuario) {
-        ResponseEntity<?> rta = checkeoAdmin(id_usuario);
+    public ResponseEntity<?> getAllReportes(Jwt principal) {
+        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if (!rta.getStatusCode().equals(HttpStatus.OK)) {
             return rta;
@@ -566,12 +568,12 @@ public class SolicitudHechoService {
     }
 
     @Transactional
-    public ResponseEntity<?> evaluarReporte(EvaluarReporteInputDTO inputDTO) {
+    public ResponseEntity<?> evaluarReporte(EvaluarReporteInputDTO inputDTO, Jwt principal) {
 
         RolCambiadoDTO dto = new RolCambiadoDTO();
         dto.setRolModificado(false);
 
-        ResponseEntity<?> rta = checkeoAdmin(inputDTO.getUsuario_id());
+        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
         if (!rta.getStatusCode().equals(HttpStatus.OK)) {
             return rta;

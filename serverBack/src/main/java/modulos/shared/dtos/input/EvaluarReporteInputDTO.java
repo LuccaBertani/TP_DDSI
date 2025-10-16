@@ -5,8 +5,6 @@ import lombok.Data;
 
 @Data
 public class EvaluarReporteInputDTO {
-    @NotNull(message = "El usuario debe indicarse")
-    private Long usuario_id;
 
     @NotNull(message = "El reporte debe indicarse")
     private Long reporte_id;

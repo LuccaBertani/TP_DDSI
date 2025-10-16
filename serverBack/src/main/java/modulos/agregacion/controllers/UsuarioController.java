@@ -1,6 +1,7 @@
 package modulos.agregacion.controllers;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import jakarta.validation.Valid;
 import modulos.agregacion.entities.DbMain.usuario.Rol;
@@ -11,6 +12,7 @@ import modulos.shared.dtos.input.*;
 import modulos.shared.dtos.output.AuthResponseDTO;
 import modulos.shared.utils.JwtUtil;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -35,26 +37,26 @@ public class UsuarioController {
 
     // Anda
     @PostMapping("/editar/contrasenia")
-    public ResponseEntity<?> cambiarContrasenia(@RequestBody CambiarContraseniaDtoInput dtoImput){
-        return usuarioService.cambiarContrasenia(dtoImput);
+    public ResponseEntity<?> cambiarContrasenia(@RequestBody CambiarContraseniaDtoInput dtoImput, @AuthenticationPrincipal Jwt principal){
+        return usuarioService.cambiarContrasenia(dtoImput, principal);
     }
 
     // Anda
     @PostMapping("/editar/campos-escalares")
-    public ResponseEntity<?> editarUsuario(@RequestBody EditarUsuarioDtoInput dtoImput){
-        return usuarioService.editarUsuario(dtoImput);
+    public ResponseEntity<?> editarUsuario(@RequestBody EditarUsuarioDtoInput dtoImput, @AuthenticationPrincipal Jwt principal){
+        return usuarioService.editarUsuario(dtoImput, principal);
     }
 
     // Anda
     @PostMapping("/editar/nombre-usuario")
-    public ResponseEntity<?> editarNombreDeUsuario(@RequestBody EditarNombreDeUsuarioDtoInput dtoImput){
-        return usuarioService.editarNombreDeUsuario(dtoImput);
+    public ResponseEntity<?> editarNombreDeUsuario(@RequestBody EditarNombreDeUsuarioDtoInput dtoImput, @AuthenticationPrincipal Jwt principal){
+        return usuarioService.editarNombreDeUsuario(dtoImput, principal);
     }
 
     // Anda
     @GetMapping("/get-all")
-    public ResponseEntity<?> getAll(@RequestParam Long id){
-        return usuarioService.getAll(id);
+    public ResponseEntity<?> getAll(@AuthenticationPrincipal Jwt principal){
+        return usuarioService.getAll(principal);
     }
 
     @GetMapping("/get/usuario")

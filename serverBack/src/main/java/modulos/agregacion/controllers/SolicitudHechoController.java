@@ -23,8 +23,8 @@ public class SolicitudHechoController {
 
     // Anda
     @PostMapping("/evaluar/subir")
-    public ResponseEntity<?> evaluarSolicitudSubida(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput){
-        return solicitudHechoService.evaluarSolicitudSubirHecho(dtoInput); // 200 o 401
+    public ResponseEntity<?> evaluarSolicitudSubida(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput, @AuthenticationPrincipal Jwt principal){
+        return solicitudHechoService.evaluarSolicitudSubirHecho(dtoInput, principal); // 200 o 401
     }
 
     // Anda
@@ -70,25 +70,25 @@ public class SolicitudHechoController {
     }
 
     @GetMapping("/reportes/get/all")
-    public ResponseEntity<?> getAllReportes(@Valid @RequestParam Long id_usuario){
-        return solicitudHechoService.getAllReportes(id_usuario);
+    public ResponseEntity<?> getAllReportes(@AuthenticationPrincipal Jwt principal){
+        return solicitudHechoService.getAllReportes(principal);
     }
 
     @GetMapping("/reportes/evaluar")
-    public ResponseEntity<?> evaluarReporte(@Valid @RequestBody EvaluarReporteInputDTO dtoInput){
-        return solicitudHechoService.evaluarReporte(dtoInput);
+    public ResponseEntity<?> evaluarReporte(@Valid @RequestBody EvaluarReporteInputDTO dtoInput, @AuthenticationPrincipal Jwt principal){
+        return solicitudHechoService.evaluarReporte(dtoInput, principal);
     }
 
     // Anda
     @GetMapping("/get/all")
-    public ResponseEntity<?> getAllSolicitudes(@Valid @RequestParam Long id_usuario){
-        return solicitudHechoService.getAllSolicitudes(id_usuario);
+    public ResponseEntity<?> getAllSolicitudes(@AuthenticationPrincipal Jwt principal){
+        return solicitudHechoService.getAllSolicitudes(principal);
     }
 
     // Anda
     @GetMapping("/get/pendientes")
-    public ResponseEntity<?> getSolicitudesPendientes(@Valid @RequestParam Long id_usuario){
-        return solicitudHechoService.obtenerSolicitudesPendientes(id_usuario);
+    public ResponseEntity<?> getSolicitudesPendientes(@AuthenticationPrincipal Jwt principal){
+        return solicitudHechoService.obtenerSolicitudesPendientes(principal);
     }
 
 }
