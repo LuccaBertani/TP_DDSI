@@ -36,7 +36,8 @@ public class SecurityConfig {
                 // Autorizaciones básicas
                 .authorizeHttpRequests(auth -> auth
                         // Estos recursos son públicos
-                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+                        //.requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+                        .requestMatchers("/","/login/**","/login", "/usuarios/cargar-register", "/usuarios/registrar-usuario", "/public/**").permitAll()
                         //.requestMatchers("/alumnos/**").hasAnyRole("ADMIN", "DOCENTE")
                         // Los chequeos en server front que se quieran agregar se agregan con requestMatchers
                         // igualmente los chequeos los estamos haciendo en los controllers
@@ -48,7 +49,7 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         // Una vez el login sea exitoso, lo redirijo a...
                         // (despues ver a donde redirigir)
-                        .defaultSuccessUrl("/index", true)
+                        .defaultSuccessUrl("/", true)
                         .failureUrl("/login?error")
                         .permitAll()
                 )

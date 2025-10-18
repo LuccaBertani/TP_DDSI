@@ -49,9 +49,7 @@ modulos\Front\dtos\input\ModificarConsensoInputDTO.class
 modulos\Front\controllers\HomeController.class
 modulos\Front\services\HechosService.class
 modulos\Front\dtos\output\UsuarioOutputDto.class
-modulos\Front\dtos\input\MensajesHechosUsuarioInputDTO.class
 modulos\Front\dtos\input\ProxyDTO.class
-modulos\Front\dtos\input\RefrescarColeccionesInputDTO.class
 modulos\ServerFrontApplication.class
 modulos\Front\dtos\input\TokenResponse$TokenResponseBuilder.class
 modulos\Front\dtos\input\UsuarioInputDTO.class

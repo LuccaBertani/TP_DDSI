@@ -42,12 +42,12 @@ public class SolicitudHechoService {
         return rta;
     }
 
-    public ResponseEntity<?> getAllReportes(Long id_usuario){
-        return webApiCallerService.getList(this.solicitudHechoServiceUrl + "/reportes/get/all" + id_usuario, SolicitudHechoOutputDTO.class);
+    public ResponseEntity<?> getAllReportes(){
+        return webApiCallerService.getList(this.solicitudHechoServiceUrl + "/reportes/get/all", SolicitudHechoOutputDTO.class);
     }
 
-    public ResponseEntity<?> getAllSolicitudes(Long id_usuario){
-        return webApiCallerService.getList(this.solicitudHechoServiceUrl + "/get/all" + id_usuario, SolicitudHechoOutputDTO.class);
+    public ResponseEntity<?> getAllSolicitudes(){
+        return webApiCallerService.getList(this.solicitudHechoServiceUrl + "/get/all", SolicitudHechoOutputDTO.class);
     }
 
     public ResponseEntity<?> evaluarReporte(EvaluarReporteInputDTO dtoInput){
@@ -56,8 +56,8 @@ public class SolicitudHechoService {
         return rta;
     }
 
-    public ResponseEntity<?> getSolicitudesPendientes(Long id_usuario){
-        return webApiCallerService.getList(this.solicitudHechoServiceUrl + "/get/pendientes?id_usuario=" + id_usuario, SolicitudHechoOutputDTO.class);
+    public ResponseEntity<?> getSolicitudesPendientes(){
+        return webApiCallerService.getList(this.solicitudHechoServiceUrl + "/get/pendientes?id_usuario=", SolicitudHechoOutputDTO.class);
     }
 
     public ResponseEntity<?> evaluarSolicitudModificacion(SolicitudHechoModificarInputDTO dto) {
@@ -73,15 +73,11 @@ public class SolicitudHechoService {
     }
 
     public ResponseEntity<?> enviarSolicitudSubirHecho(@Valid SolicitudHechoInputDTO dto) {
-        return webApiCallerService.postEntity(this.solicitudHechoServiceUrl + "/subir-hecho", dto, Void.class);
+        return webApiCallerService.postEntity(this.solicitudHechoServiceUrl + "/public/subir-hecho", dto, Void.class);
     }
 
     public ResponseEntity<?> reportarHecho(@Valid String motivo, @Valid Long idHecho, @Valid String fuente) {
         return webApiCallerService.postEntity(this.solicitudHechoServiceUrl + "/reportes/reportar?id_hecho=" + idHecho + "&fuente=" + fuente + "&motivo=" + motivo, Void.class);
-    }
-
-    public ResponseEntity<?> obtenerMensajes(@Valid Long idReceptor) {
-        return webApiCallerService.getEntity(this.solicitudHechoServiceUrl + "/get-mensajes?id_receptor=" + idReceptor, Void.class);
     }
 
     private void actualizarSesiones(ResponseEntity<?> rta) {

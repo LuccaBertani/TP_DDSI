@@ -520,29 +520,6 @@ public class SolicitudHechoService {
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> obtenerMensajes(Long id_receptor) {
-        Usuario usuario = usuariosRepository.findById(id_receptor).orElse(null);
-        if (usuario == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el usuario");
-        }
-
-        List<Mensaje> mensajes = mensajesRepository.findByReceptor(usuario);
-        List<MensajeOutputDTO> mensajesOutputDTOS = new ArrayList<>();
-        for (Mensaje mensaje: mensajes){
-            MensajeOutputDTO dto = MensajeOutputDTO.builder()
-                    .id_usuario(id_receptor)
-                    .id_solicitud_hecho(mensaje.getSolicitud_hecho_id())
-                    .id_mensaje(mensaje.getId())
-                    .mensaje(mensaje.getTextoMensaje())
-                    .build();
-
-            mensajesOutputDTOS.add(dto);
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(mensajesOutputDTOS);
-
-    }
-
     // Para buscar bien el hecho despues con un boton rápido agrego un endpoint en HechoController para obtener hecho por id y fuente
     public ResponseEntity<?> getAllReportes(Jwt principal) {
         ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));

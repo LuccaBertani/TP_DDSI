@@ -20,7 +20,6 @@ public class JwtUtil {
     public static String generarAccessToken(String username, Rol rol) {
         return Jwts.builder()
                 .setSubject(username)
-                .claim("rol", rol)
                 .setIssuer("gestion-alumnos-server")
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
                 .signWith(key)
@@ -33,7 +32,6 @@ public class JwtUtil {
                 .setIssuer("gestion-alumnos-server")
                 .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY))
                 .claim("type", "refresh") // diferenciamos refresh del access
-                .claim("rol", rol)
                 .signWith(key)
                 .compact();
     }

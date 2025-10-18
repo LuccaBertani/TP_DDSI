@@ -64,6 +64,12 @@ public class UsuarioController {
         return usuarioService.getUsuarioByNombreUsuario(nombre_usuario);
     }
 
+    // Anda
+    @GetMapping("/get-mensajes")
+    public ResponseEntity<?> getMensajesUsuario(@Valid @RequestParam String username){
+        return usuarioService.obtenerMensajes(username);
+    }
+
     @PostMapping("/auth")
     public ResponseEntity<?> loginApi(@RequestBody LoginDtoInput dtoInput) {
 

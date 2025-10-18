@@ -10,19 +10,16 @@ public class HomeController {
     @GetMapping("/")
     public String home(){
         // todo definir cual es la pantalla de inicio
-        return "redirect:/index";
+        return "index";
     }
 
     @GetMapping("/404")
-    public String notFound(Model model){
-        model.addAttribute("titulo", "No encontrado");
+    public String notFound(){
         return "404";
     }
 
     @GetMapping("/403")
-    public String accessDenied(Model model){
-        model.addAttribute("titulo", "Acceso denegado");
-        model.addAttribute("mensaje", "No tiene permiso para acceder a este recurso");
+    public String accessDenied(){
         return "403";
     }
 }

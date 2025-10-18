@@ -25,20 +25,26 @@ import java.util.List;
 public class HechosController {
     private final HechosService hechosService;
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
-    @PostMapping("/crear")
-    public String crearHecho(RedirectAttributes ra, @Valid @ModelAttribute SolicitudHechoInputDTO hechoInputDTO){
-        ResponseEntity<?> rtaDto = this.hechosService.crearHecho(hechoInputDTO);
+    @GetMapping("/crear")
+    public String getFormularioCrearHecho(){
+        return "contribuir";
+    }
+
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PostMapping("/subir")
+    public String subirHecho(RedirectAttributes ra, @Valid @ModelAttribute SolicitudHechoInputDTO hechoInputDTO){
+        ResponseEntity<?> rtaDto = this.hechosService.subirHecho(hechoInputDTO);
 
         if(rtaDto.getStatusCode().is2xxSuccessful()){
             ra.addFlashAttribute("msgExito", "Coleccion creada correctamente");
-            return "redirect:/crear";
+            return "redirect:crear";
         }
         else if(rtaDto.getBody() != null){
             ra.addAttribute("msgError", rtaDto.getBody().toString());
         }
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
+
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/importar")
     public String importarHechos(@Valid @RequestPart("meta") ImportacionHechosInputDTO dtoInput,
@@ -46,8 +52,8 @@ public class HechosController {
         ResponseEntity <?> rtaDto = this.hechosService.importarHechos(dtoInput, file);
 
         if(rtaDto.getStatusCode().is2xxSuccessful()){
-            ra.addFlashAttribute("msgExito", "Coleccion creada correctamente");
-            return "redirect:/importar";
+            ra.addFlashAttribute("msgExito", "Csv subido correctamente");
+            return "redirect:crear";
         }
         else if(rtaDto.getBody() != null){
             ra.addAttribute("msgError", rtaDto.getBody().toString());
@@ -63,7 +69,23 @@ public class HechosController {
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
             HechosResponse hechos = (HechosResponse) rtaDto.getBody();
             model.addAttribute("listaHechos", hechos.getHechos());
-            return "dashboard";
+            return "hecho";
+        }
+        else if (rtaDto.getBody() != null){
+            model.addAttribute("errorMsg", rtaDto.getBody().toString());
+        }
+        return "redirect:/" + rtaDto.getStatusCode().value();
+    }
+
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
+    @GetMapping("/get")
+    public String getHecho(Model model, Long id_hecho){
+        ResponseEntity<?> rtaDto = this.hechosService.getHecho(id_hecho);
+
+        if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
+            HechosResponse hechos = (HechosResponse) rtaDto.getBody();
+            model.addAttribute("listaHechos", hechos.getHechos());
+            return "hecho";
         }
         else if (rtaDto.getBody() != null){
             model.addAttribute("errorMsg", rtaDto.getBody().toString());
@@ -79,11 +101,13 @@ public class HechosController {
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
             List<VisualizarHechosOutputDTO> hechos = BodyToListConverter.bodyToList(rtaDto, VisualizarHechosOutputDTO.class);
             model.addAttribute("listaHechos", hechos);
-            return "dashboard";
+            return "hecho";
         }
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
 
     //todo falta
+
+
 
 }

@@ -7,6 +7,7 @@ modulos\agregacion\repositories\DbMain\IFiltroRepository.class
 modulos\shared\dtos\input\ColeccionInputDTO.class
 modulos\shared\dtos\input\TokenResponse$TokenResponseBuilder.class
 modulos\shared\dtos\input\SolicitudHechoInputDTO.class
+modulos\JwtClaimExtractor.class
 modulos\servicioEstadistica\ServicioDeEstadistica.class
 modulos\agregacion\entities\DbMain\Filtrador.class
 modulos\agregacion\entities\fuentes\FuenteEstatica.class

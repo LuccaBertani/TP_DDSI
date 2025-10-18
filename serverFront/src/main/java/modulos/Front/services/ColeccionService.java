@@ -26,7 +26,7 @@ public class ColeccionService {
     // el tercero el tipo de dato que retorna server back
 
     public ResponseEntity<?> obtenerTodasLasColecciones() {
-        return webApiCallerService.getList(coleccionServiceUrl + "/get-all", ColeccionOutputDTO.class);
+        return webApiCallerService.getList(coleccionServiceUrl + "/public/get-all", ColeccionOutputDTO.class);
     }
 
     public ResponseEntity<?> crearColeccion(ColeccionInputDTO inputDTO) {
@@ -34,14 +34,14 @@ public class ColeccionService {
     }
 
     public ResponseEntity<?> getColeccion(Long id_coleccion) {
-        return webApiCallerService.getEntity(coleccionServiceUrl + "/get/" + id_coleccion, ColeccionOutputDTO.class);
+        return webApiCallerService.getEntity(coleccionServiceUrl + "/public/get/" + id_coleccion, ColeccionOutputDTO.class);
     }
 
     public ResponseEntity<?> deleteColeccion(Long id_coleccion) {
         return webApiCallerService.postEntity(coleccionServiceUrl + "/delete/" + id_coleccion, Void.class);
     }
 
-    public ResponseEntity<?> updateColeccion(ColeccionInputDTO inputDTO) {
+    public ResponseEntity<?> updateColeccion(ColeccionUpdateInputDTO inputDTO) {
         return webApiCallerService.postEntity(coleccionServiceUrl + "/update", inputDTO, Void.class);
     }
 
@@ -57,8 +57,8 @@ public class ColeccionService {
         return webApiCallerService.postEntity(coleccionServiceUrl + "/colecciones/modificar-consenso", input, Void.class);
     }
 
-    public ResponseEntity<?> refrescarColecciones(RefrescarColeccionesInputDTO inputDTO) {
-        return webApiCallerService.postEntity(coleccionServiceUrl + "/colecciones/refrescar", inputDTO, Void.class);
+    public ResponseEntity<?> refrescarColecciones() {
+        return webApiCallerService.postEntity(coleccionServiceUrl + "/colecciones/refrescar", Void.class);
     }
 
 

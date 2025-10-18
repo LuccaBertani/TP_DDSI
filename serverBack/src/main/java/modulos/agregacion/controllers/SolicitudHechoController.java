@@ -58,12 +58,6 @@ public class SolicitudHechoController {
     }
 
     // Anda
-    @GetMapping("/get-mensajes")
-    public ResponseEntity<?> getMensajesUsuario(@Valid @RequestParam Long id_receptor){
-        return solicitudHechoService.obtenerMensajes(id_receptor);
-    }
-
-    // Anda
     @PostMapping("/reportes/reportar")
     public ResponseEntity<?> reportar(@Valid @RequestParam Long id_hecho, @Valid @RequestParam String fuente, @Valid @RequestParam String motivo){
         return solicitudHechoService.reportarHecho(motivo, id_hecho, fuente);

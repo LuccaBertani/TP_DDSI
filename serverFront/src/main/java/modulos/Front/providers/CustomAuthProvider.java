@@ -27,6 +27,17 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
     private final WebApiCallerService webApiCallerService;
 
+   /*
+    <form th:action="@{/login}" method="post">
+  <input type="text"     name="username" placeholder="Usuario">
+  <input type="password" name="password" placeholder="Contraseña">
+
+  <!-- CSRF -->
+  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+  <button type="submit">Ingresar</button>
+</form>
+
+*/
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName(); // Llega del form de login

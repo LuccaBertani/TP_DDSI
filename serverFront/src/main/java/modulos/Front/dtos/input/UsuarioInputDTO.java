@@ -15,6 +15,7 @@ public class UsuarioInputDTO {
     private String apellido;
 
     private Integer edad;
+
     @NotNull(message = "Campo contraseña obligatorio")
     private String contrasenia;
 }

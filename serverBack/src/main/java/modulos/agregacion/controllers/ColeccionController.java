@@ -66,7 +66,7 @@ public class ColeccionController {
     }
 
     @PostMapping("/colecciones/refrescar")
-    public ResponseEntity<?> refrescarColecciones(@AuthenticationPrincipal  Jwt principal){
+    public ResponseEntity<?> refrescarColecciones(@AuthenticationPrincipal Jwt principal){
         return coleccionService.refrescarColecciones(principal);
     }
 

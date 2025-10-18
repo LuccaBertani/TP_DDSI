@@ -22,8 +22,12 @@ public class HechosService {
     }
 
 
-    public ResponseEntity<?> crearHecho(SolicitudHechoInputDTO hechoInputDTO) {
-        return webApiCallerService.postEntity(this.hechoServiceUrl + "/crear", hechoInputDTO, Void.class);
+    public ResponseEntity<?> getHecho(Long id_hecho) {
+        return webApiCallerService.getEntity(this.hechoServiceUrl + "/get?id_hecho=" + id_hecho.toString(), Void.class);
+    }
+
+    public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO hechoInputDTO) {
+        return webApiCallerService.postEntity(this.hechoServiceUrl + "/subir", hechoInputDTO, Void.class);
     }
 
     public ResponseEntity<?> importarHechos(@Valid ImportacionHechosInputDTO dtoInput, MultipartFile file) {
@@ -31,10 +35,10 @@ public class HechosService {
     }
 
     public ResponseEntity<?> getHechos() {
-        return webApiCallerService.getList(this.hechoServiceUrl + "/get-all?origen=0", VisualizarHechosOutputDTO.class);
+        return webApiCallerService.getList(this.hechoServiceUrl + "/public/get-all?origen=0", VisualizarHechosOutputDTO.class);
     }
 
     public ResponseEntity<?> getHechosFiltradosColeccion(@Valid GetHechosColeccionInputDTO inputDTO) {
-        return webApiCallerService.postList(this.hechoServiceUrl + "/get/filtrar", inputDTO, GetHechosColeccionInputDTO.class);
+        return webApiCallerService.postList(this.hechoServiceUrl + "/public/get/filtrar", inputDTO, GetHechosColeccionInputDTO.class);
     }
 }

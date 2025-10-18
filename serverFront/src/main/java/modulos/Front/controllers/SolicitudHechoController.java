@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import modulos.Front.BodyToListConverter;
 import modulos.Front.dtos.input.*;
-import modulos.Front.dtos.output.MensajeOutputDTO;
 import modulos.Front.dtos.output.SolicitudHechoOutputDTO;
 import modulos.Front.services.SolicitudHechoService;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -25,14 +22,13 @@ public class SolicitudHechoController {
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/evaluar/subir")
-    public String evaluarSolicitudSubida(@Valid SolicitudHechoEvaluarInputDTO dtoInput, RedirectAttributes ra){
+    public String evaluarSolicitudSubida(@Valid SolicitudHechoEvaluarInputDTO dtoInput){
         ResponseEntity<?> rta = solicitudHechoService.evaluarSolicitudSubida(dtoInput);
 
         if (rta.getStatusCode().is2xxSuccessful()) {
-            return "solicitudes";
+            return "redirect:get/all";
         }
         return "redirect:/" + rta.getStatusCode().value();
-
     }
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
@@ -41,7 +37,7 @@ public class SolicitudHechoController {
         ResponseEntity<?> rta = solicitudHechoService.evaluarSolicitudEliminacion(dto);
 
         if(rta.getStatusCode().is2xxSuccessful()){
-            return "solicitudes";
+            return "redirect:get/all";
         }
         else if(rta.getBody() != null){
             ra.addAttribute(rta.getBody().toString());
@@ -55,7 +51,7 @@ public class SolicitudHechoController {
         ResponseEntity<?> rta = solicitudHechoService.evaluarSolicitudModificacion(dto);
 
         if(rta.getStatusCode().is2xxSuccessful()){
-            return "solicitudes";
+            return "redirect:get/all";
         }
         else if(rta.getBody() != null){
             ra.addFlashAttribute(rta.getBody().toString());
@@ -69,23 +65,7 @@ public class SolicitudHechoController {
         ResponseEntity<?> rta = this.solicitudHechoService.enviarSolicitudSubirHecho(dto);
 
         if(rta.getStatusCode().is2xxSuccessful()){
-            return "solicitudes";
-        }
-        else if(rta.getBody() != null){
-            ra.addFlashAttribute(rta.getBody().toString());
-        }
-        return "redirect:/" + rta.getStatusCode().value();
-    }
-
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
-    @GetMapping("/get-mensajes")
-    public String getMensajesUsuario(@Valid @ModelAttribute Long id_receptor, Model model, RedirectAttributes ra){
-        ResponseEntity<?> rta = solicitudHechoService.obtenerMensajes(id_receptor);
-
-        if(rta.getStatusCode().is2xxSuccessful()){
-            List<MensajeOutputDTO> mensajes = BodyToListConverter.bodyToList(rta, MensajeOutputDTO.class);
-            model.addAttribute("mensajes", mensajes);
-            return "mensajes";
+            return "redirect:/hechos/crear";
         }
         else if(rta.getBody() != null){
             ra.addFlashAttribute(rta.getBody().toString());
@@ -100,7 +80,7 @@ public class SolicitudHechoController {
         ResponseEntity<?> rta = solicitudHechoService.reportarHecho(motivo, id_hecho, fuente);
 
         if(rta.getStatusCode().is2xxSuccessful()){
-            return "solicitudes";
+            return "redirect:/hechos/get?id_usuario=" + id_hecho.toString();
         }
         else if(rta.getBody() != null){
             ra.addFlashAttribute(rta.getBody().toString());
@@ -115,7 +95,7 @@ public class SolicitudHechoController {
         ResponseEntity<?> rta = this.solicitudHechoService.enviarSolicitudEliminarHecho(dto);
 
         if(rta.getStatusCode().is2xxSuccessful()){
-            return "solicitudes";
+            return "redirect:get/all";
         }
         else if(rta.getBody() != null){
             ra.addFlashAttribute(rta.getBody().toString());
@@ -124,12 +104,12 @@ public class SolicitudHechoController {
     }
 
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
-    @PostMapping("/eliminar-hecho")
+    @PostMapping("/modificar-hecho")
     public String enviarSolicitudModificarHecho(@Valid @ModelAttribute SolicitudHechoEliminarInputDTO dto, RedirectAttributes ra){
         ResponseEntity<?> rta = this.solicitudHechoService.enviarSolicitudModificarHecho(dto);
 
         if(rta.getStatusCode().is2xxSuccessful()){
-            return "solicitudes";
+            return "redirect:get/all";
         }
         else if(rta.getBody() != null){
             ra.addFlashAttribute(rta.getBody().toString());
@@ -139,11 +119,12 @@ public class SolicitudHechoController {
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping("/reportes/get/all")
-    public String getAllReportes(@RequestParam Long id_usuario, Model model, RedirectAttributes ra) {
-        ResponseEntity<?> rta = this.solicitudHechoService.getAllReportes(id_usuario);
+    public String getAllReportes(RedirectAttributes ra) {
+        ResponseEntity<?> rta = this.solicitudHechoService.getAllReportes();
 
         if(rta.getStatusCode().is2xxSuccessful()){
-            return "solicitudes";
+            return "reportes"; // TODO vista de lista de reportes
+
         }
         else if(rta.getBody() != null) {
             ra.addFlashAttribute(rta.getBody().toString());
@@ -152,12 +133,12 @@ public class SolicitudHechoController {
     }
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    @GetMapping("/reportes/evaluar")
+    @PostMapping("/reportes/evaluar")
     public String evaluarReporte(@Valid @ModelAttribute EvaluarReporteInputDTO dtoInput, RedirectAttributes ra){
         ResponseEntity<?> rta = solicitudHechoService.evaluarReporte(dtoInput);
 
         if (rta.getStatusCode().is2xxSuccessful()) {
-            return "solicitudes";
+            return "redirect:reportes/get/all";
         }
         else if(rta.getBody() != null){
             ra.addFlashAttribute(rta.getBody().toString());
@@ -168,8 +149,8 @@ public class SolicitudHechoController {
     // Anda
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping("/get/all")
-    public String getAllSolicitudes(@RequestParam Long id_usuario, Model model, RedirectAttributes ra){
-        ResponseEntity<?> rta = solicitudHechoService.getAllSolicitudes(id_usuario);
+    public String getAllSolicitudes(Model model, RedirectAttributes ra){
+        ResponseEntity<?> rta = solicitudHechoService.getAllSolicitudes();
 
         if (rta.getStatusCode().is2xxSuccessful()) {
             List<SolicitudHechoOutputDTO> solicitudes = BodyToListConverter.bodyToList(rta, SolicitudHechoOutputDTO.class);
@@ -184,8 +165,8 @@ public class SolicitudHechoController {
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping("/get/pendientes")
-    public String getSolicitudesPendientes(@Valid @RequestParam Long id_usuario, Model model, RedirectAttributes ra) {
-        ResponseEntity<?> rta = solicitudHechoService.getSolicitudesPendientes(id_usuario);
+    public String getSolicitudesPendientes(Model model, RedirectAttributes ra) {
+        ResponseEntity<?> rta = solicitudHechoService.getSolicitudesPendientes();
 
         if (rta.getStatusCode().is2xxSuccessful()) {
             List<SolicitudHechoOutputDTO> solicitudes = BodyToListConverter.bodyToList(rta, SolicitudHechoOutputDTO.class);

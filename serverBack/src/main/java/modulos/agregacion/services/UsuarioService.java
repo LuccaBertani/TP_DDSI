@@ -2,10 +2,13 @@ package modulos.agregacion.services;
 
 import io.jsonwebtoken.Jwt;
 import modulos.JwtClaimExtractor;
+import modulos.agregacion.entities.DbMain.Mensaje;
 import modulos.agregacion.entities.DbMain.usuario.Rol;
+import modulos.agregacion.repositories.DbMain.IMensajeRepository;
 import modulos.agregacion.repositories.DbMain.IUsuarioRepository;
 import modulos.shared.dtos.input.*;
 import modulos.agregacion.entities.DbMain.usuario.Usuario;
+import modulos.shared.dtos.output.MensajeOutputDTO;
 import modulos.shared.dtos.output.UsuarioOutputDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +25,13 @@ import java.util.Optional;
 public class UsuarioService {
 
     private final IUsuarioRepository usuarioRepo;
+    private final IMensajeRepository mensajesRepo;
 
     private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(IUsuarioRepository usuarioRepo) {
+    public UsuarioService(IUsuarioRepository usuarioRepo, IMensajeRepository mensajesRepo) {
         this.usuarioRepo = usuarioRepo;
+        this.mensajesRepo = mensajesRepo;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
     //Momento en el que un usuario se registra y guarda datos personales (NO LLAMAR A ESTE METODO SI ES ANONIMO)
@@ -155,9 +160,44 @@ public class UsuarioService {
 
     public ResponseEntity<?> getUsuarioByNombreUsuario(String nombre_usuario){
         Usuario usuario = usuarioRepo.findByNombreDeUsuario(nombre_usuario).orElse(null);
+
         if (usuario != null){
-            return ResponseEntity.ok(usuario);
+            UsuarioOutputDto usuarioDto = new UsuarioOutputDto();
+            usuarioDto.setId(usuario.getId());
+            usuarioDto.setNombreDeUsuario(usuario.getNombreDeUsuario());
+            usuarioDto.setNombre(usuario.getDatosPersonales().getNombre());
+            usuarioDto.setApellido(usuario.getDatosPersonales().getApellido());
+            usuarioDto.setEdad(usuario.getDatosPersonales().getEdad());
+            usuarioDto.setCantHechosSubidos(usuario.getCantHechosSubidos());
+            return ResponseEntity.ok(usuarioDto);
         }
+
+
+
         return ResponseEntity.notFound().build();
     }
+
+    public ResponseEntity<?> obtenerMensajes(String username) {
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(username).orElse(null);
+        if (usuario == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el usuario");
+        }
+
+        List<Mensaje> mensajes = mensajesRepo.findByReceptor(usuario);
+        List<MensajeOutputDTO> mensajesOutputDTOS = new ArrayList<>();
+        for (Mensaje mensaje: mensajes){
+            MensajeOutputDTO dto = MensajeOutputDTO.builder()
+                    .id_usuario(usuario.getId())
+                    .id_solicitud_hecho(mensaje.getSolicitud_hecho_id())
+                    .id_mensaje(mensaje.getId())
+                    .mensaje(mensaje.getTextoMensaje())
+                    .build();
+
+            mensajesOutputDTOS.add(dto);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(mensajesOutputDTOS);
+
+    }
+
 }

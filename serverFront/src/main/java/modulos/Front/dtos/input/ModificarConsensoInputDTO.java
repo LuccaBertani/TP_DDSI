@@ -10,5 +10,4 @@ public class ModificarConsensoInputDTO {
     private Long idColeccion;
     @NotNull(message = "Debe especificarse el tipo de consenso")
     private String tipoConsenso; //multiples menciones, mayría simple, mayoría absoluta
-    private Long idUsuario;
 }

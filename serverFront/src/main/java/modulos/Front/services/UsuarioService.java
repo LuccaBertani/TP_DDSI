@@ -2,10 +2,7 @@ package modulos.Front.services;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import modulos.Front.dtos.input.CambiarContraseniaDtoInput;
-import modulos.Front.dtos.input.EditarNombreDeUsuarioDtoInput;
-import modulos.Front.dtos.input.EditarUsuarioDtoInput;
-import modulos.Front.dtos.input.UsuarioInputDTO;
+import modulos.Front.dtos.input.*;
 import modulos.Front.usuario.Usuario;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
@@ -68,7 +65,7 @@ public class UsuarioService {
     }
 
     public ResponseEntity<?> crearUsuario(UsuarioInputDTO inputDTO){
-        return webApiCallerService.postEntity(this.usuarioServiceUrl + "/crear", Void.class);
+        return webApiCallerService.postEntity(this.usuarioServiceUrl + "/crear", inputDTO, Void.class);
     }
 
     public ResponseEntity<?> cambiarContrasenia(CambiarContraseniaDtoInput dto) {
@@ -83,11 +80,16 @@ public class UsuarioService {
         return webApiCallerService.postEntity(this.usuarioServiceUrl + "/editar/nombre-usuario", dto, Void.class);
     }
 
-    public ResponseEntity<?> getAll(@Valid Long id) {
+    public ResponseEntity<?> getAll(Long id) {
         return webApiCallerService.getEntity(this.usuarioServiceUrl + "/get-all?id=" + id, Void.class);
     }
 
-    public ResponseEntity<?> getUsuarioByNombreUsuario(String nombreUsuario) {
-        return webApiCallerService.getEntity(this.usuarioServiceUrl + "/get/usuario?nombre_usuario=" + nombreUsuario, Void.class);
+    public ResponseEntity<?> getUsuario() {
+        return webApiCallerService.getEntity(this.usuarioServiceUrl + "/get/usuario", Void.class);
     }
+
+    public ResponseEntity<?> obtenerMensajes() {
+        return webApiCallerService.getEntity(this.usuarioServiceUrl + "/get-mensajes", Void.class);
+    }
+
 }
