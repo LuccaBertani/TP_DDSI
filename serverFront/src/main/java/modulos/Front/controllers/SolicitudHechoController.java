@@ -47,7 +47,7 @@ public class SolicitudHechoController {
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/evaluar/modificar")
-    public String evaluarSolicitudModificacion(@Valid @ModelAttribute SolicitudHechoModificarInputDTO dto, RedirectAttributes ra){
+    public String evaluarSolicitudModificacion(@Valid @ModelAttribute SolicitudHechoEvaluarInputDTO dto, RedirectAttributes ra){
         ResponseEntity<?> rta = solicitudHechoService.evaluarSolicitudModificacion(dto);
 
         if(rta.getStatusCode().is2xxSuccessful()){
@@ -105,7 +105,7 @@ public class SolicitudHechoController {
 
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @PostMapping("/modificar-hecho")
-    public String enviarSolicitudModificarHecho(@Valid @ModelAttribute SolicitudHechoEliminarInputDTO dto, RedirectAttributes ra){
+    public String enviarSolicitudModificarHecho(@Valid @ModelAttribute SolicitudHechoModificarInputDTO dto, RedirectAttributes ra){
         ResponseEntity<?> rta = this.solicitudHechoService.enviarSolicitudModificarHecho(dto);
 
         if(rta.getStatusCode().is2xxSuccessful()){

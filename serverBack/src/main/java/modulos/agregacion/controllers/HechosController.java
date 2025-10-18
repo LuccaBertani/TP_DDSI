@@ -2,6 +2,7 @@ package modulos.agregacion.controllers;
 
 import io.jsonwebtoken.Jwt;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import modulos.agregacion.entities.DbMain.Fuente;
 import modulos.agregacion.entities.atributosHecho.OrigenConexion;
 import modulos.agregacion.services.HechosService;
@@ -63,7 +64,10 @@ public class HechosController {
         return hechosService.getHechosColeccion(inputDTO);
     }
 
-
+    @GetMapping("/get")
+    public ResponseEntity<?> getHecho(@Valid @RequestParam Long id_hecho, @Valid @RequestParam String fuente){
+        return hechosService.getHecho(id_hecho, fuente);
+    }
 
 
     /*
@@ -89,7 +93,7 @@ fecha_acontecimiento_desde, fecha_acontecimiento_hasta, ubicacion BARBARO!!.
 
 //hechos filtrados de all el sistema
 
-
+    // TODO OOOOOOOOOOOOOOO
     // Anda
     @PostMapping("/add/categoria")
     public ResponseEntity<?> addCategoria(@AuthenticationPrincipal Jwt principal, @RequestParam String categoriaStr, @RequestParam(required = false) List<String> sinonimos){

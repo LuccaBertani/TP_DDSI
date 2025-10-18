@@ -16,6 +16,16 @@ public class JwtClaimExtractor {
         return claims.getSubject();
     }
 
+    public static String getRefreshToken(Jwt token){
+        Claims claims = (Claims) token.getBody();
+        return claims.get("refreshToken").toString();
+    }
+
+    public static String getToken(Jwt token){
+        Claims claims = (Claims) token.getBody();
+        return claims.get("token").toString();
+    }
+
     // ⚠️ Esta clave debe ser la misma usada para firmar el token y debe ser SECRETA.
     private final String SECRET_BASE64 = "TuClaveSecretaMuyLargaYSegura_Base64EncodedString";
 

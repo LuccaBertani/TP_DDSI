@@ -1,13 +1,9 @@
 package modulos.Front.services;
 
 import jakarta.servlet.http.HttpServletRequest;
-import modulos.Front.ApiCall;
 import modulos.Front.dtos.input.AuthResponseDTO;
 import modulos.Front.dtos.input.ImportacionHechosInputDTO;
-import modulos.Front.dtos.input.LoginDtoInput;
 import modulos.Front.dtos.input.TokenResponse;
-import modulos.Front.dtos.output.HechosResponse;
-import modulos.Front.dtos.output.VisualizarHechosOutputDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import reactor.core.publisher.Mono;
-
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class WebApiCallerService {
@@ -204,7 +196,21 @@ public class WebApiCallerService {
                         .retrieve()
                         .toEntity(elementType)
         );
+
+
     }
+
+    public <T> ResponseEntity<T> postEntitySinToken(String url, Object body, Class<T> elementType){
+
+        return webClient
+                .post()
+                .uri(url)
+                .bodyValue(body)
+                .retrieve()
+                .toEntity(elementType)
+                .block();
+    }
+
 
     public <T> ResponseEntity<T> postEntity(String url, Class<T> elementType){
         return executeWithTokenRetry(token ->
@@ -233,7 +239,7 @@ public class WebApiCallerService {
         try {
             return webClient
                 .post()
-                .uri( "/auth")
+                .uri( "/api/usuario/auth")
                 .bodyValue(body)
                 .retrieve()
                 .toEntity(elementType)

@@ -1,6 +1,7 @@
 package modulos.Front.config;
 
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import modulos.Front.providers.CustomAuthProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,11 +13,14 @@ import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @EnableMethodSecurity(prePostEnabled = true)
 @Configuration
+//@RequiredArgsConstructor
 public class SecurityConfig {
 
+    //private final CustomAuthProvider customAuthProvider;
     // Ahora, estoy diciendole a spring security que haga el login con CustomAuthProvider
     @Bean
     public AuthenticationManager authManager(HttpSecurity http, CustomAuthProvider provider) throws Exception{
@@ -37,7 +41,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Estos recursos son públicos
                         //.requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
-                        .requestMatchers("/","/login/**","/login", "/usuarios/cargar-register", "/usuarios/registrar-usuario", "/public/**").permitAll()
+                        .requestMatchers("/","/login","usuarios/cargar-register","usuarios/registrar-usuario", "/auth").permitAll()
+
+                        // Matchea con Ant (para usar ** en medio del path)
+                        .requestMatchers(
+                                antMatcher("/**/public/**"),
+                                antMatcher("/**/auth/**"),
+                                antMatcher("/auth/**")
+                        ).permitAll()
+
                         //.requestMatchers("/alumnos/**").hasAnyRole("ADMIN", "DOCENTE")
                         // Los chequeos en server front que se quieran agregar se agregan con requestMatchers
                         // igualmente los chequeos los estamos haciendo en los controllers
@@ -70,6 +82,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionFixation().migrateSession()
                 );
+                //.authenticationProvider(customAuthProvider);
 
 
         return http.build();

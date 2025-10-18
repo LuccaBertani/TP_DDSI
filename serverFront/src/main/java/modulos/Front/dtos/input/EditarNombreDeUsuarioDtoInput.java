@@ -6,5 +6,4 @@ import lombok.Data;
 public class EditarNombreDeUsuarioDtoInput {
     private String nombreDeUsuarioNuevo;
     private String contrasenia;
-    private Long id;
 }

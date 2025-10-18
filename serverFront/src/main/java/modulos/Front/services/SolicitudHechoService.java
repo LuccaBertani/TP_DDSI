@@ -3,7 +3,6 @@ package modulos.Front.services;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import modulos.Front.dtos.input.*;
-import modulos.Front.dtos.output.ColeccionOutputDTO;
 import modulos.Front.dtos.output.RolCambiadoDTO;
 import modulos.Front.dtos.output.SolicitudHechoOutputDTO;
 import modulos.Front.sessionHandlers.ActiveSessionTracker;
@@ -14,9 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -57,26 +54,26 @@ public class SolicitudHechoService {
     }
 
     public ResponseEntity<?> getSolicitudesPendientes(){
-        return webApiCallerService.getList(this.solicitudHechoServiceUrl + "/get/pendientes?id_usuario=", SolicitudHechoOutputDTO.class);
+        return webApiCallerService.getList(this.solicitudHechoServiceUrl + "/get/pendientes", SolicitudHechoOutputDTO.class);
     }
 
-    public ResponseEntity<?> evaluarSolicitudModificacion(SolicitudHechoModificarInputDTO dto) {
+    public ResponseEntity<?> evaluarSolicitudModificacion(SolicitudHechoEvaluarInputDTO dto) {
         return webApiCallerService.postEntity(this.solicitudHechoServiceUrl + "/evaluar/modificar", dto, Void.class);
     }
 
-    public ResponseEntity<?> enviarSolicitudEliminarHecho(@Valid SolicitudHechoEliminarInputDTO dto) {
+    public ResponseEntity<?> enviarSolicitudEliminarHecho(SolicitudHechoEliminarInputDTO dto) {
         return webApiCallerService.postEntity(this.solicitudHechoServiceUrl + "/eliminar-hecho", dto, Void.class);
     }
 
-    public ResponseEntity<?> enviarSolicitudModificarHecho(@Valid SolicitudHechoEliminarInputDTO dto) {
+    public ResponseEntity<?> enviarSolicitudModificarHecho( SolicitudHechoModificarInputDTO dto) {
         return webApiCallerService.postEntity(this.solicitudHechoServiceUrl + "/modificar-hecho", dto, Void.class);
     }
 
-    public ResponseEntity<?> enviarSolicitudSubirHecho(@Valid SolicitudHechoInputDTO dto) {
+    public ResponseEntity<?> enviarSolicitudSubirHecho(SolicitudHechoInputDTO dto) {
         return webApiCallerService.postEntity(this.solicitudHechoServiceUrl + "/public/subir-hecho", dto, Void.class);
     }
 
-    public ResponseEntity<?> reportarHecho(@Valid String motivo, @Valid Long idHecho, @Valid String fuente) {
+    public ResponseEntity<?> reportarHecho(String motivo, Long idHecho, String fuente) {
         return webApiCallerService.postEntity(this.solicitudHechoServiceUrl + "/reportes/reportar?id_hecho=" + idHecho + "&fuente=" + fuente + "&motivo=" + motivo, Void.class);
     }
 

@@ -1,7 +1,5 @@
 package modulos.Front.controllers;
 
-
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import modulos.Front.BodyToListConverter;
@@ -37,6 +35,9 @@ public class UsuarioController {
 
     @PostMapping("/registrar-usuario")
     public String crearUsuario(@Valid @ModelAttribute UsuarioInputDTO dtoInput, RedirectAttributes ra) {
+
+        System.out.println("HOLA SOY UNA MIERDA JAJAJA Y RECIBI ESTO: " + dtoInput.getNombreUsuario());
+
         ResponseEntity<?> rta = this.usuarioService.crearUsuario(dtoInput);
 
         if(rta.getStatusCode().is2xxSuccessful()){
@@ -124,8 +125,8 @@ public class UsuarioController {
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping("/get-all")
-    public String getAll(@Valid @ModelAttribute Long id, Model model, RedirectAttributes ra){
-        ResponseEntity<?> rta = usuarioService.getAll(id);
+    public String getAll(Model model, RedirectAttributes ra){
+        ResponseEntity<?> rta = usuarioService.getAll();
 
         if(rta.getStatusCode().is2xxSuccessful()){
             List<UsuarioOutputDto> usuarios = BodyToListConverter.bodyToList(rta, UsuarioOutputDto.class);

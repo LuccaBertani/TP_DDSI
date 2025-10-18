@@ -40,8 +40,8 @@ public class ColeccionController {
         return coleccionService.getColeccion(id_coleccion);
     }
     //anda
-    @PostMapping("/delete")
-    public ResponseEntity<?> deleteColeccion(@Valid @RequestParam Long id_coleccion, @AuthenticationPrincipal Jwt principal){
+    @PostMapping("/delete/{id_coleccion}")
+    public ResponseEntity<?> deleteColeccion(@PathVariable Long id_coleccion, @AuthenticationPrincipal Jwt principal){
         return coleccionService.deleteColeccion(id_coleccion, principal);
     }
     //anda
@@ -51,8 +51,8 @@ public class ColeccionController {
     }
 
     @PostMapping("/add/fuente")
-    public ResponseEntity<?> agregarFuente(@Valid @RequestParam Long id_coleccion, @Valid @RequestParam String dataSet, @AuthenticationPrincipal Jwt principal){
-        return coleccionService.agregarFuente(id_coleccion,dataSet, principal);
+    public ResponseEntity<?> agregarFuente(@Valid @RequestParam Long id_coleccion, @Valid @RequestParam String dataset, @AuthenticationPrincipal Jwt principal){
+        return coleccionService.agregarFuente(id_coleccion,dataset, principal);
     }
 
     @PostMapping("/delete/fuente")

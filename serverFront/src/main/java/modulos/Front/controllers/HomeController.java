@@ -9,8 +9,38 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(){
-        // todo definir cual es la pantalla de inicio
         return "index";
+    }
+
+
+    @GetMapping("/hechos")
+    public String hechos() {
+        return "hecho"; // thymeleaf busca templates/hecho.html
+    }
+
+    @GetMapping("/mapa")
+    public String mapa() {
+        return "mapa";
+    }
+
+    @GetMapping("/colecciones")
+    public String colecciones() {
+        return "colecciones";
+    }
+
+    @GetMapping("/contribuir")
+    public String contribuir() {
+        return "contribuir";
+    }
+
+    @GetMapping("/solicitudes")
+    public String solicitudes() {
+        return "solicitudes";
+    }
+
+    @GetMapping("/gestion")
+    public String gestion() {
+        return "gestion";
     }
 
     @GetMapping("/404")

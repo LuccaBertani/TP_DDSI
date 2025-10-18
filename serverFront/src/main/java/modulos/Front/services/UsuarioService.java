@@ -1,23 +1,12 @@
 package modulos.Front.services;
 
-import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import modulos.Front.dtos.input.*;
-import modulos.Front.usuario.Usuario;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 
 
 // implements UserDetailsService
@@ -65,11 +54,11 @@ public class UsuarioService {
     }
 
     public ResponseEntity<?> crearUsuario(UsuarioInputDTO inputDTO){
-        return webApiCallerService.postEntity(this.usuarioServiceUrl + "/crear", inputDTO, Void.class);
+        return webApiCallerService.postEntitySinToken(this.usuarioServiceUrl + "/public/crear", inputDTO, Void.class);
     }
 
     public ResponseEntity<?> cambiarContrasenia(CambiarContraseniaDtoInput dto) {
-        return webApiCallerService.postEntity(this.usuarioServiceUrl + "/editar/campos-escalares", dto, Void.class);
+        return webApiCallerService.postEntity(this.usuarioServiceUrl + "/editar/contrasenia", dto, Void.class);
     }
 
     public ResponseEntity<?> editarUsuario(EditarUsuarioDtoInput dto) {
@@ -80,8 +69,8 @@ public class UsuarioService {
         return webApiCallerService.postEntity(this.usuarioServiceUrl + "/editar/nombre-usuario", dto, Void.class);
     }
 
-    public ResponseEntity<?> getAll(Long id) {
-        return webApiCallerService.getEntity(this.usuarioServiceUrl + "/get-all?id=" + id, Void.class);
+    public ResponseEntity<?> getAll() {
+        return webApiCallerService.getEntity(this.usuarioServiceUrl + "/get-all", Void.class);
     }
 
     public ResponseEntity<?> getUsuario() {

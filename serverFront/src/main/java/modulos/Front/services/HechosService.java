@@ -15,22 +15,22 @@ import java.util.List;
 @Service
 public class HechosService {
     private final WebApiCallerService webApiCallerService;
-    private String hechoServiceUrl = "api/hechos";
+    private String hechoServiceUrl = "/api/hechos";
 
     public HechosService(WebApiCallerService webApiCallerService){
         this.webApiCallerService = webApiCallerService;
     }
 
 
-    public ResponseEntity<?> getHecho(Long id_hecho) {
-        return webApiCallerService.getEntity(this.hechoServiceUrl + "/get?id_hecho=" + id_hecho.toString(), Void.class);
+    public ResponseEntity<?> getHecho(Long id_hecho, String fuente) {
+        return webApiCallerService.getEntity(this.hechoServiceUrl + "/get?id_hecho=" + id_hecho.toString() + "&fuente=" + fuente, Void.class);
     }
 
     public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO hechoInputDTO) {
         return webApiCallerService.postEntity(this.hechoServiceUrl + "/subir", hechoInputDTO, Void.class);
     }
 
-    public ResponseEntity<?> importarHechos(@Valid ImportacionHechosInputDTO dtoInput, MultipartFile file) {
+    public ResponseEntity<?> importarHechos(ImportacionHechosInputDTO dtoInput, MultipartFile file) {
         return webApiCallerService.importarHecho(file, dtoInput);
     }
 
@@ -38,7 +38,7 @@ public class HechosService {
         return webApiCallerService.getList(this.hechoServiceUrl + "/public/get-all?origen=0", VisualizarHechosOutputDTO.class);
     }
 
-    public ResponseEntity<?> getHechosFiltradosColeccion(@Valid GetHechosColeccionInputDTO inputDTO) {
+    public ResponseEntity<?> getHechosFiltradosColeccion(GetHechosColeccionInputDTO inputDTO) {
         return webApiCallerService.postList(this.hechoServiceUrl + "/public/get/filtrar", inputDTO, GetHechosColeccionInputDTO.class);
     }
 }

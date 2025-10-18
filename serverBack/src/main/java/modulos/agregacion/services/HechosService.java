@@ -633,4 +633,26 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return ResponseEntity.status(HttpStatus.CREATED).body(hecho.getAtributosHecho().getContenidosMultimedia().get(hecho.getAtributosHecho().getContenidosMultimedia().size() - 1).getId());
     }
 
+    public ResponseEntity<?> getHecho(Long id_hecho, String fuente){
+        switch (fuente){
+            case "ESTATICA":{
+                HechoEstatica hecho = hechosEstaticaRepo.findById(id_hecho).orElse(null);
+                VisualizarHechosOutputDTO visualizarHechosOutputDTO = crearHechoDto(hecho, VisualizarHechosOutputDTO.class);
+                return ResponseEntity.ok(visualizarHechosOutputDTO);
+            }
+            case "DINAMICA":{
+                HechoDinamica hecho = hechosDinamicaRepo.findById(id_hecho).orElse(null);
+                VisualizarHechosOutputDTO visualizarHechosOutputDTO = crearHechoDto(hecho, VisualizarHechosOutputDTO.class);
+                return ResponseEntity.ok(visualizarHechosOutputDTO);
+            }
+            case "PROXY":{
+                HechoProxy hecho = hechosProxyRepo.findById(id_hecho).orElse(null);
+                VisualizarHechosOutputDTO visualizarHechosOutputDTO = crearHechoDto(hecho, VisualizarHechosOutputDTO.class);
+                return ResponseEntity.ok(visualizarHechosOutputDTO);
+            }
+            default: return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+
 }

@@ -63,7 +63,7 @@ public class UsuarioService {
                     .body("Nombre de usuario o contraseña incorrecto");
         }
 
-        return ResponseEntity.ok(usuario.getId());
+        return ResponseEntity.ok(usuario.getRol());
     }
 
     public ResponseEntity<?> cambiarContrasenia(CambiarContraseniaDtoInput dtoImput, Jwt principal) {
@@ -158,8 +158,8 @@ public class UsuarioService {
         return ResponseEntity.ok(usuariosDto);
     }
 
-    public ResponseEntity<?> getUsuarioByNombreUsuario(String nombre_usuario){
-        Usuario usuario = usuarioRepo.findByNombreDeUsuario(nombre_usuario).orElse(null);
+    public ResponseEntity<?> getUsuarioByNombreUsuario(Jwt principal){
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(JwtClaimExtractor.getUsernameFromToken(principal)).orElse(null);
 
         if (usuario != null){
             UsuarioOutputDto usuarioDto = new UsuarioOutputDto();
@@ -177,8 +177,27 @@ public class UsuarioService {
         return ResponseEntity.notFound().build();
     }
 
-    public ResponseEntity<?> obtenerMensajes(String username) {
-        Usuario usuario = usuarioRepo.findByNombreDeUsuario(username).orElse(null);
+    public ResponseEntity<?> getUsuarioByNombreUsuario(String usuarioStr){
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(usuarioStr).orElse(null);
+
+        if (usuario != null){
+            UsuarioOutputDto usuarioDto = new UsuarioOutputDto();
+            usuarioDto.setId(usuario.getId());
+            usuarioDto.setNombreDeUsuario(usuario.getNombreDeUsuario());
+            usuarioDto.setNombre(usuario.getDatosPersonales().getNombre());
+            usuarioDto.setApellido(usuario.getDatosPersonales().getApellido());
+            usuarioDto.setEdad(usuario.getDatosPersonales().getEdad());
+            usuarioDto.setCantHechosSubidos(usuario.getCantHechosSubidos());
+            return ResponseEntity.ok(usuarioDto);
+        }
+
+
+
+        return ResponseEntity.notFound().build();
+    }
+
+    public ResponseEntity<?> obtenerMensajes(Jwt principal) {
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(JwtClaimExtractor.getUsernameFromToken(principal)).orElse(null);
         if (usuario == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el usuario");
         }

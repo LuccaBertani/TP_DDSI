@@ -40,8 +40,15 @@ public class CustomAuthProvider implements AuthenticationProvider {
 */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+
+        System.out.println("SOY UNA CAGADA DE LABURO");
+
         String username = authentication.getName(); // Llega del form de login
         String password = authentication.getCredentials().toString();
+
+        System.out.println("USUARIO DE RE MIL MIERDA: "+username);
+
+        System.out.println("PASSWORD DE RE MIL MIERDA: "+ password);
 
         try{
             LoginDtoInput dtoInput = LoginDtoInput.builder()
@@ -51,6 +58,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
             ResponseEntity<?> rta = webApiCallerService.login(dtoInput, AuthResponseDTO.class);
 
             if (!rta.getStatusCode().is2xxSuccessful()){
+                System.out.println("Usuario o contraseña inválidos");
                 throw new BadCredentialsException("Usuario o contraseña inválidos");
             }
 
@@ -74,12 +82,14 @@ public class CustomAuthProvider implements AuthenticationProvider {
             return new UsernamePasswordAuthenticationToken(username, password, authorities);
 
         } catch (RuntimeException e){
+            System.out.println("Error en el sistema de autenticación: " + e.getMessage());
             throw new BadCredentialsException("Error en el sistema de autenticación: " + e.getMessage());
         }
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return false;
+        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
+
 }

@@ -79,8 +79,8 @@ public class HechosController {
 
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @GetMapping("/get")
-    public String getHecho(Model model, Long id_hecho){
-        ResponseEntity<?> rtaDto = this.hechosService.getHecho(id_hecho);
+    public String getHecho(Model model, Long id_hecho, String fuente){
+        ResponseEntity<?> rtaDto = this.hechosService.getHecho(id_hecho, fuente);
 
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
             HechosResponse hechos = (HechosResponse) rtaDto.getBody();

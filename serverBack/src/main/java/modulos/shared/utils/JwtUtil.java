@@ -17,7 +17,7 @@ public class JwtUtil {
     private static final long ACCESS_TOKEN_VALIDITY = 15 * 60 * 1000; // 15 min
     private static final long REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000; // 7 días
 
-    public static String generarAccessToken(String username, Rol rol) {
+    public static String generarAccessToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuer("gestion-alumnos-server")
@@ -26,7 +26,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    public static String generarRefreshToken(String username, Rol rol) {
+    public static String generarRefreshToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuer("gestion-alumnos-server")

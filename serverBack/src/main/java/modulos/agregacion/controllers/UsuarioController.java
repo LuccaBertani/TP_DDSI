@@ -30,8 +30,9 @@ public class UsuarioController {
     }
 
     // Anda
-    @PostMapping("/crear")
+    @PostMapping("/public/crear")
     public ResponseEntity<?> crearUsuario(@Valid @RequestBody UsuarioInputDTO dtoInput){
+        System.out.println("HOLA SOY UN ESTORBIN Y QUIERO CREAR USUARIO EN EL BACK");
         return usuarioService.crearUsuario(dtoInput);
     }
 
@@ -60,14 +61,14 @@ public class UsuarioController {
     }
 
     @GetMapping("/get/usuario")
-    public ResponseEntity<?> getUsuarioByNombreUsuario(@RequestParam String nombre_usuario){
-        return usuarioService.getUsuarioByNombreUsuario(nombre_usuario);
+    public ResponseEntity<?> getUsuarioByNombreUsuario(@AuthenticationPrincipal Jwt principal){
+        return usuarioService.getUsuarioByNombreUsuario(principal);
     }
 
     // Anda
     @GetMapping("/get-mensajes")
-    public ResponseEntity<?> getMensajesUsuario(@Valid @RequestParam String username){
-        return usuarioService.obtenerMensajes(username);
+    public ResponseEntity<?> getMensajesUsuario(@AuthenticationPrincipal Jwt principal){
+        return usuarioService.obtenerMensajes(principal);
     }
 
     @PostMapping("/auth")
@@ -89,16 +90,16 @@ public class UsuarioController {
             return rta;
         }
 
-        Usuario usuario = (Usuario)rta.getBody();
+        Rol rolUsuario = (Rol)rta.getBody();
 
         // Generar tokens
-        String accessToken = JwtUtil.generarAccessToken(username, usuario.getRol());
-        String refreshToken = JwtUtil.generarRefreshToken(username, usuario.getRol());
+        String accessToken = JwtUtil.generarAccessToken(username);
+        String refreshToken = JwtUtil.generarRefreshToken(username);
 
         AuthResponseDTO response = AuthResponseDTO.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .rol(usuario.getRol())
+                .rol(rolUsuario)
                 .build();
 
 
@@ -108,12 +109,13 @@ public class UsuarioController {
     @PostMapping("/auth/refresh")
     public ResponseEntity<?> refresh(@RequestBody TokenResponse request) {
         try {
-            Claims claims = JwtUtil.parseClaims(request.getRefreshToken());
 
+            Claims claims = JwtUtil.parseClaims(request.getRefreshToken());
 
             if (!"refresh".equals(claims.get("type"))) {
                 return ResponseEntity.badRequest().build();
             }
+
 
             ResponseEntity<?> rta = usuarioService.getUsuarioByNombreUsuario(claims.getSubject());
 
@@ -122,7 +124,7 @@ public class UsuarioController {
             }
             Usuario usuario = (Usuario) rta.getBody();
             Rol rol = usuario.getRol();
-            String newAccessToken = JwtUtil.generarAccessToken(claims.getSubject(), rol);
+            String newAccessToken = JwtUtil.generarAccessToken(claims.getSubject());
             AuthResponseDTO response = AuthResponseDTO.builder()
                     .accessToken(newAccessToken)
                     .refreshToken(request.getRefreshToken())
