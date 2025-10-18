@@ -1,581 +1,302 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contribuir - MetaMapa</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #4f46e5;
-            --success-color: #059669;
-        }
+<!-- templates/contribuir.html -->
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<main th:fragment="contenido">
 
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--primary-color);
-            border-radius: 8px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        .dashboard-header {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .nav-pills-custom .nav-link {
-            color: #666;
-            border-radius: 25px;
-            padding: 10px 20px;
-            margin: 0 5px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-pills-custom .nav-link.active {
-            background-color: var(--success-color);
-            color: white;
-        }
-
-        .file-upload-area {
-            border: 2px dashed #cbd5e1;
-            border-radius: 12px;
-            padding: 40px 20px;
-            text-align: center;
-            color: #64748b;
-            background: #f8fafc;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .file-upload-area:hover {
-            border-color: var(--success-color);
-            color: var(--success-color);
-            background: rgba(5, 150, 105, 0.05);
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: var(--success-color);
-            box-shadow: 0 0 0 0.2rem rgba(5, 150, 105, 0.25);
-        }
-
-        .btn-success-custom {
-            background-color: var(--success-color);
-            border-color: var(--success-color);
-            font-weight: 600;
-            padding: 12px 30px;
-        }
-
-        .btn-success-custom:hover {
-            background-color: #047857;
-            border-color: #047857;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
-        }
-
-        .contribution-methods {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .method-tab {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            color: #666;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .method-tab.active {
-            background: var(--success-color);
-            color: white;
-            border-color: var(--success-color);
-        }
-
-        .method-tab:hover:not(.active) {
-            background: #e9ecef;
-            color: #333;
-        }
-
-        /* Tabs usando :target */
-        .tab-content-contribute {
-            display: none;
-        }
-
-        .tab-content-contribute:target {
-            display: block;
-        }
-
-        .tab-content-contribute#formulario {
-            display: block; /* Default */
-        }
-
-        .csv-preview {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 15px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            overflow-x: auto;
-        }
-
-        @media (max-width: 768px) {
-            .method-tab {
-                font-size: 0.9em;
-                padding: 10px 15px;
-            }
-        }
-
-        /* Animación de entrada */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        .step-indicator {
-            background: linear-gradient(90deg, var(--success-color) 0%, #10b981 100%);
-            color: white;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        /* Hit areas mínimas para móvil */
-        @media (max-width: 768px) {
-            .btn-sm {
-                min-height: 48px;
-                min-width: 48px;
-                padding: 12px 16px;
-            }
-
-            .map-marker {
-                width: 20px;
-                height: 20px;
-                margin: -10px 0 0 -10px;
-            }
-
-            .nav-link {
-                min-height: 48px;
-                display: flex;
-                align-items: center;
-            }
-
-            .form-control, .form-select {
-                min-height: 48px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-<!-- Agrego TOASTS Ocultos asi sabemos si las operaciones fueron exitosas o no, en un futuro cambiar a js maybe -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header bg-success text-white">
-            <i class="bi bi-check-circle me-2"></i>
-            <strong class="me-auto">Éxito</strong>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+    <!-- Encabezado -->
+    <section class="text-center py-4" style="background: radial-gradient(1200px 600px at 50% -150px, #e8ecf6 0%, #f5f7fb 45%, #ffffff 100%);">
+        <div class="container">
+            <h1 class="fw-bold mb-2">
+                <i class="bi bi-plus-circle me-2"></i> Contribuir al sistema
+            </h1>
+            <p class="text-muted mb-0">Sumá nuevos hechos históricos o importá un CSV</p>
         </div>
-        <div class="toast-body" id="successMessage">
-            Operación completada exitosamente
-        </div>
-    </div>
+    </section>
 
-    <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header bg-danger text-white">
-            <i class="bi bi-exclamation-triangle me-2"></i>
-            <strong class="me-auto">Error</strong>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Cerrar"></button>
-        </div>
-        <div class="toast-body" id="errorMessage">
-            Ocurrió un error. Inténtalo nuevamente.
-        </div>
-    </div>
-</div>
+    <section class="container py-4">
 
-<!-- Header del Dashboard -->
-<header class="dashboard-header py-3">
-    <div class="container-fluid">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <a href="index.html" class="text-decoration-none text-dark d-flex align-items-center">
-                    <div class="logo-icon me-2">M</div>
-                    <span class="fs-4 fw-bold">MetaMapa</span>
-                    <span class="text-muted ms-2 d-none d-md-inline">Panel de Control</span>
-                </a>
-            </div>
-            <div class="col-md-6 text-end">
-                <span class="me-2">Bienvenido, <strong>Usuario</strong></span>
-                <!-- <span class="badge bg-dark me-2">CONTRIBUYENTE</span> -->
-                <a href="index.html" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-box-arrow-right me-1"></i>Cerrar Sesión
-                </a>
-            </div>
-        </div>
-    </div>
-</header>
-
-<!-- Navegación Principal -->
-<nav class="bg-white border-bottom">
-    <div class="container-fluid py-3">
-        <ul class="nav nav-pills nav-pills-custom justify-content-center">
+        <!-- Tabs -->
+        <ul class="nav nav-pills justify-content-center gap-2 mb-4">
             <li class="nav-item">
-                <a class="nav-link" href="dashboard.html">
-                    <i class="bi bi-file-text me-1"></i> Hechos
+                <a class="nav-link active" data-bs-toggle="pill" href="#tab-form">
+                    <i class="bi bi-pencil-square me-1"></i> Formulario individual
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="mapa.html">
-                    <i class="bi bi-map me-1"></i> Mapa
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="colecciones.html">
-                    <i class="bi bi-collection me-1"></i> Colecciones
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="contribuir.html">
-                    <i class="bi bi-plus me-1"></i> Contribuir
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="solicitudes.html">
-                    <i class="bi bi-clipboard-check me-1"></i> Solicitudes
-                    <span class="badge bg-danger ms-1">11</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="gestion.html">
-                    <i class="bi bi-gear me-1"></i> Gestión
+                <a class="nav-link" data-bs-toggle="pill" href="#tab-csv">
+                    <i class="bi bi-file-spreadsheet me-1"></i> Importar CSV
                 </a>
             </li>
         </ul>
-    </div>
-</nav>
 
-<!-- Contenido Principal - Contribuir -->
-<main class="container py-4 fade-in">
+        <div class="tab-content">
 
-    <!-- Header de contribución -->
-    <div class="text-center mb-5">
-        <h1 class="display-5 fw-bold text-white mb-3">
-            <i class="bi bi-plus-circle me-2"></i>
-            Contribuir al Sistema
-        </h1>
-        <p class="lead text-white-50">
-            Ayuda a enriquecer nuestra base de datos con nuevos hechos históricos
-        </p>
-    </div>
+            <!-- ========== TAB: FORMULARIO INDIVIDUAL ========== -->
+            <div id="tab-form" class="tab-pane fade show active">
 
-    <!-- Métodos de contribución -->
-    <div class="contribution-methods">
+                <div class="mx-auto" style="max-width: 920px;">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4 p-md-5">
+                            <div class="d-flex align-items-center mb-4">
+                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-2"
+                      style="width:32px;height:32px;background:#111;color:#fff;font-weight:700;">1</span>
+                                <h3 class="mb-0">Agregar nuevo hecho histórico</h3>
+                            </div>
 
-        <!-- Pestañas de métodos -->
-        <div class="d-flex flex-wrap border-bottom">
-            <a href="#formulario" class="method-tab active flex-fill text-center py-3 d-block">
-                <i class="bi bi-pencil-square me-2"></i>Formulario Individual
-            </a>
-            <a href="#csv" class="method-tab flex-fill text-center py-3 d-block">
-                <i class="bi bi-file-spreadsheet me-2"></i>Importar CSV
-            </a>
-        </div>
+                            <!-- NOTA: si en el controller agregaste 'hechoSolicitud', este th:object bindea -->
+                            <form th:action="@{/hechos/subir}" method="post"
+                                  enctype="multipart/form-data"
+                                  th:object="${hechoSolicitud}">
+                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
-        <!-- Contenido: Formulario Individual -->
-        <div id="formulario" class="tab-content-contribute p-4">
-            <div class="row">
-                <div class="col-lg-8 mx-auto">
+                                <!-- Información básica -->
+                                <div class="card mb-4 border-0" style="border-radius:14px;">
+                                    <div class="card-header bg-white">
+                                        <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Información básica</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold">Título del hecho *</label>
+                                                <!-- SolicitudHechoInputDTO.titulo -->
+                                                <input class="form-control" th:field="*{titulo}" name="titulo" placeholder="Ej: Revolución Francesa" required>
+                                            </div>
 
-                    <div class="d-flex align-items-center mb-4">
-                        <span class="step-indicator">1</span>
-                        <h3 class="mb-0">Agregar Nuevo Hecho Histórico</h3>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold">Categoría *</label>
+                                                <!-- si preferís ID, dejé id_categoria; si no, podrías mapear por nombre -->
+                                                <select class="form-select" th:field="*{id_categoria}" name="id_categoria" required>
+                                                    <option value="">Seleccionar categoría</option>
+                                                    <!-- TODO: poblar dinámicamente -->
+                                                    <option th:value="1">Política</option>
+                                                    <option th:value="2">Exploración</option>
+                                                    <option th:value="3">Guerra</option>
+                                                    <option th:value="4">Independencia</option>
+                                                    <option th:value="5">Cultural</option>
+                                                    <option th:value="6">Científica</option>
+                                                    <option th:value="7">Económica</option>
+                                                    <option th:value="8">Social</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <label class="form-label fw-semibold">Descripción *</label>
+                                                <!-- SolicitudHechoInputDTO.descripcion -->
+                                                <textarea class="form-control" rows="4" th:field="*{descripcion}" name="descripcion"
+                                                          placeholder="Describe el evento histórico de manera clara y concisa..." required></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Ubicación y fecha -->
+                                <div class="card mb-4 border-0" style="border-radius:14px;">
+                                    <div class="card-header bg-white">
+                                        <h5 class="mb-0"><i class="bi bi-geo-alt me-2"></i>Ubicación y fecha</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold">País *</label>
+                                                <!-- SolicitudHechoInputDTO.id_pais -->
+                                                <select class="form-select" th:field="*{id_pais}" name="id_pais" required>
+                                                    <option value="">Seleccionar país</option>
+                                                    <!-- TODO: poblar dinámicamente -->
+                                                    <option th:value="1">Argentina</option>
+                                                    <option th:value="2">Chile</option>
+                                                    <option th:value="3">Uruguay</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold">Provincia / Estado (opcional)</label>
+                                                <!-- SolicitudHechoInputDTO.id_provincia -->
+                                                <select class="form-select" th:field="*{id_provincia}" name="id_provincia">
+                                                    <option value="">Seleccionar provincia/estado</option>
+                                                    <!-- TODO: poblar dinámicamente según país -->
+                                                    <option th:value="101">Buenos Aires</option>
+                                                    <option th:value="102">Córdoba</option>
+                                                    <option th:value="103">Santa Fe</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold">Fecha del acontecimiento *</label>
+                                                <!-- SolicitudHechoInputDTO.fechaAcontecimiento (String) -->
+                                                <input type="date" class="form-control" th:field="*{fechaAcontecimiento}" name="fechaAcontecimiento" required>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold">Latitud / Longitud (opcional)</label>
+                                                <div class="input-group">
+                                                    <!-- SolicitudHechoInputDTO.latitud / longitud -->
+                                                    <input type="number" step="any" class="form-control" th:field="*{latitud}" name="latitud" placeholder="-34.6037">
+                                                    <input type="number" step="any" class="form-control" th:field="*{longitud}" name="longitud" placeholder="-58.3816">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Multimedia -->
+                                <div class="card mb-4 border-0" style="border-radius:14px;">
+                                    <div class="card-header bg-white">
+                                        <h5 class="mb-0"><i class="bi bi-image me-2"></i>Contenido multimedia (opcional)</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="p-4 text-center border rounded-3" style="border-style:dashed;">
+                                            <i class="bi bi-cloud-upload fs-1 text-muted mb-2"></i>
+                                            <div class="mb-2 fw-semibold">Subí archivos</div>
+                                            <small class="text-muted d-block mb-2">JPG, PNG, PDF, MP4, MP3 — máx 10MB c/u</small>
+                                            <!-- SolicitudHechoInputDTO.contenidosMultimedia (List<MultipartFile>) -->
+                                            <input class="form-control" type="file" name="contenidosMultimedia" multiple
+                                                   accept=".jpg,.jpeg,.png,.pdf,.mp4,.mp3">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Acciones -->
+                                <div class="d-flex justify-content-between">
+                                    <a th:href="@{/hechos}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i> Cancelar
+                                    </a>
+                                    <div>
+                                        <button type="submit" class="btn btn-dark">
+                                            <i class="bi bi-send me-1"></i> Enviar solicitud
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
                     </div>
+                </div>
 
-                    <form action="dashboard.html" method="get">
-                        <!-- Información básica -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0">
-                                    <i class="bi bi-info-circle me-2"></i>Información Básica
-                                </h5>
+            </div>
+
+            <!-- ========== TAB: IMPORTAR CSV ========== -->
+            <div id="tab-csv" class="tab-pane fade">
+                <div class="mx-auto" style="max-width: 920px;">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4 p-md-5">
+
+                            <div class="d-flex align-items-center mb-4">
+                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-2"
+                      style="width:32px;height:32px;background:#111;color:#fff;font-weight:700;">2</span>
+                                <h3 class="mb-0">Importar desde CSV</h3>
                             </div>
-                            <div class="card-body">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Título del Hecho *</label>
-                                        <input type="text" class="form-control" name="titulo" placeholder="Ej: Revolución Francesa" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Categoría *</label>
-                                        <select class="form-select" name="categoria" required>
-                                            <option value="">Seleccionar categoría</option>
-                                            <option value="politica">Política</option>
-                                            <option value="exploracion">Exploración</option>
-                                            <option value="guerra">Guerra</option>
-                                            <option value="independencia">Independencia</option>
-                                            <option value="cultural">Cultural</option>
-                                            <option value="cientifica">Científica</option>
-                                            <option value="economica">Económica</option>
-                                            <option value="social">Social</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label fw-semibold">Descripción *</label>
-                                        <textarea class="form-control" rows="4" placeholder="Describe el evento histórico de manera clara y concisa..." required></textarea>
-                                    </div>
+
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <strong>Formato sugerido:</strong>
+                                <code>"titulo","descripcion","categoria","latitud","longitud","fechadelhecho","pais"</code>
+                            </div>
+
+                            <!-- IMPORT CSV -->
+                            <!-- Tu controller espera @RequestPart("meta") ImportacionHechosInputDTO y @RequestPart("file") MultipartFile -->
+                            <!-- Desde HTML puro es común enviar solo el archivo. Si necesitás 'meta', podés agregar campos extra y cambiar el controller a @ModelAttribute, o enviar JSON vía JS. -->
+                            <form th:action="@{/hechos/importar}" method="post" enctype="multipart/form-data">
+                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                                <div class="p-4 text-center border rounded-3 mb-3" style="border-style:dashed;">
+                                    <i class="bi bi-file-earmark-spreadsheet fs-1 text-success mb-2"></i>
+                                    <div class="mb-2 fw-semibold">Subí tu archivo CSV</div>
+                                    <input class="form-control" type="file" name="file" accept=".csv" required>
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- Información geográfica y temporal -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0">
-                                    <i class="bi bi-geo-alt me-2"></i>Ubicación y Fecha
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">País *</label>
-                                        <input type="text" class="form-control" placeholder="Ej: Argentina" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Ciudad/Región *</label>
-                                        <input type="text" class="form-control" placeholder="Ej: Buenos Aires" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Fecha del Acontecimiento *</label>
-                                        <input type="date" class="form-control" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Fecha de Fin (Opcional)</label>
-                                        <input type="date" class="form-control">
-                                        <div class="form-text">Para eventos que duraron un período de tiempo</div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Latitud (Opcional)</label>
-                                        <input type="number" step="any" class="form-control" placeholder="48.8566">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Longitud (Opcional)</label>
-                                        <input type="number" step="any" class="form-control" placeholder="2.3522">
-                                    </div>
+                                <!-- Si realmente necesitás 'meta' como objeto, podés poner campos sueltos (y mapear en el controller) -->
+                                <!--
+                                <div class="row g-3 mb-3">
+                                  <div class="col-md-6">
+                                    <label class="form-label">Origen</label>
+                                    <input class="form-control" name="origen">
+                                  </div>
+                                  <div class="col-md-6">
+                                    <label class="form-label">Nota</label>
+                                    <input class="form-control" name="nota">
+                                  </div>
                                 </div>
-                            </div>
-                        </div>
+                                -->
 
-                        <!-- Contenido multimedia -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0">
-                                    <i class="bi bi-image me-2"></i>Contenido Multimedia (Opcional)
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="file-upload-area mb-3">
-                                    <i class="bi bi-cloud-upload fs-1 text-muted mb-3"></i>
-                                    <h6>Subir Archivos Multimedia</h6>
-                                    <p class="mb-2">Arrastra archivos aquí o haz clic para seleccionar</p>
-                                    <small class="text-muted">Admite: JPG, PNG, PDF, MP4, MP3 (máx. 10MB cada uno)</small>
-                                    <input type="file" class="d-none" multiple accept=".jpg,.jpeg,.png,.pdf,.mp4,.mp3">
+                                <div class="d-flex justify-content-between">
+                                    <a th:href="@{/hechos}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i> Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-dark">
+                                        <i class="bi bi-upload me-1"></i> Procesar CSV
+                                    </button>
                                 </div>
-                            </div>
-                        </div>
+                            </form>
 
-
-                        <!-- Botones de acción -->
-                        <div class="d-flex justify-content-between">
-                            <a href="dashboard.html" class="btn btn-outline-secondary">
-                                <i class="bi bi-arrow-left me-1"></i>Cancelar
-                            </a>
-                            <div>
-                                <button type="button" class="btn btn-outline-primary me-2">
-                                    <i class="bi bi-eye me-1"></i>Vista Previa
-                                </button>
-                                <button type="submit" class="btn btn-success-custom" onclick="showLoader(this)">
-                                    <span class="btn-content">
-                                        <i class="bi bi-send me-1"></i>Enviar Solicitud
-                                    </span>
-                                    <span class="btn-loader d-none">
-                                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                        Enviando...
-                                    </span>
-                                </button>
-                            </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
+
         </div>
 
-        <!-- Contenido: Importar CSV -->
-        <div id="csv" class="tab-content-contribute p-4">
-            <div class="row">
-                <div class="col-lg-8 mx-auto">
-
-                    <div class="d-flex align-items-center mb-4">
-                        <span class="step-indicator">2</span>
-                        <h3 class="mb-0">Importar desde Archivo CSV</h3>
-                    </div>
-
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle me-2"></i>
-                        <strong>Formato requerido:</strong> Asegúrate de que tu archivo CSV contenga las columnas necesarias en el formato correcto.
-                    </div>
-
-                    <!-- Instrucciones -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="bi bi-list-check me-2"></i>Instrucciones de Formato
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <p><strong>Columnas:</strong></p>
-                            <div class="csv-preview">
-                                "titulo","descripcion","categoria","latitud","longitud","fechadelhecho","pais"
-                            </div>
-
-                            <div class="mt-3">
-                                <a href="#" class="btn btn-outline-primary btn-sm me-2">
-                                    <i class="bi bi-download me-1"></i>Descargar Plantilla
-                                </a>
-                                <!-- <a href="#" class="btn btn-outline-info btn-sm">
-                                    <i class="bi bi-question-circle me-1"></i>Ver Guía Completa
-                                </a> -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Área de subida -->
-                    <form action="dashboard.html" method="get">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <div class="file-upload-area">
-                                    <i class="bi bi-file-earmark-spreadsheet fs-1 text-success mb-3"></i>
-                                    <h6>Subir Archivo CSV</h6>
-                                    <p class="mb-2">Arrastra tu archivo CSV aquí o haz clic para seleccionar</p>
-                                    <input type="file" class="d-none" accept=".csv" name="csv_file">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <a href="dashboard.html" class="btn btn-outline-secondary">
-                                <i class="bi bi-arrow-left me-1"></i>Cancelar
-                            </a>
-                            <button type="submit" class="btn btn-success-custom">
-                                <i class="bi bi-upload me-1"></i>Procesar Archivo CSV
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Historial de contribuciones -->
-    <div class="row mt-5">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="bi bi-clock-history me-2"></i>Mis Contribuciones Recientes
-                    </h5>
+        <!-- Historial de contribuciones (lista real si la proveés en el Model como 'misContribuciones') -->
+        <div class="mt-5">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i> Mis contribuciones recientes</h5>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
+                    <div class="table-responsive" th:if="${misContribuciones != null and !#lists.isEmpty(misContribuciones)}">
+                        <table class="table table-hover align-middle">
                             <thead>
                             <tr>
                                 <th>Título</th>
                                 <th>Categoría</th>
-                                <th>Fecha de Envío</th>
+                                <th>Fecha de envío</th>
                                 <th>Estado</th>
-                                <th>Solicitudes</th>
+                                <th class="text-end">Acciones</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>Revolución de los Claveles</td>
-                                <td><span class="badge bg-primary">Política</span></td>
-                                <td>2025-01-15</td>
-                                <td><span class="badge bg-success">Aprobado</span></td>
+                            <tr th:each="c : ${misContribuciones}">
+                                <td th:text="${c.titulo}">—</td>
+                                <td><span class="badge text-bg-primary" th:text="${c.categoria}">—</span></td>
+                                <td th:text="${#temporals.format(c.fechaEnvio, 'yyyy-MM-dd')}">—</td>
                                 <td>
-                                    <a href="#" class="btn btn-sm btn-outline-secondary">Modificar</a>
-                                    <a href="#" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                    <span class="badge" th:classappend="${c.estado == 'APROBADO' ? ' text-bg-success' :
+                                                           c.estado == 'RECHAZADA' ? ' text-bg-danger' :
+                                                           c.estado == 'EN_REVISION' ? ' text-bg-warning' : ' text-bg-secondary'}"
+                          th:text="${c.estado}">—</span>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td>Conquista de Tenochtitlan</td>
-                                <td><span class="badge bg-warning text-dark">Exploración</span></td>
-                                <td>2025-01-10</td>
-                                <td><span class="badge bg-warning">En Revisión</span></td>
-                                <td>
-                                    <a href="#" class="btn btn-sm btn-outline-secondary">Modificar</a>
-                                    <a href="#" class="btn btn-sm btn-outline-danger">Eliminar</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Tratado de Versalles</td>
-                                <td><span class="badge bg-danger">Guerra</span></td>
-                                <td>2025-01-05</td>
-                                <td><span class="badge bg-info">Pendiente</span></td>
-                                <td>
-                                    <a href="#" class="btn btn-sm btn-outline-secondary">Modificar</a>
-                                    <a href="#" class="btn btn-sm btn-outline-danger">Eliminar</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Rusia vs Ucrania - la ira se desata</td>
-                                <td><span class="badge bg-danger">Guerra</span></td>
-                                <td>2025-01-05</td>
-                                <td><span class="badge bg-danger">Rechazada</span></td>
-                                <td>
-                                    <a href="#" class="btn btn-sm btn-outline-secondary">Modificar</a>
-                                    <a href="#" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                                <td class="text-end">
+                                    <a th:href="@{/hechos/detalle/{id}(id=${c.id})}" class="btn btn-sm btn-outline-secondary">Ver</a>
+                                    <a th:href="@{/hechos/editar/{id}(id=${c.id})}" class="btn btn-sm btn-outline-primary">Modificar</a>
+                                    <form th:action="@{/hechos/{id}/eliminar(id=${c.id})}" method="post" class="d-inline">
+                                        <input type="hidden" name="_method" value="delete"/>
+                                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                                    </form>
                                 </td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
 
+                    <!-- Estado vacío -->
+                    <div class="text-center py-4 text-muted" th:if="${misContribuciones == null or #lists.isEmpty(misContribuciones)}">
+                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                        Aún no registrás contribuciones.
+                    </div>
+
                     <div class="text-center mt-3">
-                        <a href="historial.html" class="btn btn-outline-primary">
-                            <i class="bi bi-list me-1"></i>Ver Historial Completo
+                        <a th:href="@{/hechos}" class="btn btn-outline-dark">
+                            <i class="bi bi-list me-1"></i> Ver listado de hechos
                         </a>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</main>
 
-</body>
+    </section>
+
+    <!-- Estética homogénea -->
+    <style>
+        .btn:hover{ transform: translateY(-1px); transition: transform .08s ease; }
+    </style>
+</main>
 </html>
