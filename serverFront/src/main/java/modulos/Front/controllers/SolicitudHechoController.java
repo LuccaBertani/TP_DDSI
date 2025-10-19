@@ -21,6 +21,12 @@ import java.util.List;
 public class SolicitudHechoController {
     private final SolicitudHechoService solicitudHechoService;
 
+    @GetMapping("/contribuir")
+    public String subirSolicitud(Model model) {
+        model.addAttribute("hechoSolicitud", new SolicitudHechoInputDTO());
+
+        return "contribuir";
+    }
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/evaluar/subir")
@@ -64,10 +70,16 @@ public class SolicitudHechoController {
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @PostMapping("/subir-hecho")
     public String enviarSolicitudSubirHecho(@Valid @ModelAttribute SolicitudHechoInputDTO dto, RedirectAttributes ra){
+        System.out.println("SOY UNA PIJITA");
         ResponseEntity<?> rta = this.solicitudHechoService.enviarSolicitudSubirHecho(dto);
 
+        System.out.println("HOLA YA ME COMUNIQUÉ AAA");
+
+        System.out.println("RECIBI ESTE CODIGO: " +rta.getStatusCode().value());
+
+
         if(rta.getStatusCode().is2xxSuccessful()){
-            return "redirect:/hechos/crear";
+            return "redirect:/contribuir";
         }
         else if(rta.getBody() != null){
             ra.addFlashAttribute(rta.getBody().toString());

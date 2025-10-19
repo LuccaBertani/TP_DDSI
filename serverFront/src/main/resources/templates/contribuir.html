@@ -43,9 +43,9 @@
                             </div>
 
                             <!-- NOTA: si en el controller agregaste 'hechoSolicitud', este th:object bindea -->
-                            <form th:action="@{/hechos/subir}" method="post"
+                            <form th:action="@{/solicitudes-hecho/subir-hecho}" method="post"
                                   enctype="multipart/form-data"
-                                  th:object="${hechoSolicitud}">
+                                  th:object="${solicitudHecho}">
                                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                                 <!-- Información básica -->
@@ -138,7 +138,7 @@
                                 </div>
 
                                 <!-- Multimedia -->
-                                <div class="card mb-4 border-0" style="border-radius:14px;">
+                                <!--<div class="card mb-4 border-0" style="border-radius:14px;">
                                     <div class="card-header bg-white">
                                         <h5 class="mb-0"><i class="bi bi-image me-2"></i>Contenido multimedia (opcional)</h5>
                                     </div>
@@ -147,12 +147,12 @@
                                             <i class="bi bi-cloud-upload fs-1 text-muted mb-2"></i>
                                             <div class="mb-2 fw-semibold">Subí archivos</div>
                                             <small class="text-muted d-block mb-2">JPG, PNG, PDF, MP4, MP3 — máx 10MB c/u</small>
-                                            <!-- SolicitudHechoInputDTO.contenidosMultimedia (List<MultipartFile>) -->
-                                            <input class="form-control" type="file" name="contenidosMultimedia" multiple
-                                                   accept=".jpg,.jpeg,.png,.pdf,.mp4,.mp3">
-                                        </div>
-                                    </div>
-                                </div>
+                                            SolicitudHechoInputDTO.contenidosMultimedia (List<MultipartFile>) -->
+                                <!--<input class="form-control" type="file" name="contenidosMultimedia" multiple
+                                       accept=".jpg,.jpeg,.png,.pdf,.mp4,.mp3">
+                            </div>
+                        </div>
+                    </div> -->
 
                                 <!-- Acciones -->
                                 <div class="d-flex justify-content-between">
@@ -235,6 +235,8 @@
         </div>
 
         <!-- Historial de contribuciones (lista real si la proveés en el Model como 'misContribuciones') -->
+
+        <!--
         <div class="mt-5">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white">
@@ -276,12 +278,13 @@
                             </tbody>
                         </table>
                     </div>
-
+                    -->
                     <!-- Estado vacío -->
-                    <div class="text-center py-4 text-muted" th:if="${misContribuciones == null or #lists.isEmpty(misContribuciones)}">
+                    <!--<div class="text-center py-4 text-muted" th:if="${misContribuciones == null or #lists.isEmpty(misContribuciones)}">
                         <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                         Aún no registrás contribuciones.
                     </div>
+                    -->
 
                     <div class="text-center mt-3">
                         <a th:href="@{/hechos}" class="btn btn-outline-dark">

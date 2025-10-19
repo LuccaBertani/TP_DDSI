@@ -6,6 +6,7 @@ import modulos.Front.BodyToListConverter;
 import modulos.Front.dtos.input.GetHechosColeccionInputDTO;
 import modulos.Front.dtos.input.ImportacionHechosInputDTO;
 import modulos.Front.dtos.input.SolicitudHechoInputDTO;
+import modulos.Front.dtos.input.UsuarioInputDTO;
 import modulos.Front.dtos.output.HechosResponse;
 import modulos.Front.dtos.output.VisualizarHechosOutputDTO;
 import modulos.Front.services.HechosService;
@@ -25,14 +26,11 @@ import java.util.List;
 public class HechosController {
     private final HechosService hechosService;
 
-    @GetMapping("/crear")
-    public String getFormularioCrearHecho(){
-        return "contribuir";
-    }
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/subir")
     public String subirHecho(RedirectAttributes ra, @Valid @ModelAttribute SolicitudHechoInputDTO hechoInputDTO){
+
         ResponseEntity<?> rtaDto = this.hechosService.subirHecho(hechoInputDTO);
 
         if(rtaDto.getStatusCode().is2xxSuccessful()){
@@ -61,8 +59,7 @@ public class HechosController {
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
-    @GetMapping("/get-all")
+    @GetMapping("/public/get-all")
     public String getHechos(Model model){
         ResponseEntity<?> rtaDto = this.hechosService.getHechos();
 
@@ -71,14 +68,13 @@ public class HechosController {
             model.addAttribute("listaHechos", hechos.getHechos());
             return "hecho";
         }
-        else if (rtaDto.getBody() != null){
+        /*else if (rtaDto.getBody() != null){
             model.addAttribute("errorMsg", rtaDto.getBody().toString());
-        }
+        }*/
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
-    @GetMapping("/get")
+    @GetMapping("/public/get")
     public String getHecho(Model model, Long id_hecho, String fuente){
         ResponseEntity<?> rtaDto = this.hechosService.getHecho(id_hecho, fuente);
 

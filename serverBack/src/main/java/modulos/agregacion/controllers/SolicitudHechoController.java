@@ -2,9 +2,11 @@ package modulos.agregacion.controllers;
 
 import io.jsonwebtoken.Jwt;
 import jakarta.validation.Valid;
+import modulos.JwtClaimExtractor;
 import modulos.agregacion.services.SolicitudHechoService;
 import modulos.shared.dtos.input.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,8 +43,9 @@ public class SolicitudHechoController {
 
     // Anda
     @PostMapping("/public/subir-hecho")
-    public ResponseEntity<?> enviarSolicitudSubirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput, @AuthenticationPrincipal Optional<Jwt> principal){
-        return solicitudHechoService.solicitarSubirHecho(dtoInput, principal); // 200 o 401
+    public ResponseEntity<?> enviarSolicitudSubirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput, @AuthenticationPrincipal String username){
+        System.out.println("SOY EL PELOTUDO DE " + username);
+        return solicitudHechoService.solicitarSubirHecho(dtoInput, username); // 200 o 401
     }
 
     // Anda

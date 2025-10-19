@@ -1,5 +1,6 @@
 package modulos.Front.controllers;
 
+import modulos.Front.dtos.input.SolicitudHechoInputDTO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,11 @@ public class HomeController {
         return "hecho"; // thymeleaf busca templates/hecho.html
     }
 
+    @GetMapping("/hecho")
+    public String hecho() {
+        return "hecho";
+    }
+
     @GetMapping("/mapa")
     public String mapa() {
         return "mapa";
@@ -29,7 +35,8 @@ public class HomeController {
     }
 
     @GetMapping("/contribuir")
-    public String contribuir() {
+    public String contribuir(Model model) {
+        model.addAttribute("solicitudHecho", new SolicitudHechoInputDTO());
         return "contribuir";
     }
 
@@ -43,9 +50,16 @@ public class HomeController {
         return "gestion";
     }
 
+
+
     @GetMapping("/404")
     public String notFound(){
         return "404";
+    }
+
+    @GetMapping("/500")
+    public String internalServerError(){
+        return "500";
     }
 
     @GetMapping("/403")

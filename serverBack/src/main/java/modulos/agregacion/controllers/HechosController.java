@@ -64,7 +64,7 @@ public class HechosController {
         return hechosService.getHechosColeccion(inputDTO);
     }
 
-    @GetMapping("/get")
+    @GetMapping("/public/get")
     public ResponseEntity<?> getHecho(@Valid @RequestParam Long id_hecho, @Valid @RequestParam String fuente){
         return hechosService.getHecho(id_hecho, fuente);
     }

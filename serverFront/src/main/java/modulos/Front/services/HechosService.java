@@ -23,7 +23,7 @@ public class HechosService {
 
 
     public ResponseEntity<?> getHecho(Long id_hecho, String fuente) {
-        return webApiCallerService.getEntity(this.hechoServiceUrl + "/get?id_hecho=" + id_hecho.toString() + "&fuente=" + fuente, Void.class);
+        return webApiCallerService.getEntitySinToken(this.hechoServiceUrl + "/public/get?id_hecho=" + id_hecho.toString() + "&fuente=" + fuente, VisualizarHechosOutputDTO.class);
     }
 
     public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO hechoInputDTO) {
@@ -35,7 +35,7 @@ public class HechosService {
     }
 
     public ResponseEntity<?> getHechos() {
-        return webApiCallerService.getList(this.hechoServiceUrl + "/public/get-all?origen=0", VisualizarHechosOutputDTO.class);
+        return webApiCallerService.getListSinToken(this.hechoServiceUrl + "/public/get-all?origen=0", VisualizarHechosOutputDTO.class);
     }
 
     public ResponseEntity<?> getHechosFiltradosColeccion(GetHechosColeccionInputDTO inputDTO) {

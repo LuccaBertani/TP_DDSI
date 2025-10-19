@@ -27,8 +27,12 @@ public class WebApiCallerService {
     public <T> ResponseEntity<T> executeWithTokenRetry(
             java.util.function.Function<String, reactor.core.publisher.Mono<ResponseEntity<T>>> apiCall) {
 
+
         String accessToken = getAccessTokenFromSession();
+        System.out.println("ACCESS TOKEN DE MIERDA: " + accessToken);
         String refreshToken = getRefreshTokenFromSession();
+
+        System.out.println("REFRESH TOKEN DE MIERDA: " + refreshToken);
 
         TokenResponse tr = TokenResponse.builder()
                 .accessToken(accessToken)
@@ -175,6 +179,15 @@ public class WebApiCallerService {
         );
     }
 
+    public <T> ResponseEntity<List<T>> getListSinToken(String url, Class<T> elementType) {
+        return webClient.get()
+                        .uri(url)
+                        .retrieve()
+                        .toEntityList(elementType)
+                        .block()
+        ;
+    }
+
 
 
     public <T> ResponseEntity<T> getEntity(String url, Class<T> elementType){
@@ -186,6 +199,17 @@ public class WebApiCallerService {
                         .toEntity(elementType)
         );
     }
+
+    public <T> ResponseEntity<T> getEntitySinToken(String url, Class<T> elementType){
+        return
+                webClient.get()
+                        .uri(url)
+                        .retrieve()
+                        .toEntity(elementType)
+                        .block();
+    }
+
+
 
     public <T> ResponseEntity<T> postEntity(String url, Object body, Class<T> elementType){
         return executeWithTokenRetry(token ->

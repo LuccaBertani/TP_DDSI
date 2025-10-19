@@ -111,17 +111,24 @@ public class SolicitudHechoService {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
     }
 
-    public ResponseEntity<?> solicitarSubirHecho(SolicitudHechoInputDTO dto, Optional<Jwt> principal){
+    @Transactional
+    public ResponseEntity<?> solicitarSubirHecho(SolicitudHechoInputDTO dto, String username){
 
-        Usuario usuario = null;
         // Los visualizadores o contribuyentes llaman al metodo, no los admins
-        if(principal.isPresent()){
-            ResponseEntity<?> rta = this.checkeoNoAdmin(JwtClaimExtractor.getUsernameFromToken(principal.orElse(null)));
-            usuario = (Usuario) rta.getBody();
+        Usuario usuario = null;
+
+        if (username!=null && !username.isEmpty()){
+            ResponseEntity<?> rta = this.checkeoNoAdmin(username);
+
             if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
                 return rta;
             }
+
+            usuario = (Usuario) rta.getBody();
         }
+
+
+
 
         Pais pais = dto.getId_pais() != null ? paisRepository.findById(dto.getId_pais()).orElse(null) : null;
         Provincia provincia = dto.getId_provincia() != null ? provinciaRepository.findById(dto.getId_provincia()).orElse(null) : null;
@@ -132,42 +139,51 @@ public class SolicitudHechoService {
 
         List<ContenidoMultimedia> contenidosMultimedia = new ArrayList<>();
 
-        for(MultipartFile file : dto.getContenidosMultimedia()) {
-            try {
-                String url = GestorArchivos.guardarArchivo(file);
+        if (dto.getContenidosMultimedia() != null){
+            for(MultipartFile file : dto.getContenidosMultimedia()) {
+                try {
+                    String url = GestorArchivos.guardarArchivo(file);
 
-                ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
+                    ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
 
-                contenidoMultimedia.setUrl(url);
-                contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
-                contenidosMultimedia.add(contenidoMultimedia);
-            } catch (IOException ignore) {
+                    contenidoMultimedia.setUrl(url);
+                    contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
+                    contenidosMultimedia.add(contenidoMultimedia);
+                } catch (IOException ignore) {
+                }
             }
         }
+
+
 
         FuenteDinamica fuenteDinamica = new FuenteDinamica();
         HechoDinamica hecho = fuenteDinamica.crearHecho(dto, contenidosMultimedia, categoria_id, ubicacion_id);
 
         SolicitudSubirHecho solicitudHecho = new SolicitudSubirHecho();
 
-        if(principal.isPresent()) {
+        if(usuario!=null) {
             solicitudHecho.setUsuario_id(usuario.getId());
             hecho.setUsuario_id(usuario.getId());
+
         } else{
             solicitudHecho.setUsuario_id(null);
-            solicitudHecho.setHecho(hecho);
             hecho.setUsuario_id(null);
         }
+
         if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion())) {
             solicitudHecho.setProcesada(true);
             solicitudHecho.setRechazadaPorSpam(true);
-            hechosDinamicaRepository.save(hecho);
+            hechosDinamicaRepository.saveAndFlush(hecho);
+            solicitudHecho.setHecho(hecho);
             solicitudAgregarHechoRepo.save(solicitudHecho);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Se detectó spam");
         }
 
         hecho.getAtributosHecho().setFuente(Fuente.DINAMICA);
-        hechosDinamicaRepository.save(hecho);
+
+        // save and flush para asegurarme tener el id del hecho asociado
+        hechosDinamicaRepository.saveAndFlush(hecho);
+        solicitudHecho.setHecho(hecho);
         solicitudAgregarHechoRepo.save(solicitudHecho);
 
         return ResponseEntity.status(HttpStatus.OK).body("Se envió su solicitud para subir hecho");
