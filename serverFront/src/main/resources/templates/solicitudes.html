@@ -35,17 +35,20 @@
         <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
             <span class="brand-pill">M</span><span class="fw-bold">MetaMapa</span>
         </a>
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div id="navMain" class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" th:href="@{/hechos}">Hechos</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/hechos/public/get-all}">Hechos</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/mapa}">Mapa</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/colecciones}">Colecciones</a></li>
-                <li class="nav-item"><a class="nav-link active" th:href="@{/solicitudes}">Solicitudes</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/colecciones/get-all}">Colecciones</a></li>
+                <li class="nav-item"><a class="nav-link active" th:href="@{/solicitudes-hecho/get/pendientes}">Solicitudes</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/gestion}">Gestión</a></li>
             </ul>
+
             <div class="d-flex align-items-center gap-2">
                 <span class="badge bg-dark">ADMINISTRADOR</span>
                 <a class="btn btn-outline-secondary btn-sm" th:href="@{/logout}">
@@ -55,6 +58,7 @@
         </div>
     </div>
 </nav>
+
 
 <section class="page-wrap">
     <div class="container">
@@ -66,20 +70,24 @@
                 <div class="small text-white-50">Revisá, aprobá o rechazá con un motivo que se enviará al solicitante.</div>
             </div>
             <div class="text-end">
-                <div class="fs-4 fw-semibold" th:text="${totalPendientes} ?: 0">0</div>
+                <!-- Elvis correcto -->
+                <div class="fs-4 fw-semibold" th:text="${totalPendientes ?: 0}">0</div>
                 <div class="small text-white-50">pendientes</div>
             </div>
         </div>
 
         <!-- Estado vacío -->
-        <div class="card-elev p-5 text-center text-muted" th:if="${solicitudes == null or #lists.isEmpty(solicitudes)}">
+        <div class="card-elev p-5 text-center text-muted"
+             th:if="${solicitudes == null or #lists.isEmpty(solicitudes)}">
             <i class="bi bi-inbox fs-1 d-block mb-2"></i>
             No hay solicitudes por ahora.
         </div>
 
         <!-- Lista -->
-        <div class="d-flex flex-column gap-3" th:if="${solicitudes != null and !#lists.isEmpty(solicitudes)}">
-            <article class="card-elev p-3 solicitud-card" th:each="s : ${solicitudes}" th:id="${'sol-'+s.id}">
+        <div class="d-flex flex-column gap-3"
+             th:if="${solicitudes != null and !#lists.isEmpty(solicitudes)}">
+            <article class="card-elev p-3 solicitud-card"
+                     th:each="s : ${solicitudes}" th:id="${'sol-'+s.id}">
                 <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
                     <div class="d-flex flex-column">
                         <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -95,16 +103,29 @@
 
                     <!-- Acciones -->
                     <div class="d-flex align-items-center gap-2">
-                        <form th:action="@{/solicitudes/{id}/aprobar(id=${s.id})}" method="post" onsubmit="return aprobar(this)">
+                        <!-- Aprobar -->
+                        <form method="post"
+                              th:action="${(s.tipo == 'SUBIR') ? @{/solicitudes-hecho/evaluar/subir}
+                            : ((s.tipo == 'ELIMINAR') ? @{/solicitudes-hecho/evaluar/eliminar}
+                                                       : @{/solicitudes-hecho/evaluar/modificar})}"
+                              onsubmit="return aprobar(this)">
+                            <input type="hidden" name="id_solicitud" th:value="${s.id}"/>
+                            <input type="hidden" name="respuesta" value="true"/>
                             <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                             <button class="btn btn-aprobar btn-sm"><i class="bi bi-check-circle me-1"></i> Aprobar</button>
                         </form>
 
+                        <!-- Rechazar (abre modal) -->
                         <button class="btn btn-rechazar btn-sm"
                                 data-bs-toggle="modal" data-bs-target="#modalRechazo"
-                                th:attr="data-id=${s.id},data-titulo=${s.hecho.titulo}">
+                                th:attr="data-id=${s.id},
+                             data-titulo=${s.hecho.titulo},
+                             data-action=${(s.tipo == 'SUBIR') ? '/solicitudes-hecho/evaluar/subir'
+                                         : ((s.tipo == 'ELIMINAR') ? '/solicitudes-hecho/evaluar/eliminar'
+                                                                    : '/solicitudes-hecho/evaluar/modificar')}">
                             <i class="bi bi-x-circle me-1"></i> Rechazar
                         </button>
+
                     </div>
                 </div>
 
@@ -169,19 +190,20 @@
         <nav class="mt-4" th:if="${paginacion != null}">
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${!paginacion.hasPrev}? 'disabled'">
-                    <a class="page-link" th:href="@{/solicitudes(p=${paginacion.prev})}">Anterior</a>
+                    <!-- usar la ruta del controller de pendientes -->
+                    <a class="page-link" th:href="@{/solicitudes-hecho/get/pendientes(p=${paginacion.prev})}">Anterior</a>
                 </li>
                 <li class="page-item disabled">
                     <span class="page-link" th:text="${paginacion.page + ' / ' + paginacion.total}">1 / 1</span>
                 </li>
                 <li class="page-item" th:classappend="${!paginacion.hasNext}? 'disabled'">
-                    <a class="page-link" th:href="@{/solicitudes(p=${paginacion.next})}">Siguiente</a>
+                    <a class="page-link" th:href="@{/solicitudes-hecho/get/pendientes(p=${paginacion.next})}">Siguiente</a>
                 </li>
             </ul>
         </nav>
-
     </div>
 </section>
+
 
 <!-- Modal Rechazo -->
 <div class="modal fade" id="modalRechazo" tabindex="-1" aria-hidden="true">
@@ -194,20 +216,29 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+
             <div class="modal-body">
                 <label class="form-label fw-semibold">Motivo de rechazo</label>
-                <textarea class="form-control" name="motivo" rows="4" maxlength="300"
+                <!-- name="mensaje" (no "motivo") para mapear al DTO -->
+                <textarea class="form-control" name="mensaje" id="rechazoMensaje" rows="4" maxlength="300"
                           placeholder="Explicá brevemente por qué se rechaza..." required></textarea>
                 <div class="form-text text-end">máx. 300 caracteres</div>
             </div>
+
+            <!-- HIDDEN que exige SolicitudHechoEvaluarInputDTO -->
+            <input type="hidden" name="id_solicitud" id="rechazoId"/>
+            <input type="hidden" name="respuesta" value="false"/>
+            <!-- CSRF (usar nombre dinámico del parámetro) -->
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
             <div class="modal-footer">
                 <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button class="btn btn-danger"><i class="bi bi-x-circle me-1"></i> Rechazar solicitud</button>
             </div>
-            <input type="hidden" name="_csrf" th:if="${_csrf != null}" th:value="${_csrf.token}"/>
         </form>
     </div>
 </div>
+
 
 <!-- Toast -->
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080">
@@ -241,32 +272,42 @@
 <script>
     // Aprobación: animación suave y submit normal
     function aprobar(form){
-      const card = form.closest('.solicitud-card');
-      const btn = form.querySelector('button');
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Aprobando…';
-      card.classList.add('removing');
-      return true; // submit normal (el controller redirige)
+        const card = form.closest('.solicitud-card');
+        const btn = form.querySelector('button');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Aprobando…';
+        card.classList.add('removing');
+        return true; // submit normal (el controller redirige)
     }
 
-    // Modal rechazo: setea acción y título
+    // Modal rechazo: setea acción (endpoint real), id y título
     const modalRechazo = document.getElementById('modalRechazo');
     modalRechazo.addEventListener('show.bs.modal', (ev) => {
-      const btn = ev.relatedTarget;
-      const id = btn.getAttribute('data-id');
-      const titulo = btn.getAttribute('data-titulo') || '';
-      const form = document.getElementById('formRechazo');
-      form.action = `/solicitudes/${id}/rechazar`; // ajustá si usás otro base path
-      document.getElementById('rechazoTitulo').textContent = titulo;
+        const btn    = ev.relatedTarget;
+        const id     = btn.getAttribute('data-id');
+        const titulo = btn.getAttribute('data-titulo') || '';
+        const action = btn.getAttribute('data-action'); // '/solicitudes-hecho/evaluar/...'
+
+        const form = document.getElementById('formRechazo');
+        form.action = action;                                   // <-- ruta real desde controllers
+        const idInput = document.getElementById('rechazoId');   // hidden input name="id_solicitud"
+        if (idInput) idInput.value = id;
+
+        const msg = document.getElementById('rechazoMensaje');  // textarea name="mensaje"
+        if (msg) msg.value = '';
+
+        const tit = document.getElementById('rechazoTitulo');
+        if (tit) tit.textContent = titulo;
     });
 
     // Toast rápido por querystring (?ok=1 / ?rechazada=1)
     (function(){
-      const params = new URLSearchParams(window.location.search);
-      const toastEl = document.getElementById('toastOp');
-      const toast = new bootstrap.Toast(toastEl,{delay:3000});
-      if(params.get('ok')==='1'){ document.getElementById('toastMsg').textContent='Solicitud aprobada.'; toast.show(); }
-      if(params.get('rechazada')==='1'){ document.getElementById('toastMsg').textContent='Solicitud rechazada y notificada.'; toast.show(); }
+        const params = new URLSearchParams(window.location.search);
+        const toastEl = document.getElementById('toastOp');
+        if (!toastEl) return;
+        const toast = new bootstrap.Toast(toastEl,{delay:3000});
+        if(params.get('ok')==='1'){ document.getElementById('toastMsg').textContent='Solicitud aprobada.'; toast.show(); }
+        if(params.get('rechazada')==='1'){ document.getElementById('toastMsg').textContent='Solicitud rechazada y notificada.'; toast.show(); }
     })();
 </script>
 </body>
