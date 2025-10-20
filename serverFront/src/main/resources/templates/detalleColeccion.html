@@ -18,8 +18,8 @@
 <nav class="navbar navbar-expand-lg bg-white border-bottom">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
-      <span class="rounded-3 d-inline-flex align-items-center justify-content-center me-2"
-            style="width:34px;height:34px;background:#111;color:#fff;font-weight:800;">M</span>
+            <span class="rounded-3 d-inline-flex align-items-center justify-content-center me-2"
+                  style="width:34px;height:34px;background:#111;color:#fff;font-weight:800;">M</span>
             <span class="fw-bold">MetaMapa</span>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
@@ -27,15 +27,15 @@
         </button>
         <div id="navMain" class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" th:href="@{/hechos}">Hechos</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/hechos/public/get-all}">Hechos</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/mapa}">Mapa</a></li>
-                <li class="nav-item"><a class="nav-link active" th:href="@{/colecciones}">Colecciones</a></li>
+                <li class="nav-item"><a class="nav-link active" th:href="@{/colecciones/get-all}">Colecciones</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/contribuir}">Contribuir</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/solicitudes}">Solicitudes</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/solicitudes-hecho/get/pendientes}">Solicitudes</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/gestion}">Gestión</a></li>
             </ul>
             <div class="d-flex align-items-center gap-2">
-                <a class="btn btn-outline-secondary" th:href="@{/colecciones}">
+                <a class="btn btn-outline-secondary" th:href="@{/colecciones/get-all}">
                     <i class="bi bi-arrow-left me-1"></i> Volver
                 </a>
                 <a class="btn btn-dark" th:href="@{/perfil}">
@@ -53,7 +53,7 @@
         <nav aria-label="breadcrumb" class="mb-3">
             <ol class="breadcrumb justify-content-center">
                 <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
-                <li class="breadcrumb-item"><a th:href="@{/colecciones}">Colecciones</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/colecciones/get-all}">Colecciones</a></li>
                 <li class="breadcrumb-item active" aria-current="page" th:text="${coleccion.nombre}">Detalle</li>
             </ol>
         </nav>
@@ -107,12 +107,12 @@
                 <div class="col-md-6" th:if="${coleccion.pais != null or coleccion.provincia != null}">
                     <div class="text-muted small mb-1">Ubicación</div>
                     <div class="d-flex flex-wrap align-items-center gap-2">
-            <span class="border rounded-pill px-2 py-1" th:if="${coleccion.pais != null}">
-              <i class="bi bi-flag me-1"></i><span th:text="${coleccion.pais}">País</span>
-            </span>
+                        <span class="border rounded-pill px-2 py-1" th:if="${coleccion.pais != null}">
+                          <i class="bi bi-flag me-1"></i><span th:text="${coleccion.pais}">País</span>
+                        </span>
                         <span class="border rounded-pill px-2 py-1" th:if="${coleccion.provincia != null}">
-              <i class="bi bi-geo-alt me-1"></i><span th:text="${coleccion.provincia}">Provincia</span>
-            </span>
+                          <i class="bi bi-geo-alt me-1"></i><span th:text="${coleccion.provincia}">Provincia</span>
+                        </span>
                     </div>
                 </div>
 
@@ -196,7 +196,7 @@
 
         <!-- Acciones -->
         <div class="d-flex justify-content-center gap-2 mb-4">
-            <a class="btn btn-outline-secondary" th:href="@{/colecciones}">
+            <a class="btn btn-outline-secondary" th:href="@{/colecciones/get-all}">
                 <i class="bi bi-list me-1"></i> Volver al listado
             </a>
             <a class="btn btn-outline-primary" th:href="@{/colecciones/editar/{id}(id=${coleccion.id})}">
@@ -244,8 +244,8 @@
 <footer class="py-4" style="background:#0b1220;color:#cbd5e1">
     <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
         <div class="d-flex align-items-center">
-      <span class="rounded-3 d-inline-flex align-items-center justify-content-center me-2"
-            style="width:34px;height:34px;background:#fff;color:#0b1220;font-weight:800;">M</span>
+            <span class="rounded-3 d-inline-flex align-items-center justify-content-center me-2"
+                  style="width:34px;height:34px;background:#fff;color:#0b1220;font-weight:800;">M</span>
             <div>
                 <div class="fw-semibold">MetaMapa</div>
                 <small class="text-secondary">Sistema de Mapeos Colaborativos</small>
