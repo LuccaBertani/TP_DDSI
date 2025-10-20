@@ -2,14 +2,17 @@ package modulos.agregacion.controllers;
 
 import io.jsonwebtoken.Jwt;
 import jakarta.validation.Valid;
+import modulos.BodyToListConverter;
 import modulos.agregacion.services.ColeccionService;
 import modulos.shared.dtos.input.ColeccionInputDTO;
 import modulos.shared.dtos.input.ColeccionUpdateInputDTO;
 import modulos.shared.dtos.input.ModificarConsensoInputDTO;
+import modulos.shared.dtos.output.ColeccionOutputDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController

@@ -56,15 +56,29 @@ public class ColeccionController {
     }
 
     @GetMapping("/get-all")
-    @PreAuthorize("hasAnyRole('VISUALIZADOR', 'CONTRIBUYENTE', 'ADMINISTRADOR')")
     public String obtenerTodasLasColecciones(Model model){
+        System.out.println("ENTRÉ A OBTENER TODAS LAS COLECCIONES");
         ResponseEntity<?> rta = coleccionService.obtenerTodasLasColecciones();
 
         if (rta.getStatusCode().is2xxSuccessful() && rta.getBody() != null) {
+            System.out.println("SOY UN CAPO");
             List<ColeccionOutputDTO> colecciones = BodyToListConverter.bodyToList(rta, ColeccionOutputDTO.class);
+            if (colecciones!=null){
+                for (ColeccionOutputDTO coleccionOutputDTO : colecciones){
+                    System.out.println("Coleccion de id: " + coleccionOutputDTO.getId());
+                }
+            }
+            else{
+                System.out.println("NO ENCONTRÉ COLECCIONES");
+            }
+
+
             model.addAttribute("colecciones", colecciones);
             model.addAttribute("titulo", "Listado de colecciones");
             return "colecciones";
+        }
+        else{
+            System.out.println("SOY UN ESTORBO");
         }
         return "redirect:/" + rta.getStatusCode().value();
     }

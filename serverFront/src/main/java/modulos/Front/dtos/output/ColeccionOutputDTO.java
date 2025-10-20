@@ -1,6 +1,7 @@
 package modulos.Front.dtos.output;
 
 import lombok.Data;
+import modulos.Front.dtos.input.CriteriosColeccionDTO;
 import modulos.Front.dtos.input.ProxyDTO;
 
 @Data
@@ -9,5 +10,5 @@ public class ColeccionOutputDTO {
     private String titulo;
     private String descripcion;
 
-    private ProxyDTO criterios;
+    private CriteriosColeccionDTO criterios;
 }

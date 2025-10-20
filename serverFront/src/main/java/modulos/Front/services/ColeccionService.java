@@ -26,7 +26,7 @@ public class ColeccionService {
     // el tercero el tipo de dato que retorna server back
 
     public ResponseEntity<?> obtenerTodasLasColecciones() {
-        return webApiCallerService.getList(coleccionServiceUrl + "/public/get-all", ColeccionOutputDTO.class);
+        return webApiCallerService.getListSinToken(coleccionServiceUrl + "/public/get-all", ColeccionOutputDTO.class);
     }
 
     public ResponseEntity<?> crearColeccion(ColeccionInputDTO inputDTO) {

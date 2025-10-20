@@ -37,12 +37,12 @@
                     <div class="card border-0 shadow-sm">
                         <div class="card-body p-4 p-md-5">
                             <div class="d-flex align-items-center mb-4">
-                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-2"
-                      style="width:32px;height:32px;background:#111;color:#fff;font-weight:700;">1</span>
+                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-2"
+                                      style="width:32px;height:32px;background:#111;color:#fff;font-weight:700;">1</span>
                                 <h3 class="mb-0">Agregar nuevo hecho histórico</h3>
                             </div>
 
-                            <!-- NOTA: si en el controller agregaste 'hechoSolicitud', este th:object bindea -->
+                            <!-- Bindea con SolicitudHechoInputDTO -->
                             <form th:action="@{/solicitudes-hecho/subir-hecho}" method="post"
                                   enctype="multipart/form-data"
                                   th:object="${solicitudHecho}">
@@ -57,13 +57,11 @@
                                         <div class="row g-3">
                                             <div class="col-md-6">
                                                 <label class="form-label fw-semibold">Título del hecho *</label>
-                                                <!-- SolicitudHechoInputDTO.titulo -->
                                                 <input class="form-control" th:field="*{titulo}" name="titulo" placeholder="Ej: Revolución Francesa" required>
                                             </div>
 
                                             <div class="col-md-6">
                                                 <label class="form-label fw-semibold">Categoría *</label>
-                                                <!-- si preferís ID, dejé id_categoria; si no, podrías mapear por nombre -->
                                                 <select class="form-select" th:field="*{id_categoria}" name="id_categoria" required>
                                                     <option value="">Seleccionar categoría</option>
                                                     <!-- TODO: poblar dinámicamente -->
@@ -80,7 +78,6 @@
 
                                             <div class="col-12">
                                                 <label class="form-label fw-semibold">Descripción *</label>
-                                                <!-- SolicitudHechoInputDTO.descripcion -->
                                                 <textarea class="form-control" rows="4" th:field="*{descripcion}" name="descripcion"
                                                           placeholder="Describe el evento histórico de manera clara y concisa..." required></textarea>
                                             </div>
@@ -97,7 +94,6 @@
                                         <div class="row g-3">
                                             <div class="col-md-6">
                                                 <label class="form-label fw-semibold">País *</label>
-                                                <!-- SolicitudHechoInputDTO.id_pais -->
                                                 <select class="form-select" th:field="*{id_pais}" name="id_pais" required>
                                                     <option value="">Seleccionar país</option>
                                                     <!-- TODO: poblar dinámicamente -->
@@ -109,7 +105,6 @@
 
                                             <div class="col-md-6">
                                                 <label class="form-label fw-semibold">Provincia / Estado (opcional)</label>
-                                                <!-- SolicitudHechoInputDTO.id_provincia -->
                                                 <select class="form-select" th:field="*{id_provincia}" name="id_provincia">
                                                     <option value="">Seleccionar provincia/estado</option>
                                                     <!-- TODO: poblar dinámicamente según país -->
@@ -121,14 +116,12 @@
 
                                             <div class="col-md-6">
                                                 <label class="form-label fw-semibold">Fecha del acontecimiento *</label>
-                                                <!-- SolicitudHechoInputDTO.fechaAcontecimiento (String) -->
                                                 <input type="date" class="form-control" th:field="*{fechaAcontecimiento}" name="fechaAcontecimiento" required>
                                             </div>
 
                                             <div class="col-md-6">
                                                 <label class="form-label fw-semibold">Latitud / Longitud (opcional)</label>
                                                 <div class="input-group">
-                                                    <!-- SolicitudHechoInputDTO.latitud / longitud -->
                                                     <input type="number" step="any" class="form-control" th:field="*{latitud}" name="latitud" placeholder="-34.6037">
                                                     <input type="number" step="any" class="form-control" th:field="*{longitud}" name="longitud" placeholder="-58.3816">
                                                 </div>
@@ -137,8 +130,9 @@
                                     </div>
                                 </div>
 
-                                <!-- Multimedia -->
-                                <!--<div class="card mb-4 border-0" style="border-radius:14px;">
+                                <!-- Multimedia (opcional) -->
+                                <!--
+                                <div class="card mb-4 border-0" style="border-radius:14px;">
                                     <div class="card-header bg-white">
                                         <h5 class="mb-0"><i class="bi bi-image me-2"></i>Contenido multimedia (opcional)</h5>
                                     </div>
@@ -147,16 +141,16 @@
                                             <i class="bi bi-cloud-upload fs-1 text-muted mb-2"></i>
                                             <div class="mb-2 fw-semibold">Subí archivos</div>
                                             <small class="text-muted d-block mb-2">JPG, PNG, PDF, MP4, MP3 — máx 10MB c/u</small>
-                                            SolicitudHechoInputDTO.contenidosMultimedia (List<MultipartFile>) -->
-                                <!--<input class="form-control" type="file" name="contenidosMultimedia" multiple
-                                       accept=".jpg,.jpeg,.png,.pdf,.mp4,.mp3">
-                            </div>
-                        </div>
-                    </div> -->
+                                            <input class="form-control" type="file" name="contenidosMultimedia" multiple
+                                                   accept=".jpg,.jpeg,.png,.pdf,.mp4,.mp3">
+                                        </div>
+                                    </div>
+                                </div>
+                                -->
 
                                 <!-- Acciones -->
                                 <div class="d-flex justify-content-between">
-                                    <a th:href="@{/hechos}" class="btn btn-outline-secondary">
+                                    <a th:href="@{/hechos/public/get-all}" class="btn btn-outline-secondary">
                                         <i class="bi bi-arrow-left me-1"></i> Cancelar
                                     </a>
                                     <div>
@@ -180,8 +174,8 @@
                         <div class="card-body p-4 p-md-5">
 
                             <div class="d-flex align-items-center mb-4">
-                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-2"
-                      style="width:32px;height:32px;background:#111;color:#fff;font-weight:700;">2</span>
+                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-2"
+                                      style="width:32px;height:32px;background:#111;color:#fff;font-weight:700;">2</span>
                                 <h3 class="mb-0">Importar desde CSV</h3>
                             </div>
 
@@ -191,10 +185,8 @@
                                 <code>"titulo","descripcion","categoria","latitud","longitud","fechadelhecho","pais"</code>
                             </div>
 
-                            <!-- IMPORT CSV -->
-                            <!-- Tu controller espera @RequestPart("meta") ImportacionHechosInputDTO y @RequestPart("file") MultipartFile -->
-                            <!-- Desde HTML puro es común enviar solo el archivo. Si necesitás 'meta', podés agregar campos extra y cambiar el controller a @ModelAttribute, o enviar JSON vía JS. -->
-                            <form th:action="@{/hechos/importar}" method="post" enctype="multipart/form-data">
+                            <!-- Tu controller espera @RequestPart("meta") (con fuenteString) y @RequestPart("file") -->
+                            <form id="csvForm" th:action="@{/hechos/importar}" method="post" enctype="multipart/form-data">
                                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                                 <div class="p-4 text-center border rounded-3 mb-3" style="border-style:dashed;">
@@ -203,22 +195,17 @@
                                     <input class="form-control" type="file" name="file" accept=".csv" required>
                                 </div>
 
-                                <!-- Si realmente necesitás 'meta' como objeto, podés poner campos sueltos (y mapear en el controller) -->
-                                <!--
+                                <!-- Campo para construir 'meta' (ImportacionHechosInputDTO: fuenteString) -->
                                 <div class="row g-3 mb-3">
-                                  <div class="col-md-6">
-                                    <label class="form-label">Origen</label>
-                                    <input class="form-control" name="origen">
-                                  </div>
-                                  <div class="col-md-6">
-                                    <label class="form-label">Nota</label>
-                                    <input class="form-control" name="nota">
-                                  </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Fuente *</label>
+                                        <input class="form-control" id="csvFuente" name="fuenteString" placeholder="Ej: importación 2025-10-20" required>
+                                    </div>
                                 </div>
-                                -->
+                                <input type="hidden" name="meta" id="metaJson"/>
 
                                 <div class="d-flex justify-content-between">
-                                    <a th:href="@{/hechos}" class="btn btn-outline-secondary">
+                                    <a th:href="@{/hechos/public/get-all}" class="btn btn-outline-secondary">
                                         <i class="bi bi-arrow-left me-1"></i> Cancelar
                                     </a>
                                     <button type="submit" class="btn btn-dark">
@@ -234,65 +221,11 @@
 
         </div>
 
-        <!-- Historial de contribuciones (lista real si la proveés en el Model como 'misContribuciones') -->
-
-        <!--
-        <div class="mt-5">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i> Mis contribuciones recientes</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive" th:if="${misContribuciones != null and !#lists.isEmpty(misContribuciones)}">
-                        <table class="table table-hover align-middle">
-                            <thead>
-                            <tr>
-                                <th>Título</th>
-                                <th>Categoría</th>
-                                <th>Fecha de envío</th>
-                                <th>Estado</th>
-                                <th class="text-end">Acciones</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="c : ${misContribuciones}">
-                                <td th:text="${c.titulo}">—</td>
-                                <td><span class="badge text-bg-primary" th:text="${c.categoria}">—</span></td>
-                                <td th:text="${#temporals.format(c.fechaEnvio, 'yyyy-MM-dd')}">—</td>
-                                <td>
-                    <span class="badge" th:classappend="${c.estado == 'APROBADO' ? ' text-bg-success' :
-                                                           c.estado == 'RECHAZADA' ? ' text-bg-danger' :
-                                                           c.estado == 'EN_REVISION' ? ' text-bg-warning' : ' text-bg-secondary'}"
-                          th:text="${c.estado}">—</span>
-                                </td>
-                                <td class="text-end">
-                                    <a th:href="@{/hechos/detalle/{id}(id=${c.id})}" class="btn btn-sm btn-outline-secondary">Ver</a>
-                                    <a th:href="@{/hechos/editar/{id}(id=${c.id})}" class="btn btn-sm btn-outline-primary">Modificar</a>
-                                    <form th:action="@{/hechos/{id}/eliminar(id=${c.id})}" method="post" class="d-inline">
-                                        <input type="hidden" name="_method" value="delete"/>
-                                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    -->
-                    <!-- Estado vacío -->
-                    <!--<div class="text-center py-4 text-muted" th:if="${misContribuciones == null or #lists.isEmpty(misContribuciones)}">
-                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                        Aún no registrás contribuciones.
-                    </div>
-                    -->
-
-                    <div class="text-center mt-3">
-                        <a th:href="@{/hechos}" class="btn btn-outline-dark">
-                            <i class="bi bi-list me-1"></i> Ver listado de hechos
-                        </a>
-                    </div>
-                </div>
-            </div>
+        <!-- CTA al listado -->
+        <div class="text-center mt-3">
+            <a th:href="@{/hechos/public/get-all}" class="btn btn-outline-dark">
+                <i class="bi bi-list me-1"></i> Ver listado de hechos
+            </a>
         </div>
 
     </section>
@@ -301,5 +234,17 @@
     <style>
         .btn:hover{ transform: translateY(-1px); transition: transform .08s ease; }
     </style>
+
+    <!-- Empaqueta 'meta' como JSON antes de enviar el form CSV -->
+    <script>
+        (function(){
+            const form = document.getElementById('csvForm');
+            if(!form) return;
+            form.addEventListener('submit', function(){
+                const fuente = document.getElementById('csvFuente')?.value || '';
+                document.getElementById('metaJson').value = JSON.stringify({ fuenteString: fuente });
+            });
+        })();
+    </script>
 </main>
 </html>
