@@ -1,75 +1,143 @@
 <!-- templates/hecho.html -->
-<html th:replace="~{layout/base :: html}">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+
 <main th:fragment="contenido" class="container py-4">
 
-    <!-- Título + contador (solo se muestra si hay lista) -->
-    <div class="d-flex align-items-end justify-content-between mb-3" th:if="${listaHechos != null}">
+    <!-- Encabezado -->
+    <div class="d-flex align-items-end justify-content-between mb-3">
         <div>
             <h1 class="h3 mb-1">Hechos</h1>
-            <p class="text-muted mb-0">Listado de hechos disponibles</p>
+            <p class="text-muted mb-0">Listado y búsqueda de hechos públicos</p>
         </div>
-        <div class="text-end">
+        <div th:if="${listaHechos != null}">
       <span class="badge rounded-pill bg-dark-subtle text-dark"
-            th:text="${#lists.size(listaHechos)} + ' resultados'"></span>
+            th:text="${#lists.size(listaHechos)} + ' resultados'">0 resultados</span>
         </div>
     </div>
+
+    <!-- Filtros (POST /hechos/get/filtrar) -->
+    <form class="card mb-4" th:action="@{/hechos/get/filtrar}" method="post">
+        <div class="card-body row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Fuente</label>
+                <input class="form-control" type="text" name="fuente" placeholder="ej: usuario, importación…">
+            </div>
+
+            <!-- Categoría: si hay lista en el modelo, usamos select; si no, fallback a input numérico -->
+            <div class="col-md-3" th:if="${categorias != null}">
+                <label class="form-label">Categoría</label>
+                <select class="form-select" name="categoriaId">
+                    <option value="">Todas</option>
+                    <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}">Categoría</option>
+                </select>
+            </div>
+            <div class="col-md-3" th:unless="${categorias != null}">
+                <label class="form-label">Categoría (ID)</label>
+                <input class="form-control" type="number" name="categoriaId" placeholder="ID numérico">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Contenido multimedia</label>
+                <select class="form-select" name="contenidoMultimedia">
+                    <option value="">Cualquiera</option>
+                    <option value="1">Con multimedia</option>
+                    <option value="0">Sin multimedia</option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Descripción (contiene)</label>
+                <input class="form-control" type="text" name="descripcion" placeholder="Texto a buscar en la descripción">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Fecha del hecho (desde)</label>
+                <input class="form-control" type="date" name="fechaAcontecimientoInicial">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Fecha del hecho (hasta)</label>
+                <input class="form-control" type="date" name="fechaAcontecimientoFinal">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Fecha de carga (desde)</label>
+                <input class="form-control" type="date" name="fechaCargaInicial">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Fecha de carga (hasta)</label>
+                <input class="form-control" type="date" name="fechaCargaFinal">
+            </div>
+
+            <div class="col-md-12 d-flex gap-2 justify-content-end">
+                <a class="btn btn-outline-secondary" th:href="@{/hechos/public/get-all}">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Limpiar
+                </a>
+                <button class="btn btn-primary">
+                    <i class="bi bi-funnel me-1"></i> Filtrar
+                </button>
+            </div>
+        </div>
+
+        <!-- CSRF -->
+        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    </form>
 
     <!-- Estado vacío -->
     <div th:if="${listaHechos == null or #lists.isEmpty(listaHechos)}" class="text-center py-5">
         <i class="bi bi-file-earmark-text display-1 text-muted"></i>
-        <h4 class="text-muted mt-3">No hay hechos registrados</h4>
-        <p class="text-muted">Aún no se cargaron hechos en el sistema.</p>
-        <a th:href="@{/contribuir}" class="btn btn-primary">
-            <i class="bi bi-plus-circle me-1"></i> Crear primer hecho
+        <h4 class="text-muted mt-3">No hay hechos para mostrar</h4>
+        <p class="text-muted">Podés ajustar los filtros o volver al listado completo.</p>
+        <a th:href="@{/hechos/public/get-all}" class="btn btn-outline-dark">
+            <i class="bi bi-list-ul me-1"></i> Ver todos
         </a>
     </div>
 
     <!-- Grid de tarjetas -->
-    <div class="row g-4" th:if="${listaHechos != null and !#lists.isEmpty(listaHechos)}"
+    <div class="row g-4"
+         th:if="${listaHechos != null and !#lists.isEmpty(listaHechos)}"
          style="--card-br:16px; --card-bd:#e9ecef; --shadow:0 8px 24px rgba(2,6,23,.08)">
         <div class="col-md-6 col-lg-4" th:each="h : ${listaHechos}">
             <div class="card border-0 h-100" style="border-radius:var(--card-br); box-shadow:var(--shadow);">
                 <div class="card-body" style="border:1px solid var(--card-bd); border-radius:var(--card-br);">
 
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h5 class="card-title mb-0" th:text="${h.titulo}"></h5>
-                        <!-- categoría si viene del model -->
+                        <h5 class="card-title mb-0" th:text="${h.titulo}">Título</h5>
                         <span class="badge text-bg-light border" th:if="${h.categoria != null}"
-                              th:text="${h.categoria}"></span>
+                              th:text="${h.categoria}">Categoría</span>
                     </div>
 
-                    <p class="card-text text-muted" th:text="${h.descripcion}"></p>
+                    <p class="card-text text-muted" th:text="${h.descripcion}">Descripción…</p>
 
                     <div class="small text-muted d-flex flex-column gap-1 mb-3">
-                        <!-- fecha si viene -->
                         <div th:if="${h.fechaAcontecimiento != null}">
                             <i class="bi bi-calendar me-1"></i>
-                            <span th:text="${h.fechaAcontecimiento}"></span>
+                            <span th:text="${h.fechaAcontecimiento}">--/--/----</span>
                         </div>
 
-                        <!-- ubicación: mostramos lo que exista -->
                         <div th:if="${h.ubicacion != null}">
                             <i class="bi bi-geo-alt me-1"></i>
-                            <span th:text="${h.ubicacion}"></span>
+                            <span th:text="${h.ubicacion}">Ubicación</span>
                         </div>
+
                         <div th:if="${h.latitud != null and h.longitud != null}">
                             <i class="bi bi-geo me-1"></i>
-                            <span th:text="${h.latitud}"></span>,
-                            <span th:text="${h.longitud}"></span>
+                            <span th:text="${h.latitud}">lat</span>,
+                            <span th:text="${h.longitud}">lng</span>
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <!-- Detalle: usa tu endpoint /hechos/get con id y (si existe) fuente -->
                         <a class="btn btn-outline-dark btn-sm"
-                           th:href="@{/hechos/get(id_hecho=${h.id}, fuente=${h.fuente})}">
+                           th:href="${h.fuente} != null ?
+                         @{/hechos/public/get(id_hecho=${h.id}, fuente=${h.fuente})} :
+                         @{/hechos/public/get(id_hecho=${h.id})}">
                             <i class="bi bi-eye me-1"></i> Ver detalles
                         </a>
 
-                        <!-- Si tenés cantidad de adjuntos, la mostrás; si no, esto no aparece -->
                         <span class="badge rounded-pill text-bg-light border" th:if="${h.cantArch != null}">
               <i class="bi bi-paperclip me-1"></i>
-              <span th:text="${h.cantArch}"></span> archivos
+              <span th:text="${h.cantArch}">0</span> archivos
             </span>
                     </div>
 
@@ -78,7 +146,7 @@
         </div>
     </div>
 
-    <!-- Estilos locales: blanco/negro, limpio -->
+    <!-- Estilos locales -->
     <style>
         .card:hover{ transform: translateY(-2px); transition: transform .12s ease; }
     </style>
