@@ -37,7 +37,7 @@ public class ColeccionController {
     @GetMapping("/crear")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public String getFormularioColeccion(Model model){
-        model.addAttribute("coleccion", new ColeccionInputDTO());
+        model.addAttribute("coleccionForm", new ColeccionInputDTO());
         return "gestion";
     }
 

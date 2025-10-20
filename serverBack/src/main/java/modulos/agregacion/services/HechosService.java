@@ -385,7 +385,10 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             if(usuario != null) {
                 dto.setUsername(usuario.getNombreDeUsuario());
             }
-            dto.setFechaCarga(hechoMemoria.getAtributosHecho().getFechaCarga().toString());
+            Optional.ofNullable(hecho.getAtributosHecho().getFechaCarga())
+                    .map(Object::toString)
+                    .ifPresent(dto::setFechaCarga);
+
             dto.setFuente(hecho.getAtributosHecho().getFuente().codigoEnString());
             Optional.ofNullable(hechoMemoria.getAtributosHecho().getUbicacion())
                     .ifPresent(ubicacion -> {

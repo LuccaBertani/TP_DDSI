@@ -2,6 +2,7 @@ package modulos.Front.controllers;
 
 import lombok.AllArgsConstructor;
 import modulos.Front.BodyToListConverter;
+import modulos.Front.dtos.input.ColeccionInputDTO;
 import modulos.Front.dtos.output.CategoriaDto;
 import modulos.Front.dtos.input.SolicitudHechoInputDTO;
 import modulos.Front.dtos.output.PaisDto;
@@ -171,7 +172,8 @@ public class HomeController {
     }
 
     @GetMapping("/gestion")
-    public String gestion() {
+    public String gestion(Model model) {
+        model.addAttribute("coleccionForm", new ColeccionInputDTO());
         return "gestion";
     }
 
