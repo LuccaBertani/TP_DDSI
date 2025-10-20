@@ -2,6 +2,7 @@ modulos\Front\ApiCall.class
 modulos\Front\dtos\input\CriteriosColeccionDTO.class
 modulos\Front\controllers\ColeccionController.class
 modulos\Front\dtos\output\DatosPersonalesOutputDTO.class
+modulos\Front\dtos\input\CriteriosColeccionDTO$CriteriosColeccionDTOBuilder.class
 modulos\Front\services\WebApiCallerService.class
 modulos\Front\controllers\SolicitudHechoController.class
 modulos\Front\usuario\Rol.class
@@ -28,6 +29,7 @@ modulos\Front\dtos\input\LoginDtoInput$LoginDtoInputBuilder.class
 modulos\Front\dtos\output\MensajeOutputDTO$MensajeOutputDTOBuilder.class
 modulos\Front\dtos\input\EditarUsuarioDtoInput.class
 modulos\Front\dtos\output\ReporteHechoOutputDTO.class
+modulos\Front\ContenidoMultimedia.class
 modulos\Front\services\ColeccionService.class
 modulos\Front\dtos\input\SolicitudHechoEliminarInputDTO.class
 modulos\Front\BodyToListConverter.class
@@ -43,6 +45,7 @@ modulos\Front\dtos\output\ColeccionOutputDTO.class
 modulos\Front\services\SolicitudHechoService.class
 modulos\Front\dtos\output\HechosResponse.class
 modulos\Front\dtos\input\ColeccionUpdateInputDTO.class
+modulos\Front\TipoContenido.class
 modulos\Front\dtos\output\MensajeOutputDTO.class
 modulos\Front\dtos\input\LoginDtoInput.class
 modulos\Front\dtos\input\ModificarConsensoInputDTO.class

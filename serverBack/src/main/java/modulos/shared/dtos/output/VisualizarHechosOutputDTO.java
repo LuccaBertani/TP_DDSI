@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 public class VisualizarHechosOutputDTO {
     private Long id;
+    private String username;
     private String fuente;
     private String titulo;
     private String descripcion;
@@ -20,6 +21,7 @@ public class VisualizarHechosOutputDTO {
     private Long id_provincia;
     private String provincia;
     private String fechaAcontecimiento;
+    private String fechaCarga;
     private Double latitud;
     private Double longitud;
     private List<ContenidoMultimedia> contenido;

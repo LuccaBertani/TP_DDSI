@@ -38,6 +38,7 @@ public class BuscadorPais {
     @Order(Integer.MAX_VALUE) // último, por las dudas
     @Transactional(transactionManager = "mainTransactionManager") // <- CLAVE en multi-DB
     public void init() {
+
         if (repoPais.count() > 0) return;
 
         var paisesProvincias = Geocodificador.obtenerTodosLosPaises();

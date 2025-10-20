@@ -16,6 +16,10 @@ import modulos.agregacion.repositories.DbEstatica.IDatasetsRepository;
 import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
 import modulos.agregacion.repositories.DbMain.*;
 import modulos.agregacion.repositories.DbProxy.IHechosProxyRepository;
+import modulos.shared.dtos.output.CategoriaDto;
+import modulos.shared.dtos.output.PaisDto;
+import modulos.shared.dtos.output.ProvinciaDto;
+import modulos.shared.utils.FechaParser;
 import modulos.shared.utils.FormateadorHecho;
 import modulos.agregacion.entities.DbEstatica.Dataset;
 import modulos.buscadores.*;
@@ -373,10 +377,16 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         HechoMemoria hechoMemoria = formateadorHechoMemoria.formatearHechoMemoria(hecho);
 
         if (tipo.equals(VisualizarHechosOutputDTO.class)) {
+
+            Usuario usuario = usuariosRepo.findById(hechoMemoria.getUsuario_id()).orElse(null);
+
             VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
             dto.setId(hecho.getId());
+            if(usuario != null) {
+                dto.setUsername(usuario.getNombreDeUsuario());
+            }
+            dto.setFechaCarga(hechoMemoria.getAtributosHecho().getFechaCarga().toString());
             dto.setFuente(hecho.getAtributosHecho().getFuente().codigoEnString());
-
             Optional.ofNullable(hechoMemoria.getAtributosHecho().getUbicacion())
                     .ifPresent(ubicacion -> {
                         Optional.ofNullable(ubicacion.getPais())
@@ -446,9 +456,9 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     public ResponseEntity<?> getAllHechos(Integer origen) {
 
         List<Hecho> hechosTotales = new ArrayList<>();
-        hechosTotales.addAll(hechosEstaticaRepo.findAll());
-        hechosTotales.addAll(hechosDinamicaRepo.findAll());
-        hechosTotales.addAll(hechosProxyRepo.findAll());
+        hechosTotales.addAll(hechosEstaticaRepo.findAllByActivoTrue());
+        hechosTotales.addAll(hechosDinamicaRepo.findAllByActivoTrue());
+        hechosTotales.addAll(hechosProxyRepo.findAllByActivoTrue());
 
         if (OrigenConexion.fromCodigo(origen).equals(OrigenConexion.FRONT)) {
             List<VisualizarHechosOutputDTO> outputDTO = hechosTotales.stream()
@@ -652,6 +662,48 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             }
             default: return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+
+    public ResponseEntity<?> getAllPaises(){
+        List<Pais> paises = repoPais.findAll();
+        List<PaisDto> paisesDtos = new ArrayList<>();
+
+        for (Pais pais : paises){
+            paisesDtos.add(PaisDto.builder()
+                    .pais(pais.getPais())
+                    .id(pais.getId())
+                    .build());
+        }
+
+        return ResponseEntity.ok().body(paisesDtos);
+    }
+
+    public ResponseEntity<?> getAllCategorias(){
+        List<Categoria> categorias = categoriaRepository.findAll();
+        List<CategoriaDto> categoriasDtos = new ArrayList<>();
+
+        for (Categoria categoria : categorias){
+            categoriasDtos.add(CategoriaDto.builder()
+                    .categoria(categoria.getTitulo())
+                    .id(categoria.getId())
+                    .build());
+        }
+
+        return ResponseEntity.ok().body(categoriasDtos);
+    }
+
+    public ResponseEntity<?> getProvinciasByPais(Long id){
+        List<Provincia> provincias = repoProvincia.findAllByPaisId(id);
+        List<ProvinciaDto> provinciasDtos = new ArrayList<>();
+
+        for (Provincia provincia : provincias){
+            provinciasDtos.add(ProvinciaDto.builder()
+                    .provincia(provincia.getProvincia())
+                    .id(provincia.getId())
+                    .build());
+        }
+
+        return ResponseEntity.ok().body(provinciasDtos);
     }
 
 

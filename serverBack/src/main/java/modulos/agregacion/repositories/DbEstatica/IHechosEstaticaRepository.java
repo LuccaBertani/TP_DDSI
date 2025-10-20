@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -119,5 +120,8 @@ LIMIT 1;
         select h from HechoEstatica h where h.atributosHecho.categoria_id = :categoria_id
 """)
     List<HechoEstatica> findAllByCategoriaId(@Param("categoria_id") Long categoria_id);
-
+    @Query(value = """
+        select h from HechoEstatica h where h.activo = true
+""")
+    List<HechoEstatica> findAllByActivoTrue();
 }

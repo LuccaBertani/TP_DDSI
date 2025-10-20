@@ -21,12 +21,6 @@ import java.util.List;
 public class SolicitudHechoController {
     private final SolicitudHechoService solicitudHechoService;
 
-    @GetMapping("/contribuir")
-    public String subirSolicitud(Model model) {
-        model.addAttribute("hechoSolicitud", new SolicitudHechoInputDTO());
-
-        return "contribuir";
-    }
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/evaluar/subir")
@@ -71,6 +65,9 @@ public class SolicitudHechoController {
     @PostMapping("/subir-hecho")
     public String enviarSolicitudSubirHecho(@Valid @ModelAttribute SolicitudHechoInputDTO dto, RedirectAttributes ra){
         System.out.println("SOY UNA PIJITA");
+
+        System.out.println("HOLA SOY UNA DESCRIPCION FELIZ: " + dto.getDescripcion());
+
         ResponseEntity<?> rta = this.solicitudHechoService.enviarSolicitudSubirHecho(dto);
 
         System.out.println("HOLA YA ME COMUNIQUÉ AAA");

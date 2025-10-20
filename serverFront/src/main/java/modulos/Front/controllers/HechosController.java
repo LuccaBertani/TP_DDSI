@@ -61,11 +61,12 @@ public class HechosController {
 
     @GetMapping("/public/get-all")
     public String getHechos(Model model){
+        System.out.println("ENTRO A GET ALL HECHOS");
         ResponseEntity<?> rtaDto = this.hechosService.getHechos();
 
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
-            HechosResponse hechos = (HechosResponse) rtaDto.getBody();
-            model.addAttribute("listaHechos", hechos.getHechos());
+            List<VisualizarHechosOutputDTO> hechos = BodyToListConverter.bodyToList(rtaDto, VisualizarHechosOutputDTO.class);
+            model.addAttribute("listaHechos", hechos);
             return "hecho";
         }
         /*else if (rtaDto.getBody() != null){
@@ -78,10 +79,14 @@ public class HechosController {
     public String getHecho(Model model, Long id_hecho, String fuente){
         ResponseEntity<?> rtaDto = this.hechosService.getHecho(id_hecho, fuente);
 
+        System.out.println("HOLA");
+
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
-            HechosResponse hechos = (HechosResponse) rtaDto.getBody();
-            model.addAttribute("listaHechos", hechos.getHechos());
-            return "hecho";
+            VisualizarHechosOutputDTO hecho = (VisualizarHechosOutputDTO) rtaDto.getBody();
+            System.out.println("Fecha acontecimiento de mierda: " + hecho.getFechaAcontecimiento());
+            System.out.println("Fecha carga de mierda: " + hecho.getFechaCarga());
+            model.addAttribute("hecho", hecho);
+            return "detalleHecho";
         }
         else if (rtaDto.getBody() != null){
             model.addAttribute("errorMsg", rtaDto.getBody().toString());

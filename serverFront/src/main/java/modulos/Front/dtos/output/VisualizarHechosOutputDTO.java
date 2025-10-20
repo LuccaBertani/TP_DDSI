@@ -2,21 +2,26 @@ package modulos.Front.dtos.output;
 
 
 import lombok.Data;
+import modulos.Front.ContenidoMultimedia;
+
+import java.util.List;
 
 @Data
 public class VisualizarHechosOutputDTO {
     private Long id;
+    private String username;
     private String fuente;
     private String titulo;
     private String descripcion;
-    private String categoria;
-    private String pais;
-    private String provincia;
     private Long id_categoria;
+    private String categoria;
     private Long id_pais;
+    private String pais;
     private Long id_provincia;
+    private String provincia;
     private String fechaAcontecimiento;
-    private int contenidoMultimedia;
+    private String fechaCarga;
     private Double latitud;
     private Double longitud;
+    private List<ContenidoMultimedia> contenido;
 }

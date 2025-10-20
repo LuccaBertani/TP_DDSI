@@ -53,6 +53,7 @@ public class HechosController {
     // todos los hechos del sistema
     @GetMapping("/public/get-all")
     public ResponseEntity<?> visualizarHechos(@RequestParam Integer origen){
+        System.out.println("ENTRO A GET ALL HECHOS");
         return hechosService.getAllHechos(origen);
     }
 
@@ -66,8 +67,25 @@ public class HechosController {
 
     @GetMapping("/public/get")
     public ResponseEntity<?> getHecho(@Valid @RequestParam Long id_hecho, @Valid @RequestParam String fuente){
+        System.out.println("ENTRE A GET HECHO!!!");
         return hechosService.getHecho(id_hecho, fuente);
     }
+
+    @GetMapping("/public/paises/get-all")
+    public ResponseEntity<?> getPaises(){
+        return hechosService.getAllPaises();
+    }
+
+    @GetMapping("/public/provincias")
+    public ResponseEntity<?> getProvinciasByIdPais(@Valid @RequestParam Long id_pais){
+        return hechosService.getProvinciasByPais(id_pais);
+    }
+    @GetMapping("/public/categorias/get-all")
+    public ResponseEntity<?> getCategorias(){
+        return hechosService.getAllCategorias();
+    }
+
+
 
 
     /*

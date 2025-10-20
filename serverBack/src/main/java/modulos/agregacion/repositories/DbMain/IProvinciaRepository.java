@@ -36,6 +36,13 @@ WHERE
   )
 """)
     Optional<Provincia> findByNombreNormalizado(@Param("nombre") String nombre);
+
+
+
+    @Query("""
+    select p from Provincia p where p.pais.id = :id
+""")
+    List<Provincia> findAllByPaisId(@Param("id") Long id);
 }
 
 

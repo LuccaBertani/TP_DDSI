@@ -36,6 +36,7 @@ modulos\agregacion\entities\DbMain\Mensaje.class
 modulos\agregacion\entities\DbMain\Reporte.class
 modulos\shared\dtos\input\CriteriosColeccionDTO$CriteriosColeccionDTOBuilder.class
 modulos\agregacion\repositories\DbMain\IUbicacionRepository.class
+modulos\BodyToListConverter.class
 modulos\shared\dtos\input\ColeccionUpdateInputDTO.class
 modulos\agregacion\entities\fuentes\Responses\ColeccionesResponse.class
 modulos\agregacion\repositories\DbMain\IHechoRefRepository.class

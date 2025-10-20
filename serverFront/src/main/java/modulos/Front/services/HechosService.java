@@ -1,16 +1,15 @@
 package modulos.Front.services;
 
-import jakarta.validation.Valid;
+import modulos.Front.dtos.output.CategoriaDto;
+import modulos.Front.dtos.output.PaisDto;
 import modulos.Front.dtos.input.GetHechosColeccionInputDTO;
 import modulos.Front.dtos.input.ImportacionHechosInputDTO;
 import modulos.Front.dtos.input.SolicitudHechoInputDTO;
-import modulos.Front.dtos.output.HechosResponse;
+import modulos.Front.dtos.output.ProvinciaDto;
 import modulos.Front.dtos.output.VisualizarHechosOutputDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Service
 public class HechosService {
@@ -23,7 +22,7 @@ public class HechosService {
 
 
     public ResponseEntity<?> getHecho(Long id_hecho, String fuente) {
-        return webApiCallerService.getEntitySinToken(this.hechoServiceUrl + "/public/get?id_hecho=" + id_hecho.toString() + "&fuente=" + fuente, VisualizarHechosOutputDTO.class);
+        return webApiCallerService.getEntitySinToken(this.hechoServiceUrl + "/public/get?id_hecho=" + id_hecho + "&fuente=" + fuente, VisualizarHechosOutputDTO.class);
     }
 
     public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO hechoInputDTO) {
@@ -40,5 +39,17 @@ public class HechosService {
 
     public ResponseEntity<?> getHechosFiltradosColeccion(GetHechosColeccionInputDTO inputDTO) {
         return webApiCallerService.postList(this.hechoServiceUrl + "/public/get/filtrar", inputDTO, GetHechosColeccionInputDTO.class);
+    }
+
+    public ResponseEntity<?> getPaises() {
+        return webApiCallerService.getListSinToken(this.hechoServiceUrl + "/public/paises/get-all", PaisDto.class);
+    }
+
+    public ResponseEntity<?> getProvinciasByIdPais(Long id_pais) {
+        return webApiCallerService.getListSinToken(this.hechoServiceUrl + "/public/provincias?id_pais="+id_pais, ProvinciaDto.class);
+    }
+
+    public ResponseEntity<?> getCategorias() {
+        return webApiCallerService.getListSinToken(this.hechoServiceUrl + "/public/categorias/get-all", CategoriaDto.class);
     }
 }

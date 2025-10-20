@@ -1,250 +1,155 @@
-<!-- templates/contribuir.html -->
+<!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
-<main th:fragment="contenido">
+<main th:fragment="contenido" class="container py-4">
 
     <!-- Encabezado -->
-    <section class="text-center py-4" style="background: radial-gradient(1200px 600px at 50% -150px, #e8ecf6 0%, #f5f7fb 45%, #ffffff 100%);">
-        <div class="container">
-            <h1 class="fw-bold mb-2">
-                <i class="bi bi-plus-circle me-2"></i> Contribuir al sistema
-            </h1>
-            <p class="text-muted mb-0">Sumá nuevos hechos históricos o importá un CSV</p>
-        </div>
+    <section class="text-center py-4"
+             style="background: radial-gradient(1200px 600px at 50% -150px, #e8ecf6 0%, #f7f9fb 100%);
+                  border-radius:12px;">
+        <h2 class="fw-bold mb-1"><i class="bi bi-plus-circle me-2"></i>Contribuir con un nuevo hecho</h2>
+        <p class="text-muted mb-0">Completá la información del evento histórico que querés proponer</p>
     </section>
 
-    <section class="container py-4">
+    <!-- Mini-form GET: lleva un espejo de TODOS los campos para no perderlos -->
+    <form id="filtroPaisForm" th:action="@{/contribuir}" method="get" style="display:none;">
+        <input type="hidden" name="titulo">
+        <input type="hidden" name="descripcion">
+        <input type="hidden" name="fechaAcontecimiento">
+        <input type="hidden" name="latitud">
+        <input type="hidden" name="longitud">
+        <input type="hidden" name="id_categoria">
+        <input type="hidden" name="id_provincia">
+        <input type="hidden" name="id_pais" id="filtroPaisInput">
+    </form>
 
-        <!-- Tabs -->
-        <ul class="nav nav-pills justify-content-center gap-2 mb-4">
-            <li class="nav-item">
-                <a class="nav-link active" data-bs-toggle="pill" href="#tab-form">
-                    <i class="bi bi-pencil-square me-1"></i> Formulario individual
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="pill" href="#tab-csv">
-                    <i class="bi bi-file-spreadsheet me-1"></i> Importar CSV
-                </a>
-            </li>
-        </ul>
+    <!-- === FORMULARIO PRINCIPAL (POST real) === -->
+    <form id="formPost" th:action="@{/solicitudes-hecho/subir-hecho}" method="post"
+          th:object="${solicitudHecho}" enctype="multipart/form-data" class="mt-4">
 
-        <div class="tab-content">
+        <!-- CSRF -->
+        <input type="hidden" th:if="${_csrf != null}"
+               th:name="${_csrf.parameterName}"
+               th:value="${_csrf.token}"/>
 
-            <!-- ========== TAB: FORMULARIO INDIVIDUAL ========== -->
-            <div id="tab-form" class="tab-pane fade show active">
-
-                <div class="mx-auto" style="max-width: 920px;">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body p-4 p-md-5">
-                            <div class="d-flex align-items-center mb-4">
-                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-2"
-                                      style="width:32px;height:32px;background:#111;color:#fff;font-weight:700;">1</span>
-                                <h3 class="mb-0">Agregar nuevo hecho histórico</h3>
-                            </div>
-
-                            <!-- Bindea con SolicitudHechoInputDTO -->
-                            <form th:action="@{/solicitudes-hecho/subir-hecho}" method="post"
-                                  enctype="multipart/form-data"
-                                  th:object="${solicitudHecho}">
-                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
-                                <!-- Información básica -->
-                                <div class="card mb-4 border-0" style="border-radius:14px;">
-                                    <div class="card-header bg-white">
-                                        <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Información básica</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                <label class="form-label fw-semibold">Título del hecho *</label>
-                                                <input class="form-control" th:field="*{titulo}" name="titulo" placeholder="Ej: Revolución Francesa" required>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <label class="form-label fw-semibold">Categoría *</label>
-                                                <select class="form-select" th:field="*{id_categoria}" name="id_categoria" required>
-                                                    <option value="">Seleccionar categoría</option>
-                                                    <!-- TODO: poblar dinámicamente -->
-                                                    <option th:value="1">Política</option>
-                                                    <option th:value="2">Exploración</option>
-                                                    <option th:value="3">Guerra</option>
-                                                    <option th:value="4">Independencia</option>
-                                                    <option th:value="5">Cultural</option>
-                                                    <option th:value="6">Científica</option>
-                                                    <option th:value="7">Económica</option>
-                                                    <option th:value="8">Social</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="col-12">
-                                                <label class="form-label fw-semibold">Descripción *</label>
-                                                <textarea class="form-control" rows="4" th:field="*{descripcion}" name="descripcion"
-                                                          placeholder="Describe el evento histórico de manera clara y concisa..." required></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Ubicación y fecha -->
-                                <div class="card mb-4 border-0" style="border-radius:14px;">
-                                    <div class="card-header bg-white">
-                                        <h5 class="mb-0"><i class="bi bi-geo-alt me-2"></i>Ubicación y fecha</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                <label class="form-label fw-semibold">País *</label>
-                                                <select class="form-select" th:field="*{id_pais}" name="id_pais" required>
-                                                    <option value="">Seleccionar país</option>
-                                                    <!-- TODO: poblar dinámicamente -->
-                                                    <option th:value="1">Argentina</option>
-                                                    <option th:value="2">Chile</option>
-                                                    <option th:value="3">Uruguay</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <label class="form-label fw-semibold">Provincia / Estado (opcional)</label>
-                                                <select class="form-select" th:field="*{id_provincia}" name="id_provincia">
-                                                    <option value="">Seleccionar provincia/estado</option>
-                                                    <!-- TODO: poblar dinámicamente según país -->
-                                                    <option th:value="101">Buenos Aires</option>
-                                                    <option th:value="102">Córdoba</option>
-                                                    <option th:value="103">Santa Fe</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <label class="form-label fw-semibold">Fecha del acontecimiento *</label>
-                                                <input type="date" class="form-control" th:field="*{fechaAcontecimiento}" name="fechaAcontecimiento" required>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <label class="form-label fw-semibold">Latitud / Longitud (opcional)</label>
-                                                <div class="input-group">
-                                                    <input type="number" step="any" class="form-control" th:field="*{latitud}" name="latitud" placeholder="-34.6037">
-                                                    <input type="number" step="any" class="form-control" th:field="*{longitud}" name="longitud" placeholder="-58.3816">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Multimedia (opcional) -->
-                                <!--
-                                <div class="card mb-4 border-0" style="border-radius:14px;">
-                                    <div class="card-header bg-white">
-                                        <h5 class="mb-0"><i class="bi bi-image me-2"></i>Contenido multimedia (opcional)</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="p-4 text-center border rounded-3" style="border-style:dashed;">
-                                            <i class="bi bi-cloud-upload fs-1 text-muted mb-2"></i>
-                                            <div class="mb-2 fw-semibold">Subí archivos</div>
-                                            <small class="text-muted d-block mb-2">JPG, PNG, PDF, MP4, MP3 — máx 10MB c/u</small>
-                                            <input class="form-control" type="file" name="contenidosMultimedia" multiple
-                                                   accept=".jpg,.jpeg,.png,.pdf,.mp4,.mp3">
-                                        </div>
-                                    </div>
-                                </div>
-                                -->
-
-                                <!-- Acciones -->
-                                <div class="d-flex justify-content-between">
-                                    <a th:href="@{/hechos/public/get-all}" class="btn btn-outline-secondary">
-                                        <i class="bi bi-arrow-left me-1"></i> Cancelar
-                                    </a>
-                                    <div>
-                                        <button type="submit" class="btn btn-dark">
-                                            <i class="bi bi-send me-1"></i> Enviar solicitud
-                                        </button>
-                                    </div>
-                                </div>
-
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
+        <!-- Información básica -->
+        <div class="card mb-4 border-0 shadow-sm" style="border-radius:14px;">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Información básica</h5>
             </div>
-
-            <!-- ========== TAB: IMPORTAR CSV ========== -->
-            <div id="tab-csv" class="tab-pane fade">
-                <div class="mx-auto" style="max-width: 920px;">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body p-4 p-md-5">
-
-                            <div class="d-flex align-items-center mb-4">
-                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-2"
-                                      style="width:32px;height:32px;background:#111;color:#fff;font-weight:700;">2</span>
-                                <h3 class="mb-0">Importar desde CSV</h3>
-                            </div>
-
-                            <div class="alert alert-info">
-                                <i class="bi bi-info-circle me-2"></i>
-                                <strong>Formato sugerido:</strong>
-                                <code>"titulo","descripcion","categoria","latitud","longitud","fechadelhecho","pais"</code>
-                            </div>
-
-                            <!-- Tu controller espera @RequestPart("meta") (con fuenteString) y @RequestPart("file") -->
-                            <form id="csvForm" th:action="@{/hechos/importar}" method="post" enctype="multipart/form-data">
-                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
-                                <div class="p-4 text-center border rounded-3 mb-3" style="border-style:dashed;">
-                                    <i class="bi bi-file-earmark-spreadsheet fs-1 text-success mb-2"></i>
-                                    <div class="mb-2 fw-semibold">Subí tu archivo CSV</div>
-                                    <input class="form-control" type="file" name="file" accept=".csv" required>
-                                </div>
-
-                                <!-- Campo para construir 'meta' (ImportacionHechosInputDTO: fuenteString) -->
-                                <div class="row g-3 mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">Fuente *</label>
-                                        <input class="form-control" id="csvFuente" name="fuenteString" placeholder="Ej: importación 2025-10-20" required>
-                                    </div>
-                                </div>
-                                <input type="hidden" name="meta" id="metaJson"/>
-
-                                <div class="d-flex justify-content-between">
-                                    <a th:href="@{/hechos/public/get-all}" class="btn btn-outline-secondary">
-                                        <i class="bi bi-arrow-left me-1"></i> Cancelar
-                                    </a>
-                                    <button type="submit" class="btn btn-dark">
-                                        <i class="bi bi-upload me-1"></i> Procesar CSV
-                                    </button>
-                                </div>
-                            </form>
-
-                        </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Título del hecho *</label>
+                        <input class="form-control" th:field="*{titulo}" required>
                     </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Categoría *</label>
+                        <select class="form-select" th:field="*{id_categoria}" required>
+                            <option value="">Seleccionar categoría</option>
+                            <option th:each="cat : ${categorias}"
+                                    th:value="${cat.id}"
+                                    th:text="${cat.categoria}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Descripción *</label>
+                        <textarea class="form-control" rows="4" th:field="*{descripcion}"
+                                  placeholder="Describe el evento histórico de manera clara y concisa..."
+                                  required></textarea>
+                    </div>
+                    <img src="https://www.google.com/imgres?q=chiquitapia&imgurl=https%3A%2F%2Fwww.tiktok.com%2Fapi%2Fimg%2F%3FitemId%3D7426857365254786309%26location%3D0%26aid%3D1988&imgrefurl=https%3A%2F%2Fwww.tiktok.com%2F%40veiider%2Fvideo%2F7426857365254786309&docid=5_U8zG7CJOyQFM&tbnid=VrNucZ4FmlA9lM&vet=12ahUKEwisu5CcxbOQAxX0ILkGHcrOM3kQM3oECC0QAA..i&w=1080&h=1920&hcb=2&ved=2ahUKEwisu5CcxbOQAxX0ILkGHcrOM3kQM3oECC0QAA"
+                         alt="Chiqui Tapia"
+                         style="max-width: 100%; height: auto;">
+
                 </div>
             </div>
-
         </div>
 
-        <!-- CTA al listado -->
-        <div class="text-center mt-3">
-            <a th:href="@{/hechos/public/get-all}" class="btn btn-outline-dark">
-                <i class="bi bi-list me-1"></i> Ver listado de hechos
+        <!-- Ubicación y fecha -->
+        <div class="card mb-4 border-0 shadow-sm" style="border-radius:14px;">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-geo-alt me-2"></i>Ubicación y fecha</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+
+                    <!-- País (dispara el mini-form GET) -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">País *</label>
+                        <select class="form-select" th:field="*{id_pais}" required
+                                onchange="
+                      const post = document.getElementById('formPost');
+                      const getF = document.getElementById('filtroPaisForm');
+
+                      // Copiar todos los campos actuales del form principal al mini-GET
+                      ['titulo','descripcion','fechaAcontecimiento','latitud','longitud','id_categoria','id_provincia'].forEach(n => {
+                        const src = post.querySelector(`[name='${n}']`);
+                        const dst = getF.querySelector(`[name='${n}']`);
+                        if (src && dst) dst.value = src.value ?? '';
+                      });
+
+                      // Setear país nuevo y limpiar provincia (para forzar recarga de lista)
+                      getF.querySelector('[name=id_pais]').value = this.value;
+                      getF.querySelector('[name=id_provincia]').value = '';
+
+                      getF.submit();
+                    ">
+                            <option value="">Seleccionar país</option>
+                            <option th:each="pais : ${paises}"
+                                    th:value="${pais.id}"
+                                    th:text="${pais.pais}"></option>
+                        </select>
+                    </div>
+
+                    <!-- Provincia -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Provincia / Estado (opcional)</label>
+                        <select class="form-select" th:field="*{id_provincia}"
+                                th:attr="disabled=${solicitudHecho.id_pais == null}">
+                            <option value="">Seleccionar provincia/estado</option>
+                            <option th:each="prov : ${provincias}"
+                                    th:value="${prov.id}"
+                                    th:text="${prov.provincia}"></option>
+                        </select>
+                    </div>
+
+                    <!-- Fecha -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Fecha del acontecimiento *</label>
+                        <input type="date" class="form-control" th:field="*{fechaAcontecimiento}" required>
+                    </div>
+
+                    <!-- Latitud / Longitud -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Latitud / Longitud (opcional)</label>
+                        <div class="input-group">
+                            <input type="number" step="any" class="form-control"
+                                   th:field="*{latitud}" placeholder="-34.6037">
+                            <input type="number" step="any" class="form-control"
+                                   th:field="*{longitud}" placeholder="-58.3816">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-between mt-4">
+            <a th:href="@{/}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Cancelar
             </a>
+            <button type="submit" class="btn btn-dark">
+                <i class="bi bi-send me-1"></i> Enviar solicitud
+            </button>
         </div>
+    </form>
 
-    </section>
-
-    <!-- Estética homogénea -->
     <style>
-        .btn:hover{ transform: translateY(-1px); transition: transform .08s ease; }
+        .btn:hover { transform: translateY(-1px); transition: transform .08s ease; }
     </style>
 
-    <!-- Empaqueta 'meta' como JSON antes de enviar el form CSV -->
-    <script>
-        (function(){
-            const form = document.getElementById('csvForm');
-            if(!form) return;
-            form.addEventListener('submit', function(){
-                const fuente = document.getElementById('csvFuente')?.value || '';
-                document.getElementById('metaJson').value = JSON.stringify({ fuenteString: fuente });
-            });
-        })();
-    </script>
 </main>
 </html>
