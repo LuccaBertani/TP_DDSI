@@ -6,7 +6,7 @@
     <nav aria-label="breadcrumb" class="mb-3" th:if="${hecho != null}">
         <ol class="breadcrumb justify-content-center">
             <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
-            <li class="breadcrumb-item"><a th:href="@{/hechos}">Hechos</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/hechos/public/get-all}">Hechos</a></li>
             <li class="breadcrumb-item active" aria-current="page" th:text="${hecho.titulo}">Detalle</li>
         </ol>
     </nav>
@@ -22,11 +22,14 @@
         <h1 class="h3 text-center mb-0" th:text="${hecho.titulo}">Título del hecho</h1>
 
         <div class="d-flex justify-content-center gap-2 mt-3">
-            <!-- refrescar la misma página -->
-            <a class="btn btn-outline-dark" th:href="@{/hechos/detalle/{id}(id=${hecho.id})}">
+            <!-- Refrescar usando la ruta real -->
+            <a class="btn btn-outline-dark"
+               th:href="${hecho.fuente} != null ?
+                        @{/hechos/public/get(id_hecho=${hecho.id}, fuente=${hecho.fuente})} :
+                        @{/hechos/public/get(id_hecho=${hecho.id})}">
                 <i class="bi bi-arrow-clockwise me-1"></i> Refrescar
             </a>
-            <!-- eliminar (solo si sos admin) -->
+            <!-- Eliminar (sin endpoint conocido) -->
             <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalEliminar" th:if="${isAdmin}">
                 <i class="bi bi-trash me-1"></i> Eliminar
             </button>
@@ -63,9 +66,9 @@
                 <div>
                     <span th:text="${hecho.contribuyente.nombre}">Usuario</span>
                     <span class="text-muted" th:if="${hecho.contribuidoEl != null}">
-            · <i class="bi bi-clock me-1"></i>
-            <span th:text="${#temporals.format(hecho.contribuidoEl, 'dd/MM/yyyy HH:mm')}">—</span>
-          </span>
+                        · <i class="bi bi-clock me-1"></i>
+                        <span th:text="${#temporals.format(hecho.contribuidoEl, 'dd/MM/yyyy HH:mm')}">—</span>
+                    </span>
                 </div>
             </div>
 
@@ -119,9 +122,9 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="m-0"><i class="bi bi-image me-2"></i>Multimedia</h5>
             <span class="badge text-bg-light border">
-        <i class="bi bi-folder2 me-1"></i>
-        <span th:text="${#lists.size(hecho.archivos)}">0</span> archivos
-      </span>
+                <i class="bi bi-folder2 me-1"></i>
+                <span th:text="${#lists.size(hecho.archivos)}">0</span> archivos
+            </span>
         </div>
         <div class="row g-3">
             <div class="col-6 col-md-4" th:each="a : ${hecho.archivos}">
@@ -140,15 +143,45 @@
 
     <!-- Acciones -->
     <div class="d-flex justify-content-center gap-2 mb-4" th:if="${hecho != null}">
-        <a class="btn btn-outline-dark" th:href="@{/hechos}">
+        <a class="btn btn-outline-dark" th:href="@{/hechos/public/get-all}">
             <i class="bi bi-list me-1"></i> Volver al listado
         </a>
-        <a class="btn btn-outline-danger" th:href="@{/hechos/{id}/reportar(id=${hecho.id})}">
+        <!-- Abrir modal de reporte -->
+        <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalReportar">
             <i class="bi bi-flag me-1"></i> Reportar
-        </a>
+        </button>
     </div>
 
-    <!-- Modal eliminar -->
+    <!-- Modal REPORTAR (POST /solicitudes-hecho/reportes/reportar) -->
+    <div class="modal fade" id="modalReportar" tabindex="-1" aria-hidden="true" th:if="${hecho != null}">
+        <div class="modal-dialog">
+            <form class="modal-content" th:action="@{/solicitudes-hecho/reportes/reportar}" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-flag text-danger me-2"></i>Reportar hecho</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted mb-2">Contanos por qué este hecho debería ser revisado.</p>
+                    <div class="mb-3">
+                        <label class="form-label">Motivo</label>
+                        <textarea class="form-control" name="motivo" rows="4" maxlength="300" required></textarea>
+                        <div class="form-text text-end">máx. 300 caracteres</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-danger" type="submit"><i class="bi bi-flag me-1"></i>Enviar reporte</button>
+                </div>
+
+                <!-- Campos requeridos por el controller de reportes -->
+                <input type="hidden" name="id_hecho" th:value="${hecho.id}"/>
+                <input type="hidden" name="fuente" th:if="${hecho.fuente != null}" th:value="${hecho.fuente}"/>
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal ELIMINAR (sin endpoint conocido, dejamos deshabilitado) -->
     <div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true" th:if="${hecho != null}">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -167,10 +200,9 @@
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <form th:action="@{/hechos/{id}/eliminar(id=${hecho.id})}" method="post" class="m-0 p-0">
-                        <input type="hidden" name="_method" value="delete"/>
-                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button type="submit" class="btn btn-danger">
+                    <!-- Sin endpoint: botón deshabilitado -->
+                    <form action="#" method="post" class="m-0 p-0" onsubmit="return false;">
+                        <button type="submit" class="btn btn-danger" disabled title="Configurar endpoint en el controller">
                             <i class="bi bi-trash3 me-1"></i> Eliminar definitivamente
                         </button>
                     </form>
@@ -178,7 +210,6 @@
             </div>
         </div>
     </div>
-
 
     <style>.btn:hover{transform:translateY(-1px);transition:transform .08s ease}</style>
 
