@@ -18,7 +18,7 @@
         .fact-list-item:hover{ background:#f8f9fa }
         .fact-list-item.selected{ background:#e7f3ff;border-left:3px solid var(--primary-color) }
         .custom-marker{ width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.3);
-          display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;cursor:pointer }
+            display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;cursor:pointer }
         .leaflet-popup-content-wrapper{ border-radius:8px }
         @media (max-width:768px){ #map{height:420px} .map-sidebar{margin-top:20px} }
     </style>
@@ -28,7 +28,7 @@
 <!-- Header -->
 <header class="bg-white border-bottom py-3">
     <div class="container-fluid d-flex justify-content-between align-items-center">
-        <a th:href="@{/'/'}" class="text-decoration-none text-dark d-flex align-items-center">
+        <a th:href="@{/}" class="text-decoration-none text-dark d-flex align-items-center">
             <div class="logo-icon me-2" style="width:40px;height:40px;background:#4f46e5;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">M</div>
             <span class="fs-4 fw-bold">MetaMapa</span>
             <span class="text-muted ms-2 d-none d-md-inline">Panel de Control</span>
@@ -46,11 +46,11 @@
 <nav class="bg-white border-bottom">
     <div class="container-fluid py-3">
         <ul class="nav nav-pills nav-pills-custom justify-content-center">
-            <li class="nav-item"><a class="nav-link" th:href="@{/hechos}"><i class="bi bi-file-text me-1"></i> Hechos</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/hechos/public/get-all}"><i class="bi bi-file-text me-1"></i> Hechos</a></li>
             <li class="nav-item"><a class="nav-link active" th:href="@{/mapa}"><i class="bi bi-map me-1"></i> Mapa</a></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/colecciones}"><i class="bi bi-collection me-1"></i> Colecciones</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/colecciones/get-all}"><i class="bi bi-collection me-1"></i> Colecciones</a></li>
             <li class="nav-item"><a class="nav-link" th:href="@{/contribuir}"><i class="bi bi-plus me-1"></i> Contribuir</a></li>
-            <li class="nav-item" th:if="${isAdmin}"><a class="nav-link" th:href="@{/solicitudes}"><i class="bi bi-clipboard-check me-1"></i> Solicitudes</a></li>
+            <li class="nav-item" th:if="${isAdmin}"><a class="nav-link" th:href="@{/solicitudes-hecho/get/pendientes}"><i class="bi bi-clipboard-check me-1"></i> Solicitudes</a></li>
             <li class="nav-item" th:if="${isAdmin}"><a class="nav-link" th:href="@{/gestion}"><i class="bi bi-gear me-1"></i> Gestión</a></li>
         </ul>
     </div>
@@ -171,63 +171,68 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 
+<!-- Form oculto para reportar (POST) -->
+<form id="reportForm" th:action="@{/solicitudes-hecho/reportes/reportar}" method="post" class="d-none">
+    <input type="hidden" name="id_hecho">
+    <input type="hidden" name="fuente">
+    <input type="hidden" name="motivo">
+    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+</form>
+
 <!-- JS con Thymeleaf inline para pasar datos -->
 <script th:inline="javascript">
     /*<![CDATA[*/
-      // Hechos provistos por el backend (lista de DTOs con: id,titulo,categoria,descripcion,ubicacion,fechaAcontecimiento,latitud,longitud,archivosCount)
-      const hechos = /*[[${hechos}]]*/ [];
-      // Opcional: mapeo de categorías a colores (Bootstrap + hex para popup)
-      const catToBootstrap = /*[[${catToBootstrap}]]*/ {"politica":"primary","exploracion":"success","guerra":"danger","independencia":"warning","cientifica":"secondary"};
-      const catToHex = /*[[${catToHex}]]*/ {"politica":"#4f46e5","exploracion":"#059669","guerra":"#dc2626","independencia":"#f59e0b","cientifica":"#7c3aed"};
+    // Hechos provistos por el backend
+    const hechos = /*[[${hechos}]]*/ [];
+    const catToBootstrap = /*[[${catToBootstrap}]]*/ {"politica":"primary","exploracion":"success","guerra":"danger","independencia":"warning","cientifica":"secondary"};
+    const catToHex = /*[[${catToHex}]]*/ {"politica":"#4f46e5","exploracion":"#059669","guerra":"#dc2626","independencia":"#f59e0b","cientifica":"#7c3aed"};
 
-      let map, markers = [], selectedId = null;
+    let map, markers = [], selectedId = null;
 
-      function initMap(){
+    function initMap(){
         map = L.map('map').setView([-20,-60], 3);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-          attribution:'© OpenStreetMap contributors'
-        }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{ attribution:'© OpenStreetMap contributors' }).addTo(map);
 
         addMarkers(hechos);
         renderList(hechos);
         updateStats(hechos);
-      }
+    }
 
-      function addMarkers(list){
+    function addMarkers(list){
         markers.forEach(m => map.removeLayer(m));
         markers = [];
 
         list.forEach(h => {
-          if(h.latitud == null || h.longitud == null) return;
-          const cls = 'custom-marker';
-          const html = `<div class="${cls}" style="background:${catToHex[h.categoria]||'#4f46e5'}">${(h.titulo||'?').substring(0,1).toUpperCase()}</div>`;
-          const marker = L.marker([h.latitud, h.longitud], { icon: L.divIcon({className:'', html, iconSize:[30,30], iconAnchor:[15,15]}) })
-            .addTo(map)
-            .bindPopup(popupFor(h))
-            .on('click', () => selectFact(h.id));
-          markers.push(marker);
+            if(h.latitud == null || h.longitud == null) return;
+            const cls = 'custom-marker';
+            const html = `<div class="${cls}" style="background:${catToHex[h.categoria]||'#4f46e5'}">${(h.titulo||'?').substring(0,1).toUpperCase()}</div>`;
+            const marker = L.marker([h.latitud, h.longitud], { icon: L.divIcon({className:'', html, iconSize:[30,30], iconAnchor:[15,15]}) })
+                .addTo(map)
+                .bindPopup(popupFor(h))
+                .on('click', () => selectFact(h.id));
+            markers.push(marker);
         });
 
         document.getElementById('eventCount').textContent = `${list.length} eventos`;
         document.getElementById('statsEvents').textContent = list.length;
-      }
+    }
 
-      function popupFor(h){
+    function popupFor(h){
         const hex = catToHex[h.categoria] || '#4f46e5';
         const fechaTxt = h.fechaAcontecimiento ? new Date(h.fechaAcontecimiento).toLocaleDateString() : '—';
         return `
-          <div class="popup-content">
-            <h6 style="color:${hex}">${escapeHtml(h.titulo||'')}</h6>
-            <span class="badge" style="background:${hex};color:#fff">${escapeHtml(cap(h.categoria||'—'))}</span>
-            <p class="small mt-2 mb-2">${escapeHtml(h.descripcion||'')}</p>
-            <div class="small text-muted">
-              <div><i class="bi bi-geo-alt me-1"></i>${escapeHtml(h.ubicacion||'—')}</div>
-              <div><i class="bi bi-calendar me-1"></i>${fechaTxt}</div>
-            </div>
-          </div>`;
-      }
+      <div class="popup-content">
+        <h6 style="color:${hex}">${escapeHtml(h.titulo||'')}</h6>
+        <span class="badge" style="background:${hex};color:#fff">${escapeHtml(cap(h.categoria||'—'))}</span>
+        <p class="small mt-2 mb-2">${escapeHtml(h.descripcion||'')}</p>
+        <div class="small text-muted">
+          <div><i class="bi bi-geo-alt me-1"></i>${escapeHtml(h.ubicacion||'—')}</div>
+          <div><i class="bi bi-calendar me-1"></i>${fechaTxt}</div>
+        </div>
+      </div>`;
+    }
 
-      function selectFact(id){
+    function selectFact(id){
         selectedId = id;
         const h = hechos.find(x => x.id === id);
         if(!h) return;
@@ -245,92 +250,111 @@
         catBadge.textContent = cap(h.categoria || '—');
         catBadge.className = 'badge mb-3 bg-' + (catToBootstrap[h.categoria] || 'secondary');
 
-        document.getElementById('factViewLink').setAttribute('href', `/hechos/${h.id}`);
-        document.getElementById('factReportLink').setAttribute('href', `/hechos/${h.id}/reportar`);
+        // Ver detalle: GET /hechos/public/get
+        const viewUrl = '/hechos/public/get?id_hecho=' + h.id + (h.fuente ? ('&fuente=' + encodeURIComponent(h.fuente)) : '');
+        document.getElementById('factViewLink').setAttribute('href', viewUrl);
+
+        // Reportar: POST /solicitudes-hecho/reportes/reportar
+        const reportBtn = document.getElementById('factReportLink');
+        reportBtn.onclick = (ev) => { ev.preventDefault(); reportFact(h); };
 
         highlightSelected();
         if(h.latitud != null && h.longitud != null){ map.setView([h.latitud,h.longitud], 6); }
-      }
+    }
 
-      function clearSelection(){
+    function reportFact(h){
+        const motivo = window.prompt('Motivo del reporte (obligatorio):');
+        if(!motivo) return;
+        const form = document.getElementById('reportForm');
+        form.querySelector('input[name="id_hecho"]').value = h.id;
+        if (form.querySelector('input[name="fuente"]')) {
+            form.querySelector('input[name="fuente"]').value = h.fuente || '';
+        }
+        form.querySelector('input[name="motivo"]').value = motivo;
+        form.submit();
+    }
+
+    function clearSelection(){
         selectedId = null;
         document.getElementById('defaultView').classList.remove('d-none');
         document.getElementById('factDetail').classList.add('d-none');
         highlightSelected();
         map.setView([-20,-60], 3);
-      }
+    }
 
-      function renderList(list){
+    function renderList(list){
         const box = document.getElementById('factsList');
         box.innerHTML = '';
         list.forEach(h => {
-          const badge = catToBootstrap[h.categoria] || 'secondary';
-          const fechaTxt = h.fechaAcontecimiento ? new Date(h.fechaAcontecimiento).toLocaleDateString() : '—';
-          const el = document.createElement('div');
-          el.className = 'fact-list-item';
-          el.addEventListener('click', () => selectFact(h.id));
-          el.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <div class="fw-semibold small">${escapeHtml(h.titulo||'')}</div>
-                <div class="text-muted small"><i class="bi bi-geo-alt me-1"></i>${escapeHtml(h.ubicacion||'—')}</div>
-                <div class="text-muted small"><i class="bi bi-calendar me-1"></i>${fechaTxt}</div>
-              </div>
-              <span class="badge bg-${badge} text-white">${escapeHtml(cap(h.categoria||'—'))}</span>
-            </div>`;
-          box.appendChild(el);
+            const badge = catToBootstrap[h.categoria] || 'secondary';
+            const fechaTxt = h.fechaAcontecimiento ? new Date(h.fechaAcontecimiento).toLocaleDateString() : '—';
+            const el = document.createElement('div');
+            el.className = 'fact-list-item';
+            el.addEventListener('click', () => selectFact(h.id));
+            el.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-semibold small">${escapeHtml(h.titulo||'')}</div>
+            <div class="text-muted small"><i class="bi bi-geo-alt me-1"></i>${escapeHtml(h.ubicacion||'—')}</div>
+            <div class="text-muted small"><i class="bi bi-calendar me-1"></i>${fechaTxt}</div>
+          </div>
+          <span class="badge bg-${badge} text-white">${escapeHtml(cap(h.categoria||'—'))}</span>
+        </div>`;
+            box.appendChild(el);
         });
         highlightSelected();
-      }
+    }
 
-      function highlightSelected(){
+    function highlightSelected(){
         const items = document.querySelectorAll('.fact-list-item');
         items.forEach((el, idx) => {
-          const h = hechos[idx];
-          el.classList.toggle('selected', !!h && h.id === selectedId);
+            const h = hechos[idx];
+            el.classList.toggle('selected', !!h && h.id === selectedId);
         });
-      }
+    }
 
-      function filterByCategory(){
+    function filterByCategory(){
         const v = document.getElementById('categoryFilter').value;
         const filtered = v ? hechos.filter(h => (h.categoria||'') === v) : hechos.slice();
         addMarkers(filtered);
         renderList(filtered);
         updateStats(filtered);
-      }
+    }
 
-      function searchFacts(){
+    function searchFacts(){
         const q = document.getElementById('searchInput').value.toLowerCase();
         const v = document.getElementById('categoryFilter').value;
         let filtered = hechos.slice();
         if(v){ filtered = filtered.filter(h => (h.categoria||'') === v); }
         if(q){
-          filtered = filtered.filter(h =>
-            (h.titulo||'').toLowerCase().includes(q) ||
-            (h.descripcion||'').toLowerCase().includes(q) ||
-            (h.ubicacion||'').toLowerCase().includes(q)
-          );
+            filtered = filtered.filter(h =>
+                (h.titulo||'').toLowerCase().includes(q) ||
+                (h.descripcion||'').toLowerCase().includes(q) ||
+                (h.ubicacion||'').toLowerCase().includes(q)
+            );
         }
         addMarkers(filtered);
         renderList(filtered);
         updateStats(filtered);
-      }
+    }
 
-      function updateStats(list){
+    function updateStats(list){
         document.getElementById('statsEvents').textContent = list.length;
         const countries = new Set(list.map(h => (h.ubicacion||'').split(',').pop()?.trim()).filter(Boolean));
         document.getElementById('statsCountries').textContent = countries.size;
-      }
+    }
 
-      // Helpers
-      function cap(s){ if(!s) return s; return s.charAt(0).toUpperCase()+s.slice(1); }
-      function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+    // Helpers
+    function cap(s){ if(!s) return s; return s.charAt(0).toUpperCase()+s.slice(1); }
+    function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-      // Listeners
-      document.addEventListener('DOMContentLoaded', initMap);
-      document.getElementById('categoryFilter').addEventListener('change', filterByCategory);
-      document.getElementById('searchInput').addEventListener('input', searchFacts);
+    // Listeners
+    document.addEventListener('DOMContentLoaded', initMap);
+    document.getElementById('categoryFilter').addEventListener('change', filterByCategory);
+    document.getElementById('searchInput').addEventListener('input', searchFacts);
     /*]]>*/
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
