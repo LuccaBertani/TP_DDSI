@@ -1,4 +1,4 @@
-<!-- templates/index.html -->
+<!-- templates/colecciones.html -->
 <html th:replace="~{layout/base :: html}">
 <main th:fragment="contenido">
 
@@ -13,6 +13,7 @@
                 <p class="text-muted m-0">Organizá conjuntos de hechos históricos relacionados</p>
             </div>
             <div class="text-center text-lg-end">
+                <!-- Crear colección -->
                 <a th:href="@{/colecciones/crear}" class="btn btn-dark btn-lg">
                     <i class="bi bi-plus-circle me-1"></i> Nueva colección
                 </a>
@@ -22,7 +23,7 @@
 
     <section class="container py-4">
 
-        <!-- Filtros -->
+        <!-- Filtros (GET /colecciones/get-all) -->
         <form class="row mb-4 g-2 align-items-center" th:action="@{/colecciones/get-all}" method="get">
             <div class="col-md-8">
                 <div class="input-group">
@@ -128,16 +129,18 @@
 
                         <div class="mb-3" th:if="${c.categorias != null and !#lists.isEmpty(c.categorias)}">
                             <div class="d-flex flex-wrap gap-1">
-                <span class="badge text-bg-secondary"
-                      th:each="tag : ${c.categorias}"
-                      th:text="${tag}">Categoría</span>
+                                <span class="badge text-bg-secondary"
+                                      th:each="tag : ${c.categorias}"
+                                      th:text="${tag}">Categoría</span>
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-between">
+                            <!-- Detalle -->
                             <a class="btn btn-outline-dark btn-sm" th:href="@{/colecciones/get/{id}(id=${c.id})}">
                                 <i class="bi bi-eye me-1"></i> Ver detalle
                             </a>
+                            <!-- Botones placeholder conservados -->
                             <div class="btn-group">
                                 <a class="btn btn-outline-secondary btn-sm" href="#" title="Editar"><i class="bi bi-pencil"></i></a>
                                 <a class="btn btn-outline-secondary btn-sm" href="#" title="Compartir"><i class="bi bi-share"></i></a>
