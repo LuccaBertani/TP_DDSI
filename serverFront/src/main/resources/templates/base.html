@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:fragment="html">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title th:text="${titulo} ?: 'MetaMapa'"></title>
+
+    <!-- Bootstrap + Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root{ --mm-primary:#6b5cff; --mm-muted:#64748b; }
+        body{ background: radial-gradient(1200px 600px at 50% -150px,#e8ecf6 0%,#f5f7fb 45%,#fff 100%) }
+        .navbar{ background:#fff; border-bottom:1px solid #eef2f7; }
+        .brand-pill{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6b5cff,#8b5cf6);
+            color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;margin-right:.5rem}
+        footer{background:#0b1220;color:#cbd5e1}
+        footer a{color:#cbd5e1;text-decoration:none}
+        footer a:hover{opacity:.9}
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+            <span class="brand-pill">M</span><span class="fw-bold">MetaMapa</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="navMain" class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <!-- Ajustá estas rutas a tus controllers reales -->
+                <li class="nav-item"><a class="nav-link" th:href="@{/hechos}">Hechos</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/mapa}">Mapa</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/colecciones}">Colecciones</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/contribuir}">Contribuir</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/solicitudes}">Solicitudes</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/gestion}">Gestión</a></li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-2">
+                <!-- Usá los nombres de sesión que realmente seteás (vos guardás 'username' y 'accessToken') -->
+                <a class="btn btn-primary"
+                   th:if="${session.username == null and session.accessToken == null}"
+                   th:href="@{/login}">
+                    <i class="bi bi-box-arrow-in-right me-1"></i><span>Iniciar Sesión</span>
+                </a>
+                <a class="btn btn-primary"
+                   th:if="${session.username != null or session.accessToken != null}"
+                   th:href="@{/usuarios/perfil}">
+                    <i class="bi bi-person-circle me-1"></i><span>Mi Perfil</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ACÁ SE INYECTA EL CONTENIDO DEL HIJO -->
+<main class="container py-4" th:replace="~{::contenido}"></main>
+
+
+<footer class="py-4 mt-auto">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <div class="d-flex align-items-center">
+            <span class="brand-pill me-2">M</span>
+            <div>
+                <div class="fw-semibold">MetaMapa</div>
+                <small class="text-secondary">Sistema de Mapeos Colaborativos</small>
+            </div>
+        </div>
+        <div class="d-flex gap-3">
+            <a th:href="@{/terminos}"><i class="bi bi-file-earmark-text me-1"></i><span>Términos</span></a>
+            <a th:href="@{/privacidad}"><i class="bi bi-shield-lock me-1"></i><span>Privacidad</span></a>
+            <a th:href="@{/contacto}"><i class="bi bi-envelope me-1"></i><span>Contacto</span></a>
+        </div>
+        <small class="text-center text-md-end">© <span th:text="${#dates.format(#dates.createNow(),'yyyy')}"></span> MetaMapa</small>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
