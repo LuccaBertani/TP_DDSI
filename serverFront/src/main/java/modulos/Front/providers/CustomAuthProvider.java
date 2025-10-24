@@ -46,9 +46,9 @@ public class CustomAuthProvider implements AuthenticationProvider {
         String username = authentication.getName(); // Llega del form de login
         String password = authentication.getCredentials().toString();
 
-        System.out.println("USUARIO DE RE MIL MIERDA: "+username);
+        System.out.println("USUARIO DE RE MIL x: "+username);
 
-        System.out.println("PASSWORD DE RE MIL MIERDA: "+ password);
+        System.out.println("PASSWORD DE RE MIL x: "+ password);
 
         try{
             LoginDtoInput dtoInput = LoginDtoInput.builder()

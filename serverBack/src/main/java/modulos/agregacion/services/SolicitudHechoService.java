@@ -171,7 +171,7 @@ public class SolicitudHechoService {
         }
 
         if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion())) {
-            System.out.println("SOY UNA MIERDA AL IGUAL QUE EL DETECTOR DE SPAM");
+            System.out.println("SOY UNA x AL IGUAL QUE EL DETECTOR DE SPAM");
             solicitudHecho.setProcesada(true);
             solicitudHecho.setRechazadaPorSpam(true);
             hechosDinamicaRepository.saveAndFlush(hecho);

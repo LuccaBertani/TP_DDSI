@@ -29,10 +29,10 @@ public class WebApiCallerService {
 
 
         String accessToken = getAccessTokenFromSession();
-        System.out.println("ACCESS TOKEN DE MIERDA: " + accessToken);
+        System.out.println("ACCESS TOKEN DE x: " + accessToken);
         String refreshToken = getRefreshTokenFromSession();
 
-        System.out.println("REFRESH TOKEN DE MIERDA: " + refreshToken);
+        System.out.println("REFRESH TOKEN DE x: " + refreshToken);
 
         TokenResponse tr = TokenResponse.builder()
                 .accessToken(accessToken)
@@ -220,8 +220,6 @@ public class WebApiCallerService {
                         .retrieve()
                         .toEntity(elementType)
         );
-
-
     }
 
     public <T> ResponseEntity<T> postEntitySinToken(String url, Object body, Class<T> elementType){

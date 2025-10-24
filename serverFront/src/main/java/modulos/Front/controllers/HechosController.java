@@ -83,8 +83,8 @@ public class HechosController {
 
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
             VisualizarHechosOutputDTO hecho = (VisualizarHechosOutputDTO) rtaDto.getBody();
-            System.out.println("Fecha acontecimiento de mierda: " + hecho.getFechaAcontecimiento());
-            System.out.println("Fecha carga de mierda: " + hecho.getFechaCarga());
+            System.out.println("Fecha acontecimiento de x: " + hecho.getFechaAcontecimiento());
+            System.out.println("Fecha carga de x: " + hecho.getFechaCarga());
             model.addAttribute("hecho", hecho);
             return "detalleHecho";
         }

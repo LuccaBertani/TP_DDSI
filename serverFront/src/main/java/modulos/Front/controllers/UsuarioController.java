@@ -36,7 +36,7 @@ public class UsuarioController {
     @PostMapping("/registrar-usuario")
     public String crearUsuario(@Valid @ModelAttribute UsuarioInputDTO dtoInput, RedirectAttributes ra) {
 
-        System.out.println("HOLA SOY UNA MIERDA JAJAJA Y RECIBI ESTO: " + dtoInput.getNombreUsuario());
+        System.out.println("HOLA SOY UNA x JAJAJA Y RECIBI ESTO: " + dtoInput.getNombreUsuario());
 
         ResponseEntity<?> rta = this.usuarioService.crearUsuario(dtoInput);
 

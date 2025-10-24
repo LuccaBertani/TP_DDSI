@@ -28,6 +28,7 @@ public class ColeccionController {
     //anda
     @PostMapping("/crear")
     public ResponseEntity<?> crearColeccion(@Valid @RequestBody ColeccionInputDTO inputDTO, @AuthenticationPrincipal Jwt principal){
+            System.out.println(principal);
             return coleccionService.crearColeccion(inputDTO, principal); // 201 o 401
     }
 
