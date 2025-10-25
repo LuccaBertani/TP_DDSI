@@ -94,9 +94,9 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
 
     @Transactional
-    public ResponseEntity<?> crearColeccion(ColeccionInputDTO dtoInput, Jwt principal) {
+    public ResponseEntity<?> crearColeccion(ColeccionInputDTO dtoInput, String username) {
 
-        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
+        ResponseEntity<?> rta = checkeoAdmin(username);
 
         if (!rta.getStatusCode().is2xxSuccessful()){
             return rta;

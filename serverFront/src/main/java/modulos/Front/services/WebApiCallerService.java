@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -15,12 +16,19 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.netty.http.client.HttpClient;
+
 import java.util.List;
 
 @Service
 public class WebApiCallerService {
 
-    private final WebClient webClient = WebClient.create("http://localhost:8080");
+    private final WebClient webClient = WebClient.builder()
+            .baseUrl("http://localhost:8080")
+            .clientConnector(new ReactorClientHttpConnector(
+                    HttpClient.create().followRedirect(false)
+            ))
+            .build();
 
 
     // Method de ezequiel

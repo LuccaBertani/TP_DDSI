@@ -1,5 +1,6 @@
 modulos\Front\ApiCall.class
 modulos\Front\dtos\input\CriteriosColeccionDTO.class
+modulos\Front\dtos\output\CategoriaDto.class
 modulos\Front\controllers\ColeccionController.class
 modulos\Front\dtos\output\DatosPersonalesOutputDTO.class
 modulos\Front\dtos\input\CriteriosColeccionDTO$CriteriosColeccionDTOBuilder.class
@@ -11,6 +12,7 @@ modulos\Front\providers\CustomAuthProvider.class
 modulos\Front\controllers\UsuarioController.class
 modulos\Front\dtos\output\SolicitudHechoOutputDTO.class
 modulos\Front\services\UsuarioService.class
+modulos\Front\dtos\output\PaisDto.class
 modulos\Front\dtos\input\SolicitudHechoEvaluarInputDTO.class
 modulos\Front\dtos\output\SolicitudHechoOutputDTO$SolicitudHechoOutputDTOBuilder.class
 modulos\Front\dtos\input\EditarNombreDeUsuarioDtoInput.class
@@ -29,6 +31,7 @@ modulos\Front\dtos\input\LoginDtoInput$LoginDtoInputBuilder.class
 modulos\Front\dtos\output\MensajeOutputDTO$MensajeOutputDTOBuilder.class
 modulos\Front\dtos\input\EditarUsuarioDtoInput.class
 modulos\Front\dtos\output\ReporteHechoOutputDTO.class
+modulos\Front\dtos\output\ProvinciaDto.class
 modulos\Front\ContenidoMultimedia.class
 modulos\Front\services\ColeccionService.class
 modulos\Front\dtos\input\SolicitudHechoEliminarInputDTO.class

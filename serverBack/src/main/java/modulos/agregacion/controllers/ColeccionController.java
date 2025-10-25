@@ -27,9 +27,9 @@ public class ColeccionController {
 
     //anda
     @PostMapping("/crear")
-    public ResponseEntity<?> crearColeccion(@Valid @RequestBody ColeccionInputDTO inputDTO, @AuthenticationPrincipal Jwt principal){
-            System.out.println(principal);
-            return coleccionService.crearColeccion(inputDTO, principal); // 201 o 401
+    public ResponseEntity<?> crearColeccion(@Valid @RequestBody ColeccionInputDTO inputDTO, @AuthenticationPrincipal String username){
+            System.out.println("SOY EL USUARIO: " + username);
+            return coleccionService.crearColeccion(inputDTO, username); // 201 o 401
     }
 
     //anda

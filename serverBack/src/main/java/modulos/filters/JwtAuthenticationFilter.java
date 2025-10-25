@@ -10,13 +10,16 @@ import modulos.agregacion.entities.DbMain.usuario.Usuario;
 import modulos.agregacion.repositories.DbMain.IUsuarioRepository;
 import modulos.shared.utils.JwtUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 @AllArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -32,17 +35,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             try {
+
                 Claims claims = JwtUtil.parseClaims(token);
                 String username = claims.getSubject();
-                //String rol = claims.get("rol", String.class);
+
                 Usuario usuario = usuarioRepository.findByNombreDeUsuario(username).orElse(null);
 
-                // Si o si va a ser distinto de null porque ya se chequea antes pero igual pongo el if
-                if (usuario != null){
+                if (usuario!=null){
+                    List<GrantedAuthority> auths = new ArrayList<>();
+                    // Para evitar error
+                    auths.add(new SimpleGrantedAuthority("ROLE_USER"));
 
-                    var auth = new UsernamePasswordAuthenticationToken(
-                            username, null
-                    );
+                    UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(username, null, auths);
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
 

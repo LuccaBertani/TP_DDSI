@@ -563,74 +563,79 @@ public class FormateadorHecho {
 
 
     public static CriteriosColeccionDTO filtrosColeccionToString(List<Filtro> filtros) {
+
         CriteriosColeccionDTO criterios = new CriteriosColeccionDTO();
 
-        // Inicializamos las listas vacías
-        criterios.setCategoria(new ArrayList<>());
-        criterios.setPais(new ArrayList<>());
-        criterios.setProvincia(new ArrayList<>());
-        criterios.setOrigen(new ArrayList<>());
-        criterios.setContenidoMultimedia(new ArrayList<>());
+        if (filtros!=null){
+            // Inicializamos las listas vacías
+            criterios.setCategoria(new ArrayList<>());
+            criterios.setPais(new ArrayList<>());
+            criterios.setProvincia(new ArrayList<>());
+            criterios.setOrigen(new ArrayList<>());
+            criterios.setContenidoMultimedia(new ArrayList<>());
 
-        for (Filtro filtro : filtros) {
+            for (Filtro filtro : filtros) {
 
-            // ---------- CATEGORÍA ----------
-            if (filtro instanceof FiltroCategoria filtroCategoria) {
-                Categoria categoriaObj = filtroCategoria.getCategoria();
-                if (categoriaObj != null)
-                    criterios.getCategoria().add(categoriaObj.getTitulo());
-            }
+                // ---------- CATEGORÍA ----------
+                if (filtro instanceof FiltroCategoria filtroCategoria) {
+                    Categoria categoriaObj = filtroCategoria.getCategoria();
+                    if (categoriaObj != null)
+                        criterios.getCategoria().add(categoriaObj.getTitulo());
+                }
 
-            // ---------- CONTENIDO MULTIMEDIA ----------
-            else if (filtro instanceof FiltroContenidoMultimedia filtroContenido) {
-                TipoContenido contenido = filtroContenido.getTipoContenido();
-                if (contenido != null)
-                    criterios.getContenidoMultimedia().add(contenido.getCodigo());
-            }
+                // ---------- CONTENIDO MULTIMEDIA ----------
+                else if (filtro instanceof FiltroContenidoMultimedia filtroContenido) {
+                    TipoContenido contenido = filtroContenido.getTipoContenido();
+                    if (contenido != null)
+                        criterios.getContenidoMultimedia().add(contenido.getCodigo());
+                }
 
-            // ---------- DESCRIPCIÓN ----------
-            else if (filtro instanceof FiltroDescripcion filtroDescripcion) {
-                criterios.setDescripcion(filtroDescripcion.getDescripcion());
-            }
+                // ---------- DESCRIPCIÓN ----------
+                else if (filtro instanceof FiltroDescripcion filtroDescripcion) {
+                    criterios.setDescripcion(filtroDescripcion.getDescripcion());
+                }
 
-            // ---------- FECHA ACONTECIMIENTO ----------
-            else if (filtro instanceof FiltroFechaAcontecimiento filtroFecha) {
-                criterios.setFechaAcontecimientoInicial(filtroFecha.getFechaInicial().toString());
-                criterios.setFechaAcontecimientoFinal(filtroFecha.getFechaFinal().toString());
-            }
+                // ---------- FECHA ACONTECIMIENTO ----------
+                else if (filtro instanceof FiltroFechaAcontecimiento filtroFecha) {
+                    criterios.setFechaAcontecimientoInicial(filtroFecha.getFechaInicial().toString());
+                    criterios.setFechaAcontecimientoFinal(filtroFecha.getFechaFinal().toString());
+                }
 
-            // ---------- FECHA CARGA ----------
-            else if (filtro instanceof FiltroFechaCarga filtroFechaCarga) {
-                criterios.setFechaCargaInicial(filtroFechaCarga.getFechaInicial().toString());
-                criterios.setFechaCargaFinal(filtroFechaCarga.getFechaFinal().toString());
-            }
+                // ---------- FECHA CARGA ----------
+                else if (filtro instanceof FiltroFechaCarga filtroFechaCarga) {
+                    criterios.setFechaCargaInicial(filtroFechaCarga.getFechaInicial().toString());
+                    criterios.setFechaCargaFinal(filtroFechaCarga.getFechaFinal().toString());
+                }
 
-            // ---------- ORIGEN ----------
-            else if (filtro instanceof FiltroOrigen filtroOrigen) {
-                Origen origen = filtroOrigen.getOrigenDeseado();
-                if (origen != null)
-                    criterios.getOrigen().add(origen.getCodigo());
-            }
+                // ---------- ORIGEN ----------
+                else if (filtro instanceof FiltroOrigen filtroOrigen) {
+                    Origen origen = filtroOrigen.getOrigenDeseado();
+                    if (origen != null)
+                        criterios.getOrigen().add(origen.getCodigo());
+                }
 
-            // ---------- PAÍS ----------
-            else if (filtro instanceof FiltroPais filtroPais) {
-                Pais pais = filtroPais.getPais();
-                if (pais != null)
-                    criterios.getPais().add(pais.getPais());
-            }
+                // ---------- PAÍS ----------
+                else if (filtro instanceof FiltroPais filtroPais) {
+                    Pais pais = filtroPais.getPais();
+                    if (pais != null)
+                        criterios.getPais().add(pais.getPais());
+                }
 
-            // ---------- PROVINCIA ----------
-            else if (filtro instanceof FiltroProvincia filtroProvincia) {
-                Provincia provincia = filtroProvincia.getProvincia();
-                if (provincia != null)
-                    criterios.getProvincia().add(provincia.getProvincia());
-            }
+                // ---------- PROVINCIA ----------
+                else if (filtro instanceof FiltroProvincia filtroProvincia) {
+                    Provincia provincia = filtroProvincia.getProvincia();
+                    if (provincia != null)
+                        criterios.getProvincia().add(provincia.getProvincia());
+                }
 
-            // ---------- TÍTULO ----------
-            else if (filtro instanceof FiltroTitulo filtroTitulo) {
-                criterios.setTitulo(filtroTitulo.getTitulo());
+                // ---------- TÍTULO ----------
+                else if (filtro instanceof FiltroTitulo filtroTitulo) {
+                    criterios.setTitulo(filtroTitulo.getTitulo());
+                }
             }
         }
+
+
 
         return criterios;
     }
@@ -652,16 +657,21 @@ public class FormateadorHecho {
 
     public static List<List<IFiltro>> obtenerListaDeFiltros(FiltrosColeccion filtrosColeccion) {
         List<List<IFiltro>> filtrosPorCategoria = new ArrayList<>();
-
-        agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroCategoria());
-        agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroPais());
-        agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroProvincia());
-        agregarSiNoVacia(filtrosPorCategoria, List.of(filtrosColeccion.getFiltroDescripcion()));
-        agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroContenidoMultimedia());
-        agregarSiNoVacia(filtrosPorCategoria, List.of(filtrosColeccion.getFiltroFechaAcontecimiento()));
-        agregarSiNoVacia(filtrosPorCategoria, List.of(filtrosColeccion.getFiltroFechaCarga()));
-        agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroOrigen());
-        agregarSiNoVacia(filtrosPorCategoria, List.of(filtrosColeccion.getFiltroTitulo()));
+        if (filtrosColeccion!=null){
+            agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroCategoria());
+            agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroPais());
+            agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroProvincia());
+            if (filtrosColeccion.getFiltroDescripcion()!=null)
+                agregarSiNoVacia(filtrosPorCategoria, List.of(filtrosColeccion.getFiltroDescripcion()));
+            agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroContenidoMultimedia());
+            if (filtrosColeccion.getFiltroFechaAcontecimiento()!=null)
+                agregarSiNoVacia(filtrosPorCategoria, List.of(filtrosColeccion.getFiltroFechaAcontecimiento()));
+            if (filtrosColeccion.getFiltroFechaCarga()!=null)
+                agregarSiNoVacia(filtrosPorCategoria, List.of(filtrosColeccion.getFiltroFechaCarga()));
+            agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroOrigen());
+            if (filtrosColeccion.getFiltroTitulo()!=null)
+                agregarSiNoVacia(filtrosPorCategoria, List.of(filtrosColeccion.getFiltroTitulo()));
+        }
 
         return filtrosPorCategoria;
     }
