@@ -74,7 +74,7 @@ public class HechosController {
         }*/
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
-
+    @PreAuthorize("hasAnyRole('VISUALIZADOR', 'CONTRIBUYENTE', 'ADMINISTRADOR')")
     @GetMapping("/public/get")
     public String getHecho(Model model, Long id_hecho, String fuente){
         ResponseEntity<?> rtaDto = this.hechosService.getHecho(id_hecho, fuente);

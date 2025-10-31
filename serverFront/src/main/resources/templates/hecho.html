@@ -69,6 +69,10 @@
                 <input class="form-control" type="date" name="fechaCargaFinal">
             </div>
 
+            <!-- 👇 Campos requeridos por el DTO para evitar 400 -->
+            <input type="hidden" name="id_coleccion" value="1"/>
+            <input type="hidden" name="navegacionCurada" value="false"/>
+
             <div class="col-md-12 d-flex gap-2 justify-content-end">
                 <a class="btn btn-outline-secondary" th:href="@{/hechos/public/get-all}">
                     <i class="bi bi-arrow-counterclockwise me-1"></i> Limpiar
