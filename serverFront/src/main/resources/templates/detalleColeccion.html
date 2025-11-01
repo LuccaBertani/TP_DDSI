@@ -228,11 +228,6 @@
             </div>
 
             <!-- Requeridos por el DTO -->
-            <div class="col-md-3">
-                <label class="form-label" for="id_coleccion">Colección</label>
-                <input class="form-control" id="id_coleccion" type="number" th:field="*{id_coleccion}" required>
-                <div class="text-danger small" th:if="${#fields.hasErrors('id_coleccion')}" th:errors="*{id_coleccion}"></div>
-            </div>
 
             <!-- navegacionCurada (Boolean) -->
             <div class="col-md-3 d-flex align-items-end">
@@ -261,6 +256,10 @@
                     <i class="bi bi-funnel me-1"></i> Filtrar
                 </button>
             </div>
+
+            <input type="hidden" name="id_coleccion" th:value="${coleccion.id}"/>
+
+
         </div>
 
         <!-- CSRF -->
