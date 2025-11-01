@@ -5,6 +5,7 @@ import modulos.JwtClaimExtractor;
 import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
+import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
 import modulos.agregacion.entities.atributosHecho.ContenidoMultimedia;
 import modulos.agregacion.entities.DbMain.filtros.*;
 import modulos.agregacion.entities.DbProxy.HechoProxy;
@@ -63,6 +64,7 @@ public class HechosService {
     private final BuscadoresRegistry buscadores;
     private final ICategoriaRepository categoriaRepository;
     private final ISinonimoRepository repoSinonimo;
+    private final IHechoRefRepository hechoRefRepository;
     private FormateadorHechoMemoria formateadorHechoMemoria;
 
     public HechosService(IHechosEstaticaRepository hechosEstaticaRepo,
@@ -75,6 +77,7 @@ public class HechosService {
                          IProvinciaRepository repoProvincia,
                          IPaisRepository repoPais,
                         BuscadoresRegistry buscadores, ISinonimoRepository repoSinonimo,
+                         IHechoRefRepository hechoRefRepository,
                          FormateadorHechoMemoria formateadorHechoMemoria){
         this.repoProvincia = repoProvincia;
         this.repoPais = repoPais;
@@ -87,6 +90,7 @@ public class HechosService {
         this.categoriaRepository = categoriaRepository;
         this.repoSinonimo = repoSinonimo;
         this.buscadores = buscadores;
+        this.hechoRefRepository = hechoRefRepository;
         this.formateadorHechoMemoria = formateadorHechoMemoria;
     }
 
@@ -164,6 +168,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         }
 
         hechosDinamicaRepo.save(hecho);
+        hechoRefRepository.save(new HechoRef(hecho.getId(), hecho.getAtributosHecho().getFuente()));
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -220,6 +225,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 hecho.getAtributosHecho().setFechaCarga(fechaActual);
                 hecho.getAtributosHecho().setFechaUltimaActualizacion(fechaActual);
                 hechosEstaticaRepo.save(hecho);
+                hechoRefRepository.save(new HechoRef(hecho.getId(), hecho.getAtributosHecho().getFuente()));
             }
 
             return ResponseEntity.status(HttpStatus.CREATED).body("Se importaron los hechos correctamente");

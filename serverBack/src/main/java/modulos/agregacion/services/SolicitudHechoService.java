@@ -63,8 +63,9 @@ public class SolicitudHechoService {
     private final BuscadorProvincia buscadorProvincia;
     private final IHechosEstaticaRepository hechosEstaticaRepository;
     private final IHechosProxyRepository hechosProxyRepository;
+    private final IHechoRefRepository hechoRefRepository;
 
-    public SolicitudHechoService(ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo, IHechosProxyRepository hechosProxyRepository, ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo, ISolicitudModificarHechoRepository solicitudModificarHechoRepo, IHechosDinamicaRepository hechosDinamicaRepository, IUsuarioRepository usuariosRepository, IMensajeRepository mensajesRepository, IReporteHechoRepository reportesHechoRepository, ISolicitudRepository solicitudRepository, IPaisRepository paisRepository, IProvinciaRepository provinciaRepository, ICategoriaRepository categoriaRepository, BuscadorUbicacion buscadorUbicacion, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, IHechosEstaticaRepository hechosEstaticaRepository) {
+    public SolicitudHechoService(ISolicitudAgregarHechoRepository solicitudAgregarHechoRepo, IHechoRefRepository hechoRefRepository, IHechosProxyRepository hechosProxyRepository, ISolicitudEliminarHechoRepository solicitudEliminarHechoRepo, ISolicitudModificarHechoRepository solicitudModificarHechoRepo, IHechosDinamicaRepository hechosDinamicaRepository, IUsuarioRepository usuariosRepository, IMensajeRepository mensajesRepository, IReporteHechoRepository reportesHechoRepository, ISolicitudRepository solicitudRepository, IPaisRepository paisRepository, IProvinciaRepository provinciaRepository, ICategoriaRepository categoriaRepository, BuscadorUbicacion buscadorUbicacion, BuscadorPais buscadorPais, BuscadorProvincia buscadorProvincia, IHechosEstaticaRepository hechosEstaticaRepository) {
         this.solicitudAgregarHechoRepo = solicitudAgregarHechoRepo;
         this.solicitudEliminarHechoRepo = solicitudEliminarHechoRepo;
         this.solicitudModificarHechoRepo = solicitudModificarHechoRepo;
@@ -81,6 +82,7 @@ public class SolicitudHechoService {
         this.buscadorProvincia = buscadorProvincia;
         this.hechosEstaticaRepository = hechosEstaticaRepository;
         this.hechosProxyRepository = hechosProxyRepository;
+        this.hechoRefRepository = hechoRefRepository;
     }
 
     private ResponseEntity<?> checkeoAdmin(String username){
@@ -182,10 +184,10 @@ public class SolicitudHechoService {
 
         hecho.getAtributosHecho().setFuente(Fuente.DINAMICA);
 
-        // save and flush para asegurarme tener el id del hecho asociado
-        hechosDinamicaRepository.saveAndFlush(hecho);
+        hechosDinamicaRepository.save(hecho);
         solicitudHecho.setHecho(hecho);
         solicitudAgregarHechoRepo.save(solicitudHecho);
+        hechoRefRepository.save(new HechoRef(hecho.getId(), hecho.getAtributosHecho().getFuente()));
 
         return ResponseEntity.status(HttpStatus.OK).body("Se envió su solicitud para subir hecho");
     }
