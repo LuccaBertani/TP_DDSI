@@ -354,15 +354,24 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
 
             hechosFiltrados.addAll(hechosFiltradosEstatica);
+
+            for (HechoDinamica hd: hechosFiltradosDinamica){
+                System.out.println("HECHO DE MIERDA CON TITULO: " + hd.getAtributosHecho().getTitulo());
+            }
+
             hechosFiltrados.addAll(hechosFiltradosDinamica);
             hechosFiltrados.addAll(hechosFiltradosProxy);
 
         }
 
         if (OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.FRONT)) {
+            System.out.println("VOY A MAPEAR HECHOS A VISUALIZARHECHOSOUTPUTDTO");
             List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream()
                     .map(hecho -> crearHechoDto(hecho, VisualizarHechosOutputDTO.class))
                     .toList();
+            for (VisualizarHechosOutputDTO hecho: outputDTO){
+                System.out.println("HECHO DE MIERDA CON TITULO: " + hecho.getTitulo());
+            }
             return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
         } else if (OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.PROXY)) {
             List<HechoMetamapaResponse> outputDTO = hechosFiltrados.stream()

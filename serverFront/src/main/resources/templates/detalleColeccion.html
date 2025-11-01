@@ -31,8 +31,8 @@
 
     <!-- Encabezado -->
     <div class="header-ribbon text-center mb-4">
-        <h1 class="h3 mb-0" th:text="${coleccion.titulo}">Título de la Colección</h1>
-        <p class="mb-1" th:text="${coleccion.descripcion}">Descripción de la colección...</p>
+        <h1 class="h3 mb-0" th:text="${coleccion != null ? coleccion.titulo : '—'}">Título de la Colección</h1>
+        <p class="mb-1" th:text="${coleccion != null ? coleccion.descripcion : '—'}">Descripción de la colección...</p>
     </div>
 
     <!-- Detalles principales -->
@@ -40,11 +40,11 @@
         <div class="row g-3">
             <div class="col-md-6">
                 <div class="text-label">Título</div>
-                <div class="text-value" th:text="${coleccion.titulo}">—</div>
+                <div class="text-value" th:text="${coleccion != null ? coleccion.titulo : '—'}">—</div>
             </div>
             <div class="col-md-6">
                 <div class="text-label">Descripción</div>
-                <div class="text-value" th:text="${coleccion.descripcion}">—</div>
+                <div class="text-value" th:text="${coleccion != null ? coleccion.descripcion : '—'}">—</div>
             </div>
         </div>
     </div>
@@ -55,113 +55,209 @@
         <div class="row g-3">
             <div class="col-md-6">
                 <div class="text-label">Categorías</div>
-                <div class="text-value" th:text="${#strings.listJoin(coleccion.criterios.categoria, ', ')}">—</div>
+                <div class="text-value"
+                     th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.categoria != null
+                               ? #strings.listJoin(coleccion.criterios.categoria, ', ')
+                               : '—'}">—</div>
             </div>
             <div class="col-md-6">
                 <div class="text-label">Países</div>
-                <div class="text-value" th:text="${#strings.listJoin(coleccion.criterios.pais, ', ')}">—</div>
+                <div class="text-value"
+                     th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.pais != null
+                               ? #strings.listJoin(coleccion.criterios.pais, ', ')
+                               : '—'}">—</div>
             </div>
             <div class="col-md-6">
                 <div class="text-label">Provincias</div>
-                <div class="text-value" th:text="${#strings.listJoin(coleccion.criterios.provincia, ', ')}">—</div>
+                <div class="text-value"
+                     th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.provincia != null
+                               ? #strings.listJoin(coleccion.criterios.provincia, ', ')
+                               : '—'}">—</div>
             </div>
             <div class="col-md-6">
                 <div class="text-label">Contenido Multimedia</div>
-                <div class="text-value" th:text="${coleccion.criterios.contenidoMultimedia != null ? #strings.listJoin(coleccion.criterios.contenidoMultimedia, ', ') : '—'}">—</div>
+                <div class="col-md-3">
+                    <label class="form-label">Contenido multimedia</label>
+                    <select class="form-select" name="contenidoMultimedia">
+                        <option value="">Cualquiera</option>
+                        <option value="1">Con multimedia</option>
+                        <option value="0">Sin multimedia</option>
+                    </select>
+                </div>
             </div>
             <div class="col-md-6">
                 <div class="text-label">Fecha del Acontecimiento</div>
                 <div class="text-value">
-                    <span th:text="${coleccion.criterios.fechaAcontecimientoInicial} ?: '—'"></span>
+                    <span th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.fechaAcontecimientoInicial != null
+                                    ? coleccion.criterios.fechaAcontecimientoInicial : '—'}">—</span>
                     <span class="text-muted">a</span>
-                    <span th:text="${coleccion.criterios.fechaAcontecimientoFinal} ?: '—'"></span>
+                    <span th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.fechaAcontecimientoFinal != null
+                                    ? coleccion.criterios.fechaAcontecimientoFinal : '—'}">—</span>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="text-label">Fecha de Carga</div>
                 <div class="text-value">
-                    <span th:text="${coleccion.criterios.fechaCargaInicial} ?: '—'"></span>
+                    <span th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.fechaCargaInicial != null
+                                    ? coleccion.criterios.fechaCargaInicial : '—'}">—</span>
                     <span class="text-muted">a</span>
-                    <span th:text="${coleccion.criterios.fechaCargaFinal} ?: '—'"></span>
+                    <span th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.fechaCargaFinal != null
+                                    ? coleccion.criterios.fechaCargaFinal : '—'}">—</span>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="text-label">Origen</div>
-                <div class="text-value" th:text="${coleccion.criterios.origen != null ? #strings.listJoin(coleccion.criterios.origen, ', ') : '—'}">—</div>
+                <div class="text-value"
+                     th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.origen != null
+                               ? #strings.listJoin(coleccion.criterios.origen, ', ')
+                               : '—'}">—</div>
             </div>
             <div class="col-md-6">
                 <div class="text-label">Título contiene</div>
-                <div class="text-value" th:text="${coleccion.criterios.titulo} ?: '—'">—</div>
+                <div class="text-value"
+                     th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.titulo != null
+                               ? coleccion.criterios.titulo : '—'}">—</div>
             </div>
             <div class="col-md-12">
                 <div class="text-label">Descripción contiene</div>
-                <div class="text-value" th:text="${coleccion.criterios.descripcion} ?: '—'">—</div>
+                <div class="text-value"
+                     th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.descripcion != null
+                               ? coleccion.criterios.descripcion : '—'}">—</div>
             </div>
         </div>
     </div>
 
+    <!-- Formulario de filtros -->
+    <form class="card mb-4"
+          th:object="${getHechosColeccionInputDto}"
+          th:action="@{/hechos/get/filtrar}"
+          method="post">
 
-    <form class="card mb-4" th:action="@{/hechos/get/filtrar}" method="post">
         <div class="card-body row g-3">
-            <div class="col-md-3">
-                <label class="form-label">Fuente</label>
-                <input class="form-control" type="text" name="fuente" placeholder="ej: usuario, importación…">
+
+            <!-- Título (String) -->
+            <div class="col-md-6">
+                <label class="form-label" for="titulo">Título</label>
+                <input class="form-control" id="titulo" type="text" th:field="*{titulo}" placeholder="Título del hecho">
             </div>
 
-            <!-- Categoría: si hay lista en el modelo, usamos select; si no, fallback a input numérico -->
-            <div class="col-md-3" th:if="${categorias != null}">
-                <label class="form-label">Categoría</label>
-                <select class="form-select" name="categoriaId">
-                    <option value="">Todas</option>
+            <!-- Origen (List<Integer>) - multiselección opcional -->
+            <!--
+            <div class="col-md-3">
+                <label class="form-label" for="origen">Origen</label>
+                <select class="form-select" id="origen" th:field="*{origen}" multiple>
+                    <option th:value="1">Usuario</option>
+                    <option th:value="2">Importación</option>
+                    <option th:value="3">API</option>
+                </select>
+                <small class="text-muted">Usá Ctrl/⌘ para seleccionar múltiples.</small>
+            </div>
+            !-->
+
+            <input type="hidden" th:name="*{origenConexion}" th:value="0"/>
+
+
+            <!-- Categoría -> List<Long> categoriaId (multiple) -->
+            <div class="col-md-6" th:if="${categorias != null}">
+                <label class="form-label" for="categoriaId">Categorías</label>
+                <select class="form-select" id="categoriaId" th:field="*{categoriaId}" multiple>
                     <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}">Categoría</option>
                 </select>
+                <small class="text-muted">Podés elegir varias.</small>
             </div>
-            <div class="col-md-3" th:unless="${categorias != null}">
-                <label class="form-label">Categoría (ID)</label>
-                <input class="form-control" type="number" name="categoriaId" placeholder="ID numérico">
+            <div class="col-md-6" th:unless="${categorias != null}">
+                <label class="form-label" for="categoriaIdInput">Categorías (IDs, separadas por coma)</label>
+                <input class="form-control" id="categoriaIdInput" type="text" placeholder="Ej: 1,2,3">
+            </div>
+
+            <!-- Contenido multimedia -> List<Integer> (0/1) -->
+            <!--<div class="col-md-3">
+                <label class="form-label" for="contenidoMultimedia">Contenido multimedia</label>
+                <select class="form-select" id="contenidoMultimedia" th:field="*{contenidoMultimedia}">
+
+                    <option value="" disabled
+                            th:selected="${filtro == null || #lists.isEmpty(filtro.contenidoMultimedia)}">
+                        Cualquiera
+                    </option>
+                    <option th:value="1">Con multimedia</option>
+                    <option th:value="0">Sin multimedia</option>
+                </select>
+                <small class="text-muted">Dejar en “Cualquiera” para no filtrar.</small>
+            </div>
+            !-->
+
+            <!-- Descripción (String) -->
+            <div class="col-md-9">
+                <label class="form-label" for="descripcion">Descripción (contiene)</label>
+                <input class="form-control" id="descripcion" type="text" th:field="*{descripcion}" placeholder="Texto a buscar en la descripción">
+            </div>
+
+            <!-- Fechas (String en el DTO) -->
+            <div class="col-md-3">
+                <label class="form-label" for="fechaAcontecimientoInicial">Fecha del hecho (desde)</label>
+                <input class="form-control" id="fechaAcontecimientoInicial" type="date" th:field="*{fechaAcontecimientoInicial}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="fechaAcontecimientoFinal">Fecha del hecho (hasta)</label>
+                <input class="form-control" id="fechaAcontecimientoFinal" type="date" th:field="*{fechaAcontecimientoFinal}">
             </div>
 
             <div class="col-md-3">
-                <label class="form-label">Contenido multimedia</label>
-                <select class="form-select" name="contenidoMultimedia">
-                    <option value="">Cualquiera</option>
-                    <option value="1">Con multimedia</option>
-                    <option value="0">Sin multimedia</option>
+                <label class="form-label" for="fechaCargaInicial">Fecha de carga (desde)</label>
+                <input class="form-control" id="fechaCargaInicial" type="date" th:field="*{fechaCargaInicial}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="fechaCargaFinal">Fecha de carga (hasta)</label>
+                <input class="form-control" id="fechaCargaFinal" type="date" th:field="*{fechaCargaFinal}">
+            </div>
+
+            <!-- País -> List<Long> paisId (multiple) -->
+            <div class="col-md-6" th:if="${paises != null}">
+                <label class="form-label" for="paisId">País</label>
+                <select class="form-select" id="paisId" th:field="*{paisId}" multiple>
+                    <option th:each="p : ${paises}" th:value="${p.id}" th:text="${p.nombre}">País</option>
                 </select>
             </div>
 
-            <div class="col-md-6">
-                <label class="form-label">Descripción (contiene)</label>
-                <input class="form-control" type="text" name="descripcion" placeholder="Texto a buscar en la descripción">
+            <!-- Provincia -> List<Long> provinciaId (multiple) -->
+            <div class="col-md-6" th:if="${provincias != null}">
+                <label class="form-label" for="provinciaId">Provincia</label>
+                <select class="form-select" id="provinciaId" th:field="*{provinciaId}" multiple>
+                    <option th:each="pr : ${provincias}" th:value="${pr.id}" th:text="${pr.nombre}">Provincia</option>
+                </select>
             </div>
 
+            <!-- Requeridos por el DTO -->
             <div class="col-md-3">
-                <label class="form-label">Fecha del hecho (desde)</label>
-                <input class="form-control" type="date" name="fechaAcontecimientoInicial">
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Fecha del hecho (hasta)</label>
-                <input class="form-control" type="date" name="fechaAcontecimientoFinal">
+                <label class="form-label" for="id_coleccion">Colección</label>
+                <input class="form-control" id="id_coleccion" type="number" th:field="*{id_coleccion}" required>
+                <div class="text-danger small" th:if="${#fields.hasErrors('id_coleccion')}" th:errors="*{id_coleccion}"></div>
             </div>
 
-            <div class="col-md-3">
-                <label class="form-label">Fecha de carga (desde)</label>
-                <input class="form-control" type="date" name="fechaCargaInicial">
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Fecha de carga (hasta)</label>
-                <input class="form-control" type="date" name="fechaCargaFinal">
+            <!-- navegacionCurada (Boolean) -->
+            <div class="col-md-3 d-flex align-items-end">
+                <!-- SIEMPRE envía "false" si el checkbox no está marcado -->
+                <input type="hidden" name="navegacionCurada" value="false"/>
+
+                <div class="form-check">
+                    <input class="form-check-input" id="navegacionCurada"
+                           type="checkbox" th:field="*{navegacionCurada}" value="true">
+                    <label class="form-check-label" for="navegacionCurada">Navegación curada</label>
+                </div>
             </div>
 
-            <!-- 👇 Campos requeridos por el DTO para evitar 400 -->
-            <input type="hidden" name="id_coleccion" value="1"/>
-            <input type="hidden" name="navegacionCurada" value="false"/>
 
+
+            <div class="col-12">
+                <div class="text-danger small" th:if="${#fields.hasErrors('navegacionCurada')}" th:errors="*{navegacionCurada}"></div>
+            </div>
+
+            <!-- Acciones -->
             <div class="col-md-12 d-flex gap-2 justify-content-end">
                 <a class="btn btn-outline-secondary" th:href="@{/hechos/public/get-all}">
                     <i class="bi bi-arrow-counterclockwise me-1"></i> Limpiar
                 </a>
-                <button class="btn btn-primary">
+                <button class="btn btn-primary" type="submit">
                     <i class="bi bi-funnel me-1"></i> Filtrar
                 </button>
             </div>
@@ -172,8 +268,6 @@
     </form>
 
 </section>
-
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

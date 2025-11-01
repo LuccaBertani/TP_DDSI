@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import modulos.Front.BodyToListConverter;
 import modulos.Front.dtos.input.ColeccionInputDTO;
 import modulos.Front.dtos.input.ColeccionUpdateInputDTO;
+import modulos.Front.dtos.input.GetHechosColeccionInputDTO;
 import modulos.Front.dtos.input.ModificarConsensoInputDTO;
 import modulos.Front.dtos.output.ColeccionOutputDTO;
 import modulos.Front.services.ColeccionService;
@@ -91,6 +92,7 @@ public class ColeccionController {
         if (rta.getStatusCode().is2xxSuccessful() && rta.getBody() != null){
             ColeccionOutputDTO coleccion = (ColeccionOutputDTO) rta.getBody();
             model.addAttribute("coleccion", coleccion);
+            model.addAttribute("getHechosColeccionInputDto", new GetHechosColeccionInputDTO());
             return "detalleColeccion";
         }
         return "redirect:/" + rta.getStatusCode().value();

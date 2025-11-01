@@ -6,13 +6,13 @@ public enum Origen {
     CARGA_MANUAL(2),
     FUENTE_PROXY_METAMAPA(3);
 
-    private final int codigo;
+    private final Integer codigo;
 
-    Origen(int codigo) {
+    Origen(Integer codigo) {
         this.codigo = codigo;
     }
 
-    public int getCodigo() {
+    public Integer getCodigo() {
         return codigo;
     }
 
@@ -20,9 +20,9 @@ public enum Origen {
         return this.name();
     }
 
-    public static Origen fromCodigo(int codigo) {
+    public static Origen fromCodigo(Integer codigo) {
         for (Origen origen : Origen.values()) {
-            if (origen.getCodigo() == codigo) {
+            if (origen.getCodigo().equals(codigo)) {
                 return origen;
             }
         }

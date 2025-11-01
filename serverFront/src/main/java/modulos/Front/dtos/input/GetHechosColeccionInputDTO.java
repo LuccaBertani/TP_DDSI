@@ -3,21 +3,26 @@ package modulos.Front.dtos.input;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class GetHechosColeccionInputDTO {
-    private String fuente;
-    private Long categoriaId;
-    private Integer contenidoMultimedia;
+    private List<Long> categoriaId;
+    private List<Integer> contenidoMultimedia;
     private String descripcion;
     private String fechaAcontecimientoInicial;
     private String fechaAcontecimientoFinal;
     private String fechaCargaInicial;
     private String fechaCargaFinal;
-    private Integer origen;
-    private Long paisId;
+    private List<Integer> origen;
+    private List<Long> paisId;
     private String titulo;
-    private Long provinciaId;
+    private List<Long> provinciaId;
+    private Integer origenConexion;
 
+    private List<String> categoria;
+    private List<String> pais;
+    private List<String> provincia;
 
     @NotNull(message = "La forma de navegación debe ser especificada")
     private Boolean navegacionCurada;

@@ -7,13 +7,13 @@ public enum TipoContenido {
     AUDIO(2),
     VIDEO(3);
 
-    private final int codigo;
+    private final Integer codigo;
 
-    TipoContenido(int codigo) {
+    TipoContenido(Integer codigo) {
         this.codigo = codigo;
     }
 
-    public int getCodigo() {
+    public Integer getCodigo() {
         return codigo;
     }
 
@@ -21,9 +21,9 @@ public enum TipoContenido {
         return this.name();
     }
 
-    public static TipoContenido fromCodigo(int codigo) {
+    public static TipoContenido fromCodigo(Integer codigo) {
         for (TipoContenido tipoContenido : TipoContenido.values()) {
-            if (tipoContenido.getCodigo() == codigo) {
+            if (tipoContenido.getCodigo().equals(codigo)) {
                 return tipoContenido;
             }
         }

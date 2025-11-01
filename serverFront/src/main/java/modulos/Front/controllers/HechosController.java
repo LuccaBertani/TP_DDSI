@@ -74,7 +74,8 @@ public class HechosController {
         }*/
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
-    @PreAuthorize("hasAnyRole('VISUALIZADOR', 'CONTRIBUYENTE', 'ADMINISTRADOR')")
+
+    //@PreAuthorize("hasAnyRole('VISUALIZADOR', 'CONTRIBUYENTE', 'ADMINISTRADOR')")
     @GetMapping("/public/get")
     public String getHecho(Model model, Long id_hecho, String fuente){
         ResponseEntity<?> rtaDto = this.hechosService.getHecho(id_hecho, fuente);
@@ -97,10 +98,21 @@ public class HechosController {
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @PostMapping("/get/filtrar")
     public String getHechosFiltradosColeccion(@Valid @ModelAttribute GetHechosColeccionInputDTO inputDTO, Model model){
+        System.out.println("Hola entré acá, navegacion curada: " + inputDTO.getNavegacionCurada());
+        System.out.println("id de coleccion: " + inputDTO.getId_coleccion());
+
+        inputDTO.setOrigenConexion(0);
+        System.out.println("origen conexion: " + inputDTO.getOrigenConexion());
+
         ResponseEntity<?> rtaDto = this.hechosService.getHechosFiltradosColeccion(inputDTO);
 
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
             List<VisualizarHechosOutputDTO> hechos = BodyToListConverter.bodyToList(rtaDto, VisualizarHechosOutputDTO.class);
+
+            for (VisualizarHechosOutputDTO hecho: hechos){
+                System.out.println("Titulo de hecho: " + hecho.getTitulo());
+            }
+
             model.addAttribute("listaHechos", hechos);
             return "hecho";
         }

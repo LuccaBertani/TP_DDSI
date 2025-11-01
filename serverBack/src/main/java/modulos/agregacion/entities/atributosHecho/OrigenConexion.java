@@ -5,13 +5,13 @@ public enum OrigenConexion {
     FRONT(0),
     PROXY(1);
 
-    private final int codigo;
+    private final Integer codigo;
 
-    OrigenConexion(int codigo) {
+    OrigenConexion(Integer codigo) {
         this.codigo = codigo;
     }
 
-    public int getCodigo() {
+    public Integer getCodigo() {
         return codigo;
     }
 
@@ -19,9 +19,9 @@ public enum OrigenConexion {
         return this.name();
     }
 
-    public static OrigenConexion fromCodigo(int codigo) {
+    public static OrigenConexion fromCodigo(Integer codigo) {
         for (OrigenConexion origen : OrigenConexion.values()) {
-            if (origen.getCodigo() == codigo) {
+            if (origen.getCodigo().equals(codigo)) {
                 return origen;
             }
         }

@@ -38,7 +38,7 @@ public class HechosService {
     }
 
     public ResponseEntity<?> getHechosFiltradosColeccion(GetHechosColeccionInputDTO inputDTO) {
-        return webApiCallerService.postList(this.hechoServiceUrl + "/public/get/filtrar", inputDTO, GetHechosColeccionInputDTO.class);
+        return webApiCallerService.postList(this.hechoServiceUrl + "/public/get/filtrar", inputDTO, VisualizarHechosOutputDTO.class);
     }
 
     public ResponseEntity<?> getPaises() {
