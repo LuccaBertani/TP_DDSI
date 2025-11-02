@@ -1,5 +1,7 @@
 package modulos.buscadores;
 
+import modulos.agregacion.entities.atributosHecho.Origen;
+import modulos.agregacion.entities.atributosHecho.TipoContenido;
 import modulos.agregacion.repositories.DbMain.IFiltroRepository;
 import org.springframework.stereotype.Component;
 import modulos.agregacion.entities.DbMain.filtros.*;
@@ -23,9 +25,9 @@ public class BuscadorFiltro {
     }
 
     /* ========== Contenido Multimedia (Integer/enum) ========== */
-    public Optional<FiltroContenidoMultimedia> buscarFiltroContenidoMultimediaPorTipo(String tipo) {
+    public Optional<FiltroContenidoMultimedia> buscarFiltroContenidoMultimediaPorTipo(TipoContenido tipo) {
         if (tipo == null) return Optional.empty();
-        return filtrosRepo.findFiltroContenidoMultimediaByTipo(tipo);
+        return filtrosRepo.findFiltroContenidoMultimediaByTipo(TipoContenido.fromCodigo(tipo.getCodigo()));
     }
 
     /* ================== Descripcion (String) ================= */
@@ -49,7 +51,7 @@ public class BuscadorFiltro {
     /* ================== Origen (Integer/enum) ================= */
     public Optional<FiltroOrigen> buscarFiltroOrigenPorValor(Integer origen) {
         if (origen == null) return Optional.empty();
-        return filtrosRepo.findFiltroOrigenByOrigen(origen);
+        return filtrosRepo.findFiltroOrigenByOrigen(Origen.fromCodigo(origen));
     }
 
     /* ================== País (entidad) ================= */

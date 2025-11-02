@@ -104,6 +104,7 @@ public class HechosController {
         inputDTO.setOrigenConexion(0);
         System.out.println("origen conexion: " + inputDTO.getOrigenConexion());
 
+
         ResponseEntity<?> rtaDto = this.hechosService.getHechosFiltradosColeccion(inputDTO);
 
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){

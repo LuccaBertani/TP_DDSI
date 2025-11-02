@@ -1,6 +1,8 @@
 package modulos.agregacion.repositories.DbMain;
 
 import modulos.agregacion.entities.DbMain.filtros.*;
+import modulos.agregacion.entities.atributosHecho.Origen;
+import modulos.agregacion.entities.atributosHecho.TipoContenido;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,7 +29,7 @@ public interface IFiltroRepository extends JpaRepository<Filtro, Long> {
            from FiltroContenidoMultimedia fm
            where fm.tipoContenido = :tipo
            """)
-    Optional<FiltroContenidoMultimedia> findFiltroContenidoMultimediaByTipo(@Param("tipo") String tipo);
+    Optional<FiltroContenidoMultimedia> findFiltroContenidoMultimediaByTipo(@Param("tipo") TipoContenido tipo);
     // Si el campo es 'tipoContenidoMultimedia' o es un enum/código Integer, cambiá la firma:
     // Optional<FiltroContenidoMultimedia> findFiltroContenidoMultimediaByTipo(@Param("tipo") Integer tipo);
 
@@ -75,7 +77,7 @@ public interface IFiltroRepository extends JpaRepository<Filtro, Long> {
            from FiltroOrigen fo
            where fo.origenDeseado = :origen
            """)
-    Optional<FiltroOrigen> findFiltroOrigenByOrigen(@Param("origen") Integer origen);
+    Optional<FiltroOrigen> findFiltroOrigenByOrigen(@Param("origen") Origen origen);
     // Si 'origenDeseado' es un enum, cambiá el tipo a tu enum.
 
     /* ========== FiltroPais ========== */

@@ -38,7 +38,7 @@ public class FiltroOrigen extends Filtro {
     @Override
     public <T> Specification<T> toSpecification(Class<T> clazz) {
         return((root, query, cb) -> {
-            Path<Long> pathId = root.get("atributosHecho").get("contenidoMultimedia");
+            Path<Long> pathId = root.get("atributosHecho").get("origen");
             return cb.equal(pathId,this.origenDeseado);
         });
     }

@@ -146,13 +146,15 @@
             <div class="col-md-3">
                 <label class="form-label" for="origen">Origen</label>
                 <select class="form-select" id="origen" th:field="*{origen}" multiple>
-                    <option th:value="1">Usuario</option>
-                    <option th:value="2">Importación</option>
-                    <option th:value="3">API</option>
+                    <option th:value="0">CARGA CONTRIBUYENTE/VISUALIZADOR</option>
+                    <option th:value="1">FUENTE ESTATICA</option>
+                    <option th:value="2">CARGA MANUAL</option>
+                    <option th:value="3">FUENTE PROXY</option>
                 </select>
                 <small class="text-muted">Usá Ctrl/⌘ para seleccionar múltiples.</small>
             </div>
             !-->
+
 
             <input type="hidden" th:name="*{origenConexion}" th:value="0"/>
 
@@ -171,20 +173,16 @@
             </div>
 
             <!-- Contenido multimedia -> List<Integer> (0/1) -->
-            <!--<div class="col-md-3">
+            <div class="col-md-3">
                 <label class="form-label" for="contenidoMultimedia">Contenido multimedia</label>
-                <select class="form-select" id="contenidoMultimedia" th:field="*{contenidoMultimedia}">
-
-                    <option value="" disabled
-                            th:selected="${filtro == null || #lists.isEmpty(filtro.contenidoMultimedia)}">
-                        Cualquiera
-                    </option>
-                    <option th:value="1">Con multimedia</option>
-                    <option th:value="0">Sin multimedia</option>
+                <select class="form-select" id="contenidoMultimedia" th:field="*{contenidoMultimedia}" multiple>
+                    <option th:value="0">TEXTO</option>
+                    <option th:value="1">IMAGEN</option>
+                    <option th:value="2">AUDIO</option>
+                    <option th:value="3">VIDEO</option>
                 </select>
-                <small class="text-muted">Dejar en “Cualquiera” para no filtrar.</small>
             </div>
-            !-->
+
 
             <!-- Descripción (String) -->
             <div class="col-md-9">
@@ -230,16 +228,14 @@
             <!-- Requeridos por el DTO -->
 
             <!-- navegacionCurada (Boolean) -->
-            <div class="col-md-3 d-flex align-items-end">
-                <!-- SIEMPRE envía "false" si el checkbox no está marcado -->
-                <input type="hidden" name="navegacionCurada" value="false"/>
-
-                <div class="form-check">
-                    <input class="form-check-input" id="navegacionCurada"
-                           type="checkbox" th:field="*{navegacionCurada}" value="true">
-                    <label class="form-check-label" for="navegacionCurada">Navegación curada</label>
-                </div>
+            <div class="form-check">
+                <input class="form-check-input"
+                       id="navegacionCurada"
+                       type="checkbox"
+                       th:field="*{navegacionCurada}">
+                <label class="form-check-label" for="navegacionCurada">Navegación curada</label>
             </div>
+
 
 
 

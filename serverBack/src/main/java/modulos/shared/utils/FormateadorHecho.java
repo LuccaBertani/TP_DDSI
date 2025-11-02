@@ -374,7 +374,7 @@ public class FormateadorHecho {
         if (inputDTO.getContenidoMultimedia() != null && !inputDTO.getContenidoMultimedia().isEmpty()) {
             List<FiltroContenidoMultimedia> filtrosMultimedia = inputDTO.getContenidoMultimedia().stream()
                     .map(TipoContenido::fromCodigo)
-                    .map(tipo -> buscadorFiltro.buscarFiltroContenidoMultimediaPorTipo(tipo.codigoEnString())
+                    .map(tipo -> buscadorFiltro.buscarFiltroContenidoMultimediaPorTipo(tipo)
                             .orElseGet(() -> new FiltroContenidoMultimedia(tipo)))
                     .toList();
             filtros.setFiltroContenidoMultimedia(filtrosMultimedia);
@@ -482,7 +482,7 @@ public class FormateadorHecho {
         if (inputDTO.getContenidoMultimedia() != null && !inputDTO.getContenidoMultimedia().isEmpty()) {
             List<FiltroContenidoMultimedia> filtrosMultimedia = inputDTO.getContenidoMultimedia().stream()
                     .map(TipoContenido::fromCodigo)
-                    .map(tipo -> buscadorFiltro.buscarFiltroContenidoMultimediaPorTipo(tipo.codigoEnString())
+                    .map(tipo -> buscadorFiltro.buscarFiltroContenidoMultimediaPorTipo(tipo)
                             .orElseGet(() -> new FiltroContenidoMultimedia(tipo)))
                     .toList();
             filtros.setFiltroContenidoMultimedia(filtrosMultimedia);
