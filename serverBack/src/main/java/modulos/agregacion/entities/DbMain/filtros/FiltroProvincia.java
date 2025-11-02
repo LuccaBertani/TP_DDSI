@@ -40,15 +40,27 @@ public class FiltroProvincia extends Filtro{
 
     @Override
     public <T> Specification<T> toSpecification(Class<T> clazz) {
+
+        for(Long id: ubicaciones_ids){
+            System.out.println("SOY UNA MIERDA EN PROVINCIA: " + id);
+        }
+
         return (root, query, cb) -> {
-            Path<Long> pathId = root.get("atributosHecho").get("ubicacion_id");
-            CriteriaBuilder.In<Long> inClause = cb.in(pathId);
-            for (Long id : this.ubicaciones_ids) {
-                inClause.value(id);
+            if (ubicaciones_ids == null || ubicaciones_ids.isEmpty()) {
+                return null;
             }
+
+            Path<Long> pathUbicacionId = root
+                    .get("atributosHecho")
+                    .get("ubicacion_id");
+
+            CriteriaBuilder.In<Long> inClause = cb.in(pathUbicacionId);
+            ubicaciones_ids.forEach(inClause::value);
+
             return inClause;
         };
     }
+
 
 
 }

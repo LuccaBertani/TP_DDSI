@@ -101,6 +101,14 @@ public class HechosController {
         System.out.println("Hola entré acá, navegacion curada: " + inputDTO.getNavegacionCurada());
         System.out.println("id de coleccion: " + inputDTO.getId_coleccion());
 
+        for(Long id: inputDTO.getPaisId()){
+            System.out.println("HOLI!! SOY ESTE PAIS: " + id);
+        }
+
+        for(Long id: inputDTO.getProvinciaId()){
+            System.out.println("HOLI!! SOY ESTA PROVINCIA: " + id);
+        }
+
         inputDTO.setOrigenConexion(0);
         System.out.println("origen conexion: " + inputDTO.getOrigenConexion());
 

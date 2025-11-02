@@ -238,6 +238,10 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     public ResponseEntity<?> getHechosColeccion(GetHechosColeccionInputDTO inputDTO){
         // TODO: Criterio de fuente
 
+        for(Long id: inputDTO.getProvinciaId()){
+            System.out.println("HOLI!! SOY ESTA PROVINCIA: " + id);
+        }
+
         CriteriosColeccionDTO criterios;
 
         if(OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.FRONT)) {
@@ -297,6 +301,42 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         }
 
         List<List<IFiltro>> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadores, criterios));
+
+        for (int i = 0; i < filtros.size(); i++) {
+            List<IFiltro> grupo = filtros.get(i);
+            System.out.println("🧩 Grupo #" + i + " (" + grupo.size() + " filtro/s):");
+
+            for (IFiltro filtro : grupo) {
+                if (filtro instanceof FiltroCategoria fc) {
+                    System.out.println("  [FiltroCategoria] id=" + fc.getCategoria().getId() +
+                            ", nombre=" + fc.getCategoria().getTitulo());
+                } else if (filtro instanceof FiltroContenidoMultimedia fcm) {
+                    System.out.println("  [FiltroContenidoMultimedia] tipo=" + fcm.getTipoContenido());
+                } else if (filtro instanceof FiltroDescripcion fd) {
+                    System.out.println("  [FiltroDescripcion] texto=" + fd.getDescripcion());
+                } else if (filtro instanceof FiltroFechaAcontecimiento ffa) {
+                    System.out.println("  [FiltroFechaAcontecimiento] desde=" + ffa.getFechaInicial() +
+                            ", hasta=" + ffa.getFechaFinal());
+                } else if (filtro instanceof FiltroFechaCarga ffc) {
+                    System.out.println("  [FiltroFechaCarga] desde=" + ffc.getFechaInicial() +
+                            ", hasta=" + ffc.getFechaFinal());
+                } else if (filtro instanceof FiltroOrigen fo) {
+                    System.out.println("  [FiltroOrigen] origen=" + fo.getOrigenDeseado());
+                } else if (filtro instanceof FiltroPais fp) {
+                    System.out.println("  [FiltroPais] id=" + fp.getPais().getId() +
+                            ", nombre=" + fp.getPais().getPais());
+                } else if (filtro instanceof FiltroProvincia fprov) {
+                    System.out.println("  [FiltroProvincia] id=" + fprov.getProvincia().getId() +
+                            ", nombre=" + fprov.getProvincia().getProvincia());
+                } else if (filtro instanceof FiltroTitulo ft) {
+                    System.out.println("  [FiltroTitulo] titulo=" + ft.getTitulo());
+                } else {
+                    System.out.println("  [Otro tipo de filtro] " + filtro.getClass().getSimpleName());
+                }
+            }
+        }
+
+
 
         Coleccion coleccion = coleccionRepo.findByIdAndActivoTrue(inputDTO.getId_coleccion()).orElse(null);
 

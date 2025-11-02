@@ -513,14 +513,19 @@ public class FormateadorHecho {
 
         // ---------- PROVINCIAS ----------
         if (inputDTO.getProvinciaId() != null && !inputDTO.getProvinciaId().isEmpty()) {
+            System.out.println("PROVINCIA ID DE MIERDA: " + inputDTO.getProvinciaId());
             List<FiltroProvincia> filtrosProvincia = inputDTO.getProvinciaId().stream()
                     .map(buscadorProvincia::buscar)
                     .filter(Objects::nonNull)
                     .map(provincia -> buscadorFiltro.buscarFiltroProvinciaPorProvinciaId(provincia.getId())
                             .orElseGet(() -> new FiltroProvincia(
                                     provincia,
-                                    buscadorUbicacion.buscarUbicacionesConPais(provincia.getId()))))
+                                    buscadorUbicacion.buscarUbicacionesConProvincia(provincia.getId()))))
                     .toList();
+            for(FiltroProvincia filtro : filtrosProvincia){
+                System.out.println("MIERCHI DE MIERCHI " + filtro.getProvincia().getProvincia());
+            }
+
             filtros.setFiltroProvincia(filtrosProvincia);
         }
 

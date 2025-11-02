@@ -3,12 +3,14 @@ package modulos.Front.controllers;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import modulos.Front.BodyToListConverter;
-import modulos.Front.dtos.input.ColeccionInputDTO;
-import modulos.Front.dtos.input.ColeccionUpdateInputDTO;
-import modulos.Front.dtos.input.GetHechosColeccionInputDTO;
-import modulos.Front.dtos.input.ModificarConsensoInputDTO;
+import modulos.Front.dtos.DetallesColeccionCargadaDTO;
+import modulos.Front.dtos.input.*;
+import modulos.Front.dtos.output.CategoriaDto;
 import modulos.Front.dtos.output.ColeccionOutputDTO;
+import modulos.Front.dtos.output.PaisDto;
+import modulos.Front.dtos.output.ProvinciaDto;
 import modulos.Front.services.ColeccionService;
+import modulos.Front.services.HechosService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -16,6 +18,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.sql.SQLOutput;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -25,6 +29,7 @@ import java.util.List;
 public class ColeccionController {
 
     private final ColeccionService coleccionService;
+    private final HechosService hechosService;
 
     // Prueba de conexión entre el server front y el server back
     /*@GetMapping("/get-all")
@@ -87,15 +92,41 @@ public class ColeccionController {
 
     @GetMapping("/get/{id_coleccion}")
     @PreAuthorize("hasAnyRole('VISUALIZADOR', 'CONTRIBUYENTE', 'ADMINISTRADOR')")
-    public String getColeccion(@PathVariable Long id_coleccion, Model model){
+    public String getColeccion(@PathVariable Long id_coleccion, @ModelAttribute("getHechosColeccionInputDto") GetHechosColeccionInputDTO inputDTO, Model model) {
+
         ResponseEntity<?> rta = coleccionService.getColeccion(id_coleccion);
-        if (rta.getStatusCode().is2xxSuccessful() && rta.getBody() != null){
+        if (rta.getStatusCode().is2xxSuccessful() && rta.getBody() != null) {
             ColeccionOutputDTO coleccion = (ColeccionOutputDTO) rta.getBody();
             model.addAttribute("coleccion", coleccion);
+            ResponseEntity<?> rtaCategorias = hechosService.getCategorias();
+            ResponseEntity<?> rtaPaises = hechosService.getPaises();
+            if (rtaCategorias.getBody() != null){
+                List<CategoriaDto> categorias = BodyToListConverter.bodyToList(rtaCategorias, CategoriaDto.class);
+                model.addAttribute("categorias", categorias);
+            }
+            if (rtaPaises.getBody() != null){
+                List<PaisDto> paises = BodyToListConverter.bodyToList(rtaPaises, PaisDto.class);
+                model.addAttribute("paises", paises);
+            }
+        }
+        if (inputDTO.getPaisId() == null) {
             model.addAttribute("getHechosColeccionInputDto", new GetHechosColeccionInputDTO());
             return "detalleColeccion";
         }
-        return "redirect:/" + rta.getStatusCode().value();
+        else{
+                List<ProvinciaDto> provinciasTotales = new ArrayList<>();
+                for (Long idPais : inputDTO.getPaisId()) {
+                    ResponseEntity<?> rtaProvincia = hechosService.getProvinciasByIdPais(idPais);
+                    if (rtaProvincia.getBody() != null) {
+                        List<ProvinciaDto> provincias = BodyToListConverter.bodyToList(rtaProvincia, ProvinciaDto.class);
+                        if (provincias!=null)
+                            provinciasTotales.addAll(provincias);
+                    }
+                }
+                model.addAttribute("getHechosColeccionInputDto", inputDTO);
+                model.addAttribute("provincias", provinciasTotales);
+                return "detalleColeccion";
+        }
     }
 
     @PostMapping("/delete")
