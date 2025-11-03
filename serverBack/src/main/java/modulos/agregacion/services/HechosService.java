@@ -336,8 +336,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             }
         }
 
-
-
         Coleccion coleccion = coleccionRepo.findByIdAndActivoTrue(inputDTO.getId_coleccion()).orElse(null);
 
         if (coleccion == null){
@@ -650,24 +648,50 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     }
 
     private <T> Specification<T> crearSpecs(List<List<IFiltro>> filtrosXCategoria, Class<T> clazz) {
+
+        System.out.println("ENTRO A crearSpecs");
+        System.out.println("Total categorías: " + (filtrosXCategoria != null ? filtrosXCategoria.size() : "null"));
+
         Specification<T> specFinal = null;
 
-        for (List<IFiltro> categoria : filtrosXCategoria) {
-            // Combina los filtros de una misma categoría con OR
+        if (filtrosXCategoria == null || filtrosXCategoria.isEmpty()) {
+            System.out.println("La lista de filtros por categoría está vacía o es null.");
+            return null;
+        }
+
+        for (int i = 0; i < filtrosXCategoria.size(); i++) {
+            List<IFiltro> categoria = filtrosXCategoria.get(i);
+
+            if (categoria == null || categoria.isEmpty()) {
+                System.out.println("Categoría " + i + " vacía o null, se saltea.");
+                continue;
+            }
+
+            System.out.println("Procesando categoría " + i + " con " + categoria.size() + " filtros.");
+
             Specification<T> specCategoria = categoria.stream()
-                    .map(filtro -> filtro.toSpecification(clazz))
+                    .map(f -> {
+                        Specification<T> spec = f.toSpecification(clazz);
+                        System.out.println("  Filtro: " + f + " -> Spec: " + (spec != null ? "OK" : "null"));
+                        return spec;
+                    })
                     .filter(Objects::nonNull)
                     .reduce(Specification::or)
                     .orElse(null);
 
-            if (specCategoria == null) continue;
+            if (specCategoria == null) {
+                System.out.println("No se generó spec para categoría " + i + ".");
+                continue;
+            }
 
-            // Combina las categorías entre sí con AND
             specFinal = (specFinal == null) ? specCategoria : specFinal.and(specCategoria);
         }
 
+        System.out.println("Spec final generada: " + (specFinal != null ? "OK" : "null"));
+
         return specFinal;
     }
+
 
     private <T> Specification<T> distinct(Class <T> clazz) {
         return (root, query, cb) -> {

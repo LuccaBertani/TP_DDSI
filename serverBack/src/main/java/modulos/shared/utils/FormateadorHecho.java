@@ -523,7 +523,10 @@ public class FormateadorHecho {
                                     buscadorUbicacion.buscarUbicacionesConProvincia(provincia.getId()))))
                     .toList();
             for(FiltroProvincia filtro : filtrosProvincia){
-                System.out.println("MIERCHI DE MIERCHI " + filtro.getProvincia().getProvincia());
+                System.out.println("Filtro Provincia: " + filtro.getProvincia().getProvincia());
+                for(Long id : filtro.getUbicaciones_ids()){
+                    System.out.println("Ubicaciones ids:" + id);
+                }
             }
 
             filtros.setFiltroProvincia(filtrosProvincia);

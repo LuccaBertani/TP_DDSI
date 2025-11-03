@@ -24,41 +24,6 @@
     <section class="container py-4">
 
 
-
-        <!-- GET /colecciones/get-all -->
-        <form class="row mb-4 g-2 align-items-center" th:action="@{/colecciones/get-all}" method="get">
-            <div class="col-md-8">
-                <!--<div class="input-group">
-                    <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
-                    <input type="text"
-                           class="form-control"
-                           name="q"
-                           placeholder="Buscar colecciones..."
-                           style="border-left:none"
-                           th:value="${q} ?: ''">
-                </div>
-                !-->
-            </div>
-
-            <!--<div class="col-md-3">
-                <select class="form-select" name="categoriaId">
-                    <option th:value="${null}" th:selected="${categoriaId} == null">Todas las categorías</option>
-                    <option th:each="cat : ${categorias}"
-                            th:value="${cat.id}"
-                            th:text="${cat.nombre}"
-                            th:selected="${categoriaId} != null and categoriaId == cat.id">
-                    </option>
-                </select>
-            </div>
-            !-->
-
-            <div class="col-md-1">
-                <button type="submit" class="btn btn-outline-dark w-100">
-                    <i class="bi bi-funnel me-1"></i> Ver colecciones
-                </button>
-            </div>
-        </form>
-
         <!-- Estado vacío -->
         <div th:if="${colecciones == null or #lists.isEmpty(colecciones)}" class="text-center py-5">
             <i class="bi bi-collection display-4 text-muted d-block mb-2"></i>

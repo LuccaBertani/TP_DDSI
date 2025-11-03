@@ -3,7 +3,6 @@ package modulos.Front.controllers;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import modulos.Front.BodyToListConverter;
-import modulos.Front.dtos.DetallesColeccionCargadaDTO;
 import modulos.Front.dtos.input.*;
 import modulos.Front.dtos.output.CategoriaDto;
 import modulos.Front.dtos.output.ColeccionOutputDTO;
@@ -17,8 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 

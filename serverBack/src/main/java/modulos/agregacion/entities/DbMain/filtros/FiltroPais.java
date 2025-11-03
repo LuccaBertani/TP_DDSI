@@ -47,10 +47,12 @@ public class FiltroPais extends Filtro {
             System.out.println("SOY UNA MIERDA EN PAIS: " + id);
         }
 
+        if (ubicaciones_ids == null || ubicaciones_ids.isEmpty()) {
+            System.out.println("Lista de ubicaciones vacía -> Filtro FALSE");
+            return (root, query, cb) -> cb.disjunction(); // Nunca se cumple
+        }
+
         return (root, query, cb) -> {
-            if (ubicaciones_ids == null || ubicaciones_ids.isEmpty()) {
-                return null;
-            }
 
             Path<Long> pathUbicacionId = root
                     .get("atributosHecho")
