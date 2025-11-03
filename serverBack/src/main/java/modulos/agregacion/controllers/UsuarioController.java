@@ -62,7 +62,8 @@ public class UsuarioController {
 
     @GetMapping("/get/usuario")
     public ResponseEntity<?> getUsuarioByNombreUsuario(@AuthenticationPrincipal Jwt principal){
-        return usuarioService.getUsuarioByNombreUsuario(principal);
+        System.out.println("SOY UN FOROROROROORORORORORO");
+        return usuarioService.getUsuarioByNombreUsuarioConToken(principal);
     }
 
     // Anda
@@ -73,6 +74,8 @@ public class UsuarioController {
 
     @PostMapping("/auth")
     public ResponseEntity<?> loginApi(@RequestBody LoginDtoInput dtoInput) {
+
+        System.out.println("LOGIN");
 
         String username = dtoInput.getNombreDeUsuario();
         String password = dtoInput.getContrasenia();
@@ -116,7 +119,7 @@ public class UsuarioController {
                 return ResponseEntity.badRequest().build();
             }
 
-
+            System.out.println("FORRO");
             ResponseEntity<?> rta = usuarioService.getUsuarioByNombreUsuario(claims.getSubject());
 
             if (!rta.getStatusCode().is2xxSuccessful()){

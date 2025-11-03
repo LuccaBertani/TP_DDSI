@@ -28,17 +28,6 @@ public class HomeController {
         return "index";
     }
 
-
-    @GetMapping("/hechos")
-    public String hechos() {
-        return "hecho"; // thymeleaf busca templates/hecho.html
-    }
-
-    @GetMapping("/hecho")
-    public String hecho() {
-        return "hecho";
-    }
-
     @GetMapping("/mapa")
     public String mapa() {
         return "mapa";

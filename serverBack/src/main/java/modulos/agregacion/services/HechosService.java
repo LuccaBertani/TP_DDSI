@@ -238,10 +238,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     public ResponseEntity<?> getHechosColeccion(GetHechosColeccionInputDTO inputDTO){
         // TODO: Criterio de fuente
 
-        for(Long id: inputDTO.getProvinciaId()){
-            System.out.println("HOLI!! SOY ESTA PROVINCIA: " + id);
-        }
-
         CriteriosColeccionDTO criterios;
 
         if(OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.FRONT)) {

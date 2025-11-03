@@ -158,7 +158,7 @@ public class UsuarioService {
         return ResponseEntity.ok(usuariosDto);
     }
 
-    public ResponseEntity<?> getUsuarioByNombreUsuario(Jwt principal){
+    public ResponseEntity<?> getUsuarioByNombreUsuarioConToken(Jwt principal){
         Usuario usuario = usuarioRepo.findByNombreDeUsuario(JwtClaimExtractor.getUsernameFromToken(principal)).orElse(null);
 
         if (usuario != null){
