@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<main th:fragment="contenido" class="container py-4">
+
+    <!-- Encabezado -->
+    <section class="text-center py-4"
+             style="background: radial-gradient(1200px 600px at 50% -150px, #e8ecf6 0%, #f7f9fb 100%);
+                  border-radius:12px;">
+        <h2 class="fw-bold mb-1"><i class="bi bi-tags me-2"></i>Crear Categoría</h2>
+        <p class="text-muted mb-0">Agregá una nueva categoría para clasificar hechos históricos</p>
+    </section>
+
+    <!-- Formulario -->
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm" style="border-radius:14px;">
+                <div class="card-body p-4">
+                    <form th:action="@{/categorias}" method="post" th:object="${categoriaForm}">
+                        <!-- CSRF -->
+                        <input type="hidden" th:if="${_csrf != null}"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}"/>
+
+                        <!-- Nombre -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="categoria">Nombre de la categoría *</label>
+                            <input type="text" class="form-control" id="categoria" th:field="*{categoria}"
+                                   placeholder="Ej: Revolución" required minlength="3" />
+                            <div class="form-text">Debe ser descriptiva y única.</div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <!-- Ajustá la ruta de volver según tu flujo (ej: /gestion/categorias o /gestion) -->
+                            <a class="btn btn-outline-secondary" th:href="@{/gestion/categorias}">
+                                <i class="bi bi-arrow-left me-1"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-dark">
+                                <i class="bi bi-check2 me-1"></i> Crear Categoría
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <style>.btn:hover{transform:translateY(-1px);transition:transform .08s ease}</style>
+        </div>
+    </div>
+
+</main>
+</html>

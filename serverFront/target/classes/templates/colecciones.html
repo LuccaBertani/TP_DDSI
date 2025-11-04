@@ -1,0 +1,85 @@
+<!-- templates/colecciones.html -->
+<html th:replace="~{layout/base :: html}">
+<main th:fragment="contenido">
+
+    <!-- Header -->
+    <section class="text-center py-4" style="background: radial-gradient(1200px 600px at 50% -150px, #e8ecf6 0%, #f5f7fb 45%, #ffffff 100%);">
+        <div class="container d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3">
+            <div class="text-center text-lg-start">
+                <h1 class="fw-bold mb-1">
+                    <i class="bi bi-collection me-2"></i>
+                    <span th:text="${titulo} ?: 'Colecciones'">Colecciones</span>
+                </h1>
+                <p class="text-muted m-0">Organizá conjuntos de hechos históricos relacionados</p>
+            </div>
+            <div class="text-center text-lg-end">
+                <!-- Crear colección -->
+                <a th:href="@{/colecciones/crear}" class="btn btn-dark btn-lg">
+                    <i class="bi bi-plus-circle me-1"></i> Nueva colección
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="container py-4">
+
+
+        <!-- Estado vacío -->
+        <div th:if="${colecciones == null or #lists.isEmpty(colecciones)}" class="text-center py-5">
+            <i class="bi bi-collection display-4 text-muted d-block mb-2"></i>
+            <h4 class="text-muted">No hay colecciones</h4>
+            <p class="text-muted">Aún no hay colecciones cargadas en el sistema.</p>
+            <a th:href="@{/colecciones/crear}" class="btn btn-dark">
+                <i class="bi bi-plus-circle me-1"></i>
+            </a>
+        </div>
+
+        <!-- Grid -->
+        <div class="row g-4" th:if="${colecciones != null and !#lists.isEmpty(colecciones)}">
+            <div class="col-12 col-md-6 col-lg-4" th:each="c : ${colecciones}">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:16px; overflow:hidden;">
+
+                    <!-- Encabezado con color -->
+                    <<div class="p-3 text-white">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="rounded-3 d-inline-flex align-items-center justify-content-center"
+                                     style="width:48px;height:48px;background:rgba(255,255,255,.2);">
+                                </div>
+                                <div>
+                                    <h5 class="m-0" th:text="${c.getTitulo()}" style="color: #0b1220">Nombre de la colección</h5>
+                                    <small class="opacity-75" th:text="${c.getDescripcion()}" style="color: #0b1220">Descripción breve…</small>
+                                </div>
+                            </div>
+                        </div>
+                        !-->
+                        <!-- Stats -->
+
+                    </div>
+
+                    <!-- Cuerpo -->
+
+                        <div class="d-flex justify-content-between">
+                            <!-- Detalle -->
+                            <a class="btn btn-outline-dark btn-sm" th:href="@{/colecciones/get/{id}(id=${c.id})}">
+                                <i class="bi bi-eye me-1"></i> Ver detalle
+                            </a>
+                            <!-- Botones placeholder conservados -->
+                            <div class="btn-group">
+                                <a class="btn btn-outline-secondary btn-sm" href="#" title="Editar"><i class="bi bi-pencil"></i></a>
+                                <a class="btn btn-outline-secondary btn-sm" href="#" title="Compartir"><i class="bi bi-share"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <style>
+        .btn:hover{ transform: translateY(-1px); transition: transform .08s ease; }
+    </style>
+</main>
+</html>

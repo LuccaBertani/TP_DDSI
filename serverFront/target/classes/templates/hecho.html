@@ -1,0 +1,87 @@
+<!-- templates/hecho.html -->
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+
+<main th:fragment="contenido" class="container py-4">
+
+    <!-- Encabezado -->
+    <div class="d-flex align-items-end justify-content-between mb-3">
+        <div>
+            <h1 class="h3 mb-1">Hechos</h1>
+            <p class="text-muted mb-0">Listado y búsqueda de hechos públicos</p>
+        </div>
+        <div th:if="${listaHechos != null}">
+      <span class="badge rounded-pill bg-dark-subtle text-dark"
+            th:text="${#lists.size(listaHechos)} + ' resultados'">0 resultados</span>
+        </div>
+    </div>
+
+    <!-- Estado vacío -->
+    <div th:if="${listaHechos == null or #lists.isEmpty(listaHechos)}" class="text-center py-5">
+        <i class="bi bi-file-earmark-text display-1 text-muted"></i>
+        <h4 class="text-muted mt-3">No hay hechos para mostrar</h4>
+        <p class="text-muted">Podés ajustar los filtros o volver al listado completo.</p>
+        <a th:href="@{/hechos/public/get-all}" class="btn btn-outline-dark">
+            <i class="bi bi-list-ul me-1"></i> Ver todos
+        </a>
+    </div>
+
+    <!-- Grid de tarjetas -->
+    <div class="row g-4"
+         th:if="${listaHechos != null and !#lists.isEmpty(listaHechos)}"
+         style="--card-br:16px; --card-bd:#e9ecef; --shadow:0 8px 24px rgba(2,6,23,.08)">
+        <div class="col-md-6 col-lg-4" th:each="h : ${listaHechos}">
+            <div class="card border-0 h-100" style="border-radius:var(--card-br); box-shadow:var(--shadow);">
+                <div class="card-body" style="border:1px solid var(--card-bd); border-radius:var(--card-br);">
+
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0" th:text="${h.titulo}">Título</h5>
+                        <span class="badge text-bg-light border" th:if="${h.categoria != null}"
+                              th:text="${h.categoria}">Categoría</span>
+                    </div>
+
+                    <p class="card-text text-muted" th:text="${h.descripcion}">Descripción…</p>
+
+                    <div class="small text-muted d-flex flex-column gap-1 mb-3">
+                        <div th:if="${h.fechaAcontecimiento != null}">
+                            <i class="bi bi-calendar me-1"></i>
+                            <span th:text="${h.fechaAcontecimiento}">--/--/----</span>
+                        </div>
+
+                        <div th:if="${h.getPais() != null}" th:attr="data-pais-id=${h.getId_pais()}">
+                            <i class="bi bi-geo-alt me-1"></i>
+                            <span th:text="${h.getPais()}">País</span>
+                        </div>
+
+                        <div th:if="${h.getProvincia() != null}" th:attr="data-provincia-id=${h.getId_provincia()}">
+                            <i class="bi bi-geo-alt me-1"></i>
+                            <span th:text="${h.getProvincia()}">Provincia</span>
+                        </div>
+
+                        <div th:if="${h.latitud != null and h.longitud != null}">
+                            <i class="bi bi-geo me-1"></i>
+                            <span th:text="${h.latitud}">lat</span>,
+                            <span th:text="${h.longitud}">lng</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a class="btn btn-outline-dark btn-sm"
+                           th:unless="${h.fuente == null}"
+                           th:href="@{/hechos/public/get(id_hecho=${h.id}, fuente=${h.fuente})}">
+                            <i class="bi bi-eye me-1"></i> Ver detalles
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estilos locales -->
+    <style>
+        .card:hover{ transform: translateY(-2px); transition: transform .12s ease; }
+    </style>
+
+</main>
+</html>
