@@ -101,4 +101,9 @@ LIMIT 1;
         select h from HechoDinamica h where h.activo = true
 """)
     List<HechoDinamica> findAllByActivoTrue();
+
+    @Query(value = """
+    SELECT COUNT(h) FROM HechoDinamica h WHERE h.activo = true
+    """)
+    Long getCantHechos();
 }

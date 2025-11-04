@@ -27,29 +27,23 @@
     <!-- BANDAS / CONTENIDOS EXTRA -->
     <section class="stats-band py-4">
         <div class="container">
-            <div class="row g-3">
+            <div class="row g-3 justify-content-center">
                 <div class="col-6 col-md-3">
                     <div class="stat-card p-3 text-center">
-                        <div class="h3 m-0" th:text="${statsHechos} ?: '12k+'">12k+</div>
+                        <div class="h3 m-0" th:text="${statsHechos} ?: 'ERROR'">ERROR</div>
                         <small class="text-muted">Hechos</small>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="stat-card p-3 text-center">
-                        <div class="h3 m-0" th:text="${statsColecciones} ?: '1.2k'">1.2k</div>
+                        <div class="h3 m-0" th:text="${statsColecciones} ?: 'ERROR'">ERROR</div>
                         <small class="text-muted">Colecciones</small>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="stat-card p-3 text-center">
-                        <div class="h3 m-0" th:text="${statsSolicitudes} ?: '98%'">98%</div>
+                        <div class="h3 m-0" th:text="${statsSolicitudes} ?: 'ERROR'">ERROR</div>
                         <small class="text-muted">Solicitudes resueltas</small>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-card p-3 text-center">
-                        <div class="h3 m-0" th:text="${statsOrganizaciones} ?: '999'">999</div>
-                        <small class="text-muted">Organizaciones</small>
                     </div>
                 </div>
             </div>

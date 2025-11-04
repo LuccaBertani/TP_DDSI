@@ -153,7 +153,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         HechoDinamica hecho = new HechoDinamica();
 
         System.out.println("SOY UN ID PAIS CONTENTO: " + dtoInput.getId_pais());
-        System.out.println("SOY UN ID PROVINCIA CONTENTO: " + dtoInput.getId_provincia());
         AtributosHecho atributos = FormateadorHecho.formatearAtributosHecho(buscadores, dtoInput);
 
         hecho.setUsuario_id(usuario.getId());
@@ -161,7 +160,10 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         hecho.setActivo(true);
         hecho.getAtributosHecho().setModificado(true);
         hecho.getAtributosHecho().setFuente(Fuente.DINAMICA);
-        hecho.getAtributosHecho().setFechaCarga(ZonedDateTime.now());
+        ZonedDateTime fecha = ZonedDateTime.now();
+        System.out.printf("FECHA:" + fecha);
+        hecho.getAtributosHecho().setFechaCarga(fecha);
+        System.out.println("FECHA:" + fecha);
         hecho.getAtributosHecho().setFechaUltimaActualizacion(hecho.getAtributosHecho().getFechaCarga());
 
         for(MultipartFile contenidoMultimedia : dtoInput.getContenidosMultimedia()){
@@ -791,4 +793,13 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     }
 
 
+    public ResponseEntity<Long> getCantHechos() {
+        Long cantidadHechos = 0L;
+
+        cantidadHechos += hechosDinamicaRepo.getCantHechos();
+        cantidadHechos += hechosEstaticaRepo.getCantHechos();
+        cantidadHechos += hechosProxyRepo.getCantHechos();
+
+        return ResponseEntity.ok(cantidadHechos);
+    }
 }

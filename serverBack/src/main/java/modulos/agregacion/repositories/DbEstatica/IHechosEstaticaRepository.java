@@ -124,4 +124,9 @@ LIMIT 1;
         select h from HechoEstatica h where h.activo = true
 """)
     List<HechoEstatica> findAllByActivoTrue();
+
+    @Query(value = """
+    SELECT COUNT(h) FROM HechoEstatica h WHERE h.activo = true
+    """)
+    Long getCantHechos();
 }

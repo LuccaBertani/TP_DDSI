@@ -514,6 +514,9 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
         };
     }
 
+    public ResponseEntity<?> getCantColecciones() {
+    return ResponseEntity.ok(coleccionesRepo.cantColecciones());
+    }
 }
 
 /*

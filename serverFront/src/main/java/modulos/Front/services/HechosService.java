@@ -1,12 +1,9 @@
 package modulos.Front.services;
 
-import modulos.Front.dtos.output.CategoriaDto;
-import modulos.Front.dtos.output.PaisDto;
+import modulos.Front.dtos.output.*;
 import modulos.Front.dtos.input.GetHechosColeccionInputDTO;
 import modulos.Front.dtos.input.ImportacionHechosInputDTO;
 import modulos.Front.dtos.input.SolicitudHechoInputDTO;
-import modulos.Front.dtos.output.ProvinciaDto;
-import modulos.Front.dtos.output.VisualizarHechosOutputDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,5 +48,9 @@ public class HechosService {
 
     public ResponseEntity<?> getCategorias() {
         return webApiCallerService.getListSinToken(this.hechoServiceUrl + "/public/categorias/get-all", CategoriaDto.class);
+    }
+
+    public ResponseEntity<Long> getCantHechos() {
+        return webApiCallerService.getEntitySinToken(this.hechoServiceUrl + "/public/cantHechos", Long.class);
     }
 }

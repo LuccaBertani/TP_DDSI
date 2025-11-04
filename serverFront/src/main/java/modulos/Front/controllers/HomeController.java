@@ -7,7 +7,9 @@ import modulos.Front.dtos.output.CategoriaDto;
 import modulos.Front.dtos.input.SolicitudHechoInputDTO;
 import modulos.Front.dtos.output.PaisDto;
 import modulos.Front.dtos.output.ProvinciaDto;
+import modulos.Front.services.ColeccionService;
 import modulos.Front.services.HechosService;
+import modulos.Front.services.SolicitudHechoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,9 +24,19 @@ import java.util.List;
 public class HomeController {
 
     private final HechosService hechosService;
+    private final ColeccionService coleccionService;
+    private final SolicitudHechoService solicitudHechoService;
 
     @GetMapping("/")
-    public String home(){
+    public String home(Model model) {
+        ResponseEntity<Long> statsHechos = hechosService.getCantHechos();
+        ResponseEntity<Long> statsColecciones = coleccionService.getCantColecciones();
+        ResponseEntity<Integer> statsSolicitudes = solicitudHechoService.getPorcentajeSolicitudesProcesadas();
+
+        model.addAttribute("statsHechos", statsHechos.getBody());
+        model.addAttribute("statsColecciones", statsColecciones.getBody());
+        model.addAttribute("statsSolicitudes", statsSolicitudes.getBody());
+
         return "index";
     }
 

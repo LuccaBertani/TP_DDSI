@@ -5,7 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f850432b-1600-446e-abba-2862d1cc44e3" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/ColeccionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/ColeccionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/HechosController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/HechosController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/SolicitudHechoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/SolicitudHechoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbDinamica/IHechosDinamicaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbDinamica/IHechosDinamicaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbDinamica/ISolicitudRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbDinamica/ISolicitudRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbEstatica/IHechosEstaticaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbEstatica/IHechosEstaticaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbMain/IColeccionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbMain/IColeccionRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbProxy/IHechosProxyRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbProxy/IHechosProxyRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/ColeccionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/ColeccionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/HechosService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/HechosService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/SolicitudHechoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/SolicitudHechoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HomeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/ColeccionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/ColeccionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/HechosService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/HechosService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/SolicitudHechoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/SolicitudHechoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/index.html" afterDir="false" />
     </list>
     <list id="bd2f9c59-412c-4d85-95af-559cd31f93a3" name="Changes by merce" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -26,6 +43,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "LuccaBertani"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/dds-utn/2025-tpa-mi-no-grupo-17.git",
+    "accountId": "ad6c2145-da9b-4f6d-a29b-88bea5e350a0"
+  }
+}]]></component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="ProjectErrors" />
   </component>
@@ -41,37 +70,40 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;Spring Boot.MetaMapaApplication (1).executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.MetaMapaApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.ServerBackApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.ServerFrontApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;entrega__6&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/nehue/Escritorio/Facultad/Diseño de Sistemas/2025-tpa-mi-no-grupo-17/serverBack/src/main/java/modulos/shared/dtos/output&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Spring Boot.MetaMapaApplication (1).executor": "Run",
+    "Spring Boot.MetaMapaApplication.executor": "Run",
+    "Spring Boot.ServerBackApplication.executor": "Run",
+    "Spring Boot.ServerFrontApplication.executor": "Run",
+    "git-widget-placeholder": "entrega__6",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/nehue/Escritorio/Facultad/Diseño de Sistemas/2025-tpa-mi-no-grupo-17/serverBack/src/main/java/modulos/shared/dtos/output",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.configurations.included.in.services": "true",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="modulos.Front.dtos.output" />
       <recent name="modulos.Front.controllers" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
@@ -100,19 +132,20 @@
         <option value="SpringBootApplicationConfigurationType" />
       </set>
     </option>
+    <option name="configurationStatuses">
+      <map>
+        <entry key="SpringBootApplicationConfigurationType">
+          <value>
+            <map>
+              <entry key="ServerBackApplication" value="STOPPED" />
+              <entry key="ServerFrontApplication" value="STOPPED" />
+            </map>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
-  <component name="RunManager" selected="Spring Boot.ServerBackApplication">
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="2025-tpa-mi-no-grupo-17" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="2025-tpa-mi-no-grupo-17" />
-      <option name="filePath" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Spring Boot.ServerFrontApplication">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="2025-tpa-mi-no-grupo-17" />
       <option name="ENV_FILES" value="" />
@@ -148,6 +181,30 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="launchJavascriptDebuger" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <module name="2025-tpa-mi-no-grupo-17" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="2025-tpa-mi-no-grupo-17" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="2025-tpa-mi-no-grupo-17" />
+      <option name="filePath" />
       <method v="2" />
     </configuration>
     <configuration name="MetaMapaApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
@@ -197,19 +254,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="Tox" factoryName="Tox">
-      <module name="2025-tpa-mi-no-grupo-17" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Spring Boot.MetaMapaApplication" />
       <item itemvalue="Spring Boot.ServerBackApplication" />
@@ -217,16 +261,16 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Spring Boot.ServerBackApplication" />
         <item itemvalue="Spring Boot.ServerFrontApplication" />
+        <item itemvalue="Spring Boot.ServerBackApplication" />
       </list>
     </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26053.27" />
-        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26053.27" />
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.25557.131" />
+        <option value="bundled-js-predefined-d6986cc7102b-b598e85cdad2-JavaScript-IU-252.25557.131" />
       </set>
     </attachedChunks>
   </component>
@@ -278,6 +322,7 @@
       <workItem from="1762148628293" duration="811000" />
       <workItem from="1762186677601" duration="81000" />
       <workItem from="1762209300446" duration="17860000" />
+      <workItem from="1762281982937" duration="4274000" />
     </task>
     <servers />
   </component>

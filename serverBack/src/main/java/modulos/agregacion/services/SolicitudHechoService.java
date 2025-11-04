@@ -619,6 +619,14 @@ public class SolicitudHechoService {
         return ResponseEntity.ok().body(dto);
 
     }
+
+    public ResponseEntity<Integer> getPorcentajeSolicitudesProcesadas() {
+
+        System.out.println("Entre a solicitudes");
+        Integer porcentaje = solicitudRepository.porcentajeProcesadas().intValue();
+        System.out.println("PORCENTAJE: " + porcentaje);
+        return ResponseEntity.ok().body(porcentaje);
+    }
 }
 
 

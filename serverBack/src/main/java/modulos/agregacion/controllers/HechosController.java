@@ -27,6 +27,11 @@ public class HechosController {
         this.hechosService = hechosService;
     }
 
+    @GetMapping("/public/cantHechos")
+    public ResponseEntity<Long> cantHechos(){
+        return hechosService.getCantHechos();
+    }
+
     //anda
     @PostMapping("/subir")
     public ResponseEntity<?> subirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput, @AuthenticationPrincipal Jwt principal){

@@ -25,6 +25,11 @@ public class ColeccionController {
         this.coleccionService = coleccionService;
     }
 
+    @GetMapping("/public/cantColecciones")
+    public ResponseEntity<?> getCantColecciones(){
+        return coleccionService.getCantColecciones();
+    }
+
     //anda
     @PostMapping("/crear")
     public ResponseEntity<?> crearColeccion(@Valid @RequestBody ColeccionInputDTO inputDTO, @AuthenticationPrincipal String username){

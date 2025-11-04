@@ -61,7 +61,7 @@ public class ColeccionService {
         return webApiCallerService.postEntity(coleccionServiceUrl + "/colecciones/refrescar", Void.class);
     }
 
-
-
-
+    public ResponseEntity<Long> getCantColecciones() {
+        return webApiCallerService.getEntitySinToken(this.coleccionServiceUrl + "/public/cantColecciones", Long.class);
+    }
 }

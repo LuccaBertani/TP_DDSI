@@ -23,6 +23,11 @@ public class SolicitudHechoController {
         this.solicitudHechoService = solicitudHechoService;
     }
 
+    @GetMapping("/public/porcentajeSolicitudes")
+    public ResponseEntity<?> getPorcentajeSolicitudes(){
+        return solicitudHechoService.getPorcentajeSolicitudesProcesadas();
+    }
+
     // Anda
     @PostMapping("/evaluar/subir")
     public ResponseEntity<?> evaluarSolicitudSubida(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput, @AuthenticationPrincipal Jwt principal){

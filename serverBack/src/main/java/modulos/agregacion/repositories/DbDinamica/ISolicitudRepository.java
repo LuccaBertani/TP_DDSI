@@ -29,4 +29,11 @@ public interface ISolicitudRepository extends JpaRepository<SolicitudHecho, Long
     """)
     Optional<SolicitudHecho> findByIdAndProcesadaFalse(@Param("id_solicitud") Long idSolicitud);
 
+    @Query(value = """
+    SELECT (COUNT(*) * 100.0 / NULLIF((SELECT COUNT(*) FROM solicitud_hecho), 0))
+    FROM solicitud_hecho
+    WHERE procesada = true
+    """, nativeQuery = true)
+    Double porcentajeProcesadas();
+
 }

@@ -79,4 +79,9 @@ ORDER BY totalHechos DESC
         select h from HechoProxy h where h.activo = true
 """)
     List<HechoProxy> findAllByActivoTrue();
+
+    @Query(value = """
+    SELECT COUNT(h) FROM HechoProxy h WHERE h.activo = true
+    """)
+    Long getCantHechos();
 }
