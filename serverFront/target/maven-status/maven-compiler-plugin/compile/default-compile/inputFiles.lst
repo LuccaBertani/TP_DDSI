@@ -1,4 +1,5 @@
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\ProxyDTO.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\controllers\SinonimoController.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\UsuarioInputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\CambiarContraseniaDtoInput.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\services\UsuarioService.java
@@ -32,6 +33,7 @@ C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\se
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\CriteriosColeccionProxyDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\output\SolicitudHechoOutputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\TokenResponse.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\controllers\CategoriaController.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\output\VisualizarHechosOutputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\output\ColeccionOutputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\services\SolicitudHechoService.java

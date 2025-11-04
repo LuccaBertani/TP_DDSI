@@ -267,7 +267,7 @@ public class SolicitudHechoService {
             Ubicacion ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
             atributos.setUbicacion_id(ubicacion != null ? ubicacion.getId() : null);
         }
-        // TODO: En todos los casos, chequear que latitud y longitud VENGAN JUNTOS EN TODOS LOS CASOS
+
         if (dto.getLongitud() != null && dto.getLatitud()!=null){
             atributos.setLatitud(dto.getLatitud());
             atributos.setLongitud(dto.getLongitud());

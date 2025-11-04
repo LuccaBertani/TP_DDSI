@@ -43,13 +43,13 @@ public class FiltroPais extends Filtro {
     @Override
     public <T> Specification<T> toSpecification(Class<T> clazz) {
 
-        for(Long id: ubicaciones_ids){
-            System.out.println("SOY UNA MIERDA EN PAIS: " + id);
-        }
-
         if (ubicaciones_ids == null || ubicaciones_ids.isEmpty()) {
             System.out.println("Lista de ubicaciones vacía -> Filtro FALSE");
             return (root, query, cb) -> cb.disjunction(); // Nunca se cumple
+        }
+
+        for(Long id: ubicaciones_ids){
+            System.out.println("SOY UNA MIERDA EN PAIS: " + id);
         }
 
         return (root, query, cb) -> {

@@ -74,7 +74,6 @@ public class UsuarioService {
     }
 
     public ResponseEntity<?> getUsuario() {
-        System.out.println("HOLAAAAAAAAAAAAAAA SOY PUTO JAJA");
         return webApiCallerService.getEntity(this.usuarioServiceUrl + "/get/usuario", Void.class);
     }
 
