@@ -39,16 +39,45 @@ public class ColeccionController {
 
     @GetMapping("/crear")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public String getFormularioColeccion(Model model){
-        model.addAttribute("coleccionForm", new ColeccionInputDTO());
+    public String getFormularioColeccion(@ModelAttribute("coleccionForm") ColeccionInputDTO inputDTO, Model model){
+        System.out.println("SOY UN PELOTUDO");
+        ResponseEntity<?> rtaCategorias = hechosService.getCategorias();
+        ResponseEntity<?> rtaPaises = hechosService.getPaises();
+        if (rtaCategorias.getBody() != null){
+            List<CategoriaDto> categorias = BodyToListConverter.bodyToList(rtaCategorias, CategoriaDto.class);
+            model.addAttribute("categorias", categorias);
+        }
+        if (rtaPaises.getBody() != null){
+            List<PaisDto> paises = BodyToListConverter.bodyToList(rtaPaises, PaisDto.class);
+            model.addAttribute("paises", paises);
+        }
+
+        if (inputDTO.getCriterios().getPaisId() == null){
+            model.addAttribute("coleccionForm", new ColeccionInputDTO());
+        }
+        else{
+            List<ProvinciaDto> provinciasTotales = new ArrayList<>();
+            for (Long idPais : inputDTO.getCriterios().getPaisId()) {
+                ResponseEntity<?> rtaProvincia = hechosService.getProvinciasByIdPais(idPais);
+                if (rtaProvincia.getBody() != null) {
+                    List<ProvinciaDto> provincias = BodyToListConverter.bodyToList(rtaProvincia, ProvinciaDto.class);
+                    if (provincias!=null)
+                        provinciasTotales.addAll(provincias);
+                }
+            }
+            model.addAttribute("coleccionForm", inputDTO);
+            model.addAttribute("provincias", provinciasTotales);
+        }
         return "gestion";
+
     }
+
 
     @PostMapping("/crear")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public String crearColeccion(@Valid @ModelAttribute ColeccionInputDTO inputDTO,
                                  RedirectAttributes ra) {
-
+        System.out.println("PAISES CARGADOS: " + inputDTO.getCriterios().getPaisId());
         ResponseEntity<?> rta = coleccionService.crearColeccion(inputDTO);
 
         if (rta.getStatusCode().is2xxSuccessful()) {

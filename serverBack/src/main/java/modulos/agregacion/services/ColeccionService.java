@@ -12,8 +12,7 @@ import modulos.agregacion.entities.DbMain.*;
 import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMayoriaAbsoluta;
 import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMayoriaSimple;
 import modulos.agregacion.entities.DbMain.algoritmosConsenso.AlgoritmoConsensoMultiplesMenciones;
-import modulos.agregacion.entities.DbMain.filtros.Filtro;
-import modulos.agregacion.entities.DbMain.filtros.IFiltro;
+import modulos.agregacion.entities.DbMain.filtros.*;
 import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
 import modulos.agregacion.entities.DbProxy.HechoProxy;
 import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
@@ -42,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static modulos.JwtClaimExtractor.getUsernameFromToken;
 
@@ -96,6 +96,10 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
     @Transactional
     public ResponseEntity<?> crearColeccion(ColeccionInputDTO dtoInput, String username) {
 
+
+        System.out.println("PAISES DEL ORTO IDS: " + dtoInput.getCriterios().getPaisId());
+        System.out.println("PAISES DEL ORTO STRING: " + dtoInput.getCriterios().getPais());
+
         ResponseEntity<?> rta = checkeoAdmin(username);
 
         if (!rta.getStatusCode().is2xxSuccessful()){
@@ -122,13 +126,50 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
                         coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMultiplesMenciones());
                         break;
                 default:
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El algoritmo de consenso especificado no existe");
+                    break;
             }
         }
 
         List<List<IFiltro>> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccion(buscadores, dtoInput.getCriterios()));
-        List<Filtro> filtrosJuntos = new ArrayList<>();
-        filtros.forEach(f -> filtrosJuntos.add((Filtro) f));
+
+        for (int i = 0; i < filtros.size(); i++) {
+            List<IFiltro> grupo = filtros.get(i);
+            System.out.println("🧩 Grupo #" + i + " (" + grupo.size() + " filtro/s):");
+
+            for (IFiltro filtro : grupo) {
+                if (filtro instanceof FiltroCategoria fc) {
+                    System.out.println("  [FiltroCategoria] id=" + fc.getCategoria().getId() +
+                            ", nombre=" + fc.getCategoria().getTitulo());
+                } else if (filtro instanceof FiltroContenidoMultimedia fcm) {
+                    System.out.println("  [FiltroContenidoMultimedia] tipo=" + fcm.getTipoContenido());
+                } else if (filtro instanceof FiltroDescripcion fd) {
+                    System.out.println("  [FiltroDescripcion] texto=" + fd.getDescripcion());
+                } else if (filtro instanceof FiltroFechaAcontecimiento ffa) {
+                    System.out.println("  [FiltroFechaAcontecimiento] desde=" + ffa.getFechaInicial() +
+                            ", hasta=" + ffa.getFechaFinal());
+                } else if (filtro instanceof FiltroFechaCarga ffc) {
+                    System.out.println("  [FiltroFechaCarga] desde=" + ffc.getFechaInicial() +
+                            ", hasta=" + ffc.getFechaFinal());
+                } else if (filtro instanceof FiltroOrigen fo) {
+                    System.out.println("  [FiltroOrigen] origen=" + fo.getOrigenDeseado());
+                } else if (filtro instanceof FiltroPais fp) {
+                    System.out.println("  [FiltroPais] id=" + fp.getPais().getId() +
+                            ", nombre=" + fp.getPais().getPais());
+                } else if (filtro instanceof FiltroProvincia fprov) {
+                    System.out.println("  [FiltroProvincia] id=" + fprov.getProvincia().getId() +
+                            ", nombre=" + fprov.getProvincia().getProvincia());
+                } else if (filtro instanceof FiltroTitulo ft) {
+                    System.out.println("  [FiltroTitulo] titulo=" + ft.getTitulo());
+                } else {
+                    System.out.println("  [Otro tipo de filtro] " + filtro.getClass().getSimpleName());
+                }
+            }
+        }
+
+        List<Filtro> filtrosJuntos = filtros.stream()
+                .flatMap(List::stream)     // aplana las sublistas
+                .map(f -> (Filtro) f)      // castea cada elemento individual
+                .collect(Collectors.toCollection(ArrayList::new)); // mutable ✅
         coleccion.setCriterios(filtrosJuntos);
         coleccionesRepo.save(coleccion);
         return ResponseEntity.status(HttpStatus.CREATED).body("La colección se creó correctamente");

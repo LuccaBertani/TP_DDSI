@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" th:fragment="html">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:fragment="html" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -36,8 +36,12 @@
                 <li class="nav-item"><a class="nav-link" th:href="@{/mapa}">Mapa</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/colecciones/get-all}">Colecciones</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/contribuir}">Contribuir</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/solicitudes}">Solicitudes</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/gestion}">Gestión</a></li>
+                <li class="nav-item" sec:authorize="hasRole('ADMINISTRADOR')">
+                    <a class="nav-link" th:href="@{/solicitudes}">Solicitudes</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMINISTRADOR')">
+                    <a class="nav-link" th:href="@{/gestion}">Gestión</a>
+                </li>
             </ul>
 
             <div class="d-flex align-items-center gap-2">

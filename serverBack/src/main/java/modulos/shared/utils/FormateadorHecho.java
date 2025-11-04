@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 public class FormateadorHecho {
@@ -657,28 +658,34 @@ public class FormateadorHecho {
         if (filtros != null && !filtros.isEmpty()) {
             List<IFiltro> lista = filtros.stream()
                     .map(f -> (IFiltro) f)
-                    .toList();
+                    .collect(Collectors.toCollection(ArrayList::new)); // ✅ mutable
             filtrosPorCategoria.add(lista);
         }
     }
 
 
+
     public static List<List<IFiltro>> obtenerListaDeFiltros(FiltrosColeccion filtrosColeccion) {
         List<List<IFiltro>> filtrosPorCategoria = new ArrayList<>();
+
+        List<IFiltro> filtrosIndividual = new ArrayList<>();
+
         if (filtrosColeccion!=null){
             agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroCategoria());
             agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroPais());
             agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroProvincia());
-            if (filtrosColeccion.getFiltroDescripcion()!=null)
-                agregarSiNoVacia(filtrosPorCategoria, List.of(filtrosColeccion.getFiltroDescripcion()));
-            agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroContenidoMultimedia());
-            if (filtrosColeccion.getFiltroFechaAcontecimiento()!=null)
-                agregarSiNoVacia(filtrosPorCategoria, List.of(filtrosColeccion.getFiltroFechaAcontecimiento()));
-            if (filtrosColeccion.getFiltroFechaCarga()!=null)
-                agregarSiNoVacia(filtrosPorCategoria, List.of(filtrosColeccion.getFiltroFechaCarga()));
             agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroOrigen());
+            agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroContenidoMultimedia());
+            if (filtrosColeccion.getFiltroDescripcion()!=null)
+                filtrosIndividual.add(filtrosColeccion.getFiltroDescripcion());
+            if (filtrosColeccion.getFiltroFechaAcontecimiento()!=null)
+                filtrosIndividual.add(filtrosColeccion.getFiltroFechaAcontecimiento());
+            if (filtrosColeccion.getFiltroFechaCarga()!=null)
+                filtrosIndividual.add(filtrosColeccion.getFiltroFechaCarga());
             if (filtrosColeccion.getFiltroTitulo()!=null)
-                agregarSiNoVacia(filtrosPorCategoria, List.of(filtrosColeccion.getFiltroTitulo()));
+                filtrosIndividual.add(filtrosColeccion.getFiltroTitulo());
+
+            agregarSiNoVacia(filtrosPorCategoria,filtrosIndividual);
         }
 
         return filtrosPorCategoria;

@@ -24,6 +24,7 @@ C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\se
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\controllers\SolicitudHechoController.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\GetHechosColeccionInputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\sessionHandlers\ActiveSessionTracker.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\ContenidoMultimediaDto.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\ImportacionHechosInputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\ModificarConsensoInputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\EditarNombreDeUsuarioDtoInput.java
@@ -38,6 +39,7 @@ C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\se
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\controllers\ColeccionController.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\usuario\Rol.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\ContenidoMultimedia.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\DetallesColeccionCargadaDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\EvaluarReporteInputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\output\ProvinciaDto.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\output\HechosResponse.java
@@ -47,6 +49,7 @@ C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\se
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\output\MensajeOutputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\output\UsuarioOutputDto.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\services\ColeccionService.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\OrigenDto.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\services\WebApiCallerService.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\EditarUsuarioDtoInput.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\services\HechosService.java

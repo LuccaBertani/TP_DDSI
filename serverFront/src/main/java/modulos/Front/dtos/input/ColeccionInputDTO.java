@@ -16,4 +16,9 @@ public class ColeccionInputDTO {
 
     // Algoritmo de consenso (opcional)
     private String algoritmoConsenso;
+
+    public ColeccionInputDTO() {
+        this.criterios = new CriteriosColeccionDTO();
+    }
+
 }
