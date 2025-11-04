@@ -85,8 +85,7 @@ public class ColeccionController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
-    @GetMapping("/get-all")
-    @PreAuthorize("hasAnyRole('VISUALIZADOR', 'CONTRIBUYENTE', 'ADMINISTRADOR')")
+    @GetMapping("/public/get-all")
     public String obtenerTodasLasColecciones(Model model){
         System.out.println("ENTRÉ A OBTENER TODAS LAS COLECCIONES");
         ResponseEntity<?> rta = coleccionService.obtenerTodasLasColecciones();
@@ -115,8 +114,7 @@ public class ColeccionController {
     }
 
 
-    @GetMapping("/get/{id_coleccion}")
-    @PreAuthorize("hasAnyRole('VISUALIZADOR', 'CONTRIBUYENTE', 'ADMINISTRADOR')")
+    @GetMapping("/public/get/{id_coleccion}")
     public String getColeccion(@PathVariable Long id_coleccion, @ModelAttribute("getHechosColeccionInputDto") GetHechosColeccionInputDTO inputDTO, Model model) {
 
         System.out.println("HOLAAAAAAAAAAAAAAAAAAAAAAAAAAAA");

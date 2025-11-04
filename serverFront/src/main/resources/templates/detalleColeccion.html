@@ -143,7 +143,7 @@
           th:object="${getHechosColeccionInputDto}"
           th:action="@{/hechos/get/filtrar}"
           method="post"
-          th:attr="data-refresh-url=@{/colecciones/get/{id_coleccion}(id_coleccion=${coleccion.id})}">
+          th:attr="data-refresh-url=@{/colecciones/public/get/{id_coleccion}(id_coleccion=${coleccion.id})}">
 
         <div class="card-body row g-3">
 
