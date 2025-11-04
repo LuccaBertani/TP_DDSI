@@ -1,3 +1,4 @@
+modulos\Front\dtos\DetallesColeccionCargadaDTO.class
 modulos\Front\ApiCall.class
 modulos\Front\dtos\input\CriteriosColeccionDTO.class
 modulos\Front\dtos\output\CategoriaDto.class
@@ -10,6 +11,7 @@ modulos\Front\usuario\Rol.class
 modulos\Front\dtos\output\VisualizarHechosOutputDTO.class
 modulos\Front\providers\CustomAuthProvider.class
 modulos\Front\controllers\UsuarioController.class
+modulos\Front\dtos\ContenidoMultimediaDto.class
 modulos\Front\dtos\output\SolicitudHechoOutputDTO.class
 modulos\Front\services\UsuarioService.class
 modulos\Front\dtos\output\PaisDto.class
@@ -48,6 +50,7 @@ modulos\Front\dtos\output\ColeccionOutputDTO.class
 modulos\Front\services\SolicitudHechoService.class
 modulos\Front\dtos\output\HechosResponse.class
 modulos\Front\dtos\input\ColeccionUpdateInputDTO.class
+modulos\Front\dtos\OrigenDto.class
 modulos\Front\TipoContenido.class
 modulos\Front\dtos\output\MensajeOutputDTO.class
 modulos\Front\dtos\input\LoginDtoInput.class

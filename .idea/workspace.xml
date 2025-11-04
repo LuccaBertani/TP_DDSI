@@ -6,17 +6,26 @@
   <component name="ChangeListManager">
     <list default="true" id="f850432b-1600-446e-abba-2862d1cc44e3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/ColeccionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/ColeccionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/ColeccionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/ColeccionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/services/ColeccionService.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/services/ColeccionService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/colecciones.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/colecciones.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/contribuir.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/contribuir.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/detalleHecho.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/detalleHecho.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/layout/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/layout/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/colecciones.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/colecciones.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/gestion.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/gestion.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/mapa.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/mapa.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/solicitudes.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/solicitudes.html" afterDir="false" />
+    </list>
+    <list id="f13608ce-ca7b-462a-b1c3-e6566403784d" name="Changes by Lucas" comment="">
       <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/detalleColeccion.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/detalleColeccion.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/detalleHecho.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/detalleHecho.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/gestion.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/gestion.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/hecho.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/hecho.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/layout/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/layout/base.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/mapa.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/mapa.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/perfil.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/perfil.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/solicitudes.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/solicitudes.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/gestion.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/gestion.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/mapa.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/mapa.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/solicitudes.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/solicitudes.html" afterDir="false" />
     </list>
     <list id="bd2f9c59-412c-4d85-95af-559cd31f93a3" name="Changes by merce" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -37,20 +46,35 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "LuccaBertani"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;LuccaBertani&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/dds-utn/2025-tpa-mi-no-grupo-17.git",
-    "accountId": "ad6c2145-da9b-4f6d-a29b-88bea5e350a0"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/dds-utn/2025-tpa-mi-no-grupo-17.git&quot;,
+    &quot;accountId&quot;: &quot;ad6c2145-da9b-4f6d-a29b-88bea5e350a0&quot;
   }
-}]]></component>
+}</component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/serverFront/src/main/resources/templates/detalleHecho.html">
+      <ranges>
+        <range start1="2" end1="11" start2="2" end2="2" changelist="f13608ce-ca7b-462a-b1c3-e6566403784d" />
+        <range start1="19" end1="20" start2="10" end2="11" changelist="f13608ce-ca7b-462a-b1c3-e6566403784d" />
+        <range start1="155" end1="156" start2="146" end2="146" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+      </ranges>
+    </file>
+    <file path="$PROJECT_DIR$/serverFront/src/main/resources/templates/layout/base.html">
+      <ranges>
+        <range start1="10" end1="10" start2="10" end2="14" changelist="f13608ce-ca7b-462a-b1c3-e6566403784d" />
+        <range start1="42" end1="43" start2="46" end2="47" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+      </ranges>
+    </file>
+  </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -64,34 +88,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.MetaMapaApplication (1).executor": "Run",
-    "Spring Boot.MetaMapaApplication.executor": "Run",
-    "Spring Boot.ServerBackApplication.executor": "Run",
-    "Spring Boot.ServerFrontApplication.executor": "Run",
-    "git-widget-placeholder": "entrega__6",
-    "ignore.virus.scanning.warn.message": "true",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/nehue/Escritorio/Facultad/Diseño de Sistemas/2025-tpa-mi-no-grupo-17/serverBack/src/main/java/modulos/shared/dtos/output",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "run.configurations.included.in.services": "true",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.MetaMapaApplication (1).executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.MetaMapaApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.ServerBackApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.ServerFrontApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;entrega__6&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/nehue/Escritorio/Facultad/Diseño de Sistemas/2025-tpa-mi-no-grupo-17/serverBack/src/main/java/modulos/shared/dtos/output&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
@@ -105,6 +129,8 @@
       <recent name="C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\resources\templates\static\img" />
+      <recent name="C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\resources\templates\img" />
       <recent name="C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\resources\templates" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
@@ -126,20 +152,19 @@
         <option value="SpringBootApplicationConfigurationType" />
       </set>
     </option>
-    <option name="configurationStatuses">
-      <map>
-        <entry key="SpringBootApplicationConfigurationType">
-          <value>
-            <map>
-              <entry key="ServerBackApplication" value="STOPPED" />
-              <entry key="ServerFrontApplication" value="STOPPED" />
-            </map>
-          </value>
-        </entry>
-      </map>
-    </option>
   </component>
   <component name="RunManager" selected="Spring Boot.ServerFrontApplication">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="2025-tpa-mi-no-grupo-17" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="2025-tpa-mi-no-grupo-17" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="2025-tpa-mi-no-grupo-17" />
       <option name="ENV_FILES" value="" />
@@ -175,30 +200,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="launchJavascriptDebuger" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="Tox" factoryName="Tox">
-      <module name="2025-tpa-mi-no-grupo-17" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="2025-tpa-mi-no-grupo-17" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="2025-tpa-mi-no-grupo-17" />
-      <option name="filePath" />
       <method v="2" />
     </configuration>
     <configuration name="MetaMapaApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
@@ -247,6 +248,19 @@
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
+    </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <module name="2025-tpa-mi-no-grupo-17" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <method v="2" />
     </configuration>
     <list>
       <item itemvalue="Spring Boot.MetaMapaApplication" />
