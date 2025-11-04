@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 
@@ -56,8 +57,8 @@ public interface IFiltroRepository extends JpaRepository<Filtro, Long> {
            where fa.fechaInicial = :ini and fa.fechaFinal = :fin
            """)
     Optional<FiltroFechaAcontecimiento> findFiltroFechaAcontecimientoByRango(
-            @Param("ini") LocalDate ini,
-            @Param("fin") LocalDate fin
+            @Param("ini") ZonedDateTime ini,
+            @Param("fin") ZonedDateTime fin
     );
 
     /* ========== FiltroFechaCarga ========== */
@@ -67,8 +68,8 @@ public interface IFiltroRepository extends JpaRepository<Filtro, Long> {
            where fcg.fechaInicial = :ini and fcg.fechaFinal = :fin
            """)
     Optional<FiltroFechaCarga> findFiltroFechaCargaByRango(
-            @Param("ini") LocalDate ini,
-            @Param("fin") LocalDate fin
+            @Param("ini") ZonedDateTime ini,
+            @Param("fin") ZonedDateTime fin
     );
 
     /* ========== FiltroOrigen ========== */

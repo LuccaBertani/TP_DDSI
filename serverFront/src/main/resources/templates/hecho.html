@@ -16,77 +16,6 @@
         </div>
     </div>
 
-    <!-- Filtros (POST /hechos/get/filtrar) -->
-    <form class="card mb-4" th:action="@{/hechos/get/filtrar}" method="post">
-        <div class="card-body row g-3">
-            <div class="col-md-3">
-                <label class="form-label">Fuente</label>
-                <input class="form-control" type="text" name="fuente" placeholder="ej: usuario, importación…">
-            </div>
-
-            <!-- Categoría: si hay lista en el modelo, usamos select; si no, fallback a input numérico -->
-            <div class="col-md-3" th:if="${categorias != null}">
-                <label class="form-label">Categoría</label>
-                <select class="form-select" name="categoriaId">
-                    <option value="">Todas</option>
-                    <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}">Categoría</option>
-                </select>
-            </div>
-            <div class="col-md-3" th:unless="${categorias != null}">
-                <label class="form-label">Categoría (ID)</label>
-                <input class="form-control" type="number" name="categoriaId" placeholder="ID numérico">
-            </div>
-
-            <div class="col-md-3">
-                <label class="form-label">Contenido multimedia</label>
-                <select class="form-select" name="contenidoMultimedia">
-                    <option value="">Cualquiera</option>
-                    <option value="1">Con multimedia</option>
-                    <option value="0">Sin multimedia</option>
-                </select>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label">Descripción (contiene)</label>
-                <input class="form-control" type="text" name="descripcion" placeholder="Texto a buscar en la descripción">
-            </div>
-
-            <div class="col-md-3">
-                <label class="form-label">Fecha del hecho (desde)</label>
-                <input class="form-control" type="date" name="fechaAcontecimientoInicial">
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Fecha del hecho (hasta)</label>
-                <input class="form-control" type="date" name="fechaAcontecimientoFinal">
-            </div>
-
-            <div class="col-md-3">
-                <label class="form-label">Fecha de carga (desde)</label>
-                <input class="form-control" type="date" name="fechaCargaInicial">
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Fecha de carga (hasta)</label>
-                <input class="form-control" type="date" name="fechaCargaFinal">
-            </div>
-
-            <!-- 👇 Campos requeridos por el DTO para evitar 400 -->
-            <input type="hidden" name="id_coleccion" value="1"/>
-            <input type="hidden" name="navegacionCurada" value="false"/>
-
-            <div class="col-md-12 d-flex gap-2 justify-content-end">
-                <a class="btn btn-outline-secondary" th:href="@{/hechos/public/get-all}">
-                    <i class="bi bi-arrow-counterclockwise me-1"></i> Limpiar
-                </a>
-                <button class="btn btn-primary">
-                    <i class="bi bi-funnel me-1"></i> Filtrar
-                </button>
-            </div>
-        </div>
-
-        <!-- CSRF -->
-        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-    </form>
-
     <!-- Estado vacío -->
     <div th:if="${listaHechos == null or #lists.isEmpty(listaHechos)}" class="text-center py-5">
         <i class="bi bi-file-earmark-text display-1 text-muted"></i>
@@ -138,14 +67,8 @@
 
                     <div class="d-flex justify-content-between align-items-center">
                         <a class="btn btn-outline-dark btn-sm"
-                           th:if="${h.fuente != null}"
+                           th:unless="${h.fuente == null}"
                            th:href="@{/hechos/public/get(id_hecho=${h.id}, fuente=${h.fuente})}">
-                            <i class="bi bi-eye me-1"></i> Ver detalles
-                        </a>
-
-                        <a class="btn btn-outline-dark btn-sm"
-                           th:unless="${h.fuente != null}"
-                           th:href="@{/hechos/public/get(id_hecho=${h.id})}">
                             <i class="bi bi-eye me-1"></i> Ver detalles
                         </a>
                     </div>

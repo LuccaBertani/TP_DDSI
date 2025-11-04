@@ -393,7 +393,7 @@ public class FormateadorHecho {
         ZonedDateTime faFin = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoFinal());
         if (faIni != null && faFin != null) {
             FiltroFechaAcontecimiento filtro = buscadorFiltro
-                    .buscarFiltroFechaAcontecimientoPorRango(faIni.toLocalDate(), faFin.toLocalDate())
+                    .buscarFiltroFechaAcontecimientoPorRango(faIni, faFin)
                     .orElseGet(() -> new FiltroFechaAcontecimiento(faIni, faFin));
             filtros.setFiltroFechaAcontecimiento(filtro);
         }
@@ -403,7 +403,7 @@ public class FormateadorHecho {
         ZonedDateTime fcFin = FechaParser.parsearFecha(inputDTO.getFechaCargaFinal());
         if (fcIni != null && fcFin != null) {
             FiltroFechaCarga filtro = buscadorFiltro
-                    .buscarFiltroFechaCargaPorRango(fcIni.toLocalDate(), fcFin.toLocalDate())
+                    .buscarFiltroFechaCargaPorRango(fcIni, fcFin)
                     .orElseGet(() -> new FiltroFechaCarga(fcIni, fcFin));
             filtros.setFiltroFechaCarga(filtro);
         }
@@ -500,7 +500,9 @@ public class FormateadorHecho {
         }
 
         // ---------- PAÍSES ----------
+        System.out.println("VOY A ENTRAR A PAIS EN FORMAT");
         if (inputDTO.getPaisId() != null && !inputDTO.getPaisId().isEmpty()) {
+            System.out.println("SORETE");
             List<FiltroPais> filtrosPais = inputDTO.getPaisId().stream()
                     .map(buscadorPais::buscar)
                     .filter(Objects::nonNull)
@@ -509,6 +511,9 @@ public class FormateadorHecho {
                                     pais,
                                     buscadorUbicacion.buscarUbicacionesConPais(pais.getId()))))
                     .toList();
+            for(FiltroPais filtro : filtrosPais){
+                System.out.println("SOY ESTE PAIS FOROROROROOR " + filtro.getPais().getPais());
+            }
             filtros.setFiltroPais(filtrosPais);
         }
 
@@ -545,7 +550,7 @@ public class FormateadorHecho {
         ZonedDateTime faFin = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoFinal());
         if (faIni != null && faFin != null) {
             FiltroFechaAcontecimiento filtro = buscadorFiltro
-                    .buscarFiltroFechaAcontecimientoPorRango(faIni.toLocalDate(), faFin.toLocalDate())
+                    .buscarFiltroFechaAcontecimientoPorRango(faIni, faFin)
                     .orElseGet(() -> new FiltroFechaAcontecimiento(faIni, faFin));
             filtros.setFiltroFechaAcontecimiento(filtro);
         }
@@ -555,7 +560,7 @@ public class FormateadorHecho {
         ZonedDateTime fcFin = FechaParser.parsearFecha(inputDTO.getFechaCargaFinal());
         if (fcIni != null && fcFin != null) {
             FiltroFechaCarga filtro = buscadorFiltro
-                    .buscarFiltroFechaCargaPorRango(fcIni.toLocalDate(), fcFin.toLocalDate())
+                    .buscarFiltroFechaCargaPorRango(fcIni, fcFin)
                     .orElseGet(() -> new FiltroFechaCarga(fcIni, fcFin));
             filtros.setFiltroFechaCarga(filtro);
         }

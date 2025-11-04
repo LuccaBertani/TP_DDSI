@@ -27,6 +27,7 @@ import modulos.buscadores.*;
 import modulos.shared.dtos.input.*;
 import modulos.shared.utils.FormateadorHechoMemoria;
 import modulos.shared.utils.GestorArchivos;
+import org.hibernate.validator.internal.constraintvalidators.bv.time.futureorpresent.FutureOrPresentValidatorForOffsetDateTime;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
@@ -76,7 +77,7 @@ public class HechosService {
                          ICategoriaRepository categoriaRepository,
                          IProvinciaRepository repoProvincia,
                          IPaisRepository repoPais,
-                        BuscadoresRegistry buscadores, ISinonimoRepository repoSinonimo,
+                         BuscadoresRegistry buscadores, ISinonimoRepository repoSinonimo,
                          IHechoRefRepository hechoRefRepository,
                          FormateadorHechoMemoria formateadorHechoMemoria){
         this.repoProvincia = repoProvincia;
@@ -438,7 +439,12 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                     .map(Object::toString)
                     .ifPresent(dto::setFechaCarga);
 
-            dto.setFuente(hecho.getAtributosHecho().getFuente().codigoEnString());
+            System.out.println("TITULO HECHO: " + hecho.getAtributosHecho().getTitulo());
+            if (hecho.getAtributosHecho().getFuente() == null)
+                System.out.println("soretito");
+            else
+                dto.setFuente(hecho.getAtributosHecho().getFuente().codigoEnString());
+
             Optional.ofNullable(hechoMemoria.getAtributosHecho().getUbicacion())
                     .ifPresent(ubicacion -> {
                         Optional.ofNullable(ubicacion.getPais())

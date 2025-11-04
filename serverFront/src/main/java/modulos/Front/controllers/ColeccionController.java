@@ -4,10 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import modulos.Front.BodyToListConverter;
 import modulos.Front.dtos.input.*;
-import modulos.Front.dtos.output.CategoriaDto;
-import modulos.Front.dtos.output.ColeccionOutputDTO;
-import modulos.Front.dtos.output.PaisDto;
-import modulos.Front.dtos.output.ProvinciaDto;
+import modulos.Front.dtos.output.*;
 import modulos.Front.services.ColeccionService;
 import modulos.Front.services.HechosService;
 import org.springframework.http.ResponseEntity;
@@ -77,7 +74,8 @@ public class ColeccionController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public String crearColeccion(@Valid @ModelAttribute ColeccionInputDTO inputDTO,
                                  RedirectAttributes ra) {
-        System.out.println("PAISES CARGADOS: " + inputDTO.getCriterios().getPaisId());
+        System.out.println("PAISES CARGADOS IDS: " + inputDTO.getCriterios().getPaisId());
+        System.out.println("PAISES CARGADOS STRINGS: " + inputDTO.getCriterios().getPais());
         ResponseEntity<?> rta = coleccionService.crearColeccion(inputDTO);
 
         if (rta.getStatusCode().is2xxSuccessful()) {
@@ -88,6 +86,7 @@ public class ColeccionController {
     }
 
     @GetMapping("/get-all")
+    @PreAuthorize("hasAnyRole('VISUALIZADOR', 'CONTRIBUYENTE', 'ADMINISTRADOR')")
     public String obtenerTodasLasColecciones(Model model){
         System.out.println("ENTRÉ A OBTENER TODAS LAS COLECCIONES");
         ResponseEntity<?> rta = coleccionService.obtenerTodasLasColecciones();
@@ -120,8 +119,12 @@ public class ColeccionController {
     @PreAuthorize("hasAnyRole('VISUALIZADOR', 'CONTRIBUYENTE', 'ADMINISTRADOR')")
     public String getColeccion(@PathVariable Long id_coleccion, @ModelAttribute("getHechosColeccionInputDto") GetHechosColeccionInputDTO inputDTO, Model model) {
 
+        System.out.println("HOLAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
         ResponseEntity<?> rta = coleccionService.getColeccion(id_coleccion);
+
         if (rta.getStatusCode().is2xxSuccessful() && rta.getBody() != null) {
+            System.out.println("HOLA CHICOS NO SOY NULL!!");
             ColeccionOutputDTO coleccion = (ColeccionOutputDTO) rta.getBody();
             model.addAttribute("coleccion", coleccion);
             ResponseEntity<?> rtaCategorias = hechosService.getCategorias();

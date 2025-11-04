@@ -19,6 +19,7 @@ import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
 import modulos.agregacion.repositories.DbEstatica.IDatasetsRepository;
 import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
 import modulos.agregacion.repositories.DbMain.IColeccionRepository;
+import modulos.agregacion.repositories.DbMain.IFiltroRepository;
 import modulos.agregacion.repositories.DbMain.IHechoRefRepository;
 import modulos.agregacion.repositories.DbMain.IUsuarioRepository;
 import modulos.agregacion.repositories.DbProxy.IHechosProxyRepository;
@@ -56,6 +57,7 @@ public class ColeccionService  {
     private final IHechosDinamicaRepository hechosDinamicaRepository;
     private final IHechosProxyRepository hechosProxyRepository;
     private final IHechoRefRepository hechoRefRepository;
+    private final IFiltroRepository filtroRepository;
 
     public ColeccionService(IColeccionRepository coleccionesRepo,
                             IUsuarioRepository usuariosRepo,
@@ -65,7 +67,8 @@ public class ColeccionService  {
                             IHechosProxyRepository hechosProxyRepository,
                             BuscadoresRegistry buscadores,
                             IHechoRefRepository hechoRefRepository,
-                            IDatasetsRepository datasetsRepository) {
+                            IDatasetsRepository datasetsRepository,
+                            IFiltroRepository filtroRepository) {
         this.coleccionesRepo = coleccionesRepo;
         this.usuariosRepo = usuariosRepo;
         this.datasetsRepo = datasetsRepo;
@@ -74,6 +77,7 @@ public class ColeccionService  {
         this.hechosEstaticaRepository = hechosEstaticaRepository;
         this.hechosProxyRepository = hechosProxyRepository;
         this.hechoRefRepository = hechoRefRepository;
+        this.filtroRepository = filtroRepository;
     }
 
 
@@ -92,13 +96,11 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
     */
 
-
     @Transactional
     public ResponseEntity<?> crearColeccion(ColeccionInputDTO dtoInput, String username) {
 
 
         System.out.println("PAISES DEL ORTO IDS: " + dtoInput.getCriterios().getPaisId());
-        System.out.println("PAISES DEL ORTO STRING: " + dtoInput.getCriterios().getPais());
 
         ResponseEntity<?> rta = checkeoAdmin(username);
 
@@ -130,7 +132,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             }
         }
 
-        List<List<IFiltro>> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccion(buscadores, dtoInput.getCriterios()));
+        List<List<IFiltro>> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadores, dtoInput.getCriterios()));
 
         for (int i = 0; i < filtros.size(); i++) {
             List<IFiltro> grupo = filtros.get(i);
@@ -171,7 +173,12 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
                 .map(f -> (Filtro) f)      // castea cada elemento individual
                 .collect(Collectors.toCollection(ArrayList::new)); // mutable ✅
         coleccion.setCriterios(filtrosJuntos);
-        coleccionesRepo.save(coleccion);
+
+        for(Filtro filtro : filtrosJuntos){
+            System.out.println("SKIBIDI " + filtro.getClass());
+        }
+
+        coleccionesRepo.saveAndFlush(coleccion);
         return ResponseEntity.status(HttpStatus.CREATED).body("La colección se creó correctamente");
     }
 

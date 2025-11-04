@@ -67,7 +67,6 @@ public class HechosController {
 
     @GetMapping("/public/get")
     public ResponseEntity<?> getHecho(@Valid @RequestParam Long id_hecho, @Valid @RequestParam String fuente){
-        System.out.println("ENTRE A GET HECHO!!!");
         return hechosService.getHecho(id_hecho, fuente);
     }
 

@@ -95,19 +95,14 @@ public class Coleccion {
     private List<HechoRef> hechosConsensuados = new ArrayList<>();
 
 
-    // Helper para upsert por tipo (reemplaza si ya existe uno del mismo Class)
-    private void upsertPorTipo(Filtro filtroNuevo) {
-        criterios.removeIf(f -> f.getClass().equals(filtroNuevo.getClass()));
-        criterios.add(filtroNuevo);
-    }
 
-    // Si querés un setter directo que normalice por tipo:
     public void setCriterios(List<Filtro> filtros) {
         this.criterios.clear();
         if (filtros != null) {
-            for (Filtro f : filtros) upsertPorTipo(f);
+            this.criterios.addAll(filtros);
         }
     }
+
 
     public void addHechos(HechoRef ... hechos){
         this.hechos.addAll(List.of(hechos));
