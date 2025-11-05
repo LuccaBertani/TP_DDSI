@@ -1,5 +1,7 @@
 package modulos.Front.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import modulos.Front.BodyToListConverter;
@@ -12,6 +14,7 @@ import modulos.Front.dtos.output.UsuarioOutputDto;
 import modulos.Front.services.UsuarioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -71,22 +74,26 @@ public class UsuarioController {
 
         UsuarioOutputDto usuarioDto = (UsuarioOutputDto) rta.getBody();
 
-        System.out.println("NOMBRE: " + usuarioDto.getNombre());
-
-        model.addAttribute("usuario", usuarioDto);
+        if(usuarioDto != null) {
+            System.out.println("NOMBRE: " + usuarioDto.getNombreDeUsuario());
+        } else {
+            System.out.println("SOY UNA MIERDA");
+        }
+            model.addAttribute("usuario", usuarioDto);
 
         return "perfil";
     }
 
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @PostMapping("/editar/contrasenia")
-    public String cambiarContrasenia(@Valid @ModelAttribute CambiarContraseniaDtoInput dto, RedirectAttributes ra){
+    public String cambiarContrasenia(@Valid @ModelAttribute CambiarContraseniaDtoInput dto, RedirectAttributes ra, HttpServletRequest request){
 
         ResponseEntity<?> rta = this.usuarioService.cambiarContrasenia(dto);
 
         if(rta.getStatusCode().is2xxSuccessful()){
-            // TODO destroy session
-            return "redirect:perfil";
+            request.getSession().invalidate();
+            SecurityContextHolder.clearContext();
+            return "redirect:/login?logout";
         }
         else if(rta.getBody() != null){
             ra.addFlashAttribute(rta.getBody().toString());
@@ -101,7 +108,7 @@ public class UsuarioController {
 
         if(rta.getStatusCode().is2xxSuccessful()){
             ra.addFlashAttribute("msgExito", "Campos editados correctamente");
-            return "redirect:perfil";
+            return "redirect:/usuarios/perfil";
         }
         else if(rta.getBody() != null){
             ra.addAttribute("msgError", rta.getBody().toString());
@@ -109,15 +116,15 @@ public class UsuarioController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
-    // TODO Destroy session
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     @PostMapping("/editar/nombre-usuario")
-    public String editarNombreDeUsuario(@Valid @ModelAttribute EditarNombreDeUsuarioDtoInput dto, RedirectAttributes ra){
+    public String editarNombreDeUsuario(@Valid @ModelAttribute EditarNombreDeUsuarioDtoInput dto, RedirectAttributes ra, HttpServletRequest request){
         ResponseEntity<?> rta = this.usuarioService.editarNombreDeUsuario(dto);
 
         if(rta.getStatusCode().is2xxSuccessful()){
-            ra.addFlashAttribute("msgExito", "Campos editados correctamente");
-            return "redirect:perfil";
+            request.getSession().invalidate();
+            SecurityContextHolder.clearContext();
+            return "redirect:/login?logout";
         }
         else if(rta.getBody() != null){
             ra.addAttribute("msgError", rta.getBody().toString());
