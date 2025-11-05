@@ -30,15 +30,12 @@ public class HechosController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/subir")
     public String subirHecho(RedirectAttributes ra, @Valid @ModelAttribute SolicitudHechoInputDTO hechoInputDTO){
-
         ResponseEntity<?> rtaDto = this.hechosService.subirHecho(hechoInputDTO);
-
         if(rtaDto.getStatusCode().is2xxSuccessful()){
-            ra.addFlashAttribute("msgExito", "Coleccion creada correctamente");
-            return "redirect:crear";
+            return "redirect:/public/contribuir";
         }
         else if(rtaDto.getBody() != null){
-            ra.addAttribute("msgError", rtaDto.getBody().toString());
+            ra.addFlashAttribute(rtaDto.getBody().toString());
         }
         return "redirect:/" + rtaDto.getStatusCode().value();
     }

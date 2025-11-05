@@ -1,5 +1,6 @@
 package modulos.Front.controllers;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import modulos.Front.BodyToListConverter;
 import modulos.Front.dtos.input.ColeccionInputDTO;
@@ -11,6 +12,7 @@ import modulos.Front.services.ColeccionService;
 import modulos.Front.services.HechosService;
 import modulos.Front.services.SolicitudHechoService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -87,7 +89,7 @@ public class HomeController {
     @GetMapping("/public/contribuir")
     public String contribuir(
             @ModelAttribute("solicitudHecho") SolicitudHechoInputDTO solicitudHecho,
-            Model model) {
+            Model model, HttpSession httpSession) {
 
         // Catálogos base
         ResponseEntity<?> rtaPaises = hechosService.getPaises();
@@ -100,6 +102,16 @@ public class HomeController {
         List<CategoriaDto> categorias = BodyToListConverter.bodyToList(rtaCategorias, CategoriaDto.class);
         model.addAttribute("paises", paises);
         model.addAttribute("categorias", categorias);
+
+        Object username = httpSession.getAttribute("username");
+
+        /*if (username != null){
+
+        }
+        else{
+            model.addAttribute("url", "/solicitudes-hecho/public/subir-hecho");
+        }*/
+
 
         // Provincias si ya hay país seleccionado
         List<ProvinciaDto> provincias = java.util.Collections.emptyList();

@@ -135,13 +135,13 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
     //lo sube un administrador (lo considero carga dinamica)
     @Transactional
-    public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO dtoInput, Jwt principal){
+    public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO dtoInput, String username){
 
         if(dtoInput.getTitulo() == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
+        ResponseEntity<?> rta = checkeoAdmin(username);
 
         if (!rta.getStatusCode().equals(HttpStatus.OK)){
             return rta;
@@ -166,9 +166,12 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         System.out.println("FECHA:" + fecha);
         hecho.getAtributosHecho().setFechaUltimaActualizacion(hecho.getAtributosHecho().getFechaCarga());
 
-        for(MultipartFile contenidoMultimedia : dtoInput.getContenidosMultimedia()){
-            this.guardarContenidoMultimedia(contenidoMultimedia, hecho);
+        if (dtoInput.getContenidosMultimedia() != null){
+            for(MultipartFile contenidoMultimedia : dtoInput.getContenidosMultimedia()){
+                this.guardarContenidoMultimedia(contenidoMultimedia, hecho);
+            }
         }
+
 
         hechosDinamicaRepo.save(hecho);
         hechoRefRepository.save(new HechoRef(hecho.getId(), hecho.getAtributosHecho().getFuente()));

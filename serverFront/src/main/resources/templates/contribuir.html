@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <main th:fragment="contenido" class="container py-4">
 
     <!-- Encabezado -->
@@ -22,6 +23,7 @@
         <input type="hidden" name="id_pais" id="filtroPaisInput">
     </form>
 
+    <!--/hechos/subir-->
     <!-- === FORMULARIO PRINCIPAL (POST real) === -->
     <form id="formPost" th:action="@{/solicitudes-hecho/public/subir-hecho}" method="post"
           th:object="${solicitudHecho}" enctype="multipart/form-data" class="mt-4">
@@ -142,9 +144,13 @@
             <a th:href="@{/}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left me-1"></i> Cancelar
             </a>
-            <button type="submit" class="btn btn-dark">
+            <button type="submit" class="btn btn-dark" sec:authorize="!hasRole('ADMINISTRADOR')">
                 <i class="bi bi-send me-1"></i> Enviar solicitud
             </button>
+            <button type="submit" class="btn btn-dark" sec:authorize="hasRole('ADMINISTRADOR')" th:formaction="@{/hechos/subir}">
+                <i class="bi bi-send me-1"></i> Subir Hecho
+            </button>
+
         </div>
     </form>
 
