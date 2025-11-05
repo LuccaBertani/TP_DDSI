@@ -7,9 +7,9 @@
     <!-- Encabezado -->
     <section class="text-center py-4"
              style="background: radial-gradient(1200px 600px at 50% -150px, #e8ecf6 0%, #f7f9fb 100%);
-                    border-radius:12px;">
+                  border-radius:12px;">
         <h2 class="fw-bold mb-1"><i class="bi bi-globe-americas me-2"></i>Mapa mundial de hechos</h2>
-        <p class="text-muted mb-0">Se muestran sólo los hechos con latitud y longitud.</p>
+        <p class="text-muted mb-0">Hacé clic en un marcador para ver un hecho, o clic en el mapa para contribuir uno nuevo.</p>
     </section>
 
     <!-- Contenedor del mapa -->
@@ -18,40 +18,27 @@
     </div>
 
     <style>
-        #map {
-            height: 75vh;
-            width: 100%;
-        }
-
+        #map { height: 75vh; width: 100%; }
         .leaflet-tooltip {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255,255,255,.95);
             border: 1px solid #ddd;
             color: #222;
             padding: 6px 8px;
             border-radius: 6px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-            font-size: 0.85rem;
-            max-width: 220px;
+            box-shadow: 0 2px 6px rgba(0,0,0,.15);
+            font-size: .85rem; max-width: 220px;
         }
-
-        .leaflet-tooltip strong {
-            display: block;
-            margin-bottom: 3px;
-        }
+        .leaflet-tooltip strong { display:block; margin-bottom:3px; }
     </style>
 
-    <!-- Leaflet CSS -->
+    <!-- Leaflet CSS/JS -->
     <link rel="stylesheet"
           href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-          crossorigin=""/>
-
-    <!-- Leaflet JS -->
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-            crossorigin=""></script>
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-    <!-- Script para el mapa -->
+    <!-- Script -->
     <script th:inline="javascript">
         /*<![CDATA[*/
         const hechos = JSON.parse(/*[[${hechosJson}]]*/ '[]');
@@ -70,18 +57,16 @@
             hechosConCoords.forEach(h => {
                 const marker = L.marker([h.latitud, h.longitud]).addTo(map);
                 const titulo = h.titulo || 'Hecho';
-                const desc = h.descripcion ? String(h.descripcion).slice(0, 180) : '';
+                const desc = h.descripcion ? String(h.descripcion).slice(0,180) : '';
 
-                // Tooltip que aparece al pasar el mouse
-                marker.bindTooltip(
-                    `<strong>${esc(titulo)}</strong>${esc(desc)}`,
-                    { direction: 'top', offset: [0, -5], opacity: 0.9 }
-                );
+                // Tooltip al hover
+                marker.bindTooltip(`<strong>${esc(titulo)}</strong>${esc(desc)}`,
+                    { direction:'top', offset:[0,-5], opacity:.9 });
 
-                // Popup (al hacer click)
+                // Popup al click
                 marker.bindPopup(`<strong>${esc(titulo)}</strong><br>${esc(desc)}`);
 
-                // Click → ir al detalle
+                // Click → detalle
                 marker.on('click', () => {
                     const url = '/hechos/public/get?id_hecho=' + encodeURIComponent(h.id)
                         + (h.fuente ? ('&fuente=' + encodeURIComponent(h.fuente)) : '');
@@ -90,13 +75,20 @@
 
                 bounds.push([h.latitud, h.longitud]);
             });
-            map.fitBounds(bounds, { padding: [30, 30] });
+            map.fitBounds(bounds, { padding: [30,30] });
         } else {
             map.setView([-34.6, -58.45], 3);
         }
 
-        function esc(s) {
-            return String(s || '').replace(/[&<>"']/g, m => (
+        // ✅ Click en mapa → redirige sólo con lat/long
+        map.on('click', (e) => {
+            const lat = e.latlng.lat.toFixed(6);
+            const lon = e.latlng.lng.toFixed(6);
+            window.location.href = `/public/contribuir?latitud=${encodeURIComponent(lat)}&longitud=${encodeURIComponent(lon)}`;
+        });
+
+        function esc(s){
+            return String(s||'').replace(/[&<>"']/g, m => (
                 {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]
             ));
         }

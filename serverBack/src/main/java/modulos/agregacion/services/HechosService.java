@@ -17,20 +17,14 @@ import modulos.agregacion.repositories.DbEstatica.IDatasetsRepository;
 import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
 import modulos.agregacion.repositories.DbMain.*;
 import modulos.agregacion.repositories.DbProxy.IHechosProxyRepository;
-import modulos.shared.dtos.output.CategoriaDto;
-import modulos.shared.dtos.output.PaisDto;
-import modulos.shared.dtos.output.ProvinciaDto;
-import modulos.shared.utils.FechaParser;
-import modulos.shared.utils.FormateadorHecho;
+import modulos.shared.dtos.output.*;
+import modulos.shared.utils.*;
 import modulos.agregacion.entities.DbEstatica.Dataset;
 import modulos.buscadores.*;
 import modulos.shared.dtos.input.*;
-import modulos.shared.utils.FormateadorHechoMemoria;
-import modulos.shared.utils.GestorArchivos;
 import org.hibernate.validator.internal.constraintvalidators.bv.time.futureorpresent.FutureOrPresentValidatorForOffsetDateTime;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
-import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.agregacion.entities.fuentes.FuenteEstatica;
 import modulos.agregacion.entities.DbMain.usuario.Rol;
 import modulos.agregacion.entities.DbMain.usuario.Usuario;
@@ -40,6 +34,7 @@ import modulos.shared.dtos.input.SolicitudHechoInputDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -836,5 +831,32 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         cantidadHechos += hechosProxyRepo.getCantHechos();
 
         return ResponseEntity.ok(cantidadHechos);
+    }
+
+    public ResponseEntity<?> getPaisProvincia(Double latitud, Double longitud){
+        UbicacionString ubicacionString = Geocodificador.obtenerUbicacion(latitud, longitud);
+        if (ubicacionString != null){
+            PaisProvinciaDTO paisProvinciaDTO = new PaisProvinciaDTO();
+            String paisStr = ubicacionString.getPais();
+            if (paisStr != null){
+                Pais pais = repoPais.findByNombreNormalizado(paisStr).orElse(null);
+                if (pais != null){
+                    PaisDto paisDto = PaisDto.builder().pais(paisStr).id(pais.getId()).build();
+                    paisProvinciaDTO.setPaisDto(paisDto);
+                }
+            }
+            String provinciaStr = ubicacionString.getProvincia();
+            if (provinciaStr != null){
+                Provincia provincia = repoProvincia.findByNombreNormalizado(provinciaStr).orElse(null);
+                if (provincia != null){
+                    ProvinciaDto provinciaDto = ProvinciaDto.builder().provincia(provinciaStr).id(provincia.getId()).build();
+                    paisProvinciaDTO.setProvinciaDto(provinciaDto);
+                }
+            }
+
+            return ResponseEntity.ok(paisProvinciaDTO);
+        }
+        return ResponseEntity.notFound().build();
+
     }
 }

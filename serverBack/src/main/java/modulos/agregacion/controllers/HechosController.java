@@ -146,5 +146,10 @@ fecha_acontecimiento_desde, fecha_acontecimiento_hasta, ubicacion BARBARO!!.
         return hechosService.addSinonimoProvincia(principal, id_provincia, sinonimo);
     }
 
+    @GetMapping("/public/pais-provincia")
+    public ResponseEntity<?> getPaisProvincia(@RequestParam Double latitud, @RequestParam Double longitud){
+        return hechosService.getPaisProvincia(latitud, longitud);
+    }
+
 }
 

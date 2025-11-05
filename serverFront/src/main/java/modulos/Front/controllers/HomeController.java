@@ -7,6 +7,7 @@ import modulos.Front.dtos.input.ColeccionInputDTO;
 import modulos.Front.dtos.output.CategoriaDto;
 import modulos.Front.dtos.input.SolicitudHechoInputDTO;
 import modulos.Front.dtos.output.PaisDto;
+import modulos.Front.dtos.output.PaisProvinciaDTO;
 import modulos.Front.dtos.output.ProvinciaDto;
 import modulos.Front.services.ColeccionService;
 import modulos.Front.services.HechosService;
@@ -103,9 +104,21 @@ public class HomeController {
         model.addAttribute("paises", paises);
         model.addAttribute("categorias", categorias);
 
+        Double latitud = solicitudHecho.getLatitud();
+        Double longitud = solicitudHecho.getLongitud();
+
+        if (latitud != null & longitud != null){
+            ResponseEntity<?> rtaLatLon = hechosService.getPaisYProvincia(latitud, longitud);
+            if (rtaLatLon.getStatusCode().is2xxSuccessful()){
+                PaisProvinciaDTO paisProvinciaDTO = (PaisProvinciaDTO) rtaLatLon.getBody();
+                model.addAttribute("pais", paisProvinciaDTO.getPaisDto());
+                model.addAttribute("provincia", paisProvinciaDTO.getProvinciaDto());
+            }
+        }
+
         // Provincias si ya hay país seleccionado
         List<ProvinciaDto> provincias = java.util.Collections.emptyList();
-        if (solicitudHecho != null && solicitudHecho.getId_pais() != null) {
+        if (solicitudHecho.getId_pais() != null) {
             ResponseEntity<?> rtaProv = hechosService.getProvinciasByIdPais(solicitudHecho.getId_pais());
             if (!rtaProv.getStatusCode().is2xxSuccessful()) {
                 return "redirect:/404";
