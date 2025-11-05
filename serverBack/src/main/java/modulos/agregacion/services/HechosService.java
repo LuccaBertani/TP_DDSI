@@ -429,12 +429,18 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     }
 
     private <T> T crearHechoDto(Hecho hecho, Class<T> tipo) {
+
+        System.out.println("ID DEL HECHO: " + hecho.getId());
+
+
         HechoMemoria hechoMemoria = formateadorHechoMemoria.formatearHechoMemoria(hecho);
 
         if (tipo.equals(VisualizarHechosOutputDTO.class)) {
 
-            Usuario usuario = usuariosRepo.findById(hechoMemoria.getUsuario_id()).orElse(null);
-
+            Usuario usuario = null;
+            if(hechoMemoria.getUsuario_id() != null) {
+                usuario = usuariosRepo.findById(hechoMemoria.getUsuario_id()).orElse(null);
+            }
             VisualizarHechosOutputDTO dto = new VisualizarHechosOutputDTO();
             dto.setId(hecho.getId());
             if(usuario != null) {
@@ -517,6 +523,8 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     }
 
     public ResponseEntity<?> getAllHechos(Integer origen) {
+
+        System.out.println("ORIGEN: " +  origen);
 
         List<Hecho> hechosTotales = new ArrayList<>();
         hechosTotales.addAll(hechosEstaticaRepo.findAllByActivoTrue());
