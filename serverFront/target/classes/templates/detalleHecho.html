@@ -1,15 +1,6 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
 <main th:fragment="contenido" class="container py-4">
 
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-3" th:if="${hecho != null}">
-        <ol class="breadcrumb justify-content-center">
-            <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
-            <li class="breadcrumb-item"><a th:href="@{/hechos/public/get-all}">Hechos</a></li>
-            <li class="breadcrumb-item active" aria-current="page" th:text="${hecho.titulo}">Detalle</li>
-        </ol>
-    </nav>
-
     <!-- Header -->
     <div class="p-4 mb-4 mx-auto" style="max-width:900px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;box-shadow:0 10px 24px rgba(2,6,23,.05)" th:if="${hecho != null}">
         <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 mb-2">
@@ -17,7 +8,7 @@
         </div>
 
         <h1 class="h3 text-center mb-0" th:text="${hecho.titulo ?: ''}">Título del hecho</h1>
-        
+
     </div>
 
     <!-- Datos del hecho (todos los campos requeridos) -->

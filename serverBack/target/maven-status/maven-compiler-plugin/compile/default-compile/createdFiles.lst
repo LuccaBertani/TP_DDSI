@@ -167,7 +167,6 @@ modulos\agregacion\entities\DbMain\DatosColeccion.class
 modulos\agregacion\controllers\SolicitudHechoController.class
 modulos\servicioEstadistica\repositories\ICategoriaProvinciaRepository.class
 modulos\agregacion\entities\atributosHecho\AtributosHecho$AtributosHechoBuilder.class
-modulos\agregacion\entities\DbMain\HechosData.class
 modulos\servicioEstadistica\entities\ColeccionProvincia.class
 modulos\agregacion\entities\DbMain\projections\CategoriaCantidadProjection.class
 modulos\agregacion\repositories\DbProxy\IHechosProxyRepository.class

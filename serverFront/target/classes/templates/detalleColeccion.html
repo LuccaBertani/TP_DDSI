@@ -1,36 +1,7 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title th:text="${coleccion.titulo} + ' — MetaMapa'">Detalle de colección — MetaMapa</title>
+<html lang="es" th:replace="~{layout/base :: html}" xmlns:th="http://www.thymeleaf.org">
+<main th:fragment="contenido" class="container py-4">
 
-    <!-- Bootstrap & Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
-
-    <!-- Choices.js (enhanced selects) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
-
-    <style>
-        body { background: #f5f7fb; }
-        .card-elev { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 10px 24px rgba(2,6,23,.05); }
-        .header-ribbon { border-radius: 16px; padding: 18px; color: #fff; background: #0d6efd; box-shadow: 0 8px 24px rgba(2,6,23,.12); }
-        .text-label { font-weight: 600; font-size: 0.85rem; color: #6c757d; }
-        .text-value { font-size: 1rem; color: #212529; }
-    </style>
-</head>
-<body>
-
-<nav class="navbar navbar-expand-lg bg-white border-bottom mb-4">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
-            <span class="rounded-3 d-inline-flex align-items-center justify-content-center me-2"
-                  style="width:34px;height:34px;background:#111;color:#fff;font-weight:800;">M</span>
-            <span class="fw-bold">MetaMapa</span>
-        </a>
-    </div>
-</nav>
 
 <section class="container" style="max-width:960px">
 
@@ -251,6 +222,14 @@
         <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
     </form>
 
+    <style>
+        body { background: #f5f7fb; }
+        .card-elev { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 10px 24px rgba(2,6,23,.05); }
+        .header-ribbon { border-radius: 16px; padding: 18px; color: #fff; background: #0d6efd; box-shadow: 0 8px 24px rgba(2,6,23,.12); }
+        .text-label { font-weight: 600; font-size: 0.85rem; color: #6c757d; }
+        .text-value { font-size: 1rem; color: #212529; }
+    </style>
+
 </section>
 
 <!-- JS: Bootstrap + Choices -->
@@ -335,6 +314,6 @@
     })();
 </script>
 
-</body>
+</main>
 </html>
 
