@@ -11,7 +11,7 @@
     </section>
 
     <!-- Mini-form GET: lleva un espejo de TODOS los campos para no perderlos -->
-    <form id="filtroPaisForm" th:action="@{/contribuir}" method="get" style="display:none;">
+    <form id="filtroPaisForm" th:action="@{/public/contribuir}" method="get" style="display:none;">
         <input type="hidden" name="titulo">
         <input type="hidden" name="descripcion">
         <input type="hidden" name="fechaAcontecimiento">
@@ -23,7 +23,7 @@
     </form>
 
     <!-- === FORMULARIO PRINCIPAL (POST real) === -->
-    <form id="formPost" th:action="@{/solicitudes-hecho/subir-hecho}" method="post"
+    <form id="formPost" th:action="@{/solicitudes-hecho/public/subir-hecho}" method="post"
           th:object="${solicitudHecho}" enctype="multipart/form-data" class="mt-4">
 
         <!-- CSRF -->

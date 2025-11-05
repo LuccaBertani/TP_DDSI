@@ -41,13 +41,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Estos recursos son públicos
                         //.requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
-                        .requestMatchers("/","/login","usuarios/cargar-register","usuarios/registrar-usuario", "/auth").permitAll()
+                        .requestMatchers("/","/login","usuarios/cargar-register","usuarios/registrar-usuario").permitAll()
 
                         // Matchea con Ant (para usar ** en medio del path)
                         .requestMatchers(
-                                antMatcher("/**/public/**"),
-                                antMatcher("/**/auth/**"),
-                                antMatcher("/auth/**")
+                                antMatcher("/**/public/**")
                         ).permitAll()
 
                         //.requestMatchers("/alumnos/**").hasAnyRole("ADMIN", "DOCENTE")

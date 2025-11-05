@@ -6,17 +6,22 @@
   <component name="ChangeListManager">
     <list default="true" id="f850432b-1600-446e-abba-2862d1cc44e3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/ColeccionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/ColeccionController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/colecciones.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/colecciones.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/SolicitudHechoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/SolicitudHechoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/filters/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/filters/JwtAuthenticationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HechosController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HechosController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HomeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/SolicitudHechoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/SolicitudHechoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/SolicitudHechoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/SolicitudHechoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/contribuir.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/contribuir.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/detalleColeccion.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/detalleColeccion.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/gestion.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/gestion.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/layout/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/layout/base.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/mapa.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/mapa.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/perfil.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/perfil.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/solicitudes.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/solicitudes.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/gestion.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/gestion.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/contribuir.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/contribuir.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/mapa.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/mapa.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/solicitudes.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/solicitudes.html" afterDir="false" />
     </list>
     <list id="bd2f9c59-412c-4d85-95af-559cd31f93a3" name="Changes by merce" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -37,18 +42,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "LuccaBertani"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;LuccaBertani&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/dds-utn/2025-tpa-mi-no-grupo-17.git",
-    "accountId": "ad6c2145-da9b-4f6d-a29b-88bea5e350a0"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/dds-utn/2025-tpa-mi-no-grupo-17.git&quot;,
+    &quot;accountId&quot;: &quot;ad6c2145-da9b-4f6d-a29b-88bea5e350a0&quot;
   }
-}]]></component>
+}</component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="ProjectErrors" />
   </component>
@@ -72,6 +77,7 @@
     "RequestMappingsPanelWidth0": "75",
     "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "Spring Boot.MetaMapaApplication (1).executor": "Run",
     "Spring Boot.MetaMapaApplication.executor": "Run",
@@ -316,7 +322,8 @@
       <workItem from="1762148628293" duration="811000" />
       <workItem from="1762186677601" duration="81000" />
       <workItem from="1762209300446" duration="17860000" />
-      <workItem from="1762281982937" duration="5409000" />
+      <workItem from="1762281982937" duration="5562000" />
+      <workItem from="1762293536170" duration="4184000" />
     </task>
     <servers />
   </component>

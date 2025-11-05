@@ -49,7 +49,7 @@
             <li class="nav-item"><a class="nav-link" th:href="@{/hechos/public/get-all}"><i class="bi bi-file-text me-1"></i> Hechos</a></li>
             <li class="nav-item"><a class="nav-link active" th:href="@{/mapa}"><i class="bi bi-map me-1"></i> Mapa</a></li>
             <li class="nav-item"><a class="nav-link" th:href="@{/colecciones/public/get-all}"><i class="bi bi-collection me-1"></i> Colecciones</a></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/contribuir}"><i class="bi bi-plus me-1"></i> Contribuir</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/public/contribuir}"><i class="bi bi-plus me-1"></i> Contribuir</a></li>
             <li class="nav-item" th:if="${isAdmin}"><a class="nav-link" th:href="@{/solicitudes-hecho/get/pendientes}"><i class="bi bi-clipboard-check me-1"></i> Solicitudes</a></li>
             <li class="nav-item" th:if="${isAdmin}"><a class="nav-link" th:href="@{/gestion}"><i class="bi bi-gear me-1"></i> Gestión</a></li>
         </ul>

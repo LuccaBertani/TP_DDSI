@@ -45,11 +45,6 @@ public class HomeController {
         return "mapa";
     }
 
-    @GetMapping("/colecciones")
-    public String colecciones() {
-        return "colecciones";
-    }
-
     /*@GetMapping("/contribuir")
     public String contribuir(@RequestParam(required = false) Long pais_id,
                              @ModelAttribute SolicitudHechoInputDTO solicitudHecho,
@@ -89,7 +84,7 @@ public class HomeController {
     }*/
 
 
-    @GetMapping("/contribuir")
+    @GetMapping("/public/contribuir")
     public String contribuir(
             @ModelAttribute("solicitudHecho") SolicitudHechoInputDTO solicitudHecho,
             Model model) {

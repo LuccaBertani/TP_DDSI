@@ -49,6 +49,7 @@ public class SolicitudHechoController {
     // Anda
     @PostMapping("/public/subir-hecho")
     public ResponseEntity<?> enviarSolicitudSubirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput, @AuthenticationPrincipal String username){
+        System.out.println("HOLAAA");
         return solicitudHechoService.solicitarSubirHecho(dtoInput, username); // 200 o 401
     }
 

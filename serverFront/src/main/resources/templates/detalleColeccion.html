@@ -141,7 +141,7 @@
     <!-- Formulario de filtros -->
     <form id="filtersForm" class="card mb-4"
           th:object="${getHechosColeccionInputDto}"
-          th:action="@{/hechos/get/filtrar}"
+          th:action="@{/hechos/public/get/filtrar}"
           method="post"
           th:attr="data-refresh-url=@{/colecciones/public/get/{id_coleccion}(id_coleccion=${coleccion.id})}">
 

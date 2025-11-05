@@ -61,8 +61,7 @@ public class SolicitudHechoController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
-    @PostMapping("/subir-hecho")
+    @PostMapping("/public/subir-hecho")
     public String enviarSolicitudSubirHecho(@Valid @ModelAttribute SolicitudHechoInputDTO dto, RedirectAttributes ra){
         System.out.println("SOY UNA PIJITA");
 
@@ -76,7 +75,7 @@ public class SolicitudHechoController {
 
 
         if(rta.getStatusCode().is2xxSuccessful()){
-            return "redirect:/contribuir";
+            return "redirect:/public/contribuir";
         }
         else if(rta.getBody() != null){
             ra.addFlashAttribute(rta.getBody().toString());
