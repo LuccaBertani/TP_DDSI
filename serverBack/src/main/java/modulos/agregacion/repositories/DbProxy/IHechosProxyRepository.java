@@ -81,6 +81,11 @@ ORDER BY totalHechos DESC
     List<HechoProxy> findAllByActivoTrue();
 
     @Query(value = """
+        select h from HechoProxy h where h.activo = true and h.atributosHecho.latitud is not null and h.atributosHecho.longitud is not null
+""")
+    List<HechoProxy> findAllByActivoTrueAndLatitudYLongitudNotNull();
+
+    @Query(value = """
     SELECT COUNT(h) FROM HechoProxy h WHERE h.activo = true
     """)
     Long getCantHechos();

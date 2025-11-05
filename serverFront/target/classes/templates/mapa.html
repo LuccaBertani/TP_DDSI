@@ -1,321 +1,107 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
 <main th:fragment="contenido" class="container py-4">
 
-<main class="container-fluid py-4">
-    <!-- Filtros -->
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <div class="input-group">
-                <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
-                <input type="text" id="searchInput" class="form-control" placeholder="Buscar en el mapa…" style="border-left:none">
-            </div>
-        </div>
-        <div class="col-md-4">
-            <select class="form-select" id="categoryFilter">
-                <option value="">Todas las categorías</option>
-                <option th:each="cat : ${categorias}" th:value="${cat.codigo}" th:text="${cat.nombre}">Categoría</option>
-            </select>
-        </div>
+    <!-- Encabezado -->
+    <section class="text-center py-4"
+             style="background: radial-gradient(1200px 600px at 50% -150px, #e8ecf6 0%, #f7f9fb 100%);
+                    border-radius:12px;">
+        <h2 class="fw-bold mb-1"><i class="bi bi-globe-americas me-2"></i>Mapa mundial de hechos</h2>
+        <p class="text-muted mb-0">Se muestran sólo los hechos con latitud y longitud.</p>
+    </section>
+
+    <!-- Contenedor del mapa -->
+    <div class="mt-4 shadow-sm border rounded-3 overflow-hidden">
+        <div id="map"></div>
     </div>
-
-    <!-- Mapa -->
-    <div class="map-container">
-        <div class="bg-light border-bottom p-4">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-globe text-primary fs-2 me-3"></i>
-                <div>
-                    <h3 class="mb-1">Mapa mundial de hechos</h3>
-                    <p class="text-muted mb-0">Hacé clic en los marcadores para ver detalles rápidos</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="row g-0">
-            <div class="col-lg-8"><div id="map"></div></div>
-            <div class="col-lg-4 border-start bg-white map-sidebar">
-                <div class="p-4">
-                    <!-- Estado por defecto -->
-                    <div id="defaultView" class="text-center py-4 mb-4 bg-light rounded">
-                        <i class="bi bi-bullseye text-muted" style="font-size:3rem"></i>
-                        <h5 class="mt-3 mb-2">Seleccioná un hecho</h5>
-                        <p class="text-muted small mb-0">Tocá un marcador para ver su información</p>
-                    </div>
-
-                    <!-- Detalle seleccionado -->
-                    <div id="factDetail" class="d-none">
-                        <div class="mb-3">
-                            <button class="btn btn-sm btn-outline-secondary mb-3" onclick="clearSelection()">
-                                <i class="bi bi-arrow-left me-1"></i>Volver
-                            </button>
-                            <h5 id="factTitle" class="fw-bold"></h5>
-                            <span id="factCategory" class="badge mb-3"></span>
-                        </div>
-                        <p id="factDescription" class="text-muted mb-3"></p>
-                        <div class="mb-3">
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="bi bi-geo-alt text-muted me-2"></i><span id="factLocation" class="small"></span>
-                            </div>
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="bi bi-calendar text-muted me-2"></i><span id="factDate" class="small"></span>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-folder2 text-muted me-2"></i><span id="factMedia" class="small text-warning"></span>
-                            </div>
-                        </div>
-                        <div class="d-grid gap-2">
-                            <a class="btn btn-primary btn-sm" id="factViewLink"><i class="bi bi-eye me-1"></i>Ver detalle</a>
-                            <a class="btn btn-outline-danger btn-sm" id="factReportLink"><i class="bi bi-exclamation-triangle me-1"></i>Reportar</a>
-                        </div>
-                    </div>
-
-                    <!-- Lista -->
-                    <div class="mt-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="fw-bold mb-0">Eventos en el mapa</h6>
-                            <span class="badge bg-primary" id="eventCount">0 eventos</span>
-                        </div>
-                        <div class="border rounded" id="factsList"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Stats simples -->
-    <div class="row mt-4">
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm"><div class="card-body text-center">
-                <i class="bi bi-pin-map text-primary fs-1"></i>
-                <h5 class="mt-2" id="statsEvents">0</h5>
-                <p class="text-muted mb-0 small">Eventos mostrados</p>
-            </div></div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm"><div class="card-body text-center">
-                <i class="bi bi-globe text-success fs-1"></i>
-                <h5 class="mt-2" id="statsCountries">0</h5>
-                <p class="text-muted mb-0 small">Países representados</p>
-            </div></div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm"><div class="card-body text-center">
-                <i class="bi bi-calendar-range text-warning fs-1"></i>
-                <h5 class="mt-2" th:text="${rangoAnios} ?: '—'">—</h5>
-                <p class="text-muted mb-0 small">Años de historia</p>
-            </div></div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm"><div class="card-body text-center">
-                <i class="bi bi-eye text-info fs-1"></i>
-                <h5 class="mt-2" th:text="${visitasHoy} ?: 0">0</h5>
-                <p class="text-muted mb-0 small">Visualizaciones hoy</p>
-            </div></div>
-        </div>
-    </div>
-</main>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-
-<!-- Form oculto para reportar (POST) -->
-<form id="reportForm" th:action="@{/solicitudes-hecho/reportes/reportar}" method="post" class="d-none">
-    <input type="hidden" name="id_hecho">
-    <input type="hidden" name="fuente">
-    <input type="hidden" name="motivo">
-    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-</form>
 
     <style>
-        :root { --primary-color:#4f46e5; }
-        .nav-pills-custom .nav-link.active{ background-color:var(--primary-color); color:#fff }
-        .map-container{ background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1) }
-        #map{ height:600px;width:100% }
-        .fact-list-item{ padding:12px;border-bottom:1px solid #f1f5f9;cursor:pointer;transition:.2s }
-        .fact-list-item:hover{ background:#f8f9fa }
-        .fact-list-item.selected{ background:#e7f3ff;border-left:3px solid var(--primary-color) }
-        .custom-marker{ width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.3);
-            display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;cursor:pointer }
-        .leaflet-popup-content-wrapper{ border-radius:8px }
-        @media (max-width:768px){ #map{height:420px} .map-sidebar{margin-top:20px} }
+        #map {
+            height: 75vh;
+            width: 100%;
+        }
+
+        .leaflet-tooltip {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #ddd;
+            color: #222;
+            padding: 6px 8px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            font-size: 0.85rem;
+            max-width: 220px;
+        }
+
+        .leaflet-tooltip strong {
+            display: block;
+            margin-bottom: 3px;
+        }
     </style>
 
-<!-- JS con Thymeleaf inline para pasar datos -->
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    // Hechos provistos por el backend
-    const hechos = /*[[${hechos}]]*/ [];
-    const catToBootstrap = /*[[${catToBootstrap}]]*/ {"politica":"primary","exploracion":"success","guerra":"danger","independencia":"warning","cientifica":"secondary"};
-    const catToHex = /*[[${catToHex}]]*/ {"politica":"#4f46e5","exploracion":"#059669","guerra":"#dc2626","independencia":"#f59e0b","cientifica":"#7c3aed"};
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
 
-    let map, markers = [], selectedId = null;
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
 
-    function initMap(){
-        map = L.map('map').setView([-20,-60], 3);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{ attribution:'© OpenStreetMap contributors' }).addTo(map);
+    <!-- Script para el mapa -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const hechos = JSON.parse(/*[[${hechosJson}]]*/ '[]');
 
-        addMarkers(hechos);
-        renderList(hechos);
-        updateStats(hechos);
-    }
+        const map = L.map('map');
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
 
-    function addMarkers(list){
-        markers.forEach(m => map.removeLayer(m));
-        markers = [];
+        const hechosConCoords = (hechos || []).filter(h =>
+            h && typeof h.latitud === 'number' && typeof h.longitud === 'number'
+        );
 
-        list.forEach(h => {
-            if(h.latitud == null || h.longitud == null) return;
-            const cls = 'custom-marker';
-            const html = `<div class="${cls}" style="background:${catToHex[h.categoria]||'#4f46e5'}">${(h.titulo||'?').substring(0,1).toUpperCase()}</div>`;
-            const marker = L.marker([h.latitud, h.longitud], { icon: L.divIcon({className:'', html, iconSize:[30,30], iconAnchor:[15,15]}) })
-                .addTo(map)
-                .bindPopup(popupFor(h))
-                .on('click', () => selectFact(h.id));
-            markers.push(marker);
-        });
+        if (hechosConCoords.length > 0) {
+            const bounds = [];
+            hechosConCoords.forEach(h => {
+                const marker = L.marker([h.latitud, h.longitud]).addTo(map);
+                const titulo = h.titulo || 'Hecho';
+                const desc = h.descripcion ? String(h.descripcion).slice(0, 180) : '';
 
-        document.getElementById('eventCount').textContent = `${list.length} eventos`;
-        document.getElementById('statsEvents').textContent = list.length;
-    }
+                // Tooltip que aparece al pasar el mouse
+                marker.bindTooltip(
+                    `<strong>${esc(titulo)}</strong>${esc(desc)}`,
+                    { direction: 'top', offset: [0, -5], opacity: 0.9 }
+                );
 
-    function popupFor(h){
-        const hex = catToHex[h.categoria] || '#4f46e5';
-        const fechaTxt = h.fechaAcontecimiento ? new Date(h.fechaAcontecimiento).toLocaleDateString() : '—';
-        return `
-      <div class="popup-content">
-        <h6 style="color:${hex}">${escapeHtml(h.titulo||'')}</h6>
-        <span class="badge" style="background:${hex};color:#fff">${escapeHtml(cap(h.categoria||'—'))}</span>
-        <p class="small mt-2 mb-2">${escapeHtml(h.descripcion||'')}</p>
-        <div class="small text-muted">
-          <div><i class="bi bi-geo-alt me-1"></i>${escapeHtml(h.ubicacion||'—')}</div>
-          <div><i class="bi bi-calendar me-1"></i>${fechaTxt}</div>
-        </div>
-      </div>`;
-    }
+                // Popup (al hacer click)
+                marker.bindPopup(`<strong>${esc(titulo)}</strong><br>${esc(desc)}`);
 
-    function selectFact(id){
-        selectedId = id;
-        const h = hechos.find(x => x.id === id);
-        if(!h) return;
+                // Click → ir al detalle
+                marker.on('click', () => {
+                    const url = '/hechos/public/get?id_hecho=' + encodeURIComponent(h.id)
+                        + (h.fuente ? ('&fuente=' + encodeURIComponent(h.fuente)) : '');
+                    window.location.href = url;
+                });
 
-        document.getElementById('defaultView').classList.add('d-none');
-        document.getElementById('factDetail').classList.remove('d-none');
-
-        document.getElementById('factTitle').textContent = h.titulo || '';
-        document.getElementById('factDescription').textContent = h.descripcion || '';
-        document.getElementById('factLocation').textContent = h.ubicacion || '—';
-        document.getElementById('factDate').textContent = h.fechaAcontecimiento ? new Date(h.fechaAcontecimiento).toLocaleDateString() : '—';
-        document.getElementById('factMedia').textContent = (h.archivosCount||0) + ' archivos multimedia';
-
-        const catBadge = document.getElementById('factCategory');
-        catBadge.textContent = cap(h.categoria || '—');
-        catBadge.className = 'badge mb-3 bg-' + (catToBootstrap[h.categoria] || 'secondary');
-
-        // Ver detalle: GET /hechos/public/get
-        const viewUrl = '/hechos/public/get?id_hecho=' + h.id + (h.fuente ? ('&fuente=' + encodeURIComponent(h.fuente)) : '');
-        document.getElementById('factViewLink').setAttribute('href', viewUrl);
-
-        // Reportar: POST /solicitudes-hecho/reportes/reportar
-        const reportBtn = document.getElementById('factReportLink');
-        reportBtn.onclick = (ev) => { ev.preventDefault(); reportFact(h); };
-
-        highlightSelected();
-        if(h.latitud != null && h.longitud != null){ map.setView([h.latitud,h.longitud], 6); }
-    }
-
-    function reportFact(h){
-        const motivo = window.prompt('Motivo del reporte (obligatorio):');
-        if(!motivo) return;
-        const form = document.getElementById('reportForm');
-        form.querySelector('input[name="id_hecho"]').value = h.id;
-        if (form.querySelector('input[name="fuente"]')) {
-            form.querySelector('input[name="fuente"]').value = h.fuente || '';
+                bounds.push([h.latitud, h.longitud]);
+            });
+            map.fitBounds(bounds, { padding: [30, 30] });
+        } else {
+            map.setView([-34.6, -58.45], 3);
         }
-        form.querySelector('input[name="motivo"]').value = motivo;
-        form.submit();
-    }
 
-    function clearSelection(){
-        selectedId = null;
-        document.getElementById('defaultView').classList.remove('d-none');
-        document.getElementById('factDetail').classList.add('d-none');
-        highlightSelected();
-        map.setView([-20,-60], 3);
-    }
-
-    function renderList(list){
-        const box = document.getElementById('factsList');
-        box.innerHTML = '';
-        list.forEach(h => {
-            const badge = catToBootstrap[h.categoria] || 'secondary';
-            const fechaTxt = h.fechaAcontecimiento ? new Date(h.fechaAcontecimiento).toLocaleDateString() : '—';
-            const el = document.createElement('div');
-            el.className = 'fact-list-item';
-            el.addEventListener('click', () => selectFact(h.id));
-            el.innerHTML = `
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <div class="fw-semibold small">${escapeHtml(h.titulo||'')}</div>
-            <div class="text-muted small"><i class="bi bi-geo-alt me-1"></i>${escapeHtml(h.ubicacion||'—')}</div>
-            <div class="text-muted small"><i class="bi bi-calendar me-1"></i>${fechaTxt}</div>
-          </div>
-          <span class="badge bg-${badge} text-white">${escapeHtml(cap(h.categoria||'—'))}</span>
-        </div>`;
-            box.appendChild(el);
-        });
-        highlightSelected();
-    }
-
-    function highlightSelected(){
-        const items = document.querySelectorAll('.fact-list-item');
-        items.forEach((el, idx) => {
-            const h = hechos[idx];
-            el.classList.toggle('selected', !!h && h.id === selectedId);
-        });
-    }
-
-    function filterByCategory(){
-        const v = document.getElementById('categoryFilter').value;
-        const filtered = v ? hechos.filter(h => (h.categoria||'') === v) : hechos.slice();
-        addMarkers(filtered);
-        renderList(filtered);
-        updateStats(filtered);
-    }
-
-    function searchFacts(){
-        const q = document.getElementById('searchInput').value.toLowerCase();
-        const v = document.getElementById('categoryFilter').value;
-        let filtered = hechos.slice();
-        if(v){ filtered = filtered.filter(h => (h.categoria||'') === v); }
-        if(q){
-            filtered = filtered.filter(h =>
-                (h.titulo||'').toLowerCase().includes(q) ||
-                (h.descripcion||'').toLowerCase().includes(q) ||
-                (h.ubicacion||'').toLowerCase().includes(q)
-            );
+        function esc(s) {
+            return String(s || '').replace(/[&<>"']/g, m => (
+                {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]
+            ));
         }
-        addMarkers(filtered);
-        renderList(filtered);
-        updateStats(filtered);
-    }
-
-    function updateStats(list){
-        document.getElementById('statsEvents').textContent = list.length;
-        const countries = new Set(list.map(h => (h.ubicacion||'').split(',').pop()?.trim()).filter(Boolean));
-        document.getElementById('statsCountries').textContent = countries.size;
-    }
-
-    // Helpers
-    function cap(s){ if(!s) return s; return s.charAt(0).toUpperCase()+s.slice(1); }
-    function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-
-    // Listeners
-    document.addEventListener('DOMContentLoaded', initMap);
-    document.getElementById('categoryFilter').addEventListener('change', filterByCategory);
-    document.getElementById('searchInput').addEventListener('input', searchFacts);
-    /*]]>*/
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        /*]]>*/
+    </script>
 
 </main>
 </html>

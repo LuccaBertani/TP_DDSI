@@ -102,6 +102,12 @@ LIMIT 1;
 """)
     List<HechoDinamica> findAllByActivoTrue();
 
+
+    @Query(value = """
+        select h from HechoDinamica h where h.activo = true and h.atributosHecho.latitud is not null and h.atributosHecho.longitud is not null
+""")
+    List<HechoDinamica> findAllByActivoTrueAndLatitudYLongitudNotNull();
+
     @Query(value = """
     SELECT COUNT(h) FROM HechoDinamica h WHERE h.activo = true
     """)

@@ -62,6 +62,12 @@ public class HechosController {
         return hechosService.getAllHechos(origen);
     }
 
+    @GetMapping("/public/get-mapa")
+    public ResponseEntity<?> getHechosConLatitudYLongitud(@RequestParam Integer origen){
+        System.out.println("ENTRO A getHechosConLatitudYLongitud");
+        return hechosService.getHechosConLatitudYLongitud(origen);
+    }
+
     // Anda
     @PostMapping("/public/get/filtrar")
     public ResponseEntity<?> getHechosFiltradosColeccion(
