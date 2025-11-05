@@ -38,6 +38,10 @@ public class HechosService {
         return webApiCallerService.postList(this.hechoServiceUrl + "/public/get/filtrar", inputDTO, VisualizarHechosOutputDTO.class);
     }
 
+    public ResponseEntity<?> getHechosConLatitudYLongitud(){
+        return webApiCallerService.getListSinToken(this.hechoServiceUrl + "/public/get-mapa?origen=0", VisualizarHechosOutputDTO.class);
+    }
+
     public ResponseEntity<?> getPaises() {
         return webApiCallerService.getListSinToken(this.hechoServiceUrl + "/public/paises/get-all", PaisDto.class);
     }

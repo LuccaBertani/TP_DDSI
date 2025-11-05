@@ -1,5 +1,6 @@
 package modulos.Front.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import modulos.Front.BodyToListConverter;
@@ -25,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HechosController {
     private final HechosService hechosService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
@@ -72,6 +74,28 @@ public class HechosController {
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
 
+    @GetMapping("/public/get-mapa")
+    public String getHechosConLatitudYLongitud(Model model){
+        ResponseEntity<?> rtaDto = this.hechosService.getHechosConLatitudYLongitud();
+
+        if (rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null) {
+            List<VisualizarHechosOutputDTO> hechos =
+                    BodyToListConverter.bodyToList(rtaDto, VisualizarHechosOutputDTO.class);
+
+            // Serializamos a JSON para evitar problemas de Thymeleaf con objetos complejos
+            String hechosJson;
+            try {
+                hechosJson = objectMapper.writeValueAsString(hechos);
+            } catch (Exception e) {
+                hechosJson = "[]";
+            }
+
+            model.addAttribute("hechosJson", hechosJson);
+            model.addAttribute("SolicitudHechoInputDTO", new SolicitudHechoInputDTO());
+            return "mapa"; // nombre del template
+        }
+        return "redirect:/" + rtaDto.getStatusCode().value();
+    }
     @GetMapping("/public/get")
     public String getHecho(Model model, Long id_hecho, String fuente){
         ResponseEntity<?> rtaDto = this.hechosService.getHecho(id_hecho, fuente);
@@ -90,6 +114,7 @@ public class HechosController {
         }
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
+
 
     @PostMapping("/public/get/filtrar")
     public String getHechosFiltradosColeccion(@Valid @ModelAttribute GetHechosColeccionInputDTO inputDTO, Model model){
@@ -112,6 +137,9 @@ public class HechosController {
         }
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
+
+
+
 
     //todo falta
 

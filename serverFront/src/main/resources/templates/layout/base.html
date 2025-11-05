@@ -37,7 +37,7 @@
             <ul class="navbar-nav me-auto">
                 <!-- Ajustá estas rutas a tus controllers reales -->
                 <li class="nav-item"><a class="nav-link" th:href="@{/hechos/public/get-all}">Hechos</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/mapa}">Mapa</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/hechos/public/get-mapa}">Mapa</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/colecciones/public/get-all}">Colecciones</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/public/contribuir}">Contribuir</a></li>
                 <li class="nav-item" sec:authorize="hasRole('ADMINISTRADOR')">

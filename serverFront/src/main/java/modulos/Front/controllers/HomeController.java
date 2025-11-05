@@ -42,7 +42,7 @@ public class HomeController {
         return "index";
     }
 
-    @GetMapping("/mapa")
+    @GetMapping("/public/mapa")
     public String mapa() {
         return "mapa";
     }
@@ -102,16 +102,6 @@ public class HomeController {
         List<CategoriaDto> categorias = BodyToListConverter.bodyToList(rtaCategorias, CategoriaDto.class);
         model.addAttribute("paises", paises);
         model.addAttribute("categorias", categorias);
-
-        Object username = httpSession.getAttribute("username");
-
-        /*if (username != null){
-
-        }
-        else{
-            model.addAttribute("url", "/solicitudes-hecho/public/subir-hecho");
-        }*/
-
 
         // Provincias si ya hay país seleccionado
         List<ProvinciaDto> provincias = java.util.Collections.emptyList();

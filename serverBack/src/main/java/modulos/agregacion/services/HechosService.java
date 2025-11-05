@@ -546,6 +546,30 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
+    public ResponseEntity<?> getHechosConLatitudYLongitud(Integer origen) {
+
+        System.out.println("ORIGEN: " +  origen);
+
+        List<Hecho> hechosTotales = new ArrayList<>();
+        hechosTotales.addAll(hechosEstaticaRepo.findAllByActivoTrueAndLatitudYLongitudNotNull());
+        hechosTotales.addAll(hechosDinamicaRepo.findAllByActivoTrueAndLatitudYLongitudNotNull());
+        hechosTotales.addAll(hechosProxyRepo.findAllByActivoTrueAndLatitudYLongitudNotNull());
+
+        if (OrigenConexion.fromCodigo(origen).equals(OrigenConexion.FRONT)) {
+            List<VisualizarHechosOutputDTO> outputDTO = hechosTotales.stream()
+                    .map(hecho -> crearHechoDto(hecho, VisualizarHechosOutputDTO.class))
+                    .toList();
+            return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
+        } else if (OrigenConexion.fromCodigo(origen).equals(OrigenConexion.PROXY)) {
+            List<HechoMetamapaResponse> outputDTO = hechosTotales.stream()
+                    .map(hecho -> crearHechoDto(hecho, HechoMetamapaResponse.class))
+                    .toList();
+            return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
     private <T> Specification<T> perteneceAColeccionYesConsensuadoSiAplica(List<Long> idsHechosDeColeccionYConsensuados, Class<T> clazz) {
         if (idsHechosDeColeccionYConsensuados == null || idsHechosDeColeccionYConsensuados.isEmpty()) {
             // devuelve false siempre -> WHERE 1=0
