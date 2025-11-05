@@ -1,6 +1,7 @@
 <!-- templates/colecciones.html -->
-<html th:replace="~{layout/base :: html}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security" th:replace="~{layout/base :: html}">
 <main th:fragment="contenido">
+
     <!-- Header -->
     <section class="text-center py-4" style="background: radial-gradient(1200px 600px at 50% -150px,#e8ecf6 0%,#f5f7fb 45%,#ffffff 100%);">
         <div class="container d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3">
@@ -12,10 +13,29 @@
                 <p class="text-muted m-0">Organizá conjuntos de hechos históricos relacionados</p>
             </div>
             <div class="text-center text-lg-end">
-                <a th:href="@{/colecciones/crear}" class="btn btn-dark btn-lg">
+                <a th:href="@{/colecciones/crear}" class="btn btn-dark btn-lg" sec:authorize="hasRole('ADMINISTRADOR')">
                     <i class="bi bi-plus-circle me-1"></i> Nueva colección
                 </a>
             </div>
+        </div>
+
+        <!-- Controles: contador + selector -->
+        <div class="container pt-3 d-flex justify-content-end align-items-center gap-3"
+             th:if="${colecciones != null and !#lists.isEmpty(colecciones)}">
+      <span class="badge rounded-pill bg-dark-subtle text-dark"
+            th:text="${#lists.size(colecciones)} + ' resultados'">0 resultados</span>
+
+            <span id="rangeInfo" class="text-muted small">Viendo 1–0 de 0 resultados</span>
+
+            <label for="pageSize" class="text-muted small mb-0">Mostrar por página:</label>
+            <select id="pageSize" class="form-select form-select-sm" style="width:auto">
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+                <option value="0">Todos</option>
+            </select>
         </div>
     </section>
 
@@ -25,14 +45,14 @@
             <i class="bi bi-collection display-4 text-muted d-block mb-2"></i>
             <h4 class="text-muted">No hay colecciones</h4>
             <p class="text-muted">Aún no hay colecciones cargadas en el sistema.</p>
-            <a th:href="@{/colecciones/crear}" class="btn btn-dark">
+            <a th:href="@{/colecciones/crear}" class="btn btn-dark" sec:authorize="hasRole('ADMINISTRADOR')">
                 <i class="bi bi-plus-circle me-1"></i> Crear colección
             </a>
         </div>
 
         <!-- Grid -->
-        <div class="row g-3" th:if="${colecciones != null and !#lists.isEmpty(colecciones)}">
-            <div class="col-12 col-sm-6 col-lg-4 col-xxl-3" th:each="c : ${colecciones}">
+        <div id="coleccionesGrid" class="row g-3" th:if="${colecciones != null and !#lists.isEmpty(colecciones)}">
+            <div class="col-12 col-sm-6 col-lg-4 col-xxl-3 coleccion-item" th:each="c : ${colecciones}">
                 <div class="card h-100 border-0 shadow-sm coleccion-card">
                     <!-- Encabezado compacto -->
                     <div class="card-header border-0 py-3" style="background:linear-gradient(180deg,#f6f8fc, #ffffff);">
@@ -52,14 +72,14 @@
 
                     <!-- Cuerpo -->
                     <div class="card-body d-flex flex-column py-3">
-                        <!-- (Opcional) Tags/estadísticas resumidas; dejé placeholders comentados
+                        <!-- (Opcional) stats/tags -->
+                        <!--
                         <div class="mb-2 d-flex flex-wrap gap-2">
                           <span class="badge text-bg-light border">Hechos: <span th:text="${c.cantidadHechos} ?: 0">0</span></span>
                           <span class="badge text-bg-light border" th:if="${c.activo}">Activa</span>
                         </div>
                         -->
 
-                        <!-- Empuja los botones al fondo -->
                         <div class="mt-auto d-flex justify-content-between align-items-center">
                             <a class="btn btn-outline-dark btn-sm"
                                th:href="@{/colecciones/public/get/{id}(id=${c.id})}">
@@ -83,18 +103,49 @@
     <style>
         /* Interacciones sutiles */
         .coleccion-card:hover { transform: translateY(-2px); box-shadow:0 10px 24px rgba(2,6,23,.08); transition: transform .12s ease, box-shadow .12s ease; }
-
         /* Evita textos larguísimos que estiren la tarjeta */
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         /* Botones más vivos sin saltos bruscos */
         .btn:hover{ transform: translateY(-1px); transition: transform .08s ease; }
     </style>
-</main>
 
+    <!-- Script: mostrar N tarjetas o todas, actualizar contador, recordar preferencia -->
+    <script>
+        (function () {
+          const grid = document.getElementById('coleccionesGrid');
+          if (!grid) return;
+
+          const items = Array.from(grid.querySelectorAll('.coleccion-item'));
+          const total = items.length;
+
+          const select = document.getElementById('pageSize');
+          const info   = document.getElementById('rangeInfo');
+
+          // Preferencia previa
+          const saved = localStorage.getItem('coleccionesPageSize');
+          if (saved !== null && select.querySelector(`option[value="${saved}"]`)) {
+            select.value = saved;
+          }
+
+          function render() {
+            const n = parseInt(select.value, 10);
+            const showAll = (n === 0) || (n >= total);
+
+            items.forEach((el, idx) => {
+              el.style.display = (showAll || idx < n) ? '' : 'none';
+            });
+
+            const shown = showAll ? total : Math.min(n, total);
+            if (info) info.textContent = `Viendo 1–${shown} de ${total} resultados`;
+          }
+
+          select.addEventListener('change', () => {
+            localStorage.setItem('coleccionesPageSize', select.value);
+            render();
+          });
+
+          render();
+        })();
+    </script>
+</main>
 </html>
