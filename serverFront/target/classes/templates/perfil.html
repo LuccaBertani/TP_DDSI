@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
 <main th:fragment="contenido" class="container py-4">
 <head>
     <meta charset="UTF-8" />
@@ -66,8 +67,8 @@
             <li class="nav-item"><a class="nav-link" th:href="@{/mapa}"><i class="bi bi-map me-1"></i> Mapa</a></li>
             <li class="nav-item"><a class="nav-link" th:href="@{/colecciones/public/get-all}"><i class="bi bi-collection me-1"></i> Colecciones</a></li>
             <li class="nav-item"><a class="nav-link" th:href="@{/public/contribuir}"><i class="bi bi-plus me-1"></i> Contribuir</a></li>
-            <li class="nav-item" th:if="${isAdmin}"><a class="nav-link" th:href="@{/solicitudes-hecho/get/pendientes}"><i class="bi bi-clipboard-check me-1"></i> Solicitudes</a></li>
-            <li class="nav-item" th:if="${isAdmin}"><a class="nav-link" th:href="@{/gestion}"><i class="bi bi-gear me-1"></i> Gestión</a></li>
+            <li class="nav-item" sec:authorize="hasRole('ADMINISTRADOR')"><a class="nav-link" th:href="@{/solicitudes-hecho/get/pendientes}"><i class="bi bi-clipboard-check me-1"></i> Solicitudes</a></li>
+            <li class="nav-item" sec:authorize="hasRole('ADMINISTRADOR')"><a class="nav-link" th:href="@{/gestion}"><i class="bi bi-gear me-1"></i> Gestión</a></li>
             <li class="nav-item"><a class="nav-link active" th:href="@{/usuarios/perfil}"><i class="bi bi-person-circle me-1"></i> Mi Perfil</a></li>
         </ul>
     </div>
@@ -94,22 +95,24 @@
                 <h5 class="mb-3"><i class="bi bi-id-card me-2"></i>Datos del usuario</h5>
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <label class="form-label small text-muted">Nombre</label>
-                        <input class="form-control" th:value="${usuario?.nombre} ?: '—'" readonly>
+                        <label for = "nombre" class="form-label small text-muted">Nombre</label>
+                        <input id= "nombre" class="form-control" th:value="${usuario?.nombre} ?: '—'" readonly>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label small text-muted">Apellido</label>
-                        <input class="form-control" th:value="${usuario?.apellido} ?: '—'" readonly>
+                        <label for = "apellido" class="form-label small text-muted">Apellido</label>
+                        <input id = "apellido" class="form-control" th:value="${usuario?.apellido} ?: '—'" readonly>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label small text-muted">Edad</label>
-                        <input class="form-control" th:value="${usuario?.edad} ?: '—'" readonly>
+                        <label for = "edad" class="form-label small text-muted">Edad</label>
+                        <input id = "edad" class="form-control" th:value="${usuario?.edad} ?: '—'" readonly>
                     </div>
                     <div class="col-md-8">
                         <label class="form-label small text-muted">Nombre de usuario</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-at"></i></span>
-                            <input class="form-control" th:value="${usuario?.nombreDeUsuario} ?: '—'" readonly>
+                            <span id = class="input-group-text"><i class="bi bi-at"></i></span>
+                            <label>
+                                <input class="form-control" th:value="${usuario?.nombreDeUsuario} ?: '—'" readonly>
+                            </label>
                         </div>
                     </div>
                     <div class="col-12">
@@ -131,8 +134,10 @@
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-at"></i></span>
                                 <!-- Si tu DTO usa otro nombre de campo, cambialo aquí -->
-                                <input type="text" class="form-control" name="nuevoNombreDeUsuario"
-                                       placeholder="nuevo_usuario" minlength="3" maxlength="30" required>
+                                <label>
+                                    <input type="text" class="form-control" name="nuevoNombreDeUsuario"
+                                           placeholder="nuevo_usuario" minlength="3" maxlength="30" required>
+                                </label>
                             </div>
                             <div class="form-text">Debe ser único y sin espacios.</div>
                         </div>
@@ -152,16 +157,22 @@
                         <div class="col-md-6">
                             <label class="form-label">Contraseña actual</label>
                             <!-- Si tu DTO usa otro nombre de campo, cambialo aquí -->
-                            <input type="password" class="form-control" name="actual" required autocomplete="current-password">
+                            <label>
+                                <input type="password" class="form-control" name="actual" required autocomplete="current-password">
+                            </label>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Nueva contraseña</label>
-                            <input type="password" class="form-control" name="nueva" required minlength="8" autocomplete="new-password">
+                            <label>
+                                <input type="password" class="form-control" name="nueva" required minlength="8" autocomplete="new-password">
+                            </label>
                             <div class="form-text">Mínimo 8 caracteres. Recomendado: mayúsculas, minúsculas, número y símbolo.</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Repetir nueva contraseña</label>
-                            <input type="password" class="form-control" name="nueva2" required minlength="8" autocomplete="new-password">
+                            <label>
+                                <input type="password" class="form-control" name="nueva2" required minlength="8" autocomplete="new-password">
+                            </label>
                         </div>
                         <div class="col-md-6 d-flex align-items-end justify-content-md-end">
                             <button class="btn btn-primary" type="submit"><i class="bi bi-key me-1"></i>Actualizar contraseña</button>

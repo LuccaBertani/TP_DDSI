@@ -71,6 +71,8 @@ public class UsuarioController {
 
         UsuarioOutputDto usuarioDto = (UsuarioOutputDto) rta.getBody();
 
+        System.out.println("NOMBRE: " + usuarioDto.getNombre());
+
         model.addAttribute("usuario", usuarioDto);
 
         return "perfil";
