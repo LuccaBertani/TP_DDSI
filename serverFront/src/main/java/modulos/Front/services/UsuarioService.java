@@ -1,6 +1,7 @@
 package modulos.Front.services;
 
 import modulos.Front.dtos.input.*;
+import modulos.Front.dtos.output.UsuarioOutputDto;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -73,8 +74,8 @@ public class UsuarioService {
         return webApiCallerService.getEntity(this.usuarioServiceUrl + "/get-all", Void.class);
     }
 
-    public ResponseEntity<?> getUsuario() {
-        return webApiCallerService.getEntity(this.usuarioServiceUrl + "/get/usuario", Void.class);
+    public ResponseEntity<UsuarioOutputDto> getUsuario() {
+        return webApiCallerService.getEntity(this.usuarioServiceUrl + "/get/usuario", UsuarioOutputDto.class);
     }
 
     public ResponseEntity<?> obtenerMensajes() {

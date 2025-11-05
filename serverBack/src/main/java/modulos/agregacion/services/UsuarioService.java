@@ -66,10 +66,10 @@ public class UsuarioService {
         return ResponseEntity.ok(usuario.getRol());
     }
 
-    public ResponseEntity<?> cambiarContrasenia(CambiarContraseniaDtoInput dtoImput, Jwt principal) {
+    public ResponseEntity<?> cambiarContrasenia(CambiarContraseniaDtoInput dtoImput, String username) {
 
 
-        Usuario usuario = usuarioRepo.findByNombreDeUsuario(JwtClaimExtractor.getUsernameFromToken(principal)).orElse(null);
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(username).orElse(null);
 
         if (usuario == null || !passwordEncoder.matches(dtoImput.getContrasenia_actual(), usuario.getContrasenia())) {
             return ResponseEntity
@@ -85,9 +85,9 @@ public class UsuarioService {
 
     }
 
-    public ResponseEntity<?> editarUsuario(EditarUsuarioDtoInput dtoImput, Jwt principal) {
+    public ResponseEntity<?> editarUsuario(EditarUsuarioDtoInput dtoImput, String username) {
 
-        Usuario usuario = usuarioRepo.findByNombreDeUsuario(JwtClaimExtractor.getUsernameFromToken(principal)).orElse(null);
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(username).orElse(null);
 
         if (usuario == null) {
             return ResponseEntity
@@ -105,9 +105,9 @@ public class UsuarioService {
     }
 
 
-    public ResponseEntity<?> editarNombreDeUsuario(EditarNombreDeUsuarioDtoInput dtoImput, Jwt principal) {
+    public ResponseEntity<?> editarNombreDeUsuario(EditarNombreDeUsuarioDtoInput dtoImput, String username) {
 
-        Usuario usuario = usuarioRepo.findByNombreDeUsuario(JwtClaimExtractor.getUsernameFromToken(principal)).orElse(null);
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(username).orElse(null);
 
         if (usuario == null) {
             return ResponseEntity
@@ -128,9 +128,9 @@ public class UsuarioService {
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> getAll(Jwt principal) {
+    public ResponseEntity<?> getAll(String username) {
 
-        Usuario usuario = usuarioRepo.findByNombreDeUsuario(JwtClaimExtractor.getUsernameFromToken(principal)).orElse(null);
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(username).orElse(null);
 
         if (usuario == null) {
             return ResponseEntity
@@ -158,10 +158,11 @@ public class UsuarioService {
         return ResponseEntity.ok(usuariosDto);
     }
 
-    public ResponseEntity<?> getUsuarioByNombreUsuarioConToken(Jwt principal){
-        Usuario usuario = usuarioRepo.findByNombreDeUsuario(JwtClaimExtractor.getUsernameFromToken(principal)).orElse(null);
+    public ResponseEntity<?> getUsuarioByNombreUsuarioConToken(String username){
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(username).orElse(null);
 
         if (usuario != null){
+            System.out.println("HOLAA SOY ESTE USUARIO:" + usuario.getNombreDeUsuario());
             UsuarioOutputDto usuarioDto = new UsuarioOutputDto();
             usuarioDto.setId(usuario.getId());
             usuarioDto.setNombreDeUsuario(usuario.getNombreDeUsuario());
@@ -196,8 +197,8 @@ public class UsuarioService {
         return ResponseEntity.notFound().build();
     }
 
-    public ResponseEntity<?> obtenerMensajes(Jwt principal) {
-        Usuario usuario = usuarioRepo.findByNombreDeUsuario(JwtClaimExtractor.getUsernameFromToken(principal)).orElse(null);
+    public ResponseEntity<?> obtenerMensajes(String username) {
+        Usuario usuario = usuarioRepo.findByNombreDeUsuario(username).orElse(null);
         if (usuario == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se encontró el usuario");
         }

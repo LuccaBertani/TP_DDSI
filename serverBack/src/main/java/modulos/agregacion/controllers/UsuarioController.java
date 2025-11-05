@@ -38,38 +38,38 @@ public class UsuarioController {
 
     // Anda
     @PostMapping("/editar/contrasenia")
-    public ResponseEntity<?> cambiarContrasenia(@RequestBody CambiarContraseniaDtoInput dtoImput, @AuthenticationPrincipal Jwt principal){
-        return usuarioService.cambiarContrasenia(dtoImput, principal);
+    public ResponseEntity<?> cambiarContrasenia(@RequestBody CambiarContraseniaDtoInput dtoImput, @AuthenticationPrincipal String username){
+        return usuarioService.cambiarContrasenia(dtoImput, username);
     }
 
     // Anda
     @PostMapping("/editar/campos-escalares")
-    public ResponseEntity<?> editarUsuario(@RequestBody EditarUsuarioDtoInput dtoImput, @AuthenticationPrincipal Jwt principal){
-        return usuarioService.editarUsuario(dtoImput, principal);
+    public ResponseEntity<?> editarUsuario(@RequestBody EditarUsuarioDtoInput dtoImput, @AuthenticationPrincipal String username){
+        return usuarioService.editarUsuario(dtoImput, username);
     }
 
     // Anda
     @PostMapping("/editar/nombre-usuario")
-    public ResponseEntity<?> editarNombreDeUsuario(@RequestBody EditarNombreDeUsuarioDtoInput dtoImput, @AuthenticationPrincipal Jwt principal){
-        return usuarioService.editarNombreDeUsuario(dtoImput, principal);
+    public ResponseEntity<?> editarNombreDeUsuario(@RequestBody EditarNombreDeUsuarioDtoInput dtoImput, @AuthenticationPrincipal String username){
+        return usuarioService.editarNombreDeUsuario(dtoImput, username);
     }
 
     // Anda
     @GetMapping("/get-all")
-    public ResponseEntity<?> getAll(@AuthenticationPrincipal Jwt principal){
-        return usuarioService.getAll(principal);
+    public ResponseEntity<?> getAll(@AuthenticationPrincipal String username){
+        return usuarioService.getAll(username);
     }
 
     @GetMapping("/get/usuario")
-    public ResponseEntity<?> getUsuarioByNombreUsuario(@AuthenticationPrincipal Jwt principal){
+    public ResponseEntity<?> getUsuarioByNombreUsuario(@AuthenticationPrincipal String username){
         System.out.println("SOY UN FOROROROROORORORORORO");
-        return usuarioService.getUsuarioByNombreUsuarioConToken(principal);
+        return usuarioService.getUsuarioByNombreUsuarioConToken(username);
     }
 
     // Anda
     @GetMapping("/get-mensajes")
-    public ResponseEntity<?> getMensajesUsuario(@AuthenticationPrincipal Jwt principal){
-        return usuarioService.obtenerMensajes(principal);
+    public ResponseEntity<?> getMensajesUsuario(@AuthenticationPrincipal String username){
+        return usuarioService.obtenerMensajes(username);
     }
 
     @PostMapping("/auth")
