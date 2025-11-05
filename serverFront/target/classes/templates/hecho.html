@@ -9,9 +9,26 @@
             <h1 class="h3 mb-1">Hechos</h1>
             <p class="text-muted mb-0">Listado y búsqueda de hechos públicos</p>
         </div>
-        <div th:if="${listaHechos != null}">
-      <span class="badge rounded-pill bg-dark-subtle text-dark"
-            th:text="${#lists.size(listaHechos)} + ' resultados'">0 resultados</span>
+
+        <div class="d-flex align-items-center gap-3"
+             th:if="${listaHechos != null and !#lists.isEmpty(listaHechos)}">
+            <!-- (Opcional) badge original que ya tenías -->
+            <span class="badge rounded-pill bg-dark-subtle text-dark"
+                  th:text="${#lists.size(listaHechos)} + ' resultados'">0 resultados</span>
+
+            <!-- Contador tipo “Viendo 1–N de Z resultados” -->
+            <span id="rangeInfo" class="text-muted small">Viendo 1–0 de 0 resultados</span>
+
+            <!-- Selector “Mostrar por página” -->
+            <label for="pageSize" class="text-muted small mb-0">Mostrar por página:</label>
+            <select id="pageSize" class="form-select form-select-sm" style="width:auto">
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+                <option value="0">Todos</option>
+            </select>
         </div>
     </div>
 
@@ -26,10 +43,10 @@
     </div>
 
     <!-- Grid de tarjetas -->
-    <div class="row g-4"
+    <div id="hechosGrid" class="row g-4"
          th:if="${listaHechos != null and !#lists.isEmpty(listaHechos)}"
          style="--card-br:16px; --card-bd:#e9ecef; --shadow:0 8px 24px rgba(2,6,23,.08)">
-        <div class="col-md-6 col-lg-4" th:each="h : ${listaHechos}">
+        <div class="col-md-6 col-lg-4 hecho-card" th:each="h : ${listaHechos}">
             <div class="card border-0 h-100" style="border-radius:var(--card-br); box-shadow:var(--shadow);">
                 <div class="card-body" style="border:1px solid var(--card-bd); border-radius:var(--card-br);">
 
@@ -79,8 +96,47 @@
 
     <!-- Estilos locales -->
     <style>
-        .card:hover{ transform: translateY(-2px); transition: transform .12s ease; }
+        .card:hover { transform: translateY(-2px); transition: transform .12s ease; }
     </style>
+
+    <!-- Script: muestra N tarjetas o todas, actualiza contador y recuerda preferencia -->
+    <script>
+        (function () {
+          const grid = document.getElementById('hechosGrid');
+          if (!grid) return;
+
+          const cards = Array.from(grid.querySelectorAll('.hecho-card'));
+          const total = cards.length;
+
+          const select = document.getElementById('pageSize');
+          const info   = document.getElementById('rangeInfo');
+
+          // Preferencia previa (opcional)
+          const saved = localStorage.getItem('hechosPageSize');
+          if (saved !== null && select.querySelector(`option[value="${saved}"]`)) {
+            select.value = saved;
+          }
+
+          function render() {
+            const n = parseInt(select.value, 10);
+            const showAll = (n === 0) || (n >= total);
+
+            cards.forEach((card, idx) => {
+              card.style.display = (showAll || idx < n) ? '' : 'none';
+            });
+
+            const shown = showAll ? total : Math.min(n, total);
+            if (info) info.textContent = `Viendo 1–${shown} de ${total} resultados`;
+          }
+
+          select.addEventListener('change', () => {
+            localStorage.setItem('hechosPageSize', select.value);
+            render();
+          });
+
+          render();
+        })();
+    </script>
 
 </main>
 </html>
