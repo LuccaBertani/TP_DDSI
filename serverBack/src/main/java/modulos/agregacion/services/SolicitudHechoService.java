@@ -176,7 +176,9 @@ public class SolicitudHechoService {
             hechosDinamicaRepository.saveAndFlush(hecho);
             solicitudHecho.setHecho(hecho);
             solicitudAgregarHechoRepo.save(solicitudHecho);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Se detectó spam");
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body("La solicitud fue rechazada automáticamente por spam");
         }
 
         hecho.getAtributosHecho().setFuente(Fuente.DINAMICA);
