@@ -68,7 +68,7 @@ public class UsuarioController {
             return "redirect:/" + rta.getStatusCode().value();
 
         } else if(rta2.getStatusCode().is2xxSuccessful() && rta2.getBody() != null){
-            List<MensajeOutputDTO> mensajes = BodyToListConverter.bodyToList(rta, MensajeOutputDTO.class);
+            List<MensajeOutputDTO> mensajes = BodyToListConverter.bodyToList(rta2, MensajeOutputDTO.class);
             model.addAttribute("mensajes", mensajes);
         }
 

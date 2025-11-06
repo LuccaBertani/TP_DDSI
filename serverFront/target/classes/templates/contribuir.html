@@ -73,8 +73,8 @@
 
                     <!-- País (select) -->
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">País *</label>
-                        <select id="selectPais" class="form-select" th:field="*{id_pais}" required
+                        <label class="form-label fw-semibold">País</label>
+                        <select id="selectPais" class="form-select" th:field="*{id_pais}"
                                 th:attr="data-pais-id=${pais != null} ? ${pais.id} : null"
                                 onchange="
                       const post = document.getElementById('formPost');

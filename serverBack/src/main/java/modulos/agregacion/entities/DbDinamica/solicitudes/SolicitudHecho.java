@@ -7,6 +7,8 @@ import lombok.Setter;
 import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import modulos.agregacion.entities.DbMain.usuario.Usuario;
 
+import java.time.ZonedDateTime;
+
 @Getter
 @Setter
 @Entity
@@ -29,6 +31,9 @@ public abstract class SolicitudHecho {
     protected boolean procesada;
     @Column (name = "rechazadaPorSpam")
     protected boolean rechazadaPorSpam;
+
+    @Column (name = "fecha")
+    protected ZonedDateTime fecha;
 
     public SolicitudHecho(Long usuario_id, HechoDinamica hecho) {
         this.usuario_id = usuario_id;

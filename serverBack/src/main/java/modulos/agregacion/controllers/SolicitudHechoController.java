@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.Optional;
 
+
+import java.io.IOException;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/solicitud-hecho")
 public class SolicitudHechoController {
@@ -30,8 +34,8 @@ public class SolicitudHechoController {
 
     // Anda
     @PostMapping("/evaluar/subir")
-    public ResponseEntity<?> evaluarSolicitudSubida(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput, @AuthenticationPrincipal Jwt principal){
-        return solicitudHechoService.evaluarSolicitudSubirHecho(dtoInput, principal); // 200 o 401
+    public ResponseEntity<?> evaluarSolicitudSubida(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput, @AuthenticationPrincipal String username){
+        return solicitudHechoService.evaluarSolicitudSubirHecho(dtoInput, username); // 200 o 401
     }
 
     // Anda
@@ -50,6 +54,7 @@ public class SolicitudHechoController {
     @PostMapping("/public/subir-hecho")
     public ResponseEntity<?> enviarSolicitudSubirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput, @AuthenticationPrincipal String username){
         System.out.println("HOLAAA");
+        System.out.println("SOY UN PELOTUDO DE MIERDA " + username);
         return solicitudHechoService.solicitarSubirHecho(dtoInput, username); // 200 o 401
     }
 
@@ -89,8 +94,8 @@ public class SolicitudHechoController {
 
     // Anda
     @GetMapping("/get/pendientes")
-    public ResponseEntity<?> getSolicitudesPendientes(@AuthenticationPrincipal Jwt principal){
-        return solicitudHechoService.obtenerSolicitudesPendientes(principal);
+    public ResponseEntity<?> getSolicitudesPendientes(@AuthenticationPrincipal String username){
+        return solicitudHechoService.obtenerSolicitudesPendientes(username);
     }
 
 }

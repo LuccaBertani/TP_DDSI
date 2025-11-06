@@ -11,18 +11,11 @@ import java.util.Optional;
 
 public interface ISolicitudRepository extends JpaRepository<SolicitudHecho, Long> {
     @Query(value = """
-    SELECT 
-        s.id AS id,
-        s.id_usuario AS usuarioId,
-        s.id_hecho AS hechoId,
-        s.justificacion AS justificacion,
-        s.procesada AS procesada,
-        s.rechazadaPorSpam AS rechazadaPorSpam
-        
-    FROM solicitud_hecho s
+    SELECT s
+    FROM SolicitudHecho s
     WHERE s.procesada = false
-""", nativeQuery = true)
-    List<SolicitudHechoProjection> obtenerSolicitudesPendientes();
+""")
+    List<SolicitudHecho> obtenerSolicitudesPendientes();
 
     @Query("""
     SELECT s FROM SolicitudHecho s WHERE s.procesada = false AND s.id = :id_solicitud

@@ -151,6 +151,14 @@ public class WebApiCallerService {
         return (String) request.getSession().getAttribute("accessToken");
     }
 
+    private String getUsernameFromSession() {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        return (String) request.getSession().getAttribute("username");
+    }
+
+
+
     /**
      * Obtiene el refresh token de la sesión
      */
@@ -231,14 +239,15 @@ public class WebApiCallerService {
     }
 
     public <T> ResponseEntity<T> postEntitySinToken(String url, Object body, Class<T> elementType){
-
         return webClient
-                .post()
-                .uri(url)
-                .bodyValue(body)
-                .retrieve()
-                .toEntity(elementType)
-                .block();
+                    .post()
+                    .uri(url)
+                    .bodyValue(body)
+                    .retrieve()
+                    .toEntity(elementType)
+                    .block();
+
+
     }
 
 

@@ -33,6 +33,7 @@ modulos\agregacion\entities\DbDinamica\HechoDinamica$HechoDinamicaBuilder.class
 modulos\agregacion\entities\DbEstatica\HechoEstatica$HechoEstaticaBuilder.class
 modulos\agregacion\repositories\DbMain\IAtributosHechoModificarRepository.class
 modulos\agregacion\entities\DbMain\filtros\FiltroTitulo.class
+modulos\shared\dtos\output\PaisProvinciaDTO.class
 modulos\agregacion\config\DbMainConfig.class
 modulos\apis\DatosQuery.class
 modulos\shared\utils\Geocodificador.class

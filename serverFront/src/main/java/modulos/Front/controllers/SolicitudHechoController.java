@@ -24,11 +24,12 @@ public class SolicitudHechoController {
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/evaluar/subir")
-    public String evaluarSolicitudSubida(@Valid SolicitudHechoEvaluarInputDTO dtoInput){
+    public String evaluarSolicitudSubida(@Valid @ModelAttribute SolicitudHechoEvaluarInputDTO dtoInput){
+        System.out.println("JUSTIFICACION: " + dtoInput.getMensaje());
         ResponseEntity<?> rta = solicitudHechoService.evaluarSolicitudSubida(dtoInput);
 
         if (rta.getStatusCode().is2xxSuccessful()) {
-            return "redirect:get/all";
+            return "redirect:/solicitudes";
         }
         return "redirect:/" + rta.getStatusCode().value();
     }
@@ -39,7 +40,7 @@ public class SolicitudHechoController {
         ResponseEntity<?> rta = solicitudHechoService.evaluarSolicitudEliminacion(dto);
 
         if(rta.getStatusCode().is2xxSuccessful()){
-            return "redirect:get/all";
+            return "solicitudes";
         }
         else if(rta.getBody() != null){
             ra.addAttribute(rta.getBody().toString());
@@ -53,7 +54,7 @@ public class SolicitudHechoController {
         ResponseEntity<?> rta = solicitudHechoService.evaluarSolicitudModificacion(dto);
 
         if(rta.getStatusCode().is2xxSuccessful()){
-            return "redirect:get/all";
+            return "solicitudes";
         }
         else if(rta.getBody() != null){
             ra.addFlashAttribute(rta.getBody().toString());

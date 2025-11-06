@@ -5,6 +5,7 @@ modulos\Front\dtos\output\CategoriaDto.class
 modulos\Front\controllers\ColeccionController.class
 modulos\Front\dtos\output\DatosPersonalesOutputDTO.class
 modulos\Front\dtos\input\CriteriosColeccionDTO$CriteriosColeccionDTOBuilder.class
+modulos\Front\dtos\output\PaisProvinciaDTO.class
 modulos\Front\services\WebApiCallerService.class
 modulos\Front\controllers\SolicitudHechoController.class
 modulos\Front\usuario\Rol.class

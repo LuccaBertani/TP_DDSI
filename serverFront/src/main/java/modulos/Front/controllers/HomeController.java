@@ -4,21 +4,21 @@ import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import modulos.Front.BodyToListConverter;
 import modulos.Front.dtos.input.ColeccionInputDTO;
-import modulos.Front.dtos.output.CategoriaDto;
+import modulos.Front.dtos.input.SolicitudHechoEvaluarInputDTO;
+import modulos.Front.dtos.output.*;
 import modulos.Front.dtos.input.SolicitudHechoInputDTO;
-import modulos.Front.dtos.output.PaisDto;
-import modulos.Front.dtos.output.PaisProvinciaDTO;
-import modulos.Front.dtos.output.ProvinciaDto;
 import modulos.Front.services.ColeccionService;
 import modulos.Front.services.HechosService;
 import modulos.Front.services.SolicitudHechoService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -109,7 +109,7 @@ public class HomeController {
 
         if (latitud != null & longitud != null){
             ResponseEntity<?> rtaLatLon = hechosService.getPaisYProvincia(latitud, longitud);
-            if (rtaLatLon.getStatusCode().is2xxSuccessful()){
+            if (rtaLatLon.hasBody()){
                 PaisProvinciaDTO paisProvinciaDTO = (PaisProvinciaDTO) rtaLatLon.getBody();
                 model.addAttribute("pais", paisProvinciaDTO.getPaisDto());
                 model.addAttribute("provincia", paisProvinciaDTO.getProvinciaDto());
@@ -130,55 +130,23 @@ public class HomeController {
         return "contribuir";
     }
 
-
-    /*@GetMapping("/contribuir")
-    public String contribuir(
-            @RequestParam(required = false) Long pais_id,
-            @RequestParam(required = false) Long provincia_id,
-            @ModelAttribute SolicitudHechoInputDTO solicitudHecho,
-            Model model) {
-
-        model.addAttribute("solicitudHecho", solicitudHecho); // mantiene datos previos
-
-        // Obtener países y categorías
-        ResponseEntity<?> rtaPaises = hechosService.getPaises();
-        ResponseEntity<?> rtaCategorias = hechosService.getCategorias();
-
-        if (!rtaPaises.getStatusCode().is2xxSuccessful() || !rtaCategorias.getStatusCode().is2xxSuccessful()) {
-            return "redirect:/404";
-        }
-
-        List<PaisDto> paises = BodyToListConverter.bodyToList(rtaPaises, PaisDto.class);
-        List<CategoriaDto> categorias = BodyToListConverter.bodyToList(rtaCategorias, CategoriaDto.class);
-        model.addAttribute("paises", paises);
-        model.addAttribute("categorias", categorias);
-
-        // Si el usuario ya seleccionó un país, cargar provincias relacionadas
-        List<ProvinciaDto> provincias = List.of();
-        if (pais_id != null) {
-            ResponseEntity<?> rtaProvincias = hechosService.getProvinciasByIdPais(pais_id);
-            if (rtaProvincias.getStatusCode().is2xxSuccessful()) {
-                provincias = BodyToListConverter.bodyToList(rtaProvincias, ProvinciaDto.class);
-
-                // También podrías guardar el país seleccionado completo si lo necesitás
-                paises.stream()
-                        .filter(p -> p.getId().equals(pais_id))
-                        .findFirst()
-                        .ifPresent(p -> model.addAttribute("pais", p));
-            }
-        }
-
-        model.addAttribute("provincias", provincias);
-        model.addAttribute("paisSeleccionado", pais_id);
-        model.addAttribute("provinciaSeleccionada", provincia_id);
-
-        return "contribuir";
-    }
-*/
-
-
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping("/solicitudes")
-    public String solicitudes() {
+    public String solicitudes(Model model, RedirectAttributes ra) {
+        ResponseEntity<?> rta = solicitudHechoService.getSolicitudesPendientes();
+
+        System.out.println(rta.getBody());
+
+        if (rta.getStatusCode().is2xxSuccessful()) {
+            List<SolicitudHechoOutputDTO> solicitudes = BodyToListConverter.bodyToList(rta, SolicitudHechoOutputDTO.class);
+            model.addAttribute("solicitudes", solicitudes);
+            model.addAttribute("solicitudHechoEvaluarInputDTO", new SolicitudHechoEvaluarInputDTO());
+            return "solicitudes";
+        }
+        else if(rta.getBody() != null){
+            ra.addFlashAttribute(rta.getBody().toString());
+        }
+
         return "solicitudes";
     }
 

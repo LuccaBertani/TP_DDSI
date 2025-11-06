@@ -856,7 +856,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
             return ResponseEntity.ok(paisProvinciaDTO);
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok().build(); // Si bien sería un not found, envío esto para evitar problemas con el retrieve
 
     }
 }
