@@ -343,6 +343,7 @@ public class SolicitudHechoService {
                         mensaje.setSolicitud_hecho_id(solicitud.getId());
                         mensaje.setReceptor(usuario);
                         mensaje.setTextoMensaje("Se aceptó su hecho de título " + solicitud.getHecho().getAtributosHecho().getTitulo());
+                        hechosDinamicaRepository.saveAndFlush(solicitud.getHecho());
                         mensajesRepository.save(mensaje);
                         if (usuario.getRol().equals(Rol.VISUALIZADOR)){
                             dto.setRol(Rol.CONTRIBUYENTE);
