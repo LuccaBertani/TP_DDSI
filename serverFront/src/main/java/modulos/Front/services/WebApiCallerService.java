@@ -239,14 +239,18 @@ public class WebApiCallerService {
     }
 
     public <T> ResponseEntity<T> postEntitySinToken(String url, Object body, Class<T> elementType){
-        return webClient
+        if (getUsernameFromSession()==null||getUsernameFromSession().equals("anonymousUser")) {
+            return webClient
                     .post()
                     .uri(url)
                     .bodyValue(body)
                     .retrieve()
                     .toEntity(elementType)
                     .block();
-
+        }
+        else{
+            return postEntity(url,body,elementType);
+        }
 
     }
 

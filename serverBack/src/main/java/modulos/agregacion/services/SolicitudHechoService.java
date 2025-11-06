@@ -327,45 +327,49 @@ public class SolicitudHechoService {
 
         // Marcar como procesada
         solicitud.setProcesada(true);
-        Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
-        if (dtoInput.getRespuesta()) {
-            solicitud.getHecho().setActivo(true);
-            solicitud.getHecho().getAtributosHecho().setModificado(true);
-            solicitud.getHecho().getAtributosHecho().setFechaCarga(ZonedDateTime.now());
-            solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(solicitud.getHecho().getAtributosHecho().getFechaCarga()); // Nueva fecha de modificación
+        if (solicitud.getUsuario_id()!=null){
+            Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
+            if (dtoInput.getRespuesta()) {
+                solicitud.getHecho().setActivo(true);
+                solicitud.getHecho().getAtributosHecho().setModificado(true);
+                solicitud.getHecho().getAtributosHecho().setFechaCarga(ZonedDateTime.now());
+                solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(solicitud.getHecho().getAtributosHecho().getFechaCarga()); // Nueva fecha de modificación
 
-            if (solicitud.getUsuario_id() != null){
-                // El usuario va a existir si o si porque ya se verificó cuando solicitó subir un hecho, pero x si pide borrar la cuenta hago el chequeo antes
-                if (usuario != null){
-                    usuario.incrementarHechosSubidos();
-                    Mensaje mensaje = new Mensaje();
-                    mensaje.setSolicitud_hecho_id(solicitud.getId());
-                    mensaje.setReceptor(usuario);
-                    mensaje.setTextoMensaje("Se aceptó su hecho de título " + solicitud.getHecho().getAtributosHecho().getTitulo());
-                    mensajesRepository.save(mensaje);
-                    if (usuario.getRol().equals(Rol.VISUALIZADOR)){
-                        dto.setRol(Rol.CONTRIBUYENTE);
-                        dto.setRolModificado(true);
-                        dto.setUsername(usuario.getNombreDeUsuario());
-                        GestorRoles.VisualizadorAContribuyente(usuario);
+                if (solicitud.getUsuario_id() != null){
+                    // El usuario va a existir si o si porque ya se verificó cuando solicitó subir un hecho, pero x si pide borrar la cuenta hago el chequeo antes
+                    if (usuario != null){
+                        usuario.incrementarHechosSubidos();
+                        Mensaje mensaje = new Mensaje();
+                        mensaje.setSolicitud_hecho_id(solicitud.getId());
+                        mensaje.setReceptor(usuario);
+                        mensaje.setTextoMensaje("Se aceptó su hecho de título " + solicitud.getHecho().getAtributosHecho().getTitulo());
+                        mensajesRepository.save(mensaje);
+                        if (usuario.getRol().equals(Rol.VISUALIZADOR)){
+                            dto.setRol(Rol.CONTRIBUYENTE);
+                            dto.setRolModificado(true);
+                            dto.setUsername(usuario.getNombreDeUsuario());
+                            GestorRoles.VisualizadorAContribuyente(usuario);
+                        }
                     }
+
                 }
 
             }
-
-        }
-        else{
-            if (solicitud.getUsuario_id() != null) {
-                Mensaje mensaje = new Mensaje();
-                mensaje.setSolicitud_hecho_id(solicitud.getId());
-                mensaje.setReceptor(usuario);
-                mensaje.setTextoMensaje("Se rechazó su solicitud de subida del hecho de título " + solicitud.getHecho().getAtributosHecho().getTitulo()
-                + ".\nJustificacion: " + solicitud.getJustificacion());
-                mensajesRepository.save(mensaje);
+            else{
+                if (solicitud.getUsuario_id() != null) {
+                    Mensaje mensaje = new Mensaje();
+                    mensaje.setSolicitud_hecho_id(solicitud.getId());
+                    mensaje.setReceptor(usuario);
+                    mensaje.setTextoMensaje("Se rechazó su solicitud de subida del hecho de título " + solicitud.getHecho().getAtributosHecho().getTitulo()
+                            + ".\nJustificacion: " + solicitud.getJustificacion());
+                    mensajesRepository.save(mensaje);
+                }
             }
+            // Por alguna razon sin saveAndFlush no actualiza el bool procesada en la bdd
+            solicitudRepository.saveAndFlush(solicitud);
         }
-        // Por alguna razon sin saveAndFlush no actualiza el bool procesada en la bdd
-        solicitudRepository.saveAndFlush(solicitud);
+
+
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
