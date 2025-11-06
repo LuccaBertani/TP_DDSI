@@ -67,8 +67,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
 
-        return path.contains("/public/")
-                || path.contains("/auth/")
+        return  path.contains("/auth/")
                 || path.contains("/usuario/public/")
                 || path.contains("/usuario/auth/");
     }

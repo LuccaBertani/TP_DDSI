@@ -20,11 +20,13 @@ import java.util.List;
 public class SolicitudHechoService {
     private final WebApiCallerService webApiCallerService;
     private final ActiveSessionTracker activeSessionTracker;
+    private final HttpSession httpSession;
     private String solicitudHechoServiceUrl = "/api/solicitud-hecho";
 
-    public SolicitudHechoService(WebApiCallerService webApiCallerService, ActiveSessionTracker activeSessionTracker) {
+    public SolicitudHechoService(WebApiCallerService webApiCallerService, ActiveSessionTracker activeSessionTracker, HttpSession httpSession) {
         this.webApiCallerService = webApiCallerService;
         this.activeSessionTracker = activeSessionTracker;
+        this.httpSession = httpSession;
     }
 
     public ResponseEntity<?> evaluarSolicitudSubida(SolicitudHechoEvaluarInputDTO dtoInput) {

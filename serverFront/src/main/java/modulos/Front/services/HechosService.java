@@ -57,4 +57,9 @@ public class HechosService {
     public ResponseEntity<Long> getCantHechos() {
         return webApiCallerService.getEntitySinToken(this.hechoServiceUrl + "/public/cantHechos", Long.class);
     }
+
+    public ResponseEntity<?> getPaisYProvincia(Double latitud, Double longitud){
+        return webApiCallerService.getEntitySinToken(this.hechoServiceUrl + "/public/pais-provincia?latitud=" + latitud + "&longitud=" + longitud
+                , PaisProvinciaDTO.class);
+    }
 }

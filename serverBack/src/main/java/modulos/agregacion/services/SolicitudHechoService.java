@@ -115,10 +115,9 @@ public class SolicitudHechoService {
 
     @Transactional
     public ResponseEntity<?> solicitarSubirHecho(SolicitudHechoInputDTO dto, String username){
-
         // Los visualizadores o contribuyentes llaman al metodo, no los admins
         Usuario usuario = null;
-
+        usuario = usuariosRepository.findByNombreDeUsuario(username).orElse(null);
         if (username!=null && !username.isEmpty()){
             ResponseEntity<?> rta = this.checkeoNoAdmin(username);
 
@@ -128,8 +127,6 @@ public class SolicitudHechoService {
 
             usuario = (Usuario) rta.getBody();
         }
-
-
 
 
         Pais pais = dto.getId_pais() != null ? paisRepository.findById(dto.getId_pais()).orElse(null) : null;
@@ -162,7 +159,7 @@ public class SolicitudHechoService {
         HechoDinamica hecho = fuenteDinamica.crearHecho(dto, contenidosMultimedia, categoria_id, ubicacion_id);
 
         SolicitudSubirHecho solicitudHecho = new SolicitudSubirHecho();
-
+        solicitudHecho.setFecha(ZonedDateTime.now());
         if(usuario!=null) {
             solicitudHecho.setUsuario_id(usuario.getId());
             hecho.setUsuario_id(usuario.getId());
@@ -210,7 +207,7 @@ public class SolicitudHechoService {
         }
 
         SolicitudEliminarHecho solicitud = new SolicitudEliminarHecho(usuario.getId(), hecho, dto.getJustificacion());
-
+        solicitud.setFecha(ZonedDateTime.now());
         if (DetectorDeSpam.esSpam(dto.getJustificacion())) {
             // Marcar como rechazada por spam y guardar
             solicitud.setProcesada(true);
@@ -245,7 +242,7 @@ public class SolicitudHechoService {
         }
 
         SolicitudModificarHecho solicitud = new SolicitudModificarHecho(usuario.getId(), hecho);
-
+        solicitud.setFecha(ZonedDateTime.now());
         if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion()))
         {
             solicitud.setProcesada(true);
@@ -311,7 +308,7 @@ public class SolicitudHechoService {
     // Así, la SolicitudHecho que traés con findById queda managed durante el method y all lo que le modifiques
     //  (y a sus asociaciones cargadas) se hace UPDATE al hacer commit, sin llamar a save(...).
     @Transactional
-    public ResponseEntity<?> evaluarSolicitudSubirHecho(SolicitudHechoEvaluarInputDTO dtoInput, Jwt principal) {
+    public ResponseEntity<?> evaluarSolicitudSubirHecho(SolicitudHechoEvaluarInputDTO dtoInput, String username) {
 
         RolCambiadoDTO dto = new RolCambiadoDTO();
         dto.setRolModificado(false);
@@ -322,7 +319,7 @@ public class SolicitudHechoService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la solicitud");
         }
 
-        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
+        ResponseEntity<?> rta = checkeoAdmin(username);
 
         if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
             return rta;
@@ -330,28 +327,48 @@ public class SolicitudHechoService {
 
         // Marcar como procesada
         solicitud.setProcesada(true);
-        if (dtoInput.getRespuesta()) {
-            solicitud.getHecho().setActivo(true);
-            solicitud.getHecho().getAtributosHecho().setModificado(true);
-            solicitud.getHecho().getAtributosHecho().setFechaCarga(ZonedDateTime.now());
-            solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(solicitud.getHecho().getAtributosHecho().getFechaCarga()); // Nueva fecha de modificación
+        if (solicitud.getUsuario_id()!=null){
+            Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
+            if (dtoInput.getRespuesta()) {
+                solicitud.getHecho().setActivo(true);
+                solicitud.getHecho().getAtributosHecho().setModificado(true);
+                solicitud.getHecho().getAtributosHecho().setFechaCarga(ZonedDateTime.now());
+                solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(solicitud.getHecho().getAtributosHecho().getFechaCarga()); // Nueva fecha de modificación
 
-            if (solicitud.getUsuario_id() != null){
-                Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
-                // El usuario va a existir si o si porque ya se verificó cuando solicitó subir un hecho, pero x si pide borrar la cuenta hago el chequeo antes
-                if (usuario != null){
-                    usuario.incrementarHechosSubidos();
-                    if (usuario.getRol().equals(Rol.VISUALIZADOR)){
-                        dto.setRol(Rol.CONTRIBUYENTE);
-                        dto.setRolModificado(true);
-                        dto.setUsername(usuario.getNombreDeUsuario());
-                        GestorRoles.VisualizadorAContribuyente(usuario);
+                if (solicitud.getUsuario_id() != null){
+                    // El usuario va a existir si o si porque ya se verificó cuando solicitó subir un hecho, pero x si pide borrar la cuenta hago el chequeo antes
+                    if (usuario != null){
+                        usuario.incrementarHechosSubidos();
+                        Mensaje mensaje = new Mensaje();
+                        mensaje.setSolicitud_hecho_id(solicitud.getId());
+                        mensaje.setReceptor(usuario);
+                        mensaje.setTextoMensaje("Se aceptó su hecho de título " + solicitud.getHecho().getAtributosHecho().getTitulo());
+                        mensajesRepository.save(mensaje);
+                        if (usuario.getRol().equals(Rol.VISUALIZADOR)){
+                            dto.setRol(Rol.CONTRIBUYENTE);
+                            dto.setRolModificado(true);
+                            dto.setUsername(usuario.getNombreDeUsuario());
+                            GestorRoles.VisualizadorAContribuyente(usuario);
+                        }
                     }
+
                 }
 
             }
-
+            else{
+                if (solicitud.getUsuario_id() != null) {
+                    Mensaje mensaje = new Mensaje();
+                    mensaje.setSolicitud_hecho_id(solicitud.getId());
+                    mensaje.setReceptor(usuario);
+                    mensaje.setTextoMensaje("Se rechazó su solicitud de subida del hecho de título " + solicitud.getHecho().getAtributosHecho().getTitulo()
+                            + ".\nJustificacion: " + solicitud.getJustificacion());
+                    mensajesRepository.save(mensaje);
+                }
+            }
+            // Por alguna razon sin saveAndFlush no actualiza el bool procesada en la bdd
+            solicitudRepository.saveAndFlush(solicitud);
         }
+
 
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
@@ -489,24 +506,38 @@ public class SolicitudHechoService {
         return ResponseEntity.status(HttpStatus.OK).body(solicitudHechoOutputDTOS);
     }
 
-    public ResponseEntity<?> obtenerSolicitudesPendientes(Jwt principal) {
-        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
+    public ResponseEntity<?> obtenerSolicitudesPendientes(String username) {
+        ResponseEntity<?> rta = checkeoAdmin(username);
 
         if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
             return rta;
         }
 
-        List<SolicitudHechoProjection> solicitudesHechosProjection = solicitudRepository.obtenerSolicitudesPendientes();
+        List<SolicitudHecho> solicitudHechos = solicitudRepository.obtenerSolicitudesPendientes();
 
         List<SolicitudHechoOutputDTO> solicitudHechoOutputDTOS = new ArrayList<>();
-        for (SolicitudHechoProjection solicitud: solicitudesHechosProjection){
+
+
+
+        for (SolicitudHecho solicitud: solicitudHechos){
+            String nombreUsuario = null;
+            if (solicitud.getUsuario_id()!=null){
+                Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
+                if (usuario!=null){
+                    nombreUsuario = usuario.getNombreDeUsuario();
+                }
+            }
+
             SolicitudHechoOutputDTO dto = SolicitudHechoOutputDTO.builder()
                     .id(solicitud.getId())
-                    .usuarioId(solicitud.getUsuarioId())
-                    .hechoId(solicitud.getHechoId())
+                    .usuarioId(solicitud.getUsuario_id())
+                    .username(nombreUsuario)
+                    .hechoId(solicitud.getHecho() != null ? solicitud.getHecho().getId() : null)
                     .justificacion(solicitud.getJustificacion())
-                    .procesada(solicitud.getProcesada())
-                    .rechazadaPorSpam(solicitud.getRechazadaPorSpam())
+                    .procesada(solicitud.isProcesada())
+                    .rechazadaPorSpam(solicitud.isRechazadaPorSpam())
+                    .tipo(this.clasificacionSolicitud(solicitud))
+                    .fecha(solicitud.getFecha() != null ? solicitud.getFecha().toString() : null)
                     .build();
             solicitudHechoOutputDTOS.add(dto);
         }
@@ -627,6 +658,22 @@ public class SolicitudHechoService {
         System.out.println("PORCENTAJE: " + porcentaje);
         return ResponseEntity.ok().body(porcentaje);
     }
+
+    public String clasificacionSolicitud(SolicitudHecho solicitud){
+        String tipo = null;
+
+        if (solicitud instanceof SolicitudSubirHecho){
+            tipo = "SUBIR";
+        }
+        else if (solicitud instanceof SolicitudModificarHecho){
+            tipo = "MODIFICAR";
+        }
+        else if (solicitud instanceof SolicitudEliminarHecho){
+            tipo = "ELIMINAR";
+        }
+        return tipo;
+    }
+
 }
 
 

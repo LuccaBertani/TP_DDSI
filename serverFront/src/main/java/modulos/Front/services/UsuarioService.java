@@ -1,6 +1,7 @@
 package modulos.Front.services;
 
 import modulos.Front.dtos.input.*;
+import modulos.Front.dtos.output.MensajeOutputDTO;
 import modulos.Front.dtos.output.UsuarioOutputDto;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
@@ -79,7 +80,7 @@ public class UsuarioService {
     }
 
     public ResponseEntity<?> obtenerMensajes() {
-        return webApiCallerService.getEntity(this.usuarioServiceUrl + "/get-mensajes", Void.class);
+        return webApiCallerService.getList(this.usuarioServiceUrl + "/get-mensajes", MensajeOutputDTO.class);
     }
 
 }

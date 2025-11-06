@@ -11,7 +11,7 @@
         <p class="text-muted mb-0">Completá la información del evento histórico que querés proponer</p>
     </section>
 
-    <!-- Mini-form GET: lleva un espejo de TODOS los campos para no perderlos -->
+    <!-- Mini-form GET para recargar provincias sin perder datos -->
     <form id="filtroPaisForm" th:action="@{/public/contribuir}" method="get" style="display:none;">
         <input type="hidden" name="titulo">
         <input type="hidden" name="descripcion">
@@ -23,15 +23,13 @@
         <input type="hidden" name="id_pais" id="filtroPaisInput">
     </form>
 
-    <!--/hechos/subir-->
-    <!-- === FORMULARIO PRINCIPAL (POST real) === -->
+    <!-- Form principal -->
     <form id="formPost" th:action="@{/solicitudes-hecho/public/subir-hecho}" method="post"
           th:object="${solicitudHecho}" enctype="multipart/form-data" class="mt-4">
 
         <!-- CSRF -->
         <input type="hidden" th:if="${_csrf != null}"
-               th:name="${_csrf.parameterName}"
-               th:value="${_csrf.token}"/>
+               th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
         <!-- Información básica -->
         <div class="card mb-4 border-0 shadow-sm" style="border-radius:14px;">
@@ -65,11 +63,6 @@
             </div>
         </div>
 
-        <audio controls>
-            <source src="https://www.myinstants.com/media/sounds/skibidi-toilette.mp3" type="audio/mpeg">
-            Tu navegador no soporta el elemento de audio.
-        </audio>
-
         <!-- Ubicación y fecha -->
         <div class="card mb-4 border-0 shadow-sm" style="border-radius:14px;">
             <div class="card-header bg-white">
@@ -78,39 +71,42 @@
             <div class="card-body">
                 <div class="row g-3">
 
-                    <!-- País (dispara el mini-form GET) -->
+                    <!-- País (select) -->
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">País *</label>
-                        <select class="form-select" th:field="*{id_pais}" required
+                        <label class="form-label fw-semibold">País</label>
+                        <select id="selectPais" class="form-select" th:field="*{id_pais}"
+                                th:attr="data-pais-id=${pais != null} ? ${pais.id} : null"
                                 onchange="
                       const post = document.getElementById('formPost');
                       const getF = document.getElementById('filtroPaisForm');
 
-                      // Copiar todos los campos actuales del form principal al mini-GET
-                      ['titulo','descripcion','fechaAcontecimiento','latitud','longitud','id_categoria','id_provincia'].forEach(n => {
-                        const src = post.querySelector(`[name='${n}']`);
-                        const dst = getF.querySelector(`[name='${n}']`);
-                        if (src && dst) dst.value = src.value ?? '';
-                      });
+                      // Copiar campos actuales al mini-GET (incluye lat/long)
+                      ['titulo','descripcion','fechaAcontecimiento','latitud','longitud','id_categoria','id_provincia']
+                        .forEach(n => {
+                          const src = post.querySelector(`[name='${n}']`);
+                          const dst = getF.querySelector(`[name='${n}']`);
+                          if (src && dst) dst.value = src.value ?? '';
+                        });
 
-                      // Setear país nuevo y limpiar provincia (para forzar recarga de lista)
+                      // Setear país nuevo y limpiar provincia (para recargar lista)
                       getF.querySelector('[name=id_pais]').value = this.value;
                       getF.querySelector('[name=id_provincia]').value = '';
 
                       getF.submit();
                     ">
                             <option value="">Seleccionar país</option>
-                            <option th:each="pais : ${paises}"
-                                    th:value="${pais.id}"
-                                    th:text="${pais.pais}"></option>
+                            <option th:each="paisItem : ${paises}"
+                                    th:value="${paisItem.id}"
+                                    th:text="${paisItem.pais}"></option>
                         </select>
                     </div>
 
-                    <!-- Provincia -->
+                    <!-- Provincia (select) -->
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Provincia / Estado (opcional)</label>
-                        <select class="form-select" th:field="*{id_provincia}"
-                                th:attr="disabled=${solicitudHecho.id_pais == null}">
+                        <select id="selectProvincia" class="form-select" th:field="*{id_provincia}"
+                                th:attr="disabled=${solicitudHecho.id_pais == null}"
+                                th:attrappend=" data-prov-id=${provincia != null} ? ${provincia.id} : null">
                             <option value="">Seleccionar provincia/estado</option>
                             <option th:each="prov : ${provincias}"
                                     th:value="${prov.id}"
@@ -150,13 +146,45 @@
             <button type="submit" class="btn btn-dark" sec:authorize="hasRole('ADMINISTRADOR')" th:formaction="@{/hechos/subir}">
                 <i class="bi bi-send me-1"></i> Subir Hecho
             </button>
-
         </div>
     </form>
 
-    <style>
-        .btn:hover { transform: translateY(-1px); transition: transform .08s ease; }
-    </style>
+    <style>.btn:hover{transform:translateY(-1px);transition:transform .08s ease}</style>
+
+    <!-- Auto-preselección País/Provincia detectados -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const selPais = document.getElementById('selectPais');
+            const selProv = document.getElementById('selectProvincia');
+
+            const detectedPaisId = selPais?.dataset?.paisId || '';
+            const detectedProvId = selProv?.dataset?.provId || '';
+
+            // Si el backend detectó país y todavía no lo tenemos seleccionado ni cargadas las provincias,
+            // hacemos un GET automático para recargar con id_pais (preservando campos).
+            if (detectedPaisId && !selPais.value) {
+                const post = document.getElementById('formPost');
+                const getF  = document.getElementById('filtroPaisForm');
+                ['titulo','descripcion','fechaAcontecimiento','latitud','longitud','id_categoria','id_provincia']
+                    .forEach(n => {
+                        const src = post.querySelector(`[name='${n}']`);
+                        const dst = getF.querySelector(`[name='${n}']`);
+                        if (src && dst) dst.value = src.value ?? '';
+                    });
+                getF.querySelector('[name=id_pais]').value = detectedPaisId;
+                getF.submit();
+                return; // dejamos que recargue
+            }
+
+            // Si ya hay lista de provincias cargada, preseleccionamos la detectada
+            if (detectedPaisId && selPais && !selPais.value) {
+                selPais.value = detectedPaisId;
+            }
+            if (detectedProvId && selProv) {
+                selProv.value = detectedProvId;
+            }
+        });
+    </script>
 
 </main>
 </html>

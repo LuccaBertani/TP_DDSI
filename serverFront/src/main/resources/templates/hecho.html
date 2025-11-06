@@ -1,102 +1,149 @@
 <!-- templates/hecho.html -->
 <html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
 
-<main th:fragment="contenido" class="container py-4">
+<main th:fragment="contenido">
 
-    <!-- Encabezado -->
-    <div class="d-flex align-items-end justify-content-between mb-3">
-        <div>
-            <h1 class="h3 mb-1">Hechos</h1>
-            <p class="text-muted mb-0">Listado y búsqueda de hechos públicos</p>
-        </div>
-
-        <div class="d-flex align-items-center gap-3"
-             th:if="${listaHechos != null and !#lists.isEmpty(listaHechos)}">
-            <!-- (Opcional) badge original que ya tenías -->
-            <span class="badge rounded-pill bg-dark-subtle text-dark"
-                  th:text="${#lists.size(listaHechos)} + ' resultados'">0 resultados</span>
-
-            <!-- Contador tipo “Viendo 1–N de Z resultados” -->
-            <span id="rangeInfo" class="text-muted small">Viendo 1–0 de 0 resultados</span>
-
-            <!-- Selector “Mostrar por página” -->
-            <label for="pageSize" class="text-muted small mb-0">Mostrar por página:</label>
-            <select id="pageSize" class="form-select form-select-sm" style="width:auto">
-                <option value="10">10</option>
-                <option value="20" selected>20</option>
-                <option value="30">30</option>
-                <option value="40">40</option>
-                <option value="50">50</option>
-                <option value="0">Todos</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- Estado vacío -->
-    <div th:if="${listaHechos == null or #lists.isEmpty(listaHechos)}" class="text-center py-5">
-        <i class="bi bi-file-earmark-text display-1 text-muted"></i>
-        <h4 class="text-muted mt-3">No hay hechos para mostrar</h4>
-        <p class="text-muted">Podés ajustar los filtros o volver al listado completo.</p>
-        <a th:href="@{/hechos/public/get-all}" class="btn btn-outline-dark">
-            <i class="bi bi-list-ul me-1"></i> Ver todos
-        </a>
-    </div>
-
-    <!-- Grid de tarjetas -->
-    <div id="hechosGrid" class="row g-4"
-         th:if="${listaHechos != null and !#lists.isEmpty(listaHechos)}"
-         style="--card-br:16px; --card-bd:#e9ecef; --shadow:0 8px 24px rgba(2,6,23,.08)">
-        <div class="col-md-6 col-lg-4 hecho-card" th:each="h : ${listaHechos}">
-            <div class="card border-0 h-100" style="border-radius:var(--card-br); box-shadow:var(--shadow);">
-                <div class="card-body" style="border:1px solid var(--card-bd); border-radius:var(--card-br);">
-
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h5 class="card-title mb-0" th:text="${h.titulo}">Título</h5>
-                        <span class="badge text-bg-light border" th:if="${h.categoria != null}"
-                              th:text="${h.categoria}">Categoría</span>
+    <!-- Hero Header -->
+    <section class="hero-header py-5 mb-4">
+        <div class="container">
+            <div class="row align-items-end justify-content-between g-4">
+                <div class="col-lg-7">
+                    <div class="d-inline-flex align-items-center gap-2 mb-3 feature-badge">
+                        <i class="bi bi-clock-history"></i>
+                        <span>Explora la historia</span>
                     </div>
+                    <h1 class="display-5 fw-bold mb-3">Hechos Históricos</h1>
+                    <p class="lead text-muted mb-0">
+                        Descubrí y explorá acontecimientos históricos públicos de todo el mundo
+                    </p>
+                </div>
+                <div class="col-lg-5">
+                    <div class="d-flex flex-wrap align-items-center justify-content-lg-end gap-3"
+                         th:if="${listaHechos != null and !#lists.isEmpty(listaHechos)}">
+                        <!-- Badge con total de resultados -->
+                        <span class="results-badge">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span th:text="${#lists.size(listaHechos)} + ' resultados'">0 resultados</span>
+                        </span>
 
-                    <p class="card-text text-muted" th:text="${h.descripcion}">Descripción…</p>
+                        <!-- Contador dinámico -->
+                        <span id="rangeInfo" class="text-muted small">Viendo 1–0 de 0 resultados</span>
 
-                    <div class="small text-muted d-flex flex-column gap-1 mb-3">
-                        <div th:if="${h.fechaAcontecimiento != null}">
-                            <i class="bi bi-calendar me-1"></i>
-                            <span th:text="${h.fechaAcontecimiento}">--/--/----</span>
+                        <!-- Selector de paginación -->
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="pageSize" class="text-muted small mb-0">Mostrar:</label>
+                            <select id="pageSize" class="form-select form-select-sm" style="width:auto;border-radius:10px">
+                                <option value="10">10</option>
+                                <option value="20" selected>20</option>
+                                <option value="30">30</option>
+                                <option value="40">40</option>
+                                <option value="50">50</option>
+                                <option value="0">Todos</option>
+                            </select>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                        <div th:if="${h.getPais() != null}" th:attr="data-pais-id=${h.getId_pais()}">
-                            <i class="bi bi-geo-alt me-1"></i>
-                            <span th:text="${h.getPais()}">País</span>
-                        </div>
+    <div class="container pb-5">
+        <!-- Estado vacío -->
+        <div th:if="${listaHechos == null or #lists.isEmpty(listaHechos)}" class="empty-state-box">
+            <div class="empty-illustration">
+                <i class="bi bi-file-earmark-text"></i>
+            </div>
+            <h3 class="mb-2">No se encontraron hechos</h3>
+            <p class="text-muted mb-4">
+                Intentá ajustar los filtros de búsqueda o explorá el listado completo de hechos históricos
+            </p>
+            <a th:href="@{/hechos/public/get-all}" class="btn btn-primary btn-lg">
+                <i class="bi bi-list-ul me-2"></i>Ver todos los hechos
+            </a>
+        </div>
 
-                        <div th:if="${h.getProvincia() != null}" th:attr="data-provincia-id=${h.getId_provincia()}">
-                            <i class="bi bi-geo-alt me-1"></i>
-                            <span th:text="${h.getProvincia()}">Provincia</span>
-                        </div>
-
-                        <div th:if="${h.latitud != null and h.longitud != null}">
-                            <i class="bi bi-geo me-1"></i>
-                            <span th:text="${h.latitud}">lat</span>,
-                            <span th:text="${h.longitud}">lng</span>
+        <!-- Grid de tarjetas -->
+        <div id="hechosGrid" class="row g-4" th:if="${listaHechos != null and !#lists.isEmpty(listaHechos)}">
+            <div class="col-12 col-md-6 col-lg-4 hecho-card" th:each="h : ${listaHechos}">
+                <article class="fact-card">
+                    <div class="fact-header">
+                        <div class="d-flex justify-content-between align-items-start gap-2">
+                            <h5 class="fact-title" th:text="${h.titulo}">Título del hecho</h5>
+                            <span class="category-badge" th:if="${h.categoria != null}" th:text="${h.categoria}">Categoría</span>
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center">
-                        <a class="btn btn-outline-dark btn-sm"
-                           th:unless="${h.fuente == null}"
-                           th:href="@{/hechos/public/get(id_hecho=${h.id}, fuente=${h.fuente})}">
-                            <i class="bi bi-eye me-1"></i> Ver detalles
+                    <div class="fact-body">
+                        <p class="fact-description" th:text="${h.descripcion}">Descripción del hecho histórico con detalles relevantes...</p>
+
+                        <div class="fact-metadata">
+                            <div class="metadata-item" th:if="${h.fechaAcontecimiento != null}">
+                                <div class="metadata-icon"><i class="bi bi-calendar-event"></i></div>
+                                <span th:text="${h.fechaAcontecimiento}">01/01/2000</span>
+                            </div>
+
+                            <div class="metadata-item" th:if="${h.getPais() != null}" th:attr="data-pais-id=${h.getId_pais()}">
+                                <div class="metadata-icon"><i class="bi bi-globe-americas"></i></div>
+                                <span th:text="${h.getPais()}">País</span>
+                            </div>
+
+                            <div class="metadata-item" th:if="${h.getProvincia() != null}" th:attr="data-provincia-id=${h.getId_provincia()}">
+                                <div class="metadata-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                                <span th:text="${h.getProvincia()}">Provincia</span>
+                            </div>
+
+                            <div class="metadata-item" th:if="${h.latitud != null and h.longitud != null}">
+                                <div class="metadata-icon"><i class="bi bi-pin-map-fill"></i></div>
+                                <span><span th:text="${h.latitud}">lat</span>, <span th:text="${h.longitud}">lng</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fact-footer">
+                        <a class="btn btn-primary w-100" th:unless="${h.fuente == null}" th:href="@{/hechos/public/get(id_hecho=${h.id}, fuente=${h.fuente})}">
+                            <i class="bi bi-eye me-2"></i>Ver detalles completos
                         </a>
                     </div>
-
-                </div>
+                </article>
             </div>
         </div>
     </div>
 
-    <!-- Estilos locales -->
     <style>
-        .card:hover { transform: translateY(-2px); transition: transform .12s ease; }
+        .hero-header{background:radial-gradient(ellipse 1400px 800px at 50% -100px,rgba(139,92,246,.12) 0%,rgba(255,255,255,0) 50%);position:relative;overflow:hidden}
+        .hero-header::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b5cf6' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");opacity:.4;pointer-events:none}
+        .feature-badge{background:linear-gradient(135deg,rgba(139,92,246,.1) 0%,rgba(167,139,250,.1) 100%);color:#8b5cf6;padding:.5rem 1rem;border-radius:50px;font-size:.875rem;font-weight:600;border:1px solid rgba(139,92,246,.2)}
+        .results-badge{background:#fff;padding:.75rem 1.25rem;border-radius:14px;border:1px solid #e9ecef;display:inline-flex;align-items:center;gap:.5rem;font-weight:600;color:#1a202c;box-shadow:0 4px 12px rgba(0,0,0,.05);font-size:.875rem}
+        .results-badge i{color:#10b981;font-size:1rem}
+        .empty-state-box{background:#fff;border-radius:24px;padding:5rem 2rem;text-align:center;border:2px dashed #e9ecef}
+        .empty-illustration{width:120px;height:120px;margin:0 auto 2rem;background:linear-gradient(135deg,rgba(139,92,246,.1) 0%,rgba(167,139,250,.1) 100%);border-radius:50%;display:flex;align-items:center;justify-content:center}
+        .empty-illustration i{font-size:3rem;color:#8b5cf6}
+        .fact-card{background:#fff;border-radius:20px;overflow:hidden;border:1px solid rgba(0,0,0,.06);transition:all .3s cubic-bezier(.4,0,.2,1);height:100%;display:flex;flex-direction:column;position:relative}
+        .fact-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#8b5cf6 0%,#a78bfa 100%);transform:scaleX(0);transform-origin:left;transition:transform .3s ease}
+        .fact-card:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(0,0,0,.12);border-color:rgba(139,92,246,.2)}
+        .fact-card:hover::before{transform:scaleX(1)}
+        .fact-header{padding:1.5rem 1.5rem 1rem;background:linear-gradient(180deg,#faf8ff 0%,#fff 100%)}
+        .fact-title{font-size:1.1rem;font-weight:700;color:#1a202c;margin:0;line-height:1.4}
+        .category-badge{background:linear-gradient(135deg,#8b5cf6 0%,#a78bfa 100%);color:#fff;padding:.35rem .75rem;border-radius:8px;font-size:.75rem;font-weight:600;white-space:nowrap;box-shadow:0 2px 8px rgba(139,92,246,.3)}
+        .fact-body{padding:0 1.5rem 1rem;flex-grow:1}
+        .fact-description{color:#475569;font-size:.9rem;line-height:1.6;margin-bottom:1.25rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+        .fact-metadata{display:flex;flex-direction:column;gap:.75rem}
+        .metadata-item{display:flex;align-items:center;gap:.75rem;font-size:.875rem;color:#64748b}
+        .metadata-icon{width:32px;height:32px;background:linear-gradient(135deg,#f8f7ff 0%,#f0eeff 100%);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(139,92,246,.1)}
+        .metadata-icon i{font-size:.9rem;color:#8b5cf6}
+        .fact-footer{padding:1rem 1.5rem 1.5rem;border-top:1px solid #f1f5f9}
+        .btn{border-radius:12px;font-weight:600;transition:all .2s ease;padding:.65rem 1.25rem}
+        .btn:hover{transform:translateY(-2px)}
+        .btn-primary{background:linear-gradient(135deg,#8b5cf6 0%,#a78bfa 100%);border:none;box-shadow:0 4px 12px rgba(139,92,246,.3)}
+        .btn-primary:hover{background:linear-gradient(135deg,#7c3aed 0%,#9333ea 100%);box-shadow:0 8px 20px rgba(139,92,246,.4)}
+        @media (max-width:768px){
+            .hero-header{padding:2rem 0!important}
+            .display-5{font-size:2rem}
+            .results-badge{padding:.5rem 1rem;font-size:.8rem}
+            .empty-state-box{padding:3rem 1.5rem}
+            .empty-illustration{width:80px;height:80px}
+            .empty-illustration i{font-size:2rem}
+        }
     </style>
 
     <!-- Script: muestra N tarjetas o todas, actualiza contador y recuerda preferencia -->
