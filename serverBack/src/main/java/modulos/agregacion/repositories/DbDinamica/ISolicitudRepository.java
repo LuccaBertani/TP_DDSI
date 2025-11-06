@@ -29,4 +29,8 @@ public interface ISolicitudRepository extends JpaRepository<SolicitudHecho, Long
     """, nativeQuery = true)
     Double porcentajeProcesadas();
 
+    @Query(value = """
+    SELECT s FROM SolicitudHecho s WHERE s.procesada = false
+    """)
+    List<SolicitudHecho> findAllByProcesadaFalse();
 }

@@ -326,63 +326,57 @@ public class SolicitudHechoService {
         if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
             return rta;
         }
-
-        // Marcar como procesada
-        solicitud.setProcesada(true);
-        if (solicitud.getUsuario_id()!=null){
-            Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
-            if (dtoInput.getRespuesta()) {
-                solicitud.getHecho().setActivo(true);
-                solicitud.getHecho().getAtributosHecho().setModificado(true);
-                solicitud.getHecho().getAtributosHecho().setFechaCarga(ZonedDateTime.now());
-                solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(solicitud.getHecho().getAtributosHecho().getFechaCarga()); // Nueva fecha de modificación
-
-                if (solicitud.getUsuario_id() != null){
-                    // El usuario va a existir si o si porque ya se verificó cuando solicitó subir un hecho, pero x si pide borrar la cuenta hago el chequeo antes
-                    if (usuario != null){
-                        usuario.incrementarHechosSubidos();
-                        Mensaje mensaje = new Mensaje();
-                        mensaje.setSolicitud_hecho_id(solicitud.getId());
-                        mensaje.setReceptor(usuario);
-                        mensaje.setTextoMensaje("Se aceptó su hecho de título " + solicitud.getHecho().getAtributosHecho().getTitulo());
-                        hechosDinamicaRepository.saveAndFlush(solicitud.getHecho());
-                        mensajesRepository.save(mensaje);
-                        if (usuario.getRol().equals(Rol.VISUALIZADOR)){
-                            dto.setRol(Rol.CONTRIBUYENTE);
-                            dto.setRolModificado(true);
-                            dto.setUsername(usuario.getNombreDeUsuario());
-                            GestorRoles.VisualizadorAContribuyente(usuario);
-                        }
-                    }
-
-                }
-
-            }
-            else{
-                if (solicitud.getUsuario_id() != null) {
-                    Mensaje mensaje = new Mensaje();
-                    mensaje.setSolicitud_hecho_id(solicitud.getId());
-                    mensaje.setReceptor(usuario);
-                    mensaje.setTextoMensaje("Se rechazó su solicitud de subida del hecho de título " + solicitud.getHecho().getAtributosHecho().getTitulo()
-                            + ".\nJustificacion: " + solicitud.getJustificacion());
-                    mensajesRepository.save(mensaje);
-                }
-            }
-            // Por alguna razon sin saveAndFlush no actualiza el bool procesada en la bdd
-            solicitudRepository.saveAndFlush(solicitud);
+        Usuario usuario = null;
+        if(solicitud.getUsuario_id() != null) {
+            usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
         }
 
+        if (dtoInput.getRespuesta()) {
+            solicitud.getHecho().setActivo(true);
+            solicitud.getHecho().getAtributosHecho().setModificado(true);
+            solicitud.getHecho().getAtributosHecho().setFechaCarga(ZonedDateTime.now());
+            solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(solicitud.getHecho().getAtributosHecho().getFechaCarga()); // Nueva fecha de modificación
+
+            if (usuario != null){
+                usuario.incrementarHechosSubidos();
+                Mensaje mensaje = new Mensaje();
+                mensaje.setSolicitud_hecho_id(solicitud.getId());
+                mensaje.setReceptor(usuario);
+                mensaje.setTextoMensaje("Se aceptó su hecho de título " + solicitud.getHecho().getAtributosHecho().getTitulo());
+                hechosDinamicaRepository.saveAndFlush(solicitud.getHecho());
+                mensajesRepository.save(mensaje);
+                if (usuario.getRol().equals(Rol.VISUALIZADOR)){
+                    dto.setRol(Rol.CONTRIBUYENTE);
+                    dto.setRolModificado(true);
+                    dto.setUsername(usuario.getNombreDeUsuario());
+                    GestorRoles.VisualizadorAContribuyente(usuario);
+                }
+            }
+        } else {
+            if (usuario != null) {
+                Mensaje mensaje = new Mensaje();
+                mensaje.setSolicitud_hecho_id(solicitud.getId());
+                mensaje.setReceptor(usuario);
+                mensaje.setTextoMensaje("Se rechazó su solicitud de subida del hecho de título " + solicitud.getHecho().getAtributosHecho().getTitulo()
+                        + ".\nJustificacion: " + solicitud.getJustificacion());
+                mensajesRepository.save(mensaje);
+            }
+        }
+            solicitud.setProcesada(true);
+
+            // Por alguna razon sin saveAndFlush no actualiza el bool procesada en la bdd
+            solicitudRepository.saveAndFlush(solicitud);
 
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
     @Transactional
-    public ResponseEntity<?> evaluarEliminacionHecho(SolicitudHechoEvaluarInputDTO dtoInput, Jwt principal) {
+    public ResponseEntity<?> evaluarEliminacionHecho(SolicitudHechoEvaluarInputDTO dtoInput, String username) {
 
         RolCambiadoDTO dto = new RolCambiadoDTO();
         dto.setRolModificado(false);
 
-        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
+        ResponseEntity<?> rta = checkeoAdmin(username);
 
         if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
             return rta;
@@ -416,9 +410,9 @@ public class SolicitudHechoService {
     }
 
     @Transactional
-    public ResponseEntity<?> evaluarModificacionHecho(SolicitudHechoEvaluarInputDTO dtoInput, Jwt principal) {
+    public ResponseEntity<?> evaluarModificacionHecho(SolicitudHechoEvaluarInputDTO dtoInput, String username) {
 
-        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
+        ResponseEntity<?> rta = checkeoAdmin(username);
 
         if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
             return rta;
@@ -483,16 +477,16 @@ public class SolicitudHechoService {
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> getAllSolicitudes(Jwt principal) {
+    public ResponseEntity<?> getAllSolicitudes(String username) {
 
-        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
+        ResponseEntity<?> rta = checkeoAdmin(username);
 
         if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
             return rta;
         }
 
 
-        List<SolicitudHecho> solicitudesHechos = solicitudRepository.findAll();
+        List<SolicitudHecho> solicitudesHechos = solicitudRepository.findAllByProcesadaFalse();
         List<SolicitudHechoOutputDTO> solicitudHechoOutputDTOS = new ArrayList<>();
         for (SolicitudHecho solicitud: solicitudesHechos){
             SolicitudHechoOutputDTO dto = SolicitudHechoOutputDTO.builder()
@@ -574,8 +568,8 @@ public class SolicitudHechoService {
     }
 
     // Para buscar bien el hecho despues con un boton rápido agrego un endpoint en HechoController para obtener hecho por id y fuente
-    public ResponseEntity<?> getAllReportes(Jwt principal) {
-        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
+    public ResponseEntity<?> getAllReportes(String username) {
+        ResponseEntity<?> rta = checkeoAdmin(username);
 
         if (!rta.getStatusCode().equals(HttpStatus.OK)) {
             return rta;

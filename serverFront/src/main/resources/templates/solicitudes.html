@@ -48,14 +48,14 @@
 
             <article class="request-card"
                      th:each="s : ${solicitudes}"
-                     th:id="${'sol-'+s.id}"
+                     th:id="${'sol-' + s.id}"
                      th:with="
-                esSubir=${s.tipo} == 'SUBIR',
-                esEliminar=${s.tipo} == 'ELIMINAR',
-                actionUrl=${esSubir} ? @{/solicitudes-hecho/evaluar/subir}
-                         : (${esEliminar} ? @{/solicitudes-hecho/evaluar/eliminar}
-                                          : @{/solicitudes-hecho/evaluar/modificar})
-             ">
+            esSubir=${s.tipo} == 'SUBIR',
+            esEliminar=${s.tipo} == 'ELIMINAR',
+            actionUrl=${esSubir} ? '/solicitudes-hecho/evaluar/subir'
+                     : (${esEliminar} ? '/solicitudes-hecho/evaluar/eliminar'
+                                      : '/solicitudes-hecho/evaluar/modificar')
+         ">
 
                 <!-- Contenido principal (clickeable si hay hechoId) -->
                 <a class="request-content"
@@ -149,7 +149,11 @@
     <!-- MODAL RECHAZO -->
     <div class="modal fade" id="modalRechazo" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <form class="modal-content border-0" id="formRechazo" method="post" style="border-radius:20px;overflow:hidden">
+            <form class="modal-content border-0"
+                  id="formRechazo"
+                  method="post"
+                  th:object="${solicitudHechoEvaluarInputDTO}"
+                  style="border-radius:20px;overflow:hidden">
                 <div class="modal-header" style="background:linear-gradient(135deg,#fee2e2,#fecaca);border:none;padding:2rem">
                     <h5 class="modal-title fw-bold" style="color:#991b1b">
                         <i class="bi bi-exclamation-triangle-fill me-2"></i>
@@ -160,11 +164,14 @@
 
                 <div class="modal-body" style="padding:2rem">
                     <label class="form-label fw-semibold mb-2">Motivo del rechazo</label>
-                    <textarea class="form-control" name="mensaje" id="rechazoMensaje"
-                              rows="4" maxlength="300"
-                              placeholder="Explicá brevemente por qué se rechaza esta solicitud..."
-                              style="border-radius:12px;border:1px solid #e9ecef;background:#f8f9ff"
-                              required></textarea>
+                    <label for="rechazoMensaje"></label><textarea class="form-control"
+                                                                  th:field="*{mensaje}"
+                                                                  id="rechazoMensaje"
+                                                                  rows="4"
+                                                                  maxlength="300"
+                                                                  placeholder="Explicá brevemente por qué se rechaza esta solicitud..."
+                                                                  style="border-radius:12px;border:1px solid #e9ecef;background:#f8f9ff"
+                                                                  required></textarea>
                     <div class="form-text text-end mt-2">
                         <i class="bi bi-info-circle me-1"></i>Máximo 300 caracteres
                     </div>

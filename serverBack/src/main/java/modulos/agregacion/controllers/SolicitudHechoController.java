@@ -40,14 +40,14 @@ public class SolicitudHechoController {
 
     // Anda
     @PostMapping("/evaluar/eliminar")
-    public ResponseEntity<?> evaluarSolicitudEliminacion(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput, @AuthenticationPrincipal Jwt principal){
-        return solicitudHechoService.evaluarEliminacionHecho(dtoInput, principal); // 200, 401
+    public ResponseEntity<?> evaluarSolicitudEliminacion(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput, @AuthenticationPrincipal String username){
+        return solicitudHechoService.evaluarEliminacionHecho(dtoInput, username); // 200, 401
     }
 
 
     @PostMapping("/evaluar/modificar")
-    public ResponseEntity<?> evaluarSolicitudModificacion(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput, @AuthenticationPrincipal Jwt principal){
-        return solicitudHechoService.evaluarModificacionHecho(dtoInput, principal); // 200, 401
+    public ResponseEntity<?> evaluarSolicitudModificacion(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput, @AuthenticationPrincipal String username){
+        return solicitudHechoService.evaluarModificacionHecho(dtoInput, username); // 200, 401
     }
 
     // Anda
@@ -77,8 +77,8 @@ public class SolicitudHechoController {
     }
 
     @GetMapping("/reportes/get/all")
-    public ResponseEntity<?> getAllReportes(@AuthenticationPrincipal Jwt principal){
-        return solicitudHechoService.getAllReportes(principal);
+    public ResponseEntity<?> getAllReportes(@AuthenticationPrincipal String username){
+        return solicitudHechoService.getAllReportes(username);
     }
 
     @GetMapping("/reportes/evaluar")
@@ -88,8 +88,8 @@ public class SolicitudHechoController {
 
     // Anda
     @GetMapping("/get/all")
-    public ResponseEntity<?> getAllSolicitudes(@AuthenticationPrincipal Jwt principal){
-        return solicitudHechoService.getAllSolicitudes(principal);
+    public ResponseEntity<?> getAllSolicitudes(@AuthenticationPrincipal String username){
+        return solicitudHechoService.getAllSolicitudes(username);
     }
 
     // Anda
