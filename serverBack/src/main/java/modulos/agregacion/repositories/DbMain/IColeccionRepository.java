@@ -12,9 +12,6 @@ import java.util.Optional;
 
 public interface IColeccionRepository extends JpaRepository<Coleccion, Long> {
 
-    List<Coleccion> findByActivoTrueAndModificadoTrue();
-    List<Coleccion> findByActivoTrue();
-
     @Query("""
     SELECT c FROM Coleccion c where c.activo = true
     """)

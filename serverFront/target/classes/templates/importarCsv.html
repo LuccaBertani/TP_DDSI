@@ -1,0 +1,225 @@
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+
+<main th:fragment="contenido">
+
+    <div class="upload-container">
+        <h1 class="upload-title">Importar Hechos</h1>
+        <p class="text-muted mb-4">Sube un archivo CSV y especifica la fuente para la importación.</p>
+
+        <form id="importForm" enctype="multipart/form-data">
+
+            <div class="mb-3 text-start">
+                <label for="inputFuente" class="form-label fw-semibold">Fuente (Ej: infobae)</label>
+                <input type="text" class="form-control" id="inputFuente" required placeholder="Nombre de la fuente, ej: Infobae">
+            </div>
+
+            <label for="csvFile" class="file-upload-box">
+                <i class="bi bi-cloud-arrow-up-fill"></i>
+                <p>Arrastra y suelta tu archivo CSV aquí o haz clic para seleccionarlo</p>
+                <small>Solo se aceptan archivos .csv</small>
+                <input type="file" id="csvFile" name="file" accept=".csv">
+            </label>
+            <div id="fileNameDisplay" class="selected-file-name"></div>
+
+            <button type="submit" class="btn btn-upload" id="uploadButton" disabled>
+                <i class="bi bi-upload me-2"></i> Subir CSV
+            </button>
+        </form>
+    </div>
+
+    <style th:fragment="import-styles">
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .upload-container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+            animation: fadeIn 0.8s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .upload-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #343a40;
+            margin-bottom: 30px;
+        }
+        .file-upload-box {
+            border: 3px dashed #ced4da;
+            border-radius: 12px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 180px;
+        }
+        .file-upload-box:hover {
+            border-color: #007bff;
+            background-color: #e9f7ff;
+        }
+        .file-upload-box input[type="file"] {
+            display: none;
+        }
+        .file-upload-box i {
+            font-size: 3.5rem;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+        .file-upload-box p {
+            font-size: 1.1rem;
+            color: #495057;
+            margin: 0;
+            font-weight: 600;
+        }
+        .file-upload-box small {
+            color: #888;
+            margin-top: 5px;
+            display: block;
+        }
+        .selected-file-name {
+            margin-top: 20px;
+            font-style: italic;
+            color: #28a745;
+            font-weight: 500;
+        }
+        .btn-upload {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            margin-top: 30px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn-upload:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        .btn-upload:disabled {
+            background-color: #a0c9ed;
+            border-color: #a0c9ed;
+            cursor: not-allowed;
+        }
+    </style>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('csvFile');
+            const inputFuente = document.getElementById('inputFuente');
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
+            const uploadButton = document.getElementById('uploadButton');
+            const fileUploadBox = document.querySelector('.file-upload-box');
+            const importForm = document.getElementById('importForm');
+
+            // --- Funciones de Validación ---
+            const validateForm = () => {
+                const isFileSelected = fileInput.files.length > 0 && fileInput.files[0].name.toLowerCase().endsWith('.csv');
+                const isFuenteFilled = inputFuente.value.trim().length > 0;
+                uploadButton.disabled = !(isFileSelected && isFuenteFilled);
+            };
+
+            // --- Event Listeners ---
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length > 0 && fileInput.files[0].name.toLowerCase().endsWith('.csv')) {
+                    fileNameDisplay.textContent = `Archivo seleccionado: ${fileInput.files[0].name}`;
+                } else {
+                    fileNameDisplay.textContent = '⛔ Error: Solo se permiten archivos .csv.';
+                    fileInput.value = "";
+                }
+                validateForm();
+            });
+
+            inputFuente.addEventListener('input', validateForm);
+
+            // Drag and Drop: Dragover, Dragleave (Lógica de diseño omitida aquí por brevedad, pero estaba correcta en tu código)
+            fileUploadBox.addEventListener('dragover', (e) => { e.preventDefault(); fileUploadBox.style.borderColor = '#007bff'; fileUploadBox.style.backgroundColor = '#e9f7ff'; });
+            fileUploadBox.addEventListener('dragleave', () => { fileUploadBox.style.borderColor = '#ced4da'; fileUploadBox.style.backgroundColor = '#f0f2f5'; });
+
+            fileUploadBox.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUploadBox.style.borderColor = '#ced4da';
+                fileUploadBox.style.backgroundColor = '#f0f2f5';
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].name.toLowerCase().endsWith('.csv')) {
+                    fileInput.files = files;
+                    fileNameDisplay.textContent = `Archivo seleccionado: ${files[0].name}`;
+                } else {
+                    fileNameDisplay.textContent = '⛔ Error: Por favor, suelta un archivo .csv válido.';
+                    fileInput.value = "";
+                }
+                validateForm();
+            });
+
+            // --- Manejo del Submit del Formulario (Fetch API) ---
+            importForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // 1. Deshabilitar botón para evitar doble envío
+                uploadButton.disabled = true;
+                uploadButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Subiendo...';
+
+                // 2. Obtener datos y construir el JSON para 'meta'
+                const fuente = inputFuente.value.trim();
+                const file = fileInput.files[0];
+
+                const metaDto = JSON.stringify({
+                    fuenteString: fuente
+                });
+
+                // 3. Crear FormData para multipart/form-data
+                const formData = new FormData();
+                formData.append('meta', new Blob([metaDto], { type: 'application/json' }));
+                formData.append('file', file);
+
+
+                // 4. LECTURA Y PREPARACIÓN DEL CSRF
+                const csrfMeta = document.querySelector("meta[name='_csrf']");
+                const csrfHeaderMeta = document.querySelector("meta[name='_csrf_header']");
+                const requestHeaders = {};
+
+                if (csrfMeta && csrfHeaderMeta) {
+                    const csrfToken = csrfMeta.getAttribute("content");
+                    const csrfHeader = csrfHeaderMeta.getAttribute("content");
+                    requestHeaders[csrfHeader] = csrfToken;
+                }
+
+                // 5. Enviar usando Fetch API
+                fetch('/colecciones/importar', {
+                    method: 'POST',
+                    body: formData,
+                    headers: requestHeaders // INCLUYE EL CSRF TOKEN
+                })
+                    .then(response => {
+                        // Manejo la redirección del servidor
+                        window.location.href = response.url;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error al subir el archivo: ' + error.message);
+                        uploadButton.innerHTML = '<i class="bi bi-upload me-2"></i> Subir CSV';
+                        validateForm();
+                    });
+            });
+        });
+    </script>
+</main>

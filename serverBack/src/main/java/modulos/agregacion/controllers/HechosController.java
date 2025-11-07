@@ -45,8 +45,8 @@ public class HechosController {
     public ResponseEntity<?> importarHechos(
             @Valid @RequestPart("meta") ImportacionHechosInputDTO dtoInput,
             @RequestPart("file") MultipartFile file,
-            @AuthenticationPrincipal Jwt principal){
-        return hechosService.importarHechos(dtoInput, file, principal);
+            @AuthenticationPrincipal String username){
+        return hechosService.importarHechos(dtoInput, file, username);
     }
     //TODO supongo que es solo fuente dinamica
     @PostMapping("/subir-archivo")

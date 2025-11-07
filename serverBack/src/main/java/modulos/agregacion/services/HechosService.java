@@ -188,9 +188,12 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     }
 
     @Transactional
-    public ResponseEntity<?> importarHechos(ImportacionHechosInputDTO dtoInput, MultipartFile file, Jwt principal) {
+    public ResponseEntity<?> importarHechos(ImportacionHechosInputDTO dtoInput, MultipartFile file, String username) {
         try {
-            ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
+
+            System.out.println("ENTRE AL BACK JIJI: " + file.getContentType() + " " + dtoInput.getFuenteString());
+
+            ResponseEntity<?> rta = checkeoAdmin(username);
 
             if (!rta.getStatusCode().equals(HttpStatus.OK)) {
                 return rta;
@@ -215,6 +218,9 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             FuenteEstatica fuente = new FuenteEstatica();
             Dataset dataset = new Dataset(dtoInput.getFuenteString());
             dataset.setStoragePath(destino.toString());
+
+            System.out.println("ARCHIVO DE MIERDA A LEER: " + dataset.getStoragePath());
+
             datasetsRepo.save(dataset);
             fuente.setDataSet(dataset);
 
@@ -225,8 +231,9 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 ZonedDateTime fechaActual = ZonedDateTime.now();
                 hecho.getAtributosHecho().setFechaCarga(fechaActual);
                 hecho.getAtributosHecho().setFechaUltimaActualizacion(fechaActual);
-                hechosEstaticaRepo.save(hecho);
-                hechoRefRepository.save(new HechoRef(hecho.getId(), hecho.getAtributosHecho().getFuente()));
+
+                hechosEstaticaRepo.saveAndFlush(hecho);
+                hechoRefRepository.saveAndFlush(new HechoRef(hecho.getId(), hecho.getAtributosHecho().getFuente()));
             }
 
             return ResponseEntity.status(HttpStatus.CREATED).body("Se importaron los hechos correctamente");

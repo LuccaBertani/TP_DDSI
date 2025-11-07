@@ -4,23 +4,33 @@
 <main th:fragment="contenido">
 
     <!-- Hero Header -->
+    <!-- Hero Header -->
     <section class="contribute-hero">
         <div class="container">
-            <div class="row align-items-center justify-content-center">
-                <div class="col-lg-8 text-center">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <!-- Texto alineado a la izquierda -->
+                <div class="hero-text">
                     <div class="contribute-badge mb-3">
                         <i class="bi bi-stars me-2"></i>Contribución Colaborativa
                     </div>
-                    <h1 class="display-5 fw-bold mb-3">
+                    <h1 class="display-5 fw-bold mb-2">
                         <i class="bi bi-plus-circle me-2"></i>Nuevo Hecho Histórico
                     </h1>
                     <p class="lead text-muted mb-0">
                         Completá la información del evento que querés compartir con la comunidad
                     </p>
                 </div>
+
+                <!-- Botón solo visible para administradores -->
+                <div sec:authorize="hasRole('ADMINISTRADOR')" class="mt-3 mt-md-0">
+                    <a th:href="@{/hechos/importar}" class="btn btn-warning-custom">
+                        <i class="bi bi-upload me-2"></i>Importar hechos
+                    </a>
+                </div>
             </div>
         </div>
     </section>
+
 
     <div class="container pb-5">
         <!-- Mini-form GET para recargar provincias sin perder datos -->
@@ -224,6 +234,32 @@
             .action-buttons{justify-content:stretch}
             .action-buttons a,.action-buttons button{flex:1}
         }
+        .hero-text {
+            text-align: left;
+            max-width: 600px;
+        }
+
+        .btn-warning-custom {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border: none;
+            color: #fff;
+            padding: .875rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, .3);
+            transition: all .2s ease;
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .btn-warning-custom:hover {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(245, 158, 11, .4);
+            color: #fff;
+        }
+
     </style>
 
     <!-- Auto-preselección País/Provincia detectados -->

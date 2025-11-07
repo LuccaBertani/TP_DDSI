@@ -310,13 +310,15 @@ public class WebApiCallerService {
         builder.part("file", file.getResource())
                 .header("Content-Disposition", "form-data; name=\"file\"; filename=\"" + file.getOriginalFilename() + "\"");
 
-        return webClient.post()
+        return executeWithTokenRetry(token-> webClient.post()
                 .uri("/api/hechos/importar")
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .retrieve()
                 .toEntity(Void.class)
-                .block();
+        );
+
 
     }
 

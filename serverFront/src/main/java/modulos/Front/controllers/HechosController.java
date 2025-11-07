@@ -43,14 +43,24 @@ public class HechosController {
     }
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @GetMapping("/importar")
+    public String importar(Model model){
+        model.addAttribute("meta", new ImportacionHechosInputDTO());
+        return "importarCsv";
+    }
+
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/importar")
     public String importarHechos(@Valid @RequestPart("meta") ImportacionHechosInputDTO dtoInput,
                                  @RequestPart("file") MultipartFile file, RedirectAttributes ra){
+
+        System.out.println("ENTRE A IMPORTAR CON ESTO: " + dtoInput.getFuenteString());
+
         ResponseEntity <?> rtaDto = this.hechosService.importarHechos(dtoInput, file);
 
         if(rtaDto.getStatusCode().is2xxSuccessful()){
             ra.addFlashAttribute("msgExito", "Csv subido correctamente");
-            return "redirect:crear";
+            return "redirect:importar";
         }
         else if(rtaDto.getBody() != null){
             ra.addAttribute("msgError", rtaDto.getBody().toString());

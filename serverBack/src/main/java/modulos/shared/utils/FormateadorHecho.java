@@ -294,6 +294,18 @@ public class FormateadorHecho {
 
 */
 
+    public static List<List<IFiltro>> agruparFiltrosPorClase(List<Filtro> criterios) {
+        return criterios.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.groupingBy(
+                        Filtro::getClass // o filtro -> filtro.getClass()
+                ))
+                .values()
+                .stream()
+                .map(list -> new ArrayList<IFiltro>(list))
+                .collect(Collectors.toList());
+    }
+
     public static AtributosHecho formatearAtributosHecho(BuscadoresRegistry buscadores, SolicitudHechoInputDTO dtoInput){
 
     AtributosHecho atributos = new AtributosHecho();

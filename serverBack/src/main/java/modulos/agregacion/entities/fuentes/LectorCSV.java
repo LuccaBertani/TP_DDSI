@@ -17,6 +17,7 @@ import modulos.agregacion.entities.atributosHecho.Origen;
 import modulos.buscadores.*;
 import modulos.shared.utils.FechaParser;
 import modulos.shared.utils.Geocodificador;
+import modulos.shared.utils.GestorArchivos;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -35,7 +36,7 @@ public class LectorCSV {
         List<HechoEstatica> hechosASubir = new ArrayList<>();
 
         try {
-            Reader reader = new InputStreamReader(new FileInputStream(this.dataSet.getFuente()), Charset.forName("ISO-8859-1"));
+            Reader reader = new InputStreamReader(new FileInputStream(this.dataSet.getStoragePath()), Charset.forName("ISO-8859-1"));
             //Reader reader = new InputStreamReader(new FileInputStream(this.dataSet), Charset.forName("ISO-8859-1"));
             CSVFormat formato = CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
@@ -50,7 +51,7 @@ public class LectorCSV {
             if(headers.size() == 1){
                 parser.close();
 
-                reader = new FileReader(this.dataSet.getFuente());
+                reader = new FileReader(this.dataSet.getStoragePath());
 
                 formato = CSVFormat.DEFAULT
                         .withFirstRecordAsHeader()
@@ -121,7 +122,7 @@ public class LectorCSV {
                     hecho.getAtributosHecho().setUbicacion_id(null);
                 }
 
-                System.out.println("Soy una fecha asquerosa: " + FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))));
+                //System.out.println("Soy una fecha asquerosa: " + FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))));
 
                 hecho.getAtributosHecho().setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))) : null);
                 hecho.getAtributosHecho().setModificado(true);
@@ -131,14 +132,16 @@ public class LectorCSV {
                 if (tituloRepetido){
                     HechoEstatica hechoIdentico = buscadores.getBuscadorHecho().existeHechoIdentico(hecho, categoria, pais, provincia);
                     if (hechoIdentico!=null){
-                        hechoIdentico.getDatasets().add(this.dataSet);
-                        continue; // Evito agregar un hecho identico
+                        hecho = hechoIdentico;
+                        hecho.getAtributosHecho().setModificado(true);
+                        hecho.getDatasets().add(this.dataSet);
                     }
                 }
 
                 hechosASubir.add(hecho);
 
             }
+            GestorArchivos.eliminarArchivo(this.dataSet.getStoragePath());
             parser.close();
         }
         catch(IOException e){

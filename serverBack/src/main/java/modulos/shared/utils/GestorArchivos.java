@@ -31,4 +31,25 @@ public class GestorArchivos {
         return "/uploads/" + fileName;
     }
 
+    public static boolean eliminarArchivo(String rutaArchivo) {
+        try {
+            Path path = Paths.get(rutaArchivo);
+
+            // Verifica si existe
+            if (Files.exists(path)) {
+                Files.delete(path);
+                System.out.println("Archivo eliminado: " + rutaArchivo);
+                return true;
+            } else {
+                System.out.println("El archivo no existe: " + rutaArchivo);
+                return false;
+            }
+
+        } catch (IOException e) {
+            System.err.println("Error al eliminar el archivo: " + e.getMessage());
+            return false;
+        }
+    }
+
+
 }

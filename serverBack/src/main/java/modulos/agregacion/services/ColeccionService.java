@@ -403,39 +403,45 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
     }
 
     @Async
-    @Scheduled(cron = "0 0 * * * *") // cada hora
+    @Scheduled(cron = "0 * * * * *") // cada hora
+    @Transactional
     public void refrescarColeccionesCronjob() {
+
+        System.out.println("Iniciando refrescar colecciones");
+
         Specification<HechoEstatica> specs1 = (root, query, cb) -> {
             if (query != null) query.distinct(true); // útil si después hay JOINs
             // activo = true AND atributosHecho.modificado = true (null => false)
             var activo = root.<Boolean>get("activo");
-            var modif  = root.get("atributosHecho").<Boolean>get("modificado");
-            return cb.and(cb.isTrue(activo), cb.isTrue(cb.coalesce(modif, cb.literal(false))));
+            return cb.and(cb.isTrue(activo));
         };
 
         Specification<HechoDinamica> specs2 = (root, query, cb) -> {
             if (query != null) query.distinct(true); // útil si después hay JOINs
             // activo = true AND atributosHecho.modificado = true (null => false)
             var activo = root.<Boolean>get("activo");
-            var modif  = root.get("atributosHecho").<Boolean>get("modificado");
-            return cb.and(cb.isTrue(activo), cb.isTrue(cb.coalesce(modif, cb.literal(false))));
+            return cb.and(cb.isTrue(activo));
         };
 
         Specification<HechoProxy> specs3 = (root, query, cb) -> {
             if (query != null) query.distinct(true); // útil si después hay JOINs
             // activo = true AND atributosHecho.modificado = true (null => false)
             var activo = root.<Boolean>get("activo");
-            var modif  = root.get("atributosHecho").<Boolean>get("modificado");
-            return cb.and(cb.isTrue(activo), cb.isTrue(cb.coalesce(modif, cb.literal(false))));
+            return cb.and(cb.isTrue(activo));
         };
 
 
-        List<Coleccion> colecciones = coleccionesRepo.findByActivoTrue();
+        List<Coleccion> colecciones = coleccionesRepo.findAllByActivoTrue();
 
         for(Coleccion coleccion : colecciones){
-            Specification<HechoEstatica> specsEstatica = crearSpecs(coleccion.getCriterios(), HechoEstatica.class);
-            Specification<HechoDinamica> specsDinamica = crearSpecs(coleccion.getCriterios(), HechoDinamica.class);
-            Specification<HechoProxy> specsProxy = crearSpecs(coleccion.getCriterios(), HechoProxy.class);
+
+            System.out.println("Coleccion SIGMA SKIBIDI: " + coleccion.getTitulo());
+
+            List<List<IFiltro>> filtrosXCategoria = FormateadorHecho.agruparFiltrosPorClase(coleccion.getCriterios());
+
+            Specification<HechoEstatica> specsEstatica = crearSpecs(filtrosXCategoria, HechoEstatica.class);
+            Specification<HechoDinamica> specsDinamica = crearSpecs(filtrosXCategoria, HechoDinamica.class);
+            Specification<HechoProxy> specsProxy = crearSpecs(filtrosXCategoria, HechoProxy.class);
 
             Specification<HechoEstatica> specFinalEstatica = Specification
                     .where(this.distinct(HechoEstatica.class))
@@ -463,9 +469,13 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
 
             hechosFiltrados.forEach(hecho -> hecho.getAtributosHecho().setModificado(false));
 
+            hechosFiltrados.forEach(hecho -> System.out.println("Titulo hecho: " + hecho.getAtributosHecho().getTitulo()));
+
             if(!hechosFiltrados.isEmpty()) {
                 coleccion.setModificado(false);
-                coleccion.setHechos(hechosFiltrados.stream().map(h->new HechoRef(h.getId(), h.getAtributosHecho().getFuente())).toList());
+                coleccion.setHechos(hechosFiltrados.stream()
+                        .map(h -> new HechoRef(h.getId(), h.getAtributosHecho().getFuente()))
+                        .collect(java.util.stream.Collectors.toList()));
                 coleccionesRepo.save(coleccion);
             }
         }
@@ -500,11 +510,49 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    private <T> Specification<T> crearSpecs(List<Filtro> filtros, Class<T> clazz) {
-        return filtros.stream()
-                .map(filtro->filtro.toSpecification(clazz))  // o IFiltro::toSpecification
-                .filter(Objects::nonNull)
-                .reduce(Specification.where(null), Specification::and); // NO meter distinct acá
+    private <T> Specification<T> crearSpecs(List<List<IFiltro>> filtrosXCategoria, Class<T> clazz) {
+
+        System.out.println("ENTRO A crearSpecs");
+        System.out.println("Total categorías: " + (filtrosXCategoria != null ? filtrosXCategoria.size() : "null"));
+
+        Specification<T> specFinal = null;
+
+        if (filtrosXCategoria == null || filtrosXCategoria.isEmpty()) {
+            System.out.println("La lista de filtros por categoría está vacía o es null.");
+            return null;
+        }
+
+        for (int i = 0; i < filtrosXCategoria.size(); i++) {
+            List<IFiltro> categoria = filtrosXCategoria.get(i);
+
+            if (categoria == null || categoria.isEmpty()) {
+                System.out.println("Categoría " + i + " vacía o null, se saltea.");
+                continue;
+            }
+
+            System.out.println("Procesando categoría " + i + " con " + categoria.size() + " filtros.");
+
+            Specification<T> specCategoria = categoria.stream()
+                    .map(f -> {
+                        Specification<T> spec = f.toSpecification(clazz);
+                        System.out.println("  Filtro: " + f + " -> Spec: " + (spec != null ? "OK" : "null"));
+                        return spec;
+                    })
+                    .filter(Objects::nonNull)
+                    .reduce(Specification::or)
+                    .orElse(null);
+
+            if (specCategoria == null) {
+                System.out.println("No se generó spec para categoría " + i + ".");
+                continue;
+            }
+
+            specFinal = (specFinal == null) ? specCategoria : specFinal.and(specCategoria);
+        }
+
+        System.out.println("Spec final generada: " + (specFinal != null ? "OK" : "null"));
+
+        return specFinal;
     }
 
     private <T> Specification<T> distinct(Class <T> clazz) {
