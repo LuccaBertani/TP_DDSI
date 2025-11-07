@@ -1,155 +1,230 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<main th:fragment="contenido" class="container py-4">
+<main th:fragment="contenido">
 
-    <!-- Encabezado -->
-    <section class="text-center py-4"
-             style="background: radial-gradient(1200px 600px at 50% -150px, #e8ecf6 0%, #f7f9fb 100%);
-                  border-radius:12px;">
-        <h2 class="fw-bold mb-1"><i class="bi bi-plus-circle me-2"></i>Contribuir con un nuevo hecho</h2>
-        <p class="text-muted mb-0">Completá la información del evento histórico que querés proponer</p>
+    <!-- Hero Header -->
+    <section class="contribute-hero">
+        <div class="container">
+            <div class="row align-items-center justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <div class="contribute-badge mb-3">
+                        <i class="bi bi-stars me-2"></i>Contribución Colaborativa
+                    </div>
+                    <h1 class="display-5 fw-bold mb-3">
+                        <i class="bi bi-plus-circle me-2"></i>Nuevo Hecho Histórico
+                    </h1>
+                    <p class="lead text-muted mb-0">
+                        Completá la información del evento que querés compartir con la comunidad
+                    </p>
+                </div>
+            </div>
+        </div>
     </section>
 
-    <!-- Mini-form GET para recargar provincias sin perder datos -->
-    <form id="filtroPaisForm" th:action="@{/public/contribuir}" method="get" style="display:none;">
-        <input type="hidden" name="titulo">
-        <input type="hidden" name="descripcion">
-        <input type="hidden" name="fechaAcontecimiento">
-        <input type="hidden" name="latitud">
-        <input type="hidden" name="longitud">
-        <input type="hidden" name="id_categoria">
-        <input type="hidden" name="id_provincia">
-        <input type="hidden" name="id_pais" id="filtroPaisInput">
-    </form>
+    <div class="container pb-5">
+        <!-- Mini-form GET para recargar provincias sin perder datos -->
+        <form id="filtroPaisForm" th:action="@{/public/contribuir}" method="get" style="display:none;">
+            <input type="hidden" name="titulo">
+            <input type="hidden" name="descripcion">
+            <input type="hidden" name="fechaAcontecimiento">
+            <input type="hidden" name="latitud">
+            <input type="hidden" name="longitud">
+            <input type="hidden" name="id_categoria">
+            <input type="hidden" name="id_provincia">
+            <input type="hidden" name="id_pais" id="filtroPaisInput">
+        </form>
 
-    <!-- Form principal -->
-    <form id="formPost" th:action="@{/solicitudes-hecho/public/subir-hecho}" method="post"
-          th:object="${solicitudHecho}" enctype="multipart/form-data" class="mt-4">
+        <!-- Form principal -->
+        <form id="formPost" th:action="@{/solicitudes-hecho/public/subir-hecho}" method="post"
+              th:object="${solicitudHecho}" enctype="multipart/form-data" class="mt-4">
 
-        <!-- CSRF -->
-        <input type="hidden" th:if="${_csrf != null}"
-               th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <!-- CSRF -->
+            <input type="hidden" th:if="${_csrf != null}"
+                   th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
-        <!-- Información básica -->
-        <div class="card mb-4 border-0 shadow-sm" style="border-radius:14px;">
-            <div class="card-header bg-white">
-                <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Información básica</h5>
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Título del hecho *</label>
-                        <input class="form-control" th:field="*{titulo}" required>
+            <!-- Información básica -->
+            <div class="form-card mb-4">
+                <div class="form-card-header">
+                    <div class="form-card-icon">
+                        <i class="bi bi-info-circle-fill"></i>
                     </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Categoría *</label>
-                        <select class="form-select" th:field="*{id_categoria}" required>
-                            <option value="">Seleccionar categoría</option>
-                            <option th:each="cat : ${categorias}"
-                                    th:value="${cat.id}"
-                                    th:text="${cat.categoria}"></option>
-                        </select>
-                    </div>
-
-                    <div class="col-12">
-                        <label class="form-label fw-semibold">Descripción *</label>
-                        <textarea class="form-control" rows="4" th:field="*{descripcion}"
-                                  placeholder="Describe el evento histórico de manera clara y concisa..."
-                                  required></textarea>
-                    </div>
+                    <h5 class="mb-0">Información Básica</h5>
                 </div>
-            </div>
-        </div>
+                <div class="form-card-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label-custom">
+                                <i class="bi bi-text-left me-2"></i>Título del hecho
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input class="form-control-custom" th:field="*{titulo}"
+                                   placeholder="Ej: Revolución de Mayo" required>
+                        </div>
 
-        <!-- Ubicación y fecha -->
-        <div class="card mb-4 border-0 shadow-sm" style="border-radius:14px;">
-            <div class="card-header bg-white">
-                <h5 class="mb-0"><i class="bi bi-geo-alt me-2"></i>Ubicación y fecha</h5>
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label-custom">
+                                <i class="bi bi-tag me-2"></i>Categoría
+                                <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select-custom" th:field="*{id_categoria}" required>
+                                <option value="">Seleccionar categoría</option>
+                                <option th:each="cat : ${categorias}"
+                                        th:value="${cat.id}"
+                                        th:text="${cat.categoria}"></option>
+                            </select>
+                        </div>
 
-                    <!-- País (select) -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">País</label>
-                        <select id="selectPais" class="form-select" th:field="*{id_pais}"
-                                th:attr="data-pais-id=${pais != null} ? ${pais.id} : null"
-                                onchange="
-                      const post = document.getElementById('formPost');
-                      const getF = document.getElementById('filtroPaisForm');
-
-                      // Copiar campos actuales al mini-GET (incluye lat/long)
-                      ['titulo','descripcion','fechaAcontecimiento','latitud','longitud','id_categoria','id_provincia']
-                        .forEach(n => {
-                          const src = post.querySelector(`[name='${n}']`);
-                          const dst = getF.querySelector(`[name='${n}']`);
-                          if (src && dst) dst.value = src.value ?? '';
-                        });
-
-                      // Setear país nuevo y limpiar provincia (para recargar lista)
-                      getF.querySelector('[name=id_pais]').value = this.value;
-                      getF.querySelector('[name=id_provincia]').value = '';
-
-                      getF.submit();
-                    ">
-                            <option value="">Seleccionar país</option>
-                            <option th:each="paisItem : ${paises}"
-                                    th:value="${paisItem.id}"
-                                    th:text="${paisItem.pais}"></option>
-                        </select>
-                    </div>
-
-                    <!-- Provincia (select) -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Provincia / Estado (opcional)</label>
-                        <select id="selectProvincia" class="form-select" th:field="*{id_provincia}"
-                                th:attr="disabled=${solicitudHecho.id_pais == null}"
-                                th:attrappend=" data-prov-id=${provincia != null} ? ${provincia.id} : null">
-                            <option value="">Seleccionar provincia/estado</option>
-                            <option th:each="prov : ${provincias}"
-                                    th:value="${prov.id}"
-                                    th:text="${prov.provincia}"></option>
-                        </select>
-                    </div>
-
-                    <!-- Fecha -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Fecha del acontecimiento *</label>
-                        <input type="date" class="form-control" th:field="*{fechaAcontecimiento}" required>
-                    </div>
-
-                    <!-- Latitud / Longitud -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Latitud / Longitud (opcional)</label>
-                        <div class="input-group">
-                            <input type="number" step="any" class="form-control"
-                                   th:field="*{latitud}" placeholder="-34.6037">
-                            <input type="number" step="any" class="form-control"
-                                   th:field="*{longitud}" placeholder="-58.3816">
+                        <div class="col-12">
+                            <label class="form-label-custom">
+                                <i class="bi bi-card-text me-2"></i>Descripción del evento
+                                <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control-custom" rows="5" th:field="*{descripcion}"
+                                      placeholder="Describí el acontecimiento con el mayor detalle posible..."
+                                      required></textarea>
+                            <small class="form-text-custom">
+                                <i class="bi bi-info-circle me-1"></i>Incluí contexto histórico, personajes relevantes y consecuencias
+                            </small>
                         </div>
                     </div>
-
                 </div>
             </div>
-        </div>
 
-        <!-- Botones -->
-        <div class="d-flex justify-content-between mt-4">
-            <a th:href="@{/}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left me-1"></i> Cancelar
-            </a>
-            <button type="submit" class="btn btn-dark" sec:authorize="!hasRole('ADMINISTRADOR')">
-                <i class="bi bi-send me-1"></i> Enviar solicitud
-            </button>
-            <button type="submit" class="btn btn-dark" sec:authorize="hasRole('ADMINISTRADOR')" th:formaction="@{/hechos/subir}">
-                <i class="bi bi-send me-1"></i> Subir Hecho
-            </button>
-        </div>
-    </form>
+            <!-- Ubicación y fecha -->
+            <div class="form-card mb-4">
+                <div class="form-card-header">
+                    <div class="form-card-icon bg-gradient-green">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <h5 class="mb-0">Ubicación y Fecha</h5>
+                </div>
+                <div class="form-card-body">
+                    <div class="row g-4">
+                        <!-- País -->
+                        <div class="col-md-6">
+                            <label class="form-label-custom">
+                                <i class="bi bi-globe-americas me-2"></i>País
+                            </label>
+                            <select id="selectPais" class="form-select-custom" th:field="*{id_pais}"
+                                    th:attr="data-pais-id=${pais != null} ? ${pais.id} : null"
+                                    onchange="
+                              const post = document.getElementById('formPost');
+                              const getF = document.getElementById('filtroPaisForm');
 
-    <style>.btn:hover{transform:translateY(-1px);transition:transform .08s ease}</style>
+                              ['titulo','descripcion','fechaAcontecimiento','latitud','longitud','id_categoria','id_provincia']
+                                .forEach(n => {
+                                  const src = post.querySelector(`[name='${n}']`);
+                                  const dst = getF.querySelector(`[name='${n}']`);
+                                  if (src && dst) dst.value = src.value ?? '';
+                                });
+
+                              getF.querySelector('[name=id_pais]').value = this.value;
+                              getF.querySelector('[name=id_provincia]').value = '';
+
+                              getF.submit();
+                            ">
+                                <option value="">Seleccionar país</option>
+                                <option th:each="paisItem : ${paises}"
+                                        th:value="${paisItem.id}"
+                                        th:text="${paisItem.pais}"></option>
+                            </select>
+                        </div>
+
+                        <!-- Provincia -->
+                        <div class="col-md-6">
+                            <label class="form-label-custom">
+                                <i class="bi bi-signpost me-2"></i>Provincia / Estado
+                            </label>
+                            <select id="selectProvincia" class="form-select-custom" th:field="*{id_provincia}"
+                                    th:attr="disabled=${solicitudHecho.id_pais == null}"
+                                    th:attrappend=" data-prov-id=${provincia != null} ? ${provincia.id} : null">
+                                <option value="">Seleccionar provincia/estado</option>
+                                <option th:each="prov : ${provincias}"
+                                        th:value="${prov.id}"
+                                        th:text="${prov.provincia}"></option>
+                            </select>
+                            <small class="form-text-custom" th:if="${solicitudHecho.id_pais == null}">
+                                <i class="bi bi-info-circle me-1"></i>Primero seleccioná un país
+                            </small>
+                        </div>
+
+                        <!-- Fecha -->
+                        <div class="col-md-6">
+                            <label class="form-label-custom">
+                                <i class="bi bi-calendar-event me-2"></i>Fecha del acontecimiento
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="date" class="form-control-custom" th:field="*{fechaAcontecimiento}" required>
+                        </div>
+
+                        <!-- Coordenadas -->
+                        <div class="col-md-6">
+                            <label class="form-label-custom">
+                                <i class="bi bi-pin-map me-2"></i>Coordenadas (opcional)
+                            </label>
+                            <div class="coordinates-group">
+                                <input type="number" step="any" class="form-control-custom"
+                                       th:field="*{latitud}" placeholder="Latitud: -34.6037">
+                                <span class="coordinates-separator">,</span>
+                                <input type="number" step="any" class="form-control-custom"
+                                       th:field="*{longitud}" placeholder="Longitud: -58.3816">
+                            </div>
+                            <small class="form-text-custom">
+                                <i class="bi bi-lightbulb me-1"></i>Hacé clic en el mapa para obtener coordenadas automáticamente
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="action-buttons">
+                <a th:href="@{/}" class="btn btn-secondary-custom">
+                    <i class="bi bi-arrow-left me-2"></i>Cancelar
+                </a>
+                <button type="submit" class="btn btn-primary-custom" sec:authorize="!hasRole('ADMINISTRADOR')">
+                    <i class="bi bi-send-fill me-2"></i>Enviar solicitud
+                </button>
+                <button type="submit" class="btn btn-primary-custom" sec:authorize="hasRole('ADMINISTRADOR')"
+                        th:formaction="@{/hechos/subir}">
+                    <i class="bi bi-upload me-2"></i>Subir Hecho
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <style>
+        .contribute-hero{padding:80px 0 40px;background:radial-gradient(ellipse 1400px 800px at 50% -100px,rgba(102,126,234,.12) 0%,transparent 50%);position:relative;overflow:hidden}
+        .contribute-hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236b5cff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
+        .contribute-badge{background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(251,191,36,.15));color:#f59e0b;padding:.65rem 1.5rem;border-radius:50px;font-size:.875rem;font-weight:600;display:inline-flex;align-items:center;border:1px solid rgba(245,158,11,.2)}
+        .form-card{background:#fff;border-radius:20px;border:1px solid rgba(0,0,0,.06);box-shadow:0 4px 12px rgba(0,0,0,.05);overflow:hidden}
+        .form-card-header{padding:1.5rem;background:linear-gradient(135deg,#f8f9ff 0%,#fff 100%);border-bottom:1px solid rgba(0,0,0,.05);display:flex;align-items:center;gap:1rem}
+        .form-card-icon{width:48px;height:48px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.5rem;box-shadow:0 4px 12px rgba(102,126,234,.3)}
+        .form-card-icon.bg-gradient-green{background:linear-gradient(135deg,#10b981,#059669)}
+        .form-card-body{padding:2rem}
+        .form-label-custom{display:flex;align-items:center;font-size:.9rem;font-weight:600;color:#475569;margin-bottom:.75rem}
+        .form-control-custom,.form-select-custom{background:#f8f9ff;border:1px solid #e9ecef;border-radius:12px;padding:.875rem 1rem;font-size:.9rem;color:#1a202c;transition:all .2s ease}
+        .form-control-custom:focus,.form-select-custom:focus{border-color:#667eea;background:#fff;box-shadow:0 0 0 .2rem rgba(102,126,234,.1);outline:none}
+        .form-control-custom::placeholder{color:#94a3b8}
+        .form-text-custom{display:block;margin-top:.5rem;font-size:.8rem;color:#64748b}
+        .coordinates-group{display:flex;align-items:center;gap:.75rem}
+        .coordinates-separator{color:#94a3b8;font-weight:600}
+        .action-buttons{display:flex;gap:1rem;justify-content:flex-end;margin-top:2rem;flex-wrap:wrap}
+        .btn-primary-custom{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff;padding:.875rem 2rem;border-radius:12px;font-weight:600;box-shadow:0 4px 12px rgba(102,126,234,.3);transition:all .2s ease;display:inline-flex;align-items:center}
+        .btn-primary-custom:hover{background:linear-gradient(135deg,#5568d3,#63408b);transform:translateY(-2px);box-shadow:0 6px 16px rgba(102,126,234,.4);color:#fff}
+        .btn-secondary-custom{background:#fff;border:2px solid #e9ecef;color:#64748b;padding:.875rem 2rem;border-radius:12px;font-weight:600;transition:all .2s ease;display:inline-flex;align-items:center;text-decoration:none}
+        .btn-secondary-custom:hover{border-color:#667eea;color:#667eea;transform:translateY(-2px);box-shadow:0 4px 12px rgba(102,126,234,.15)}
+        @media (max-width:768px){
+            .contribute-hero{padding:60px 0 30px}
+            .display-5{font-size:2rem}
+            .form-card-body{padding:1.5rem}
+            .coordinates-group{flex-direction:column}
+            .coordinates-separator{display:none}
+            .action-buttons{justify-content:stretch}
+            .action-buttons a,.action-buttons button{flex:1}
+        }
+    </style>
 
     <!-- Auto-preselección País/Provincia detectados -->
     <script>
@@ -160,8 +235,6 @@
             const detectedPaisId = selPais?.dataset?.paisId || '';
             const detectedProvId = selProv?.dataset?.provId || '';
 
-            // Si el backend detectó país y todavía no lo tenemos seleccionado ni cargadas las provincias,
-            // hacemos un GET automático para recargar con id_pais (preservando campos).
             if (detectedPaisId && !selPais.value) {
                 const post = document.getElementById('formPost');
                 const getF  = document.getElementById('filtroPaisForm');
@@ -173,10 +246,9 @@
                     });
                 getF.querySelector('[name=id_pais]').value = detectedPaisId;
                 getF.submit();
-                return; // dejamos que recargue
+                return;
             }
 
-            // Si ya hay lista de provincias cargada, preseleccionamos la detectada
             if (detectedPaisId && selPais && !selPais.value) {
                 selPais.value = detectedPaisId;
             }
