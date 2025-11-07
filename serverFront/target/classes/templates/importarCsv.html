@@ -137,7 +137,7 @@
                 uploadButton.disabled = !(isFileSelected && isFuenteFilled);
             };
 
-            // --- Event Listeners ---
+            // --- Event Listeners (File & Input) ---
             fileInput.addEventListener('change', function() {
                 if (fileInput.files.length > 0 && fileInput.files[0].name.toLowerCase().endsWith('.csv')) {
                     fileNameDisplay.textContent = `Archivo seleccionado: ${fileInput.files[0].name}`;
@@ -150,7 +150,7 @@
 
             inputFuente.addEventListener('input', validateForm);
 
-            // Drag and Drop: Dragover, Dragleave (Lógica de diseño omitida aquí por brevedad, pero estaba correcta en tu código)
+            // Drag and Drop listeners
             fileUploadBox.addEventListener('dragover', (e) => { e.preventDefault(); fileUploadBox.style.borderColor = '#007bff'; fileUploadBox.style.backgroundColor = '#e9f7ff'; });
             fileUploadBox.addEventListener('dragleave', () => { fileUploadBox.style.borderColor = '#ced4da'; fileUploadBox.style.backgroundColor = '#f0f2f5'; });
 
@@ -193,21 +193,23 @@
 
 
                 // 4. LECTURA Y PREPARACIÓN DEL CSRF
+                // **CAMBIO CLAVE AQUÍ:** Leer el token y añadirlo al FormData con el nombre "_csrf"
                 const csrfMeta = document.querySelector("meta[name='_csrf']");
-                const csrfHeaderMeta = document.querySelector("meta[name='_csrf_header']");
-                const requestHeaders = {};
 
-                if (csrfMeta && csrfHeaderMeta) {
+                if (csrfMeta) {
                     const csrfToken = csrfMeta.getAttribute("content");
-                    const csrfHeader = csrfHeaderMeta.getAttribute("content");
-                    requestHeaders[csrfHeader] = csrfToken;
+                    // Spring Security espera el token con el nombre "_csrf" en el body del formulario.
+                    formData.append('_csrf', csrfToken);
                 }
 
+                // NOTA: Se eliminó el uso de los encabezados (requestHeaders) para que el navegador
+                // pueda establecer automáticamente el 'Content-Type: multipart/form-data' necesario.
+
                 // 5. Enviar usando Fetch API
-                fetch('/colecciones/importar', {
+                fetch('/hechos/importar', {
                     method: 'POST',
                     body: formData,
-                    headers: requestHeaders // INCLUYE EL CSRF TOKEN
+                    // NO PASAR EL OBJETO HEADERS AQUÍ. El navegador lo maneja.
                 })
                     .then(response => {
                         // Manejo la redirección del servidor
