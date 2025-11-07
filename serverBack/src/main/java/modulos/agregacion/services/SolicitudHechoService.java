@@ -312,6 +312,8 @@ public class SolicitudHechoService {
     @Transactional
     public ResponseEntity<?> evaluarSolicitudSubirHecho(SolicitudHechoEvaluarInputDTO dtoInput, String username) {
 
+        System.out.println("JUSTIFICACION: " + dtoInput.getMensaje());
+
         RolCambiadoDTO dto = new RolCambiadoDTO();
         dto.setRolModificado(false);
 
@@ -358,7 +360,7 @@ public class SolicitudHechoService {
                 mensaje.setSolicitud_hecho_id(solicitud.getId());
                 mensaje.setReceptor(usuario);
                 mensaje.setTextoMensaje("Se rechazó su solicitud de subida del hecho de título " + solicitud.getHecho().getAtributosHecho().getTitulo()
-                        + ".\nJustificacion: " + solicitud.getJustificacion());
+                        + ".\nJustificacion: " + dtoInput.getMensaje());
                 mensajesRepository.save(mensaje);
             }
         }

@@ -37,7 +37,7 @@
             <p class="text-muted mb-4">
                 No hay solicitudes pendientes de revisión. Excelente trabajo manteniendo la plataforma actualizada.
             </p>
-            <a th:href="@{/hechos/public/get-all}" class="btn btn-primary btn-lg">
+            <a th:href="@{/hechos/public/get-all}" class="btn btn-lg btn-explorar-hechos">
                 <i class="bi bi-compass me-2"></i>Explorar hechos
             </a>
         </div>
@@ -123,7 +123,6 @@
 
                 <!-- Acciones -->
                 <div class="request-actions">
-                    <!-- ACEPTAR -->
                     <form method="post" th:action="${actionUrl}">
                         <input type="hidden" name="id_solicitud" th:value="${s.id}">
                         <input type="hidden" name="respuesta" value="true">
@@ -134,7 +133,6 @@
                         </button>
                     </form>
 
-                    <!-- RECHAZAR -->
                     <button class="btn btn-reject"
                             data-bs-toggle="modal" data-bs-target="#modalRechazo"
                             th:attr="data-id=${s.id}, data-tipo=${s.tipo}, data-action=${actionUrl}">
@@ -164,21 +162,23 @@
 
                 <div class="modal-body" style="padding:2rem">
                     <label class="form-label fw-semibold mb-2">Motivo del rechazo</label>
-                    <label for="rechazoMensaje"></label><textarea class="form-control"
-                                                                  th:field="*{mensaje}"
-                                                                  id="rechazoMensaje"
-                                                                  rows="4"
-                                                                  maxlength="300"
-                                                                  placeholder="Explicá brevemente por qué se rechaza esta solicitud..."
-                                                                  style="border-radius:12px;border:1px solid #e9ecef;background:#f8f9ff"
-                                                                  required></textarea>
+                    <label for="rechazoMensaje"></label>
+                    <textarea class="form-control"
+                              th:field="*{mensaje}"  id="rechazoMensaje"
+                              rows="4"
+                              maxlength="300"
+                              placeholder="Explicá brevemente por qué se rechaza esta solicitud..."
+                              style="border-radius:12px;border:1px solid #e9ecef;background:#f8f9ff"
+                              required></textarea>
                     <div class="form-text text-end mt-2">
                         <i class="bi bi-info-circle me-1"></i>Máximo 300 caracteres
                     </div>
                 </div>
 
-                <input type="hidden" name="id_solicitud" id="rechazoId"/>
+                <input type="hidden" th:field="*{id_solicitud}" id="rechazoId"/>
+
                 <input type="hidden" name="respuesta" value="false"/>
+
                 <input type="hidden" th:if="${_csrf != null}"
                        th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
@@ -228,6 +228,11 @@
         .btn-accept:hover{background:linear-gradient(135deg,#047857,#065f46);transform:translateY(-2px);box-shadow:0 6px 16px rgba(5,150,105,.4);color:#fff}
         .btn-reject{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;box-shadow:0 4px 12px rgba(220,38,38,.3)}
         .btn-reject:hover{background:linear-gradient(135deg,#b91c1c,#991b1b);transform:translateY(-2px);box-shadow:0 6px 16px rgba(220,38,38,.4);color:#fff}
+        .btn-explorar-hechos{background:linear-gradient(135deg,#667eea,#8b5cf6);color:#fff;border:none;border-radius:999px;padding:.9rem 2.5rem;font-weight:600;box-shadow:0 8px 22px rgba(107,92,246,.35);display:inline-flex;align-items:center;gap:.5rem;transition:all .25s ease}
+        .btn-explorar-hechos i{color:#fff}
+        .btn-explorar-hechos:hover{background:linear-gradient(135deg,#5a67d8,#7c3aed);transform:translateY(-2px);box-shadow:0 12px 28px rgba(88,80,236,.45);color:#fff}
+        .btn-explorar-hechos:focus{outline:none;box-shadow:0 0 0 .18rem rgba(139,92,246,.4)}
+
         @media (max-width:991px){
             .requests-hero{padding:60px 0 30px}
             .display-5{font-size:2rem}
