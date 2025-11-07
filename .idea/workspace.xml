@@ -6,9 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="f850432b-1600-446e-abba-2862d1cc44e3" name="Changes" comment="Merge branch 'entrega_6' of https://github.com/dds-utn/2025-tpa-mi-no-grupo-17 into entrega_6&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/SolicitudHechoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/SolicitudHechoService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/services/SolicitudHechoService.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/services/SolicitudHechoService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/contribuir.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/contribuir.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/gestion.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/gestion.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/hecho.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/hecho.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/solicitudes.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/solicitudes.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/contribuir.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/contribuir.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/hecho.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/hecho.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/solicitudes.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/solicitudes.html" afterDir="false" />
     </list>
     <list id="3bb68fa4-4cba-440f-a626-e70e60e396a9" name="Changes by germa" comment="" />
@@ -75,8 +78,6 @@
     "Spring Boot.MetaMapaApplication.executor": "Run",
     "Spring Boot.ServerBackApplication.executor": "Run",
     "Spring Boot.ServerFrontApplication.executor": "Run",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "git-widget-placeholder": "entrega__6",
     "ignore.virus.scanning.warn.message": "true",
     "junie.onboarding.icon.badge.shown": "true",
@@ -129,7 +130,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Application.ServerBackApplication">
+  <component name="RunManager" selected="Application.ServerFrontApplication">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="2025-tpa-mi-no-grupo-17" />
       <option name="ENV_FILES" value="" />
@@ -166,6 +167,17 @@
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="launchJavascriptDebuger" value="false" />
       <method v="2" />
+    </configuration>
+    <configuration default="true" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <selectedOptions>
+        <option name="vmParameters" />
+        <option name="commandLineParameters" />
+        <option name="environmentVariables" />
+      </selectedOptions>
+      <option name="SPRING_BOOT_MAIN_CLASS" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
     <configuration default="true" type="Tox" factoryName="Tox">
       <module name="2025-tpa-mi-no-grupo-17" />
@@ -217,35 +229,16 @@
       <option name="filePath" />
       <method v="2" />
     </configuration>
-    <configuration default="true" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-      <selectedOptions>
-        <option name="vmParameters" />
-        <option name="commandLineParameters" />
-        <option name="environmentVariables" />
-      </selectedOptions>
-      <option name="SPRING_BOOT_MAIN_CLASS" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <list>
       <item itemvalue="Application.ServerBackApplication" />
       <item itemvalue="Application.ServerFrontApplication" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.ServerBackApplication" />
         <item itemvalue="Application.ServerFrontApplication" />
+        <item itemvalue="Application.ServerBackApplication" />
       </list>
     </recent_temporary>
-  </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.27397.103" />
-        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.27397.103" />
-      </set>
-    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -299,7 +292,6 @@
       <workItem from="1762293536170" duration="4184000" />
       <workItem from="1762365499111" duration="11095000" />
       <workItem from="1762412710394" duration="2431000" />
-      <workItem from="1762479324463" duration="3647000" />
     </task>
     <task id="LOCAL-00001" summary="Merge branch 'entrega_6' of https://github.com/dds-utn/2025-tpa-mi-no-grupo-17 into entrega_6&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
       <option name="closed" value="true" />
