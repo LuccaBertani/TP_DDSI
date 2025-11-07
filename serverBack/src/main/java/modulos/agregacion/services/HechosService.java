@@ -866,4 +866,30 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return ResponseEntity.ok().build(); // Si bien sería un not found, envío esto para evitar problemas con el retrieve
 
     }
+
+    public ResponseEntity<?> getHechosDelUsuario(String username){
+
+        if (username == null || username.isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El nombre de usuario es requerido.");
+        }
+
+        Usuario usuario = usuariosRepo.findByNombreDeUsuario(username).orElse(null);
+
+        if (usuario == null){
+            // Si el token es válido, esto no debería suceder, pero es un buen chequeo de seguridad.
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+        }
+
+        Long usuarioId = usuario.getId();
+
+        List<HechoDinamica> misHechosDinamicos = hechosDinamicaRepo.findAllByUsuarioIdAndActivoTrue(usuarioId);
+
+        List<VisualizarHechosOutputDTO> outputDTO = misHechosDinamicos.stream()
+                .map(hecho -> crearHechoDto(hecho, VisualizarHechosOutputDTO.class))
+                .toList();
+
+        System.out.println("Hechos encontrados para " + username + ": " + outputDTO.size());
+
+        return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
+    }
 }
