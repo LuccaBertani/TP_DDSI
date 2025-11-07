@@ -6,11 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="f850432b-1600-446e-abba-2862d1cc44e3" name="Changes" comment="Merge branch 'entrega_6' of https://github.com/dds-utn/2025-tpa-mi-no-grupo-17 into entrega_6&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/HechosController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/HechosController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbDinamica/IHechosDinamicaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbDinamica/IHechosDinamicaRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/HechosService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/HechosService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HechosController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HechosController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/HechosService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/HechosService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/controllers/HechosController.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/controllers/HechosController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/entities/fuentes/LectorCSV.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/entities/fuentes/LectorCSV.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/repositories/DbDinamica/IHechosDinamicaRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/repositories/DbDinamica/IHechosDinamicaRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/services/HechosService.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/services/HechosService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/shared/utils/GestorArchivos.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/shared/utils/GestorArchivos.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/controllers/HechosController.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/controllers/HechosController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/services/HechosService.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/services/HechosService.class" afterDir="false" />
     </list>
     <list id="3bb68fa4-4cba-440f-a626-e70e60e396a9" name="Changes by germa" comment="" />
     <list id="f13608ce-ca7b-462a-b1c3-e6566403784d" name="Changes by Lucas" comment="" />
@@ -128,7 +130,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Application.ServerFrontApplication">
+  <component name="RunManager" selected="Application.ServerBackApplication">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="2025-tpa-mi-no-grupo-17" />
       <option name="ENV_FILES" value="" />
@@ -165,17 +167,6 @@
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="launchJavascriptDebuger" value="false" />
       <method v="2" />
-    </configuration>
-    <configuration default="true" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-      <selectedOptions>
-        <option name="vmParameters" />
-        <option name="commandLineParameters" />
-        <option name="environmentVariables" />
-      </selectedOptions>
-      <option name="SPRING_BOOT_MAIN_CLASS" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
     </configuration>
     <configuration default="true" type="Tox" factoryName="Tox">
       <module name="2025-tpa-mi-no-grupo-17" />
@@ -227,14 +218,25 @@
       <option name="filePath" />
       <method v="2" />
     </configuration>
+    <configuration default="true" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <selectedOptions>
+        <option name="vmParameters" />
+        <option name="commandLineParameters" />
+        <option name="environmentVariables" />
+      </selectedOptions>
+      <option name="SPRING_BOOT_MAIN_CLASS" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <list>
       <item itemvalue="Application.ServerBackApplication" />
       <item itemvalue="Application.ServerFrontApplication" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.ServerFrontApplication" />
         <item itemvalue="Application.ServerBackApplication" />
+        <item itemvalue="Application.ServerFrontApplication" />
       </list>
     </recent_temporary>
   </component>
@@ -299,11 +301,23 @@
       <option name="project" value="LOCAL" />
       <updated>1762437801801</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Merge branch 'entrega_6' of https://github.com/dds-utn/2025-tpa-mi-no-grupo-17 into entrega_6&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
+      <option name="closed" value="true" />
+      <created>1762542947962</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1762542947962</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Merge branch 'entrega_6' of https://github.com/dds-utn/2025-tpa-mi-no-grupo-17 into entrega_6&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'entrega_6' of https://github.com/dds-utn/2025-tpa-mi-no-grupo-17 into entrega_6&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
