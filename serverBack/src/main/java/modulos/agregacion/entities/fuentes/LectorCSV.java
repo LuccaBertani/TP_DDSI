@@ -71,7 +71,7 @@ public class LectorCSV {
 
             List<CSVRecord> registrosCSV = parser.getRecords();
             // for (int f = 0; f < registrosCSV.size(); f++)
-            for (int f = 0; f < 3; f++) {
+            for (int f = 0; f < registrosCSV.size(); f++) {
                 System.out.println("ESTOY EN FILA " + f);
                 CSVRecord fila = registrosCSV.get(f);
 
