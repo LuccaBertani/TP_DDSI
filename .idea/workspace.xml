@@ -6,11 +6,31 @@
   <component name="ChangeListManager">
     <list default="true" id="f850432b-1600-446e-abba-2862d1cc44e3" name="Changes" comment="Merge branch 'entrega_6' of https://github.com/dds-utn/2025-tpa-mi-no-grupo-17 into entrega_6&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/importarCsv.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/importarCsv.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/importarCsv.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/importarCsv.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/HechosController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/HechosController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/entities/fuentes/LectorCSV.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/entities/fuentes/LectorCSV.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbMain/IProvinciaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbMain/IProvinciaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/ColeccionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/ColeccionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/buscadores/BuscadorCategoria.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/buscadores/BuscadorCategoria.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/buscadores/BuscadorHecho.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/buscadores/BuscadorHecho.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/buscadores/BuscadorProvincia.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/buscadores/BuscadorProvincia.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/entities/fuentes/LectorCSV.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/entities/fuentes/LectorCSV.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/controllers/HechosController.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/controllers/HechosController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/hecho.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/hecho.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/e478a9d9-2b16-4b92-9d96-31937bd3ae04_Test-Pastel.csv" beforeDir="false" />
     </list>
-    <list id="3bb68fa4-4cba-440f-a626-e70e60e396a9" name="Changes by germa" comment="" />
-    <list id="f13608ce-ca7b-462a-b1c3-e6566403784d" name="Changes by Lucas" comment="" />
+    <list id="3bb68fa4-4cba-440f-a626-e70e60e396a9" name="Changes by germa" comment="">
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/entities/fuentes/LectorCSV.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/entities/fuentes/LectorCSV.java" afterDir="false" />
+    </list>
+    <list id="f13608ce-ca7b-462a-b1c3-e6566403784d" name="Changes by Lucas" comment="">
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/HechosController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/HechosController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HechosController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HechosController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/hecho.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/hecho.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/perfil.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/perfil.html" afterDir="false" />
+    </list>
     <list id="bd2f9c59-412c-4d85-95af-559cd31f93a3" name="Changes by merce" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,6 +62,34 @@
     &quot;accountId&quot;: &quot;ad6c2145-da9b-4f6d-a29b-88bea5e350a0&quot;
   }
 }</component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/entities/fuentes/LectorCSV.java">
+      <ranges>
+        <range start1="68" end1="69" start2="68" end2="69" changelist="3bb68fa4-4cba-440f-a626-e70e60e396a9" />
+        <range start1="72" end1="73" start2="72" end2="75" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="85" end1="85" start2="87" end2="88" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="91" end1="92" start2="94" end2="95" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="93" end1="94" start2="96" end2="97" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="97" end1="98" start2="100" end2="102" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="108" end1="108" start2="112" end2="116" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="113" end1="113" start2="121" end2="124" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="117" end1="118" start2="128" end2="132" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="120" end1="120" start2="134" end2="135" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="123" end1="123" start2="138" end2="140" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="127" end1="127" start2="144" end2="145" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="132" end1="133" start2="150" end2="151" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="139" end1="140" start2="157" end2="158" changelist="3bb68fa4-4cba-440f-a626-e70e60e396a9" />
+        <range start1="143" end1="143" start2="161" end2="162" changelist="3bb68fa4-4cba-440f-a626-e70e60e396a9" />
+      </ranges>
+    </file>
+    <file path="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/HechosController.java">
+      <ranges>
+        <range start1="12" end1="12" start2="12" end2="13" changelist="f13608ce-ca7b-462a-b1c3-e6566403784d" />
+        <range start1="154" end1="154" start2="155" end2="156" changelist="f13608ce-ca7b-462a-b1c3-e6566403784d" />
+        <range start1="155" end1="158" start2="157" end2="158" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+      </ranges>
+    </file>
+  </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>

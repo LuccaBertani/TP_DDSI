@@ -37,10 +37,23 @@ public class HechosController {
 
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
             List<VisualizarHechosOutputDTO> hechos = BodyToListConverter.bodyToList(rtaDto, VisualizarHechosOutputDTO.class);
+            model.addAttribute("listaHechos", hechos);
+            return "hecho";
+        }
 
-            model.addAttribute("listaMisHechos", hechos);
+        return "redirect:/" + rtaDto.getStatusCode().value();
+    }
 
-            return "misHechos";
+    @GetMapping("/public/get-all")
+    public String getHechos(Model model){
+        System.out.println("ENTRO A GET ALL HECHOS");
+        ResponseEntity<?> rtaDto = this.hechosService.getHechos();
+
+        if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
+            List<VisualizarHechosOutputDTO> hechos = BodyToListConverter.bodyToList(rtaDto, VisualizarHechosOutputDTO.class);
+            model.addAttribute("listaHechos", hechos);
+
+            return "hecho";
         }
 
         return "redirect:/" + rtaDto.getStatusCode().value();
@@ -86,21 +99,7 @@ public class HechosController {
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
 
-    @GetMapping("/public/get-all")
-    public String getHechos(Model model){
-        System.out.println("ENTRO A GET ALL HECHOS");
-        ResponseEntity<?> rtaDto = this.hechosService.getHechos();
 
-        if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
-            List<VisualizarHechosOutputDTO> hechos = BodyToListConverter.bodyToList(rtaDto, VisualizarHechosOutputDTO.class);
-            model.addAttribute("listaHechos", hechos);
-            return "hecho";
-        }
-        /*else if (rtaDto.getBody() != null){
-            model.addAttribute("errorMsg", rtaDto.getBody().toString());
-        }*/
-        return "redirect:/" + rtaDto.getStatusCode().value();
-    }
 
     @GetMapping("/public/get-mapa")
     public String getHechosConLatitudYLongitud(Model model){

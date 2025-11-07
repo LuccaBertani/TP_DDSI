@@ -111,7 +111,7 @@ public class BuscadorHecho {
     }
 
 
-    public HechoEstatica existeHechoIdentico(HechoEstatica hecho, Categoria categoria, Pais pais, Provincia provincia) {
+    public HechoEstatica existeHechoIdentico(HechoEstatica hecho, Categoria categoria, Pais pais, Provincia provincia, List<HechoEstatica> hechosASubir) {
         var tgtAttr = Optional.ofNullable(hecho).map(Hecho::getAtributosHecho);
 
         if (hecho != null && hecho.getAtributosHecho() != null) {
@@ -125,6 +125,7 @@ public class BuscadorHecho {
             Double lonTgt    = tgtAttr.map(AtributosHecho::getLongitud).orElse(null);
 
             List<HechoEstatica> hechos = this.hechoRepoEstatica.findAllByNombreNormalizado(tituloTgt);
+            hechos.addAll(hechosASubir);
 
             final double EPS_DEG = 1e-6; // ~0.11 m en el ecuador; subilo a 1e-5 si querés ~1.1 m
 
@@ -147,8 +148,22 @@ public class BuscadorHecho {
                 boolean mismaProvincia = normEq(prov,provTgt);
                 boolean mismaDesc  = normEq(desc, descTgt);
                 boolean mismaFecha = Objects.equals(fecha, fechaTgt);
-                boolean mismaLat   = eqDouble(lat, latTgt, EPS_DEG);
-                boolean mismaLon   = eqDouble(lon, lonTgt, EPS_DEG);
+
+
+                boolean mismaLat = false;
+                boolean mismaLon = false;
+
+                if (lat!=null){
+                    if (lat.equals(latTgt)){
+                        mismaLat = true;
+                    }
+                }
+
+                if (lon!=null){
+                    if (lon.equals(lonTgt)){
+                        mismaLon = true;
+                    }
+                }
 
                 if (mismaCat && mismoPais && mismaProvincia && mismaDesc && mismaFecha && mismaLat && mismaLon) {
                     return h;
