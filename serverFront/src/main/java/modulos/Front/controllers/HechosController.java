@@ -28,6 +28,24 @@ public class HechosController {
     private final HechosService hechosService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @PreAuthorize("isAuthenticated()") // Solo usuarios logueados
+    @GetMapping("/mis-hechos")
+    public String getHechosDelUsuario(Model model){
+        System.out.println("ENTRO A GET HECHOS DEL USUARIO (Front)");
+
+        ResponseEntity<?> rtaDto = this.hechosService.getHechosDelUsuario();
+
+        if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
+            List<VisualizarHechosOutputDTO> hechos = BodyToListConverter.bodyToList(rtaDto, VisualizarHechosOutputDTO.class);
+
+            model.addAttribute("listaMisHechos", hechos);
+
+            return "misHechos";
+        }
+
+        return "redirect:/" + rtaDto.getStatusCode().value();
+    }
+
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/subir")

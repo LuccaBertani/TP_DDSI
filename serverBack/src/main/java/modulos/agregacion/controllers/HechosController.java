@@ -3,6 +3,7 @@ package modulos.agregacion.controllers;
 import io.jsonwebtoken.Jwt;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import modulos.JwtClaimExtractor;
 import modulos.agregacion.entities.DbMain.Fuente;
 import modulos.agregacion.entities.atributosHecho.OrigenConexion;
 import modulos.agregacion.services.HechosService;
@@ -149,6 +150,14 @@ fecha_acontecimiento_desde, fecha_acontecimiento_hasta, ubicacion BARBARO!!.
     @GetMapping("/public/pais-provincia")
     public ResponseEntity<?> getPaisProvincia(@RequestParam Double latitud, @RequestParam Double longitud){
         return hechosService.getPaisProvincia(latitud, longitud);
+    }
+
+    @GetMapping("/mis-hechos")
+    public ResponseEntity<?> getHechosDelUsuario(@AuthenticationPrincipal Jwt principal){
+
+        String username = JwtClaimExtractor.getUsernameFromToken(principal);
+        System.out.println("ENTRO A GET HECHOS DEL USUARIO: " + username);
+        return hechosService.getHechosDelUsuario(username);
     }
 
 }

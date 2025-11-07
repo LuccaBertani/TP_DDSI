@@ -62,4 +62,12 @@ public class HechosService {
         return webApiCallerService.getEntitySinToken(this.hechoServiceUrl + "/public/pais-provincia?latitud=" + latitud + "&longitud=" + longitud
                 , PaisProvinciaDTO.class);
     }
+
+    public ResponseEntity<?> getHechosDelUsuario(){
+        // Llama al endpoint del backend: /api/hechos/mis-hechos
+        return webApiCallerService.getList(
+                this.hechoServiceUrl + "/mis-hechos",
+                VisualizarHechosOutputDTO.class
+        );
+    }
 }
