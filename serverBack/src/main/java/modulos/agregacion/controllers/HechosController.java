@@ -10,6 +10,7 @@ import modulos.agregacion.services.HechosService;
 import modulos.shared.dtos.input.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -152,10 +153,9 @@ fecha_acontecimiento_desde, fecha_acontecimiento_hasta, ubicacion BARBARO!!.
         return hechosService.getPaisProvincia(latitud, longitud);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/mis-hechos")
-    public ResponseEntity<?> getHechosDelUsuario(@AuthenticationPrincipal Jwt principal){
-
-        String username = JwtClaimExtractor.getUsernameFromToken(principal);
+    public ResponseEntity<?> getHechosDelUsuario(@AuthenticationPrincipal String username){
         System.out.println("ENTRO A GET HECHOS DEL USUARIO: " + username);
         return hechosService.getHechosDelUsuario(username);
     }

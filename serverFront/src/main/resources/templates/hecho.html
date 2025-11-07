@@ -142,39 +142,39 @@
     <!-- Script: muestra N tarjetas o todas, actualiza contador y recuerda preferencia -->
     <script>
         (function () {
-          const grid = document.getElementById('hechosGrid');
-          if (!grid) return;
+            const grid = document.getElementById('hechosGrid');
+            if (!grid) return;
 
-          const cards = Array.from(grid.querySelectorAll('.hecho-card'));
-          const total = cards.length;
+            const cards = Array.from(grid.querySelectorAll('.hecho-card'));
+            const total = cards.length;
 
-          const select = document.getElementById('pageSize');
-          const info   = document.getElementById('rangeInfo');
+            const select = document.getElementById('pageSize');
+            const info   = document.getElementById('rangeInfo');
 
-          // Preferencia previa (opcional)
-          const saved = localStorage.getItem('hechosPageSize');
-          if (saved !== null && select.querySelector(`option[value="${saved}"]`)) {
-            select.value = saved;
-          }
+            // Preferencia previa (opcional)
+            const saved = localStorage.getItem('hechosPageSize');
+            if (saved !== null && select.querySelector(`option[value="${saved}"]`)) {
+                select.value = saved;
+            }
 
-          function render() {
-            const n = parseInt(select.value, 10);
-            const showAll = (n === 0) || (n >= total);
+            function render() {
+                const n = parseInt(select.value, 10);
+                const showAll = (n === 0) || (n >= total);
 
-            cards.forEach((card, idx) => {
-              card.style.display = (showAll || idx < n) ? '' : 'none';
+                cards.forEach((card, idx) => {
+                    card.style.display = (showAll || idx < n) ? '' : 'none';
+                });
+
+                const shown = showAll ? total : Math.min(n, total);
+                if (info) info.textContent = `Viendo 1–${shown} de ${total} resultados`;
+            }
+
+            select.addEventListener('change', () => {
+                localStorage.setItem('hechosPageSize', select.value);
+                render();
             });
 
-            const shown = showAll ? total : Math.min(n, total);
-            if (info) info.textContent = `Viendo 1–${shown} de ${total} resultados`;
-          }
-
-          select.addEventListener('change', () => {
-            localStorage.setItem('hechosPageSize', select.value);
             render();
-          });
-
-          render();
         })();
     </script>
 
