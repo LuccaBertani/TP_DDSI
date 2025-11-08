@@ -1,16 +1,20 @@
 package modulos.agregacion.repositories.DbEstatica;
 
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
+import modulos.agregacion.entities.DbMain.Fuente;
 import modulos.agregacion.entities.DbMain.Hecho;
 import modulos.agregacion.entities.DbMain.projections.CategoriaCantidadProjection;
 import modulos.agregacion.entities.DbMain.projections.CategoriaProvinciaProjection;
 import modulos.agregacion.entities.DbMain.projections.HoraCategoriaProjection;
+import modulos.agregacion.entities.atributosHecho.Origen;
 import modulos.servicioEstadistica.entities.ProvinciaCantidad;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +35,14 @@ WHERE REPLACE(LOWER(h.atributosHecho.titulo), ' ', '') =
       REPLACE(LOWER(:nombre), ' ', '')
 """)
     Optional<HechoEstatica> findByNombreNormalizado(@Param("nombre") String nombre);
+
+    @Query("""
+SELECT COUNT(h)
+FROM HechoEstatica h 
+WHERE REPLACE(LOWER(h.atributosHecho.titulo), ' ', '') =
+      REPLACE(LOWER(:nombre), ' ', '')
+""")
+    Integer findCantByNombreNormalizado(@Param("nombre") String nombre);
 
     @Query("""
         select hecho
@@ -109,7 +121,34 @@ LIMIT 1;
     """, nativeQuery = true)
     Long findCantHechosIgualTituloDiferentesAtributos(@Param("hecho_id") Long hechoId);
 
-
+    //TODO ESTA QUERY MUGROSA NO ANDA, ME PUDRI
+    @Query("""
+    SELECT h
+    FROM HechoEstatica h
+    WHERE h.activo = true
+      AND h.id <> :id
+      AND (:titulo IS NULL OR h.atributosHecho.titulo = :titulo)
+      AND (:categoriaId IS NULL OR h.atributosHecho.categoria_id = :categoriaId)
+      AND (:descripcion IS NULL OR h.atributosHecho.descripcion = :descripcion)
+      AND (:ubicacionId IS NULL OR h.atributosHecho.ubicacion_id = :ubicacionId)
+      AND (:origen IS NULL OR h.atributosHecho.origen = :origen)
+      AND (:fuente IS NULL OR h.atributosHecho.fuente = :fuente)
+      AND (:fechaAcontecimiento IS NULL OR FUNCTION('DATE', h.atributosHecho.fechaAcontecimiento) = FUNCTION('DATE', :fechaAcontecimiento))
+      AND (:latitud IS NULL OR h.atributosHecho.latitud = :latitud)
+      AND (:longitud IS NULL OR h.atributosHecho.longitud = :longitud)
+""")
+    Optional<HechoEstatica> findHechoIdentico(
+            @Param("id") Long id,
+            @Param("titulo") String titulo,
+            @Param("categoriaId") Long categoriaId,
+            @Param("descripcion") String descripcion,
+            @Param("ubicacionId") Long ubicacionId,
+            @Param("origen") Origen origen,
+            @Param("fuente") Fuente fuente,
+            @Param("fechaAcontecimiento") LocalDateTime fechaAcontecimiento,
+            @Param("latitud") Double latitud,
+            @Param("longitud") Double longitud
+    );
 
     @Query(value = """
         select h.atributosHecho.ubicacion_id from HechoEstatica h where h.id = :hecho_id

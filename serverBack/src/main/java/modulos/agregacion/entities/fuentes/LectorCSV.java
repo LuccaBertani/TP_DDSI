@@ -5,6 +5,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,7 +37,7 @@ public class LectorCSV {
         List<HechoEstatica> hechosASubir = new ArrayList<>();
 
         try {
-            Reader reader = new InputStreamReader(new FileInputStream(this.dataSet.getStoragePath()), Charset.forName("ISO-8859-1"));
+            Reader reader = new InputStreamReader(new FileInputStream(this.dataSet.getStoragePath()), StandardCharsets.ISO_8859_1);
             //Reader reader = new InputStreamReader(new FileInputStream(this.dataSet), Charset.forName("ISO-8859-1"));
             CSVFormat formato = CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
@@ -70,7 +71,7 @@ public class LectorCSV {
             //indicesColumnas.forEach(i->i.);
 
             List<CSVRecord> registrosCSV = parser.getRecords();
-            // for (int f = 0; f < registrosCSV.size(); f++)
+
             for (int f = 0; f < registrosCSV.size(); f++) {
                 System.out.println("ESTOY EN FILA " + f);
                 CSVRecord fila = registrosCSV.get(f);
@@ -87,22 +88,31 @@ public class LectorCSV {
                 hecho.getAtributosHecho().setTitulo((indicesColumnas.get(0) != -1) ? registros.get(indicesColumnas.get(0)) : null);
                 System.out.println("TITULO: " + hecho.getAtributosHecho().getTitulo());
                 //Se leen los de fuente estatica
-                HechoEstatica hecho0 = buscadores.getBuscadorHecho().buscarEstatica(hecho.getAtributosHecho().getTitulo());
-
-                if (hecho0 != null){
-                    tituloRepetido = true;
+                if(hecho.getAtributosHecho().getTitulo() != null) {
+                    Integer cantidadTitulosIguales = buscadores.getBuscadorHecho().buscarCantTituloIgual(hecho.getAtributosHecho().getTitulo());
+                    for (HechoEstatica hecho1 : hechosASubir) {
+                        if (hecho1.getAtributosHecho().getTitulo() != null && hecho1.getAtributosHecho().getTitulo().equals(hecho.getAtributosHecho().getTitulo())) {
+                            cantidadTitulosIguales += 1;
+                            break;
+                        }
+                    }
+                    if (cantidadTitulosIguales != 0) {
+                        tituloRepetido = true;
+                    }
                 }
-
                 hecho.getAtributosHecho().setDescripcion((indicesColumnas.get(1) != -1) ? registros.get(indicesColumnas.get(1)) : null);
                 System.out.println("DESCRIPCION: " + hecho.getAtributosHecho().getDescripcion());
+
                 String categoriaString = indicesColumnas.get(2) != -1 ? registros.get(indicesColumnas.get(2)) : null;
                 Categoria categoria = buscadores.getBuscadorCategoria().buscar(categoriaString);
                 hecho.getAtributosHecho().setCategoria_id(categoria != null ? categoria.getId() : null);
                 System.out.println("CATEGORIA: " + hecho.getAtributosHecho().getCategoria_id());
+
                 UbicacionString ubicacionString = null;
                 Pais pais = null;
                 Provincia provincia = null;
                 Ubicacion ubicacion = null;
+
                 if (indicesColumnas.get(3) != -1 && indicesColumnas.get(4) != -1 &&
                         (!registros.get(indicesColumnas.get(3)).isEmpty() && !registros.get(indicesColumnas.get(4)).isEmpty())) {
                     Double latitud = Double.parseDouble(registros.get(indicesColumnas.get(3)));
@@ -143,16 +153,21 @@ public class LectorCSV {
 
                 hecho.getAtributosHecho().setFechaAcontecimiento((indicesColumnas.get(5) != -1) ? FechaParser.parsearFecha(registros.get(indicesColumnas.get(5))) : null);
                 System.out.println("FECHA ACONTECIMIENTO: " + hecho.getAtributosHecho().getFechaAcontecimiento());
+
                 hecho.getAtributosHecho().setModificado(true);
                 hecho.setUsuario_id(usuario.getId());
                 hecho.getAtributosHecho().setFuente(Fuente.ESTATICA);
                 hecho.getDatasets().add(this.dataSet);
                 if (tituloRepetido){
-                    HechoEstatica hechoIdentico = buscadores.getBuscadorHecho().existeHechoIdentico(hecho, categoria, pais, provincia, hechosASubir);
+                    HechoEstatica hechoIdentico = buscadores.getBuscadorHecho().existeHechoIdentico(hecho, hechosASubir);
                     if (hechoIdentico!=null){
-                        hecho = hechoIdentico;
-                        hecho.getAtributosHecho().setModificado(true);
-                        hecho.getDatasets().add(this.dataSet);
+                        System.out.println("SOY UN HECHO REPETIDO");
+                        hechoIdentico.getAtributosHecho().setModificado(true);
+                        if(!hechoIdentico.getDatasets().contains(this.dataSet)){
+                            hechoIdentico.getDatasets().add(this.dataSet);
+                        }
+
+                        continue;
                     }
                 }
                 System.out.println("HOLA VOY A SUBIR UN HECHO DIVERTIDO!");

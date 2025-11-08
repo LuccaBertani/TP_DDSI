@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import modulos.agregacion.entities.DbMain.filtros.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
@@ -38,13 +39,13 @@ public class BuscadorFiltro {
     }
 
     /* ======= Fecha de Acontecimiento (ini / fin) ======= */
-    public Optional<FiltroFechaAcontecimiento> buscarFiltroFechaAcontecimientoPorRango(ZonedDateTime ini, ZonedDateTime fin) {
+    public Optional<FiltroFechaAcontecimiento> buscarFiltroFechaAcontecimientoPorRango(LocalDateTime ini, LocalDateTime fin) {
         if (ini == null && fin == null) return Optional.empty();
         return filtrosRepo.findFiltroFechaAcontecimientoByRango(ini, fin);
     }
 
     /* ======= Fecha de Carga (ini / fin) ======= */
-    public Optional<FiltroFechaCarga> buscarFiltroFechaCargaPorRango(ZonedDateTime ini, ZonedDateTime fin) {
+    public Optional<FiltroFechaCarga> buscarFiltroFechaCargaPorRango(LocalDateTime ini, LocalDateTime fin) {
         if (ini == null && fin == null) return Optional.empty();
         return filtrosRepo.findFiltroFechaCargaByRango(ini, fin);
     }

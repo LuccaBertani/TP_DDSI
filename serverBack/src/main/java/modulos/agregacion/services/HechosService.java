@@ -41,6 +41,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -155,7 +156,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         hecho.setActivo(true);
         hecho.getAtributosHecho().setModificado(true);
         hecho.getAtributosHecho().setFuente(Fuente.DINAMICA);
-        ZonedDateTime fecha = ZonedDateTime.now();
+        LocalDateTime fecha = LocalDateTime.now();
         System.out.printf("FECHA:" + fecha);
         hecho.getAtributosHecho().setFechaCarga(fecha);
         System.out.println("FECHA:" + fecha);
@@ -216,19 +217,29 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
 
             FuenteEstatica fuente = new FuenteEstatica();
-            Dataset dataset = new Dataset(dtoInput.getFuenteString());
-            dataset.setStoragePath(destino.toString());
+
+
+            System.out.println("FUENTE: " + dtoInput.getFuenteString());
+
+            Dataset dataset = datasetsRepo.findByFuente(dtoInput.getFuenteString()).orElse(null);
+            if (dataset == null) {
+                dataset = new Dataset(dtoInput.getFuenteString());
+                dataset.setStoragePath(destino.toString());
+                datasetsRepo.save(dataset);
+            } else {
+                dataset.setStoragePath(destino.toString());
+            }
 
             System.out.println("ARCHIVO DE MIERDA A LEER: " + dataset.getStoragePath());
 
-            datasetsRepo.save(dataset);
             fuente.setDataSet(dataset);
 
             List<HechoEstatica> hechos = fuente.leerFuente((Usuario) rta.getBody(), buscadores);
 
             for (HechoEstatica hecho : hechos) {
+                System.out.println("VOY A SUBIR ESTE HECHO: " + hecho.getAtributosHecho().getTitulo());
                 hecho.setActivo(true);
-                ZonedDateTime fechaActual = ZonedDateTime.now();
+                LocalDateTime fechaActual = LocalDateTime.now();
                 hecho.getAtributosHecho().setFechaCarga(fechaActual);
                 hecho.getAtributosHecho().setFechaUltimaActualizacion(fechaActual);
 

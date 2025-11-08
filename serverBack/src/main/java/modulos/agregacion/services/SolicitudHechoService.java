@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -336,7 +337,7 @@ public class SolicitudHechoService {
         if (dtoInput.getRespuesta()) {
             solicitud.getHecho().setActivo(true);
             solicitud.getHecho().getAtributosHecho().setModificado(true);
-            solicitud.getHecho().getAtributosHecho().setFechaCarga(ZonedDateTime.now());
+            solicitud.getHecho().getAtributosHecho().setFechaCarga(LocalDateTime.now());
             solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(solicitud.getHecho().getAtributosHecho().getFechaCarga()); // Nueva fecha de modificación
 
             if (usuario != null){
@@ -432,7 +433,7 @@ public class SolicitudHechoService {
         if (dtoInput.getRespuesta()) {
             // El hecho debe modificarse
             this.setearModificadoAOficial(solicitud.getHecho(), solicitud.getAtributosAshei());
-            solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(ZonedDateTime.now());
+            solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(LocalDateTime.now());
             solicitud.getHecho().getAtributosHecho().setModificado(true);
         }
         else{

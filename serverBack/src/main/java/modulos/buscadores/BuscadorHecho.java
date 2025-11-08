@@ -9,8 +9,11 @@ import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
 import modulos.agregacion.repositories.DbEstatica.IHechosEstaticaRepository;
 import modulos.agregacion.repositories.DbMain.*;
 import modulos.agregacion.repositories.DbProxy.IHechosProxyRepository;
+import modulos.shared.utils.FechaParser;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -65,6 +68,10 @@ public class BuscadorHecho {
         return this.hechoRepoEstatica.findByNombreNormalizado(elemento).orElse(null);
     }
 
+    public Integer buscarCantTituloIgual(String elemento) {
+        return this.hechoRepoEstatica.findCantByNombreNormalizado(elemento);
+    }
+
     public List<HechoEstatica> buscarListaEstatica(String elemento) {
         return this.hechoRepoEstatica.findAllByNombreNormalizado(elemento);
     }
@@ -93,7 +100,6 @@ public class BuscadorHecho {
         return this.hechoRepoEstatica.findCantHechosIgualTituloDiferentesAtributos(hecho_id);
     }
 
-
     private static boolean normEq(String a, String b) {
         // Evita NPE dentro del normalizador
         String s1 = (a == null) ? "" : a;
@@ -111,66 +117,44 @@ public class BuscadorHecho {
     }
 
 
-    public HechoEstatica existeHechoIdentico(HechoEstatica hecho, Categoria categoria, Pais pais, Provincia provincia, List<HechoEstatica> hechosASubir) {
-        var tgtAttr = Optional.ofNullable(hecho).map(Hecho::getAtributosHecho);
+    public HechoEstatica existeHechoIdentico(HechoEstatica hecho, List<HechoEstatica> hechosASubir) {
 
         if (hecho != null && hecho.getAtributosHecho() != null) {
-            String tituloTgt = tgtAttr.map(AtributosHecho::getTitulo).orElse(null);
-            String catTgt = categoria != null ? categoria.getTitulo() : null;
-            String paisTgt  = pais != null ? pais.getPais() : null;
-            String provTgt = provincia != null ? provincia.getProvincia() : null;
-            String descTgt   = tgtAttr.map(AtributosHecho::getDescripcion).orElse(null);
-            var    fechaTgt  = tgtAttr.map(AtributosHecho::getFechaAcontecimiento).orElse(null);
-            Double latTgt    = tgtAttr.map(AtributosHecho::getLatitud).orElse(null);
-            Double lonTgt    = tgtAttr.map(AtributosHecho::getLongitud).orElse(null);
-
-            List<HechoEstatica> hechos = this.hechoRepoEstatica.findAllByNombreNormalizado(tituloTgt);
-            hechos.addAll(hechosASubir);
-
-            final double EPS_DEG = 1e-6; // ~0.11 m en el ecuador; subilo a 1e-5 si querés ~1.1 m
-
-            for (HechoEstatica h : hechos) {
-                var attr  = Optional.ofNullable(h).map(Hecho::getAtributosHecho);
-
-                String desc  = attr.map(AtributosHecho::getDescripcion).orElse(null);
-                var    fecha = attr.map(AtributosHecho::getFechaAcontecimiento).orElse(null);
-                Double lat   = attr.map(AtributosHecho::getLatitud).orElse(null);
-                Double lon   = attr.map(AtributosHecho::getLongitud).orElse(null);
-
-                String cat = h.getAtributosHecho().getCategoria_id()!=null ? categoriaRepository.findById(h.getAtributosHecho().getCategoria_id()).orElse(null).getTitulo() : null;
-                Ubicacion ubicacion = ubicacionRepository.findById(h.getAtributosHecho().getUbicacion_id()).orElse(null);
-
-                String paisStr = ubicacion.getPais() != null ? ubicacion.getPais().getPais() : null;
-                String prov = ubicacion.getProvincia() != null ? ubicacion.getProvincia().getProvincia() : null;
-
-                boolean mismaCat   = normEq(cat,  catTgt);
-                boolean mismoPais  = normEq(paisStr, paisTgt);
-                boolean mismaProvincia = normEq(prov,provTgt);
-                boolean mismaDesc  = normEq(desc, descTgt);
-                boolean mismaFecha = Objects.equals(fecha, fechaTgt);
-
-
-                boolean mismaLat = false;
-                boolean mismaLon = false;
-
-                if (lat!=null){
-                    if (lat.equals(latTgt)){
-                        mismaLat = true;
-                    }
-                }
-
-                if (lon!=null){
-                    if (lon.equals(lonTgt)){
-                        mismaLon = true;
-                    }
-                }
-
-                if (mismaCat && mismoPais && mismaProvincia && mismaDesc && mismaFecha && mismaLat && mismaLon) {
-                    return h;
+            for(HechoEstatica h : hechosASubir){
+                if(normEq(h.getAtributosHecho().getTitulo(), hecho.getAtributosHecho().getTitulo())
+                && normEq(h.getAtributosHecho().getDescripcion(), hecho.getAtributosHecho().getDescripcion())
+                && FechaParser.sonMismaFecha(h.getAtributosHecho().getFechaAcontecimiento(), hecho.getAtributosHecho().getFechaAcontecimiento())
+                && Objects.equals(h.getAtributosHecho().getUbicacion_id(), hecho.getAtributosHecho().getUbicacion_id()) &&
+                        Objects.equals(h.getAtributosHecho().getCategoria_id(), hecho.getAtributosHecho().getCategoria_id()) &&
+                        Objects.equals(h.getAtributosHecho().getLatitud(), hecho.getAtributosHecho().getLatitud()) &&
+                        Objects.equals(h.getAtributosHecho().getLongitud(), hecho.getAtributosHecho().getLongitud()))
+                {
+                return h;
                 }
             }
         }
-        return null;
+
+        assert hecho != null;
+        assert hecho.getAtributosHecho() != null;
+
+        AtributosHecho atributos = hecho.getAtributosHecho();
+        LocalDateTime fecha = atributos.getFechaAcontecimiento() != null
+                ? atributos.getFechaAcontecimiento()
+                : LocalDateTime.of(9999, 12, 31, 23, 59);
+
+        return hechoRepoEstatica.findHechoIdentico(
+                hecho.getId(),
+                atributos.getTitulo(),
+                atributos.getCategoria_id(),
+                atributos.getDescripcion(),
+                atributos.getUbicacion_id(),
+                atributos.getOrigen(),
+                atributos.getFuente(),
+                fecha,
+                atributos.getLatitud(),
+                atributos.getLongitud()
+        ).orElse(null);
+
     }
 
 }

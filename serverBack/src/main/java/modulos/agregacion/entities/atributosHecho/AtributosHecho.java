@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import modulos.agregacion.entities.DbMain.Fuente;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class AtributosHecho {
     private String descripcion;
 
     @Column(name = "fechaAcontecimiento")
-    private ZonedDateTime fechaAcontecimiento;
+    private LocalDateTime fechaAcontecimiento;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinColumn(name = "id_hecho")
@@ -44,10 +45,10 @@ public class AtributosHecho {
     private Fuente fuente;
 
     @Column(name = "fechaCarga")
-    private ZonedDateTime fechaCarga;
+    private LocalDateTime fechaCarga;
 
     @Column(name = "fechaUltimaActualizacion")
-    private ZonedDateTime fechaUltimaActualizacion;
+    private LocalDateTime fechaUltimaActualizacion;
 
     //se persiste porque si se corta la luz, se tiene que saber los hechos que estan modificados y todavia no revisados
     @Column(name = "modificado")

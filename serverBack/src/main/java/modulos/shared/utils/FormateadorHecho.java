@@ -8,6 +8,9 @@ import modulos.buscadores.*;
 import modulos.shared.dtos.input.CriteriosColeccionDTO;
 import modulos.shared.dtos.input.SolicitudHechoInputDTO;
 import modulos.agregacion.entities.DbMain.filtros.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -401,8 +404,8 @@ public class FormateadorHecho {
         }
 
         // ---------- FECHA ACONTECIMIENTO ----------
-        ZonedDateTime faIni = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoInicial());
-        ZonedDateTime faFin = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoFinal());
+        LocalDateTime faIni = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoInicial());
+        LocalDateTime faFin = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoFinal());
         if (faIni != null && faFin != null) {
             FiltroFechaAcontecimiento filtro = buscadorFiltro
                     .buscarFiltroFechaAcontecimientoPorRango(faIni, faFin)
@@ -411,8 +414,8 @@ public class FormateadorHecho {
         }
 
         // ---------- FECHA CARGA ----------
-        ZonedDateTime fcIni = FechaParser.parsearFecha(inputDTO.getFechaCargaInicial());
-        ZonedDateTime fcFin = FechaParser.parsearFecha(inputDTO.getFechaCargaFinal());
+        LocalDateTime fcIni = FechaParser.parsearFecha(inputDTO.getFechaCargaInicial());
+        LocalDateTime fcFin = FechaParser.parsearFecha(inputDTO.getFechaCargaFinal());
         if (fcIni != null && fcFin != null) {
             FiltroFechaCarga filtro = buscadorFiltro
                     .buscarFiltroFechaCargaPorRango(fcIni, fcFin)
@@ -558,8 +561,8 @@ public class FormateadorHecho {
         }
 
         // ---------- FECHA ACONTECIMIENTO ----------
-        ZonedDateTime faIni = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoInicial());
-        ZonedDateTime faFin = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoFinal());
+        LocalDateTime faIni = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoInicial());
+        LocalDateTime faFin = FechaParser.parsearFecha(inputDTO.getFechaAcontecimientoFinal());
         if (faIni != null && faFin != null) {
             FiltroFechaAcontecimiento filtro = buscadorFiltro
                     .buscarFiltroFechaAcontecimientoPorRango(faIni, faFin)
@@ -568,8 +571,8 @@ public class FormateadorHecho {
         }
 
         // ---------- FECHA CARGA ----------
-        ZonedDateTime fcIni = FechaParser.parsearFecha(inputDTO.getFechaCargaInicial());
-        ZonedDateTime fcFin = FechaParser.parsearFecha(inputDTO.getFechaCargaFinal());
+        LocalDateTime fcIni = FechaParser.parsearFecha(inputDTO.getFechaCargaInicial());
+        LocalDateTime fcFin = FechaParser.parsearFecha(inputDTO.getFechaCargaFinal());
         if (fcIni != null && fcFin != null) {
             FiltroFechaCarga filtro = buscadorFiltro
                     .buscarFiltroFechaCargaPorRango(fcIni, fcFin)
