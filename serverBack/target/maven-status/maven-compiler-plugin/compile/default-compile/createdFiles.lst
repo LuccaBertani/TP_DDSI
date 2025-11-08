@@ -145,10 +145,10 @@ modulos\servicioEstadistica\entities\ProvinciaCantidad.class
 modulos\agregacion\entities\fuentes\Responses\HechosMetamapaResponse.class
 modulos\agregacion\services\HechosService.class
 modulos\buscadores\BuscadorCategoria.class
-modulos\agregacion\converters\ZonedDateTimeConverter.class
 modulos\agregacion\entities\DbMain\UbicacionString.class
 modulos\servicioEstadistica\entities\CategoriaHora.class
 modulos\servicioEstadistica\repositories\IColeccionProvinciaRepository.class
+modulos\agregacion\converters\LocalDateTimeConverter.class
 modulos\shared\dtos\output\MensajeOutputDTO.class
 modulos\agregacion\entities\DbMain\Categoria.class
 modulos\agregacion\entities\DbMain\Pais.class

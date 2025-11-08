@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -117,7 +118,11 @@ public class BuscadorHecho {
     }
 
 
-    public HechoEstatica existeHechoIdentico(HechoEstatica hecho, List<HechoEstatica> hechosASubir) {
+    public List<HechoEstatica> existenHechosIdenticos(HechoEstatica hecho, List<HechoEstatica> hechosASubir) {
+
+        // Si bien ahora ya no van a haber hechos identicos repetidos, hago array list de hechos identicos pq ya hay algunos en la BDD
+
+        List<HechoEstatica> hechos = new ArrayList<>();
 
         if (hecho != null && hecho.getAtributosHecho() != null) {
             for(HechoEstatica h : hechosASubir){
@@ -129,7 +134,7 @@ public class BuscadorHecho {
                         Objects.equals(h.getAtributosHecho().getLatitud(), hecho.getAtributosHecho().getLatitud()) &&
                         Objects.equals(h.getAtributosHecho().getLongitud(), hecho.getAtributosHecho().getLongitud()))
                 {
-                return h;
+                    hechos.add(h);
                 }
             }
         }
@@ -138,22 +143,22 @@ public class BuscadorHecho {
         assert hecho.getAtributosHecho() != null;
 
         AtributosHecho atributos = hecho.getAtributosHecho();
-        LocalDateTime fecha = atributos.getFechaAcontecimiento() != null
+        /*LocalDateTime fecha = atributos.getFechaAcontecimiento() != null
                 ? atributos.getFechaAcontecimiento()
-                : LocalDateTime.of(9999, 12, 31, 23, 59);
+                : LocalDateTime.of(9999, 12, 31, 23, 59);*/
 
-        return hechoRepoEstatica.findHechoIdentico(
-                hecho.getId(),
+        hechos.addAll(hechoRepoEstatica.findHechosIdenticos(
                 atributos.getTitulo(),
                 atributos.getCategoria_id(),
                 atributos.getDescripcion(),
                 atributos.getUbicacion_id(),
-                atributos.getOrigen(),
-                atributos.getFuente(),
-                fecha,
+                atributos.getOrigen().codigoEnString(),
+                atributos.getFuente().codigoEnString(),
+                atributos.getFechaAcontecimiento(),
                 atributos.getLatitud(),
-                atributos.getLongitud()
-        ).orElse(null);
+                atributos.getLongitud()));
+
+        return hechos;
 
     }
 

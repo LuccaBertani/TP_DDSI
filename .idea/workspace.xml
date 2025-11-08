@@ -6,8 +6,55 @@
   <component name="ChangeListManager">
     <list default="true" id="f850432b-1600-446e-abba-2862d1cc44e3" name="Changes" comment="Merge branch 'entrega_6' of https://github.com/dds-utn/2025-tpa-mi-no-grupo-17 into entrega_6&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/shared/utils/Geocodificador.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/shared/utils/Geocodificador.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/shared/utils/Geocodificador.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/shared/utils/Geocodificador.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/entities/fuentes/LectorCSV.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/entities/fuentes/LectorCSV.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbEstatica/IHechosEstaticaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbEstatica/IHechosEstaticaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/buscadores/BuscadorHecho.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/buscadores/BuscadorHecho.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/entities/fuentes/LectorCSV.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/entities/fuentes/LectorCSV.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/repositories/DbEstatica/IHechosEstaticaRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/repositories/DbEstatica/IHechosEstaticaRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/buscadores/BuscadorHecho.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/buscadores/BuscadorHecho.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/182abf11-2005-447d-a4cb-637ddc78c4d7_SAT-MV-BU_2017-2023.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/1ba84967-b159-4049-a6be-70dd41d1d374_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/23c0aa00-8313-4b1c-a9dd-c92701ccecea_Test-Pastel.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/242e5444-2ae4-48b5-a960-9cda7c0f346f_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/24f2a6aa-80a9-4601-a81b-b51b3ceacc33_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/28c4ac0d-c513-4440-afa4-f13f763a7187_e90d167a-fe23-4ad7-ac85-532358d5cce4_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/2a4a1afe-ef7e-409f-b631-a092cda2c1ad_SAT-MV-BU_2017-2023.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/2c79cb21-fc5b-4a37-b93b-6ad411a6ee1c_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/32e0839c-511a-456f-b5b7-bc1e6dc00379_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/334c855a-aed9-4238-ab3d-68ecc6a11bb9_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/3c938bd9-1bb2-450f-8493-6aeab9d1e60f_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/41ec91c4-d1a3-4d5f-a051-ef5b8b141ec5_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/4c994c83-fa08-4411-983c-15a40f978d35_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/503d449e-5146-4e03-bb40-2d6f041251af_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/515a21bc-35ea-4e58-8b97-0ab94bd73325_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/548c45a6-f5c8-4ab1-8bff-390d40f1a517_ejemplo_hechos_dataset.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/56f009d7-c8dd-4007-98ce-4bc2d4f00482_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/773ad640-f05e-4fbb-8288-cdbaeec37a40_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/85cc472b-a482-41fe-a4b5-d17e4f499ac5_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/87e1c7c6-c6e0-4642-a915-8fe4eef65800_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/8d708218-0acb-4e29-a10c-ea055759f986_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/8e26ea52-e911-4221-9fd8-0aa98b0411e9_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/a2dfdb0f-513c-407c-93f0-2e9238b4adb5_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/a9d6b0a7-277e-4dd0-87a6-506711dd163f_SAT-MV-BU_2017-2023.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/b2dc4770-6ee5-4634-85ed-c1dae7baa0e3_Test-Pastel.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/b3f8734c-4f09-431a-9d6d-869feabadcbd_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/b7a60638-bc49-4032-ba37-a786c241f43a_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/b9c60cf9-17ca-4d56-818b-8cecd6227a07_SAT-MV-BU_2017-2023.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/bed0f6ef-0e58-464e-b431-00af70cc220e_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/c24913f6-d63b-4303-9cfa-4bf5c25c7b85_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/d7389c19-ea4d-423f-9431-1475d563d93a_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/d9d9f70d-c2f0-42d2-831b-6e8f287f78bb_SAT-MV-BU_2017-2023.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/debcd409-dfe2-4b94-bb82-7b1a88a653c2_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/dfa63f24-5180-410b-aa61-41b2aeead3fe_hechos_repetidos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/e838fbef-56f8-42e3-8176-3d9b9c159a0e_SAT-MV-BU_2017-2023.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/e90d167a-fe23-4ad7-ac85-532358d5cce4_hechos_20_con_duplicados_exactos.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/ede03bc6-a33f-45d2-acf5-9820724af157_SAT-MV-BU_2017-2023.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/f00c0830-db28-4ff2-ac30-c952bde947c4_ejemplo_hechos_dataset.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/datasets/f7332d3a-8c81-4c7b-99de-277f86dd7a2f_SAT-MV-BU_2017-2023.csv" beforeDir="false" />
     </list>
     <list id="3bb68fa4-4cba-440f-a626-e70e60e396a9" name="Changes by germa" comment="" />
     <list id="f13608ce-ca7b-462a-b1c3-e6566403784d" name="Changes by Lucas" comment="" />
@@ -235,6 +282,14 @@
       </list>
     </recent_temporary>
   </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26053.27" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26053.27" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -287,6 +342,8 @@
       <workItem from="1762293536170" duration="4184000" />
       <workItem from="1762365499111" duration="11095000" />
       <workItem from="1762412710394" duration="2431000" />
+      <workItem from="1762638001865" duration="95000" />
+      <workItem from="1762638104339" duration="5356000" />
     </task>
     <task id="LOCAL-00001" summary="Merge branch 'entrega_6' of https://github.com/dds-utn/2025-tpa-mi-no-grupo-17 into entrega_6&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
       <option name="closed" value="true" />

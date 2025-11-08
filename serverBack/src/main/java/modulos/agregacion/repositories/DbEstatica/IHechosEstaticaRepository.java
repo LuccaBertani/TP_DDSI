@@ -122,29 +122,28 @@ LIMIT 1;
     Long findCantHechosIgualTituloDiferentesAtributos(@Param("hecho_id") Long hechoId);
 
     //TODO ESTA QUERY MUGROSA NO ANDA, ME PUDRI
-    @Query("""
-    SELECT h
-    FROM HechoEstatica h
-    WHERE h.activo = true
-      AND h.id <> :id
-      AND (:titulo IS NULL OR h.atributosHecho.titulo = :titulo)
-      AND (:categoriaId IS NULL OR h.atributosHecho.categoria_id = :categoriaId)
-      AND (:descripcion IS NULL OR h.atributosHecho.descripcion = :descripcion)
-      AND (:ubicacionId IS NULL OR h.atributosHecho.ubicacion_id = :ubicacionId)
-      AND (:origen IS NULL OR h.atributosHecho.origen = :origen)
-      AND (:fuente IS NULL OR h.atributosHecho.fuente = :fuente)
-      AND (:fechaAcontecimiento IS NULL OR FUNCTION('DATE', h.atributosHecho.fechaAcontecimiento) = FUNCTION('DATE', :fechaAcontecimiento))
-      AND (:latitud IS NULL OR h.atributosHecho.latitud = :latitud)
-      AND (:longitud IS NULL OR h.atributosHecho.longitud = :longitud)
-""")
-    Optional<HechoEstatica> findHechoIdentico(
-            @Param("id") Long id,
+    @Query(value = """
+        SELECT h1.*
+        FROM hecho_estatica h1
+        WHERE h1.activo = true
+          AND h1.titulo <=> :titulo
+          AND h1.categoria_id <=> :categoriaId
+          AND h1.descripcion <=> :descripcion
+          AND h1.fechaAcontecimiento <=> :fechaAcontecimiento
+          AND h1.fuente <=> :fuente
+          AND h1.latitud <=> :latitud
+          AND h1.longitud <=> :longitud
+          AND h1.origen <=> :origen
+          AND h1.ubicacion_id <=> :ubicacionId
+        """,
+            nativeQuery = true)
+    List<HechoEstatica> findHechosIdenticos(
             @Param("titulo") String titulo,
             @Param("categoriaId") Long categoriaId,
             @Param("descripcion") String descripcion,
             @Param("ubicacionId") Long ubicacionId,
-            @Param("origen") Origen origen,
-            @Param("fuente") Fuente fuente,
+            @Param("origen") String origen,
+            @Param("fuente") String fuente,
             @Param("fechaAcontecimiento") LocalDateTime fechaAcontecimiento,
             @Param("latitud") Double latitud,
             @Param("longitud") Double longitud

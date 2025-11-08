@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import jakarta.transaction.Transactional;
 import modulos.agregacion.entities.DbEstatica.Dataset;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
@@ -32,6 +33,7 @@ public class LectorCSV {
     }
 
     // Entrega 3: los hechos no se pisan los atributos
+
     public List<HechoEstatica> leerCSV(Usuario usuario, BuscadoresRegistry buscadores) {
 
         List<HechoEstatica> hechosASubir = new ArrayList<>();
@@ -159,24 +161,27 @@ public class LectorCSV {
                 hecho.getAtributosHecho().setFuente(Fuente.ESTATICA);
                 hecho.getDatasets().add(this.dataSet);
                 if (tituloRepetido){
-                    HechoEstatica hechoIdentico = buscadores.getBuscadorHecho().existeHechoIdentico(hecho, hechosASubir);
-                    if (hechoIdentico!=null){
-                        System.out.println("SOY UN HECHO REPETIDO");
-                        hechoIdentico.getAtributosHecho().setModificado(true);
-                        if(!hechoIdentico.getDatasets().contains(this.dataSet)){
-                            hechoIdentico.getDatasets().add(this.dataSet);
+                    List<HechoEstatica> hechosIdenticos = buscadores.getBuscadorHecho().existenHechosIdenticos(hecho, hechosASubir);
+                    if (!hechosIdenticos.isEmpty()){
+                        for (HechoEstatica hechoIdentico: hechosIdenticos){
+                            hechoIdentico.getAtributosHecho().setModificado(true);
+                            if(hechoIdentico.getDatasets().stream().filter(d->d.getFuente().equals(this.dataSet.getFuente()))
+                                    .findFirst()
+                                    .isEmpty()){
+                                System.out.println("MISMA FUENTE");
+                                hechoIdentico.getDatasets().add(this.dataSet);
+                                hechosASubir.add(hechoIdentico); // LO AÑADO PARA QUE SE UPDATEE EN importarHechos
+                            }
                         }
-
                         continue;
                     }
                 }
                 System.out.println("HOLA VOY A SUBIR UN HECHO DIVERTIDO!");
-                hechosASubir.add(hecho);
 
             }
             System.out.println("SIZE DE LA LISTA: " + hechosASubir.size());
-            GestorArchivos.eliminarArchivo(this.dataSet.getStoragePath());
             parser.close();
+            GestorArchivos.eliminarArchivo(this.dataSet.getStoragePath());
         }
         catch(IOException e){
             throw new RuntimeException("Error al leer el archivo CSV: " + e.getMessage(), e);
