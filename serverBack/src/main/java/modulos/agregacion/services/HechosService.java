@@ -856,21 +856,31 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         if (ubicacionString != null){
             PaisProvinciaDTO paisProvinciaDTO = new PaisProvinciaDTO();
             String paisStr = ubicacionString.getPais();
+            System.out.println("SOY UN PAIS MUY FELIZ, Y ME LLAMO: " + paisStr);
+            Pais pais = null;
             if (paisStr != null){
-                Pais pais = repoPais.findByNombreNormalizado(paisStr).orElse(null);
+                pais = repoPais.findByNombreNormalizado(paisStr).orElse(null);
                 if (pais != null){
                     PaisDto paisDto = PaisDto.builder().pais(paisStr).id(pais.getId()).build();
                     paisProvinciaDTO.setPaisDto(paisDto);
                 }
             }
-            String provinciaStr = ubicacionString.getProvincia();
-            if (provinciaStr != null){
-                Provincia provincia = repoProvincia.findByNombreNormalizado(provinciaStr).orElse(null);
-                if (provincia != null){
-                    ProvinciaDto provinciaDto = ProvinciaDto.builder().provincia(provinciaStr).id(provincia.getId()).build();
-                    paisProvinciaDTO.setProvinciaDto(provinciaDto);
+            if (pais!=null){
+                String provinciaStr = ubicacionString.getProvincia();
+                if (provinciaStr != null){
+                    System.out.println("SOY UNA PROVINCIA FELIZ, Y ME LLAMO: " + provinciaStr);
+                    Provincia provincia = repoProvincia.findByNombreNormalizadoAndPaisId(provinciaStr, pais.getId()).orElse(null);
+                    if (provincia != null){
+                        System.out.println("SIUU NO SOY PROVINCIA NULL Y ME LLAMO: " + provincia.getProvincia());
+                        ProvinciaDto provinciaDto = ProvinciaDto.builder().provincia(provinciaStr).id(provincia.getId()).build();
+                        paisProvinciaDTO.setProvinciaDto(provinciaDto);
+                    }
+                    else{
+                        System.out.println("SOY UNA PROVINCIA ESTORBO");
+                    }
                 }
             }
+
 
             return ResponseEntity.ok(paisProvinciaDTO);
         }
