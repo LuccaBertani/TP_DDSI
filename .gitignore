@@ -28,5 +28,6 @@ target/**
 # IJ files
 *.iml
 .idea/*.xml
+.idea
 
 .idea/httpRequests/

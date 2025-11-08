@@ -27,7 +27,7 @@ public final class Geocodificador {
         try {
             // Nominatim reverse (pedimos addressdetails y sesgo de idioma)
             String url = String.format(Locale.US,
-                    "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=%f&lon=%f&addressdetails=1&zoom=10&accept-language=es",
+                    "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=%f&lon=%f&addressdetails=1&zoom=10&accept-language=en",
                     lat, lon);
             String UA = "metamapa/1.0 (contacto: tu-email@dominio)";
             String OVERPASS = "https://overpass-api.de/api/interpreter";
