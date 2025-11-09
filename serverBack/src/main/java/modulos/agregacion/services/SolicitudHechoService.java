@@ -39,7 +39,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -160,7 +159,7 @@ public class SolicitudHechoService {
         HechoDinamica hecho = fuenteDinamica.crearHecho(dto, contenidosMultimedia, categoria_id, ubicacion_id);
 
         SolicitudSubirHecho solicitudHecho = new SolicitudSubirHecho();
-        solicitudHecho.setFecha(ZonedDateTime.now());
+        solicitudHecho.setFecha(LocalDateTime.now());
         if(usuario!=null) {
             solicitudHecho.setUsuario_id(usuario.getId());
             hecho.setUsuario_id(usuario.getId());
@@ -193,10 +192,11 @@ public class SolicitudHechoService {
     }
 
     //El usuario manda una solicitud para eliminar un hecho -> guardar la solicitud en la base de datos
-    public ResponseEntity<?> solicitarEliminacionHecho(SolicitudHechoEliminarInputDTO dto, Jwt principal){
+    @Transactional
+    public ResponseEntity<?> solicitarEliminacionHecho(SolicitudHechoEliminarInputDTO dto, String username){
         // Un admin no debería solicitar eliminar, los elimina directamente
 
-            ResponseEntity<?> rta = this.checkeoNoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
+            ResponseEntity<?> rta = this.checkeoNoAdmin(username);
             Usuario usuario = (Usuario) rta.getBody();
             if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
                 return rta;
@@ -210,7 +210,7 @@ public class SolicitudHechoService {
         }
 
         SolicitudEliminarHecho solicitud = new SolicitudEliminarHecho(usuario.getId(), hecho, dto.getJustificacion());
-        solicitud.setFecha(ZonedDateTime.now());
+        solicitud.setFecha(LocalDateTime.now());
         if (DetectorDeSpam.esSpam(dto.getJustificacion())) {
             // Marcar como rechazada por spam y guardar
             solicitud.setProcesada(true);
@@ -222,10 +222,10 @@ public class SolicitudHechoService {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    public ResponseEntity<?> solicitarModificacionHecho(SolicitudHechoModificarInputDTO dto, Jwt principal){
+    public ResponseEntity<?> solicitarModificacionHecho(SolicitudHechoModificarInputDTO dto, String username){
 
         
-        ResponseEntity<?> rta = checkeoContribuyente(JwtClaimExtractor.getUsernameFromToken(principal));
+        ResponseEntity<?> rta = checkeoContribuyente(username);
 
         if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
             return rta;
@@ -245,7 +245,7 @@ public class SolicitudHechoService {
         }
 
         SolicitudModificarHecho solicitud = new SolicitudModificarHecho(usuario.getId(), hecho);
-        solicitud.setFecha(ZonedDateTime.now());
+        solicitud.setFecha(LocalDateTime.now());
         if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion()))
         {
             solicitud.setProcesada(true);
@@ -254,7 +254,7 @@ public class SolicitudHechoService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Se detectó spam"); // 400 - solicitud rechazada por spam
         }
 
-        if (ChronoUnit.DAYS.between(hecho.getAtributosHecho().getFechaCarga(), ZonedDateTime.now()) >= 7){
+        if (ChronoUnit.DAYS.between(hecho.getAtributosHecho().getFechaCarga(), LocalDateTime.now()) >= 7){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Terminó la fecha límite para solicitar modificar el hecho"); // Error 409: cuando la solicitud es válida, pero no puede procesarse por estado actual del recurso
         }
 
@@ -391,14 +391,20 @@ public class SolicitudHechoService {
         }
 
         solicitud.setProcesada(true);
+        Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
         if (dtoInput.getRespuesta()) {
             // No va a haber null pointer exception porque sí o sí hay un usuario asociado al hecho que se solicita eliminar
             solicitud.getHecho().getAtributosHecho().setModificado(true);
             solicitud.getHecho().setActivo(false);
-            Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
+            hechosDinamicaRepository.save(solicitud.getHecho());
             // El usuario va a existir si o si porque ya se verificó cuando solicitó eliminar un hecho, pero x si pide borrar la cuenta hago el chequeo antes
             if (usuario != null){
                 usuario.disminuirHechosSubidos();
+                Mensaje mensaje = new Mensaje();
+                mensaje.setSolicitud_hecho_id(solicitud.getId());
+                mensaje.setReceptor(usuario);
+                mensaje.setTextoMensaje("Se aceptó su solicitud de eliminar el hecho de título " + solicitud.getHecho().getAtributosHecho().getTitulo());
+                mensajesRepository.save(mensaje);
                 if (usuario.getCantHechosSubidos() == 0){
                     dto.setRolModificado(true);
                     dto.setRol(Rol.VISUALIZADOR);
@@ -407,6 +413,18 @@ public class SolicitudHechoService {
                 }
             }
         }
+        else{
+            if (usuario!=null){
+                Mensaje mensaje = new Mensaje();
+                mensaje.setSolicitud_hecho_id(solicitud.getId());
+                mensaje.setReceptor(usuario);
+                mensaje.setTextoMensaje("Se rechazó su solicitud de eliminar el hecho de título " + solicitud.getHecho().getAtributosHecho().getTitulo()
+                        + ".\nJustificacion: " + dtoInput.getMensaje());
+                mensajesRepository.save(mensaje);
+            }
+        }
+
+        solicitudRepository.save(solicitud);
 
         return ResponseEntity.ok().body(dto);
     }

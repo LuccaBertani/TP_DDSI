@@ -76,13 +76,36 @@
 
     <!-- Acciones -->
     <div class="d-flex justify-content-center gap-2 mb-4">
+
+        <!-- Siempre visible -->
         <a class="btn btn-outline-dark" th:href="@{/hechos/public/get-all}">
             <i class="bi bi-list me-1"></i> Volver al listado
         </a>
+
+        <!-- Siempre visible -->
         <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalReportar">
             <i class="bi bi-flag me-1"></i> Reportar
         </button>
+
+        <!-- Solo si el usuario actual es el dueño del hecho (DTO presente en el model) -->
+        <button class="btn btn-danger"
+                th:if="${SolicitudHechoEliminarInputDTO != null}"
+                data-bs-toggle="modal"
+                data-bs-target="#modalSolicitarEliminacion">
+            <i class="bi bi-trash3 me-1"></i> Solicitar eliminación
+        </button>
+
+        <!-- Opcional: botón para solicitar modificación, mismo criterio -->
+        <button class="btn btn-outline-warning"
+                th:if="${SolicitudHechoModificarInputDTO != null}"
+                data-bs-toggle="modal"
+                data-bs-target="#modalSolicitarModificacion">
+            <i class="bi bi-pencil-square me-1"></i> Solicitar modificación
+        </button>
+
     </div>
+
+
 
     <!-- Modal REPORTAR -->
     <div class="modal fade" id="modalReportar" tabindex="-1" aria-hidden="true">
@@ -111,34 +134,68 @@
         </div>
     </div>
 
-    <!-- Modal ELIMINAR (placeholder) -->
-    <div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="modalSolicitarEliminacion" tabindex="-1" aria-hidden="true"
+         th:if="${SolicitudHechoEliminarInputDTO != null}">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title">
-                        <i class="bi bi-exclamation-triangle text-danger me-2"></i>
-                        Confirmar eliminación
+            <form class="modal-content border-0"
+                  th:action="@{/solicitudes-hecho/eliminar-hecho}"
+                  method="post"
+                  th:object="${SolicitudHechoEliminarInputDTO}"
+                  style="border-radius:20px;overflow:hidden">
+
+                <div class="modal-header"
+                     style="background:linear-gradient(135deg,#fee2e2,#fecaca);border:none;padding:2rem">
+                    <h5 class="modal-title fw-bold" style="color:#991b1b">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        Solicitar eliminación del hecho
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                    <p class="mb-0">
-                        Vas a eliminar el hecho <strong th:text="${hecho.titulo ?: 'este hecho'}"></strong>.
-                        Esta acción no se puede deshacer.
+
+                <div class="modal-body" style="padding:2rem">
+                    <p class="small text-muted mb-3">
+                        Esta solicitud será revisada por el equipo de MetaMapa. Explicá con detalle por qué
+                        considerás que este hecho debería ser eliminado.
                     </p>
+
+                    <label class="form-label fw-semibold mb-2" for="justificacionEliminar">
+                        Justificación de la eliminación
+                    </label>
+                    <textarea class="form-control"
+                              id="justificacionEliminar"
+                              th:field="*{justificacion}"
+                              rows="5"
+                              minlength="500"
+                              maxlength="2000"
+                              placeholder="Explicá con el mayor detalle posible por qué querés que se elimine este hecho..."
+                              style="border-radius:12px;border:1px solid #e9ecef;background:#f8f9ff"
+                              required></textarea>
+
+                    <div class="form-text text-end mt-2">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Mínimo **500 caracteres** (describí bien el motivo).
+                    </div>
                 </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <form action="#" method="post" class="m-0 p-0" onsubmit="return false;">
-                        <button type="submit" class="btn btn-danger" disabled title="Configurar endpoint en el controller">
-                            <i class="bi bi-trash3 me-1"></i> Eliminar definitivamente
-                        </button>
-                    </form>
+
+                <input type="hidden" th:field="*{id_hecho}" />
+
+                <input type="hidden" th:if="${_csrf != null}"
+                       th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <div class="modal-footer" style="border:none;padding:1.5rem 2rem 2rem">
+                    <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal"
+                            style="border-radius:12px">
+                        Cancelar
+                    </button>
+                    <button class="btn btn-danger" type="submit"
+                            style="border-radius:12px;padding:.75rem 1.5rem">
+                        <i class="bi bi-trash3 me-1"></i> Enviar solicitud de eliminación
+                    </button>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
+
 
     <style>.btn:hover{transform:translateY(-1px);transition:transform .08s ease}</style>
 

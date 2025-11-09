@@ -4,15 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import modulos.Front.BodyToListConverter;
-import modulos.Front.dtos.input.GetHechosColeccionInputDTO;
-import modulos.Front.dtos.input.ImportacionHechosInputDTO;
-import modulos.Front.dtos.input.SolicitudHechoInputDTO;
-import modulos.Front.dtos.input.UsuarioInputDTO;
+import modulos.Front.dtos.input.*;
 import modulos.Front.dtos.output.HechosResponse;
 import modulos.Front.dtos.output.UsuarioOutputDto;
 import modulos.Front.dtos.output.VisualizarHechosOutputDTO;
 import modulos.Front.services.HechosService;
 import modulos.Front.services.UsuarioService;
+import modulos.Front.usuario.Rol;
+import modulos.Front.usuario.Usuario;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -139,12 +138,22 @@ public class HechosController {
             model.addAttribute("hecho", hecho);
 
             if (hecho.getUsername() != null){
-                String usuarioActual = usuarioService.getUsernameFromSession();
+                ResponseEntity<?> rtaUsuario = usuarioService.getUsuario();
 
-                if (usuarioActual.equals(hecho.getUsername())){
-                    model.addAttribute("puedeSolicitarEliminacion", true);
-                    model.addAttribute("puedeSolicitarModificacion", true);
+                if (rtaUsuario.getStatusCode().is2xxSuccessful() && rtaUsuario.hasBody()){
+                    UsuarioOutputDto usuarioActual = (UsuarioOutputDto) rtaUsuario.getBody();
+
+                    if (usuarioActual.getRol().equals(Rol.CONTRIBUYENTE)){
+                        SolicitudHechoEliminarInputDTO solicitudHechoEliminarInputDTO = new SolicitudHechoEliminarInputDTO();
+                        solicitudHechoEliminarInputDTO.setId_hecho(hecho.getId());
+                        SolicitudHechoModificarInputDTO solicitudHechoModificarInputDTO = new SolicitudHechoModificarInputDTO();
+                        solicitudHechoModificarInputDTO.setId_hecho(hecho.getId());
+                        model.addAttribute("SolicitudHechoEliminarInputDTO", solicitudHechoEliminarInputDTO);
+                        model.addAttribute("SolicitudHechoModificarInputDTO", solicitudHechoModificarInputDTO);
+                    }
                 }
+
+
             }
 
             return "detalleHecho";

@@ -100,13 +100,13 @@ public class SolicitudHechoController {
     }
 
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
+    @PreAuthorize("hasRole('CONTRIBUYENTE')")
     @PostMapping("/eliminar-hecho")
     public String enviarSolicitudEliminarHecho(@Valid @ModelAttribute SolicitudHechoEliminarInputDTO dto, RedirectAttributes ra){
         ResponseEntity<?> rta = this.solicitudHechoService.enviarSolicitudEliminarHecho(dto);
 
         if(rta.getStatusCode().is2xxSuccessful()){
-            return "redirect:get/all";
+            return "redirect:/hechos/public/get-all";
         }
         else if(rta.getBody() != null){
             ra.addFlashAttribute(rta.getBody().toString());

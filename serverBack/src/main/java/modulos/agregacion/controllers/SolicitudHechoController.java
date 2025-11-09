@@ -60,14 +60,14 @@ public class SolicitudHechoController {
 
     // Anda
     @PostMapping("/eliminar-hecho")
-    public ResponseEntity<?> enviarSolicitudEliminarHecho(@Valid @RequestBody SolicitudHechoEliminarInputDTO dtoInput, @AuthenticationPrincipal Jwt principal){
-        return solicitudHechoService.solicitarEliminacionHecho(dtoInput, principal); // 200 o 401
+    public ResponseEntity<?> enviarSolicitudEliminarHecho(@Valid @RequestBody SolicitudHechoEliminarInputDTO dtoInput, @AuthenticationPrincipal String username){
+        return solicitudHechoService.solicitarEliminacionHecho(dtoInput, username); // 200 o 401
     }
 
     // Anda
     @PostMapping("/modificar-hecho")
-    public ResponseEntity<?> enviarSolicitudModificarHecho(@Valid @RequestBody SolicitudHechoModificarInputDTO dtoInput, @AuthenticationPrincipal Jwt principal){
-        return solicitudHechoService.solicitarModificacionHecho(dtoInput, principal); // 200, 401 o 409 (recurso ya modificado)
+    public ResponseEntity<?> enviarSolicitudModificarHecho(@Valid @RequestBody SolicitudHechoModificarInputDTO dtoInput, @AuthenticationPrincipal String username){
+        return solicitudHechoService.solicitarModificacionHecho(dtoInput, username); // 200, 401 o 409 (recurso ya modificado)
     }
 
     // Anda
