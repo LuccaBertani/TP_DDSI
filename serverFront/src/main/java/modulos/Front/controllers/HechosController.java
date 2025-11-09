@@ -138,18 +138,14 @@ public class HechosController {
             System.out.println("Fecha carga: " + hecho.getFechaCarga());
             model.addAttribute("hecho", hecho);
 
-            ResponseEntity<?> rta = usuarioService.getUsuario();
+            if (hecho.getUsername() != null){
+                String usuarioActual = usuarioService.getUsernameFromSession();
 
-            if (rta.getStatusCode().is2xxSuccessful()){
-                UsuarioOutputDto usuarioActual = (UsuarioOutputDto) rta.getBody();
-                if (usuarioActual!=null){
-                    if (usuarioActual.getNombreDeUsuario().equals(hecho.getUsername())){
-                        model.addAttribute("puedeSolicitarModificacionHecho", true);
-                        model.addAttribute("puedeSolicitarEliminacionHecho", true);
-                    }
+                if (usuarioActual.equals(hecho.getUsername())){
+                    model.addAttribute("puedeSolicitarEliminacion", true);
+                    model.addAttribute("puedeSolicitarModificacion", true);
                 }
             }
-
 
             return "detalleHecho";
         }

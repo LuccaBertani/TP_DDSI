@@ -151,7 +151,7 @@ public class WebApiCallerService {
         return (String) request.getSession().getAttribute("accessToken");
     }
 
-    private String getUsernameFromSession() {
+    public String getUsernameFromSession() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         return (String) request.getSession().getAttribute("username");

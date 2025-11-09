@@ -55,6 +55,10 @@ public class UsuarioService {
         return new BCryptPasswordEncoder();
     }
 
+    public String getUsernameFromSession(){
+        return webApiCallerService.getUsernameFromSession();
+    }
+
     public ResponseEntity<?> crearUsuario(UsuarioInputDTO inputDTO){
         return webApiCallerService.postEntitySinToken(this.usuarioServiceUrl + "/public/crear", inputDTO, Void.class);
     }
