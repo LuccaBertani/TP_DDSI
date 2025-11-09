@@ -120,6 +120,9 @@ public class LectorCSV {
                     Double latitud = Double.parseDouble(registros.get(indicesColumnas.get(3)));
                     Double longitud = Double.parseDouble(registros.get(indicesColumnas.get(4)));
                     ubicacionString = Geocodificador.obtenerUbicacion(latitud, longitud);
+                    if(ubicacionString == null) {
+                        System.out.println("El geocodificador esta todo cogido");
+                    }
                     hecho.getAtributosHecho().setLatitud(latitud);
                     hecho.getAtributosHecho().setLongitud(longitud);
                     System.out.println("LATITUD: " + hecho.getAtributosHecho().getLatitud());
