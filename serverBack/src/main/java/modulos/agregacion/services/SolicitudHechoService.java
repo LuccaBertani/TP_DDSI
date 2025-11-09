@@ -339,14 +339,13 @@ public class SolicitudHechoService {
             solicitud.getHecho().getAtributosHecho().setModificado(true);
             solicitud.getHecho().getAtributosHecho().setFechaCarga(LocalDateTime.now());
             solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(solicitud.getHecho().getAtributosHecho().getFechaCarga()); // Nueva fecha de modificación
-
+            hechosDinamicaRepository.saveAndFlush(solicitud.getHecho());
             if (usuario != null){
                 usuario.incrementarHechosSubidos();
                 Mensaje mensaje = new Mensaje();
                 mensaje.setSolicitud_hecho_id(solicitud.getId());
                 mensaje.setReceptor(usuario);
                 mensaje.setTextoMensaje("Se aceptó su hecho de título " + solicitud.getHecho().getAtributosHecho().getTitulo());
-                hechosDinamicaRepository.saveAndFlush(solicitud.getHecho());
                 mensajesRepository.save(mensaje);
                 if (usuario.getRol().equals(Rol.VISUALIZADOR)){
                     dto.setRol(Rol.CONTRIBUYENTE);

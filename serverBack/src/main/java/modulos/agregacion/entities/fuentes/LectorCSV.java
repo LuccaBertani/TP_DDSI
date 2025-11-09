@@ -162,12 +162,13 @@ public class LectorCSV {
                 hecho.getDatasets().add(this.dataSet);
                 if (tituloRepetido){
                     List<HechoEstatica> hechosIdenticos = buscadores.getBuscadorHecho().existenHechosIdenticos(hecho, hechosASubir);
-                    if (!hechosIdenticos.isEmpty()){
-                        for (HechoEstatica hechoIdentico: hechosIdenticos){
+                    System.out.println("HOLAAAA SOY UN HECHO REPETIDO");
+                    if (!hechosIdenticos.isEmpty()) {
+                        for (HechoEstatica hechoIdentico : hechosIdenticos) {
                             hechoIdentico.getAtributosHecho().setModificado(true);
-                            if(hechoIdentico.getDatasets().stream().filter(d->d.getFuente().equals(this.dataSet.getFuente()))
+                            if (hechoIdentico.getDatasets().stream().filter(d -> d.getFuente().equals(this.dataSet.getFuente()))
                                     .findFirst()
-                                    .isEmpty()){
+                                    .isEmpty()) {
                                 System.out.println("MISMA FUENTE");
                                 hechoIdentico.getDatasets().add(this.dataSet);
                                 hechosASubir.add(hechoIdentico); // LO AÑADO PARA QUE SE UPDATEE EN importarHechos
@@ -177,7 +178,7 @@ public class LectorCSV {
                     }
                 }
                 System.out.println("HOLA VOY A SUBIR UN HECHO DIVERTIDO!");
-
+                hechosASubir.add(hecho);
             }
             System.out.println("SIZE DE LA LISTA: " + hechosASubir.size());
             parser.close();
