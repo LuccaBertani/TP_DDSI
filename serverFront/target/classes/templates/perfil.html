@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}"
       xmlns:sec="http://www.w3.org/1999/xhtml">
+
 <main th:fragment="contenido">
 
     <!-- Hero Header del Perfil -->
@@ -22,7 +23,7 @@
                         Gestioná tu información personal y configuración de seguridad
                     </p>
                 </div>
-                <div class="col-auto">
+                <div class="col-auto" sec:authorize="hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE')">
                     <a th:href="@{/hechos/mis-hechos}" class="btn btn-primary-hero">
                         <i class="bi bi-journal-text me-2"></i>Mis Hechos
                     </a>

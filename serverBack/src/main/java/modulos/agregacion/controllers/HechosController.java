@@ -153,7 +153,7 @@ fecha_acontecimiento_desde, fecha_acontecimiento_hasta, ubicacion BARBARO!!.
         return hechosService.getPaisProvincia(latitud, longitud);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE')")
     @GetMapping("/mis-hechos")
     public ResponseEntity<?> getHechosDelUsuario(@AuthenticationPrincipal String username){
         System.out.println("ENTRO A GET HECHOS DEL USUARIO: " + username);

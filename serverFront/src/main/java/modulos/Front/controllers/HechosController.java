@@ -9,8 +9,10 @@ import modulos.Front.dtos.input.ImportacionHechosInputDTO;
 import modulos.Front.dtos.input.SolicitudHechoInputDTO;
 import modulos.Front.dtos.input.UsuarioInputDTO;
 import modulos.Front.dtos.output.HechosResponse;
+import modulos.Front.dtos.output.UsuarioOutputDto;
 import modulos.Front.dtos.output.VisualizarHechosOutputDTO;
 import modulos.Front.services.HechosService;
+import modulos.Front.services.UsuarioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -26,6 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HechosController {
     private final HechosService hechosService;
+    private final UsuarioService usuarioService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @PreAuthorize("isAuthenticated()") // Solo usuarios logueados
@@ -131,9 +134,23 @@ public class HechosController {
 
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
             VisualizarHechosOutputDTO hecho = (VisualizarHechosOutputDTO) rtaDto.getBody();
-            System.out.println("Fecha acontecimiento de x: " + hecho.getFechaAcontecimiento());
-            System.out.println("Fecha carga de x: " + hecho.getFechaCarga());
+            System.out.println("Fecha acontecimiento: " + hecho.getFechaAcontecimiento());
+            System.out.println("Fecha carga: " + hecho.getFechaCarga());
             model.addAttribute("hecho", hecho);
+
+            ResponseEntity<?> rta = usuarioService.getUsuario();
+
+            if (rta.getStatusCode().is2xxSuccessful()){
+                UsuarioOutputDto usuarioActual = (UsuarioOutputDto) rta.getBody();
+                if (usuarioActual!=null){
+                    if (usuarioActual.getNombreDeUsuario().equals(hecho.getUsername())){
+                        model.addAttribute("puedeSolicitarModificacionHecho", true);
+                        model.addAttribute("puedeSolicitarEliminacionHecho", true);
+                    }
+                }
+            }
+
+
             return "detalleHecho";
         }
         else if (rtaDto.getBody() != null){
