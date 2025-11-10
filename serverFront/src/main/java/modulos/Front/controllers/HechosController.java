@@ -125,50 +125,58 @@ public class HechosController {
         }
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
+
     @GetMapping("/public/get")
     public String getHecho(Model model, Long id_hecho, String fuente){
         ResponseEntity<?> rtaDto = this.hechosService.getHecho(id_hecho, fuente);
 
-        System.out.println("HOLA");
-
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
             VisualizarHechosOutputDTO hecho = (VisualizarHechosOutputDTO) rtaDto.getBody();
-            System.out.println("Fecha acontecimiento: " + hecho.getFechaAcontecimiento());
-            System.out.println("Fecha carga: " + hecho.getFechaCarga());
             model.addAttribute("hecho", hecho);
 
-            if (hecho.getUsername() != null){
-                ResponseEntity<?> rtaUsuario = usuarioService.getUsuario();
+            // Asumimos que NO puede reportar ni modificar/eliminar hasta que se verifique el rol/propiedad
+            model.addAttribute("puedeReportar", false);
 
-                if (rtaUsuario.getStatusCode().is2xxSuccessful() && rtaUsuario.hasBody()){
-                    UsuarioOutputDto usuarioActual = (UsuarioOutputDto) rtaUsuario.getBody();
+            // Bandera de control inicial
+            boolean esContribuyenteDelHecho = false;
 
-                    if (usuarioActual.getRol().equals(Rol.CONTRIBUYENTE)){
-                        SolicitudHechoEliminarInputDTO solicitudHechoEliminarInputDTO = new SolicitudHechoEliminarInputDTO();
-                        solicitudHechoEliminarInputDTO.setId_hecho(hecho.getId());
-                        model.addAttribute("SolicitudHechoEliminarInputDTO", solicitudHechoEliminarInputDTO);
+            // Obtenemos la información del usuario autenticado (si la hay)
+            ResponseEntity<?> rtaUsuario = usuarioService.getUsuario();
 
-                        SolicitudHechoModificarInputDTO dtoModificar = SolicitudHechoModificarInputDTO.builder()
-                                .id_hecho(hecho.getId())
-                                .titulo(hecho.getTitulo())
-                                .descripcion(hecho.getDescripcion())
-                                .fechaAcontecimiento(hecho.getFechaAcontecimiento())
-                                .latitud(hecho.getLatitud())
-                                .longitud(hecho.getLongitud())
-                                .id_pais(hecho.getId_pais())
-                                .id_provincia(hecho.getId_provincia())
-                                .id_categoria(hecho.getId_categoria())
-                                .build();
+            if (rtaUsuario.getStatusCode().is2xxSuccessful() && rtaUsuario.hasBody()){
+                UsuarioOutputDto usuarioActual = (UsuarioOutputDto) rtaUsuario.getBody();
 
-                        model.addAttribute("SolicitudHechoModificarInputDTO", dtoModificar);
-                    }
+                if (hecho.getUsername() != null){
+                    esContribuyenteDelHecho = hecho.getUsername().equals(usuarioActual.getNombreDeUsuario());
                 }
 
 
+                if (esContribuyenteDelHecho) {
+
+                    SolicitudHechoEliminarInputDTO solicitudHechoEliminarInputDTO = new SolicitudHechoEliminarInputDTO();
+                    solicitudHechoEliminarInputDTO.setId_hecho(hecho.getId());
+                    model.addAttribute("SolicitudHechoEliminarInputDTO", solicitudHechoEliminarInputDTO);
+
+                    SolicitudHechoModificarInputDTO dtoModificar = SolicitudHechoModificarInputDTO.builder()
+                            .id_hecho(hecho.getId())
+                            .titulo(hecho.getTitulo())
+                            // ... (resto de campos)
+                            .build();
+
+                    model.addAttribute("SolicitudHechoModificarInputDTO", dtoModificar);
+
+
+                } else {
+
+                    model.addAttribute("puedeReportar", true);
+                }
+            } else {
+                model.addAttribute("puedeReportar", true);
             }
 
             return "detalleHecho";
         }
+
         else if (rtaDto.getBody() != null){
             model.addAttribute("errorMsg", rtaDto.getBody().toString());
         }

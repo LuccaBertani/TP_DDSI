@@ -77,17 +77,17 @@
     <!-- Acciones -->
     <div class="d-flex justify-content-center gap-2 mb-4">
 
-        <!-- Siempre visible -->
         <a class="btn btn-outline-dark" th:href="@{/hechos/public/get-all}">
             <i class="bi bi-list me-1"></i> Volver al listado
         </a>
 
-        <!-- Siempre visible -->
-        <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalReportar">
+        <button class="btn btn-outline-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#modalReportar"
+                th:if="${puedeReportar}">
             <i class="bi bi-flag me-1"></i> Reportar
         </button>
 
-        <!-- Solo si el usuario actual es el dueño del hecho (DTO presente en el model) -->
         <button class="btn btn-danger"
                 th:if="${SolicitudHechoEliminarInputDTO != null}"
                 data-bs-toggle="modal"
@@ -96,34 +96,16 @@
         </button>
 
 
-        <!-- Botón / formulario para solicitar modificación -->
         <form th:if="${SolicitudHechoModificarInputDTO != null}"
               th:object="${SolicitudHechoModificarInputDTO}"
               th:action="@{/solicitud-modificacion}"
               method="post"
               class="d-inline">
 
-            <!-- Campos ocultos del DTO, ya vienen rellenos desde el controller -->
-            <input type="hidden" th:field="*{id_hecho}" />
-            <input type="hidden" th:field="*{titulo}" />
-            <input type="hidden" th:field="*{descripcion}" />
-            <input type="hidden" th:field="*{fechaAcontecimiento}" />
-            <input type="hidden" th:field="*{latitud}" />
-            <input type="hidden" th:field="*{longitud}" />
-            <input type="hidden" th:field="*{id_pais}" />
-            <input type="hidden" th:field="*{id_provincia}" />
-            <input type="hidden" th:field="*{id_categoria}" />
-
-            <!-- CSRF -->
-            <input type="hidden" th:if="${_csrf != null}"
-                   th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
             <button type="submit" class="btn btn-outline-warning">
                 <i class="bi bi-pencil-square me-1"></i> Solicitar modificación
             </button>
         </form>
-
-
     </div>
 
 
