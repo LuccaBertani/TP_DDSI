@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: html}">
+
+<main th:fragment="contenido">
+
+  <!-- HERO HEADER -->
+  <section class="contribute-hero">
+    <div class="container position-relative">
+      <div class="row align-items-center justify-content-center">
+        <div class="col-lg-8 text-center">
+          <div class="contribute-badge mb-3">
+            <i class="bi bi-pencil-square me-2"></i>Solicitud de Modificación
+          </div>
+          <h1 class="display-5 fw-bold mb-2 animated-gradient-text">
+            Modificación de Hecho Histórico
+          </h1>
+          <p class="lead text-muted mb-0">
+            Actualizá los datos del acontecimiento seleccionado
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMULARIO -->
+  <div class="container pb-5">
+
+    <form id="formModificar"
+          class="mt-4"
+          th:object="${camposViejos}"
+          th:action="@{/solicitudes-hecho/modificar-hecho}"
+          method="post"
+          enctype="multipart/form-data">
+
+      <!-- CSRF -->
+      <input type="hidden" th:if="${_csrf != null}"
+             th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+      <!-- ID oculto del hecho -->
+      <input type="hidden" th:field="*{id_hecho}"/>
+
+      <!-- INFORMACIÓN BÁSICA -->
+      <div class="form-card-collection mb-4">
+        <div class="form-card-header-collection">
+          <div class="form-card-icon-collection">
+            <i class="bi bi-info-circle-fill"></i>
+          </div>
+          <h5 class="mb-0">Información Básica</h5>
+        </div>
+
+        <div class="form-card-body-collection">
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label class="form-label-collection">
+                <i class="bi bi-text-left me-2"></i>Título del hecho
+                <span class="text-danger">*</span>
+              </label>
+              <input class="form-control-collection"
+                     th:field="*{titulo}"
+                     placeholder="Ej: Revolución de Mayo"
+                     required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label-collection">
+                <i class="bi bi-tag me-2"></i>Categoría
+                <span class="text-danger">*</span>
+              </label>
+              <select class="form-select-collection"
+                      th:field="*{id_categoria}"
+                      required>
+                <option value="">Seleccionar categoría</option>
+                <option th:each="cat : ${categorias}"
+                        th:value="${cat.id}"
+                        th:text="${cat.categoria}"></option>
+              </select>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label-collection">
+                <i class="bi bi-card-text me-2"></i>Descripción del evento
+                <span class="text-danger">*</span>
+              </label>
+              <textarea class="form-control-collection"
+                        th:field="*{descripcion}"
+                        rows="3"
+                        placeholder="Describí el acontecimiento con el mayor detalle posible..."
+                        required></textarea>
+              <small class="form-text-collection">
+                Incluí contexto histórico, personajes relevantes y consecuencias.
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- UBICACIÓN Y FECHA -->
+      <div class="form-card-collection mb-4">
+        <div class="form-card-header-collection">
+          <div class="form-card-icon-collection bg-gradient-green">
+            <i class="bi bi-geo-alt-fill"></i>
+          </div>
+          <h5 class="mb-0">Ubicación y Fecha</h5>
+        </div>
+
+        <div class="form-card-body-collection">
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label class="form-label-collection">
+                <i class="bi bi-globe-americas me-2"></i>País
+              </label>
+              <select id="selectPais"
+                      class="form-select-collection"
+                      th:field="*{id_pais}"
+                      th:attr="data-pais-id=${pais != null} ? ${pais.id} : null">
+                <option value="">Seleccionar país</option>
+                <option th:each="paisItem : ${paises}"
+                        th:value="${paisItem.id}"
+                        th:text="${paisItem.pais}"></option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label-collection">
+                <i class="bi bi-signpost me-2"></i>Provincia / Estado
+              </label>
+              <select id="selectProvincia"
+                      class="form-select-collection"
+                      th:field="*{id_provincia}"
+                      th:attr="disabled=${camposViejos.id_pais == null}"
+                      th:attrappend=" data-prov-id=${provincia != null} ? ${provincia.id} : null">
+                <option value="">Seleccionar provincia/estado</option>
+                <option th:each="prov : ${provincias}"
+                        th:value="${prov.id}"
+                        th:text="${prov.provincia}"></option>
+              </select>
+              <small class="form-text-collection"
+                     th:if="${camposViejos.id_pais == null}">
+                Primero seleccioná un país.
+              </small>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label-collection">
+                <i class="bi bi-calendar-event me-2"></i>Fecha del acontecimiento
+                <span class="text-danger">*</span>
+              </label>
+              <input type="date"
+                     class="form-control-collection"
+                     th:field="*{fechaAcontecimiento}"
+                     required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label-collection">
+                <i class="bi bi-pin-map me-2"></i>Coordenadas (opcional)
+              </label>
+              <div class="coordinates-group">
+                <input type="number" step="any"
+                       class="form-control-collection"
+                       th:field="*{latitud}"
+                       placeholder="Latitud">
+                <span class="coordinates-separator">,</span>
+                <input type="number" step="any"
+                       class="form-control-collection"
+                       th:field="*{longitud}"
+                       placeholder="Longitud">
+              </div>
+            </div>
+            <div class="action-buttons-collection">
+              <a th:href="@{/hechos/public/get-all}" class="btn btn-secondary-collection">
+                <i class="bi bi-arrow-left me-2"></i>Cancelar
+              </a>
+
+              <!-- botón para enviar la solicitud de modificación -->
+              <button type="submit"
+                      class="btn btn-primary-collection">
+                <i class="bi bi-send-fill me-2"></i>Enviar solicitud de modificación
+              </button>
+
+              <!-- opcional: si querés que el admin pueda modificar directo -->
+              <button type="submit"
+                      class="btn btn-primary-collection"
+                      sec:authorize="hasRole('ADMINISTRADOR')"
+                      th:formaction="@{/hechos/modificar}">
+                <i class="bi bi-pencil-square me-2"></i>Modificar hecho
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Misma hoja de estilo de contribuir -->
+  <style th:insert="~{contribuir :: style}"></style>
+
+</main>
+</html>

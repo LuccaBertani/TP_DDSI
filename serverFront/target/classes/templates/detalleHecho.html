@@ -95,13 +95,34 @@
             <i class="bi bi-trash3 me-1"></i> Solicitar eliminación
         </button>
 
-        <!-- Opcional: botón para solicitar modificación, mismo criterio -->
-        <button class="btn btn-outline-warning"
-                th:if="${SolicitudHechoModificarInputDTO != null}"
-                data-bs-toggle="modal"
-                data-bs-target="#modalSolicitarModificacion">
-            <i class="bi bi-pencil-square me-1"></i> Solicitar modificación
-        </button>
+
+        <!-- Botón / formulario para solicitar modificación -->
+        <form th:if="${SolicitudHechoModificarInputDTO != null}"
+              th:object="${SolicitudHechoModificarInputDTO}"
+              th:action="@{/solicitud-modificacion}"
+              method="post"
+              class="d-inline">
+
+            <!-- Campos ocultos del DTO, ya vienen rellenos desde el controller -->
+            <input type="hidden" th:field="*{id_hecho}" />
+            <input type="hidden" th:field="*{titulo}" />
+            <input type="hidden" th:field="*{descripcion}" />
+            <input type="hidden" th:field="*{fechaAcontecimiento}" />
+            <input type="hidden" th:field="*{latitud}" />
+            <input type="hidden" th:field="*{longitud}" />
+            <input type="hidden" th:field="*{id_pais}" />
+            <input type="hidden" th:field="*{id_provincia}" />
+            <input type="hidden" th:field="*{id_categoria}" />
+
+            <!-- CSRF -->
+            <input type="hidden" th:if="${_csrf != null}"
+                   th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+            <button type="submit" class="btn btn-outline-warning">
+                <i class="bi bi-pencil-square me-1"></i> Solicitar modificación
+            </button>
+        </form>
+
 
     </div>
 

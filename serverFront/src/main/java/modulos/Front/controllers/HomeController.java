@@ -1,10 +1,12 @@
 package modulos.Front.controllers;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import modulos.Front.BodyToListConverter;
 import modulos.Front.dtos.input.ColeccionInputDTO;
 import modulos.Front.dtos.input.SolicitudHechoEvaluarInputDTO;
+import modulos.Front.dtos.input.SolicitudHechoModificarInputDTO;
 import modulos.Front.dtos.output.*;
 import modulos.Front.dtos.input.SolicitudHechoInputDTO;
 import modulos.Front.services.ColeccionService;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -129,6 +132,50 @@ public class HomeController {
 
         return "contribuir";
     }
+
+    @PreAuthorize("hasRole('CONTRIBUYENTE')")
+    @PostMapping("/solicitud-modificacion")
+    public String solicitudModificacion(@Valid @ModelAttribute SolicitudHechoModificarInputDTO dto, Model model){
+        // Catálogos base
+        ResponseEntity<?> rtaPaises = hechosService.getPaises();
+        ResponseEntity<?> rtaCategorias = hechosService.getCategorias();
+        if (!rtaPaises.getStatusCode().is2xxSuccessful() || !rtaCategorias.getStatusCode().is2xxSuccessful()) {
+            return "redirect:/404";
+        }
+
+        List<PaisDto> paises = BodyToListConverter.bodyToList(rtaPaises, PaisDto.class);
+        List<CategoriaDto> categorias = BodyToListConverter.bodyToList(rtaCategorias, CategoriaDto.class);
+        model.addAttribute("paises", paises);
+        model.addAttribute("categorias", categorias);
+
+        Double latitud = dto.getLatitud();
+        Double longitud = dto.getLongitud();
+
+        if (latitud != null & longitud != null){
+            ResponseEntity<?> rtaLatLon = hechosService.getPaisYProvincia(latitud, longitud);
+            if (rtaLatLon.hasBody()){
+                PaisProvinciaDTO paisProvinciaDTO = (PaisProvinciaDTO) rtaLatLon.getBody();
+                model.addAttribute("pais", paisProvinciaDTO.getPaisDto());
+                model.addAttribute("provincia", paisProvinciaDTO.getProvinciaDto());
+            }
+        }
+
+        // Provincias si ya hay país seleccionado
+        List<ProvinciaDto> provincias = java.util.Collections.emptyList();
+        if (dto.getId_pais() != null) {
+            ResponseEntity<?> rtaProv = hechosService.getProvinciasByIdPais(dto.getId_pais());
+            if (!rtaProv.getStatusCode().is2xxSuccessful()) {
+                return "redirect:/404";
+            }
+            provincias = BodyToListConverter.bodyToList(rtaProv, ProvinciaDto.class);
+        }
+        model.addAttribute("provincias", provincias);
+
+        model.addAttribute("camposViejos", dto);
+
+        return "modificar";
+    }
+
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping("/solicitudes")

@@ -114,13 +114,13 @@ public class SolicitudHechoController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE', 'VISUALIZADOR')")
+    @PreAuthorize("hasRole('CONTRIBUYENTE')")
     @PostMapping("/modificar-hecho")
     public String enviarSolicitudModificarHecho(@Valid @ModelAttribute SolicitudHechoModificarInputDTO dto, RedirectAttributes ra){
         ResponseEntity<?> rta = this.solicitudHechoService.enviarSolicitudModificarHecho(dto);
 
         if(rta.getStatusCode().is2xxSuccessful()){
-            return "redirect:get/all";
+            return "redirect:/hechos/public/get-all";
         }
         else if(rta.getBody() != null){
             ra.addFlashAttribute(rta.getBody().toString());

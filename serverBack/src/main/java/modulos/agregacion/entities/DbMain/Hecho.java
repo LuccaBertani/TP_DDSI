@@ -32,13 +32,9 @@ public abstract class Hecho {
     @Embedded
     private AtributosHecho atributosHecho;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
-    @JoinColumn(name = "id_hecho")
-    private List<AtributosHechoModificar> atributosHechoAModificar;
 
     public Hecho() {
         this.atributosHecho = new AtributosHecho();
-        this.atributosHechoAModificar = new ArrayList<>();
         this.activo = false;
     }
 

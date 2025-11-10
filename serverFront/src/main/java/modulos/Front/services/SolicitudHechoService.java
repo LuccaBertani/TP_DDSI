@@ -67,7 +67,7 @@ public class SolicitudHechoService {
         return webApiCallerService.postEntity(this.solicitudHechoServiceUrl + "/eliminar-hecho", dto, Void.class);
     }
 
-    public ResponseEntity<?> enviarSolicitudModificarHecho( SolicitudHechoModificarInputDTO dto) {
+    public ResponseEntity<?> enviarSolicitudModificarHecho(SolicitudHechoModificarInputDTO dto) {
         return webApiCallerService.postEntity(this.solicitudHechoServiceUrl + "/modificar-hecho", dto, Void.class);
     }
 

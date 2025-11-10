@@ -146,10 +146,21 @@ public class HechosController {
                     if (usuarioActual.getRol().equals(Rol.CONTRIBUYENTE)){
                         SolicitudHechoEliminarInputDTO solicitudHechoEliminarInputDTO = new SolicitudHechoEliminarInputDTO();
                         solicitudHechoEliminarInputDTO.setId_hecho(hecho.getId());
-                        SolicitudHechoModificarInputDTO solicitudHechoModificarInputDTO = new SolicitudHechoModificarInputDTO();
-                        solicitudHechoModificarInputDTO.setId_hecho(hecho.getId());
                         model.addAttribute("SolicitudHechoEliminarInputDTO", solicitudHechoEliminarInputDTO);
-                        model.addAttribute("SolicitudHechoModificarInputDTO", solicitudHechoModificarInputDTO);
+
+                        SolicitudHechoModificarInputDTO dtoModificar = SolicitudHechoModificarInputDTO.builder()
+                                .id_hecho(hecho.getId())
+                                .titulo(hecho.getTitulo())
+                                .descripcion(hecho.getDescripcion())
+                                .fechaAcontecimiento(hecho.getFechaAcontecimiento())
+                                .latitud(hecho.getLatitud())
+                                .longitud(hecho.getLongitud())
+                                .id_pais(hecho.getId_pais())
+                                .id_provincia(hecho.getId_provincia())
+                                .id_categoria(hecho.getId_categoria())
+                                .build();
+
+                        model.addAttribute("SolicitudHechoModificarInputDTO", dtoModificar);
                     }
                 }
 

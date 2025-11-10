@@ -222,6 +222,7 @@ public class SolicitudHechoService {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @Transactional
     public ResponseEntity<?> solicitarModificacionHecho(SolicitudHechoModificarInputDTO dto, String username){
 
         
@@ -246,6 +247,7 @@ public class SolicitudHechoService {
 
         SolicitudModificarHecho solicitud = new SolicitudModificarHecho(usuario.getId(), hecho);
         solicitud.setFecha(LocalDateTime.now());
+        /*
         if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion()))
         {
             solicitud.setProcesada(true);
@@ -253,6 +255,8 @@ public class SolicitudHechoService {
             solicitudModificarHechoRepo.save(solicitud);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Se detectó spam"); // 400 - solicitud rechazada por spam
         }
+        */
+
 
         if (ChronoUnit.DAYS.between(hecho.getAtributosHecho().getFechaCarga(), LocalDateTime.now()) >= 7){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Terminó la fecha límite para solicitar modificar el hecho"); // Error 409: cuando la solicitud es válida, pero no puede procesarse por estado actual del recurso
@@ -302,8 +306,9 @@ public class SolicitudHechoService {
         }
         Optional.ofNullable(dto.getContenidosMultimediaAEliminar()).ifPresent(atributos::setContenidoMultimediaEliminar);
         Optional.ofNullable(dto.getDescripcion()).ifPresent(atributos::setDescripcion);
-        hecho.getAtributosHechoAModificar().add(atributos);
-        solicitud.setAtributosAshei(atributos);
+        // hecho.getAtributosHechoAModificar().add(atributos);
+        hechosDinamicaRepository.save(hecho);
+        solicitud.setAtributosModificar(atributos);
         solicitudModificarHechoRepo.save(solicitud);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -449,9 +454,10 @@ public class SolicitudHechoService {
 
         if (dtoInput.getRespuesta()) {
             // El hecho debe modificarse
-            this.setearModificadoAOficial(solicitud.getHecho(), solicitud.getAtributosAshei());
+            this.setearModificadoAOficial(solicitud.getHecho(), solicitud.getAtributosModificar());
             solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(LocalDateTime.now());
             solicitud.getHecho().getAtributosHecho().setModificado(true);
+            hechosDinamicaRepository.save(solicitud.getHecho());
         }
         else{
             Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
@@ -460,6 +466,7 @@ public class SolicitudHechoService {
                 return this.enviarMensaje(usuario,solicitud, dtoInput.getMensaje());
             }
         }
+        solicitudModificarHechoRepo.save(solicitud);
         return ResponseEntity.ok().build();
     }
 
