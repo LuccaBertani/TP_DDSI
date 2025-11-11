@@ -784,16 +784,21 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             case "ESTATICA":{
                 HechoEstatica hecho = hechosEstaticaRepo.findById(id_hecho).orElse(null);
                 hecho.incrementarAccesos();
+                hechosEstaticaRepo.save(hecho);
                 VisualizarHechosOutputDTO visualizarHechosOutputDTO = crearHechoDto(hecho, VisualizarHechosOutputDTO.class);
                 return ResponseEntity.ok(visualizarHechosOutputDTO);
             }
             case "DINAMICA":{
                 HechoDinamica hecho = hechosDinamicaRepo.findById(id_hecho).orElse(null);
+                hecho.incrementarAccesos();
+                hechosDinamicaRepo.save(hecho);
                 VisualizarHechosOutputDTO visualizarHechosOutputDTO = crearHechoDto(hecho, VisualizarHechosOutputDTO.class);
                 return ResponseEntity.ok(visualizarHechosOutputDTO);
             }
             case "PROXY":{
                 HechoProxy hecho = hechosProxyRepo.findById(id_hecho).orElse(null);
+                hecho.incrementarAccesos();
+                hechosProxyRepo.save(hecho);
                 VisualizarHechosOutputDTO visualizarHechosOutputDTO = crearHechoDto(hecho, VisualizarHechosOutputDTO.class);
                 return ResponseEntity.ok(visualizarHechosOutputDTO);
             }

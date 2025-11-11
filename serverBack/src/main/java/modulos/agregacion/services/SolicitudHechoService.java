@@ -460,7 +460,7 @@ public class SolicitudHechoService {
             Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
             // X si se borró la cuenta del usuario chequeo si es null o no
             if (dtoInput.getMensaje() != null && usuario != null){
-                return this.enviarMensaje(usuario,solicitud, dtoInput.getMensaje());
+                this.enviarMensaje(usuario,solicitud, dtoInput.getMensaje());
             }
         }
         solicitudModificarHechoRepo.save(solicitud);
@@ -491,14 +491,13 @@ public class SolicitudHechoService {
         Optional.ofNullable(atributos.getLongitud()).ifPresent(hecho.getAtributosHecho()::setLongitud);
     }
 
-    private ResponseEntity<?> enviarMensaje(Usuario usuario, SolicitudHecho solicitudHecho, String texto){
+    private void enviarMensaje(Usuario usuario, SolicitudHecho solicitudHecho, String texto){
 
         Mensaje mensaje = new Mensaje();
         mensaje.setSolicitud_hecho_id(solicitudHecho.getId());
         mensaje.setTextoMensaje(texto);
         mensaje.setReceptor(usuario);
         mensajesRepository.save(mensaje);
-        return ResponseEntity.ok().build();
     }
 
     public ResponseEntity<?> getAllSolicitudes(String username) {

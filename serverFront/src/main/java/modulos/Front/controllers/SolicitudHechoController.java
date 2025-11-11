@@ -40,7 +40,7 @@ public class SolicitudHechoController {
         ResponseEntity<?> rta = solicitudHechoService.evaluarSolicitudEliminacion(dto);
 
         if(rta.getStatusCode().is2xxSuccessful()){
-            return "solicitudes";
+            return "redirect:/solicitudes";
         }
         else if(rta.getBody() != null){
             ra.addAttribute(rta.getBody().toString());
@@ -54,7 +54,7 @@ public class SolicitudHechoController {
         ResponseEntity<?> rta = solicitudHechoService.evaluarSolicitudModificacion(dto);
 
         if(rta.getStatusCode().is2xxSuccessful()){
-            return "solicitudes";
+            return "redirect:/solicitudes";
         }
         else if(rta.getBody() != null){
             ra.addFlashAttribute(rta.getBody().toString());

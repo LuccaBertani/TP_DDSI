@@ -208,6 +208,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         }
 
         coleccion.incrementarAccesos();
+        coleccionesRepo.save(coleccion);
 
         ColeccionOutputDTO dto = new ColeccionOutputDTO();
 
@@ -226,6 +227,8 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         System.out.println("ALGORITMO DE CONSENSO: " + dto.getAlgoritmoDeConsenso());
 
         dto.setCriterios(FormateadorHecho.filtrosColeccionToString(coleccion.getCriterios()));
+
+
 
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
