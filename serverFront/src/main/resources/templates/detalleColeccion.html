@@ -109,6 +109,15 @@
         </div>
     </div>
 
+    <div class="card-elev p-4 mb-4">
+        <h5 class="mb-3 text-center text-muted">Algoritmo de consenso</h5>
+        <div class="col-md-12">
+            <div class="text-value"
+                 th:text="${coleccion != null and coleccion.algoritmoDeConsenso != null
+                       ? coleccion.algoritmoDeConsenso : '—'}">—</div>
+        </div>
+    </div>
+
     <!-- Formulario de filtros -->
     <form id="filtersForm" class="card mb-4"
           th:object="${getHechosColeccionInputDto}"
@@ -168,6 +177,16 @@
                 </select>
                 <small class="text-muted d-block">Se habilita y completa según los países seleccionados.</small>
             </div>
+
+            <div class="col-md-6">
+                <label class="form-label" for="navegacionCurada">Modo de navegación</label>
+                <select class="form-select" id="navegacionCurada" th:field="*{navegacionCurada}">
+                    <option th:value="false">Irrestricta</option>
+                    <option th:value="true">Curada</option>
+                </select>
+                <small class="text-muted">Elegí cómo se navegarán los hechos en la colección.</small>
+            </div>
+
 
             <!-- Descripción (String) -->
             <div class="col-md-12">

@@ -10,5 +10,6 @@ public class ColeccionOutputDTO {
     private String titulo;
     private String descripcion;
 
+    private String algoritmoDeConsenso;
     private CriteriosColeccionDTO criterios;
 }

@@ -213,6 +213,16 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         dto.setTitulo(coleccion.getTitulo());
         dto.setDescripcion(coleccion.getDescripcion());
 
+        if(coleccion.getAlgoritmoConsenso() instanceof AlgoritmoConsensoMayoriaAbsoluta){
+            dto.setAlgoritmoDeConsenso("Mayoría absoluta");
+        } else if (coleccion.getAlgoritmoConsenso() instanceof AlgoritmoConsensoMayoriaSimple){
+            dto.setAlgoritmoDeConsenso("Mayoría simple");
+        } else if (coleccion.getAlgoritmoConsenso() instanceof AlgoritmoConsensoMultiplesMenciones){
+            dto.setAlgoritmoDeConsenso("Múltiples menciones");
+        }
+
+        System.out.println("ALGORITMO DE CONSENSO: " + dto.getAlgoritmoDeConsenso());
+
         dto.setCriterios(FormateadorHecho.filtrosColeccionToString(coleccion.getCriterios()));
 
         return ResponseEntity.status(HttpStatus.OK).body(dto);
@@ -359,11 +369,13 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @Scheduled(cron = "0 0 3 * * *")
+    @Transactional
+    @Scheduled(cron = "0 * * * * *")
     public void ejecutarAlgoritmoConsenso(){
+        System.out.println("ENTRO a algoritmo de consenso");
         List<Coleccion> colecciones = coleccionesRepo.findAllByActivoTrue();
         List<Dataset> datasets = datasetsRepo.findAll();
-        colecciones.forEach(coleccion->coleccion.getAlgoritmoConsenso().ejecutarAlgoritmoConsenso(buscadores.getBuscadorHecho(), datasets, coleccion));
+        colecciones.forEach(coleccion-> {if(coleccion.getAlgoritmoConsenso() != null) coleccion.getAlgoritmoConsenso().ejecutarAlgoritmoConsenso(buscadores.getBuscadorHecho(), datasets, coleccion);});
     }
 
     public ResponseEntity<?> modificarAlgoritmoConsenso(ModificarConsensoInputDTO input, Jwt principal) {
@@ -403,7 +415,7 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
     }
 
     @Async
-    @Scheduled(cron = "0 0 * * * *") // cada hora
+    @Scheduled(cron = "0 * * * * *") // cada hora
     @Transactional
     public void refrescarColeccionesCronjob() {
 
