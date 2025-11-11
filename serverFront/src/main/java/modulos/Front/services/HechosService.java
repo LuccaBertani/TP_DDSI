@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Service
 public class HechosService {
     private final WebApiCallerService webApiCallerService;
@@ -71,4 +73,7 @@ public class HechosService {
         );
     }
 
+    public ResponseEntity<List<VisualizarHechosOutputDTO>> getHechosDestacados() {
+        return webApiCallerService.getListTokenOpcional(this.hechoServiceUrl + "/public/destacados", VisualizarHechosOutputDTO.class);
+    }
 }

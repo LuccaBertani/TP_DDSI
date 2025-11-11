@@ -3,9 +3,7 @@ package modulos.Front.services;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import modulos.Front.dtos.input.*;
-import modulos.Front.dtos.output.AtributosModificarDTO;
-import modulos.Front.dtos.output.RolCambiadoDTO;
-import modulos.Front.dtos.output.SolicitudHechoOutputDTO;
+import modulos.Front.dtos.output.*;
 import modulos.Front.sessionHandlers.ActiveSessionTracker;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -131,4 +129,5 @@ public class SolicitudHechoService {
     public ResponseEntity<?> getAtributosHechoAModificar(Long id_solicitud){
         return webApiCallerService.getEntity(this.solicitudHechoServiceUrl + "/atributos-hecho?id_solicitud=" + id_solicitud, AtributosModificarDTO.class);
     }
+
 }

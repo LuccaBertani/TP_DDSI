@@ -97,7 +97,7 @@ public class HechosController {
         return hechosService.getAllCategorias();
     }
 
-    @GetMapping("/public/hechosDestacados")
+    @GetMapping("/public/destacados")
     public ResponseEntity<?> getHechosDestacados(){
         return hechosService.getHechosDestacados();
     }

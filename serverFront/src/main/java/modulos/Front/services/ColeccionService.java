@@ -64,4 +64,8 @@ public class ColeccionService {
     public ResponseEntity<Long> getCantColecciones() {
         return webApiCallerService.getEntityTokenOpcional(this.coleccionServiceUrl + "/public/cantColecciones", Long.class);
     }
+
+    public ResponseEntity<List<ColeccionOutputDTO>> getColeccionesDestacadas() {
+        return  webApiCallerService.getListTokenOpcional(this.coleccionServiceUrl + "/public/destacadas", ColeccionOutputDTO.class);
+    }
 }

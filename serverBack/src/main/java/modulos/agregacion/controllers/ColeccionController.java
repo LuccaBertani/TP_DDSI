@@ -74,13 +74,14 @@ public class ColeccionController {
         return coleccionService.modificarAlgoritmoConsenso(input, principal);
     }
 
-    @PostMapping("/colecciones/refrescar")
+    @PostMapping("/refrescar")
     public ResponseEntity<?> refrescarColecciones(@AuthenticationPrincipal Jwt principal){
         return coleccionService.refrescarColecciones(principal);
     }
 
-    @GetMapping("/public/ColeccionesDestacadas")
-    public ResponseEntity<?> getHechosDestacados(){
+    @GetMapping("/public/destacadas")
+    public ResponseEntity<?> getColeccionesDestacadas(){
+        System.out.println("Entro a colecciones destacadas");
         return coleccionService.getColeccionDestacados();
     }
 

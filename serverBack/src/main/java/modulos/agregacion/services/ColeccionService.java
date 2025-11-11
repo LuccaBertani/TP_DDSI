@@ -590,10 +590,12 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
         List<ColeccionOutputDTO> coleccionesDto = new ArrayList<>();
 
         for(Coleccion coleccion : coleccionesEstatica){
+            System.out.println("HOLAAAA FORRO");
             ColeccionOutputDTO coleccionDto = new  ColeccionOutputDTO();
             coleccionDto.setId(coleccion.getId());
             coleccionDto.setTitulo(coleccion.getTitulo());
             coleccionDto.setDescripcion(coleccion.getDescripcion());
+            coleccionesDto.add(coleccionDto);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(coleccionesDto);

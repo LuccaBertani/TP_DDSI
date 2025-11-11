@@ -12,6 +12,7 @@ import modulos.Front.dtos.input.SolicitudHechoInputDTO;
 import modulos.Front.services.ColeccionService;
 import modulos.Front.services.HechosService;
 import modulos.Front.services.SolicitudHechoService;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,10 +39,14 @@ public class HomeController {
         ResponseEntity<Long> statsHechos = hechosService.getCantHechos();
         ResponseEntity<Long> statsColecciones = coleccionService.getCantColecciones();
         ResponseEntity<Integer> statsSolicitudes = solicitudHechoService.getPorcentajeSolicitudesProcesadas();
+        ResponseEntity<List<ColeccionOutputDTO>> coleccionesDestacadas = coleccionService.getColeccionesDestacadas();
+        ResponseEntity<List<VisualizarHechosOutputDTO>> hechosDestacados = hechosService.getHechosDestacados();
 
         model.addAttribute("statsHechos", statsHechos.getBody());
         model.addAttribute("statsColecciones", statsColecciones.getBody());
         model.addAttribute("statsSolicitudes", statsSolicitudes.getBody());
+        model.addAttribute("coleccionesDestacadas", coleccionesDestacadas.getBody());
+        model.addAttribute("hechosDestacados", hechosDestacados.getBody());
 
         return "index";
     }
