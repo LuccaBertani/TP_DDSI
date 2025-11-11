@@ -21,10 +21,7 @@ import modulos.buscadores.BuscadorPais;
 import modulos.buscadores.BuscadorProvincia;
 import modulos.buscadores.BuscadorUbicacion;
 import modulos.shared.dtos.input.*;
-import modulos.shared.dtos.output.MensajeOutputDTO;
-import modulos.shared.dtos.output.ReporteHechoOutputDTO;
-import modulos.shared.dtos.output.RolCambiadoDTO;
-import modulos.shared.dtos.output.SolicitudHechoOutputDTO;
+import modulos.shared.dtos.output.*;
 import modulos.shared.utils.DetectorDeSpam;
 import modulos.shared.utils.FechaParser;
 import modulos.agregacion.entities.fuentes.FuenteDinamica;
@@ -696,6 +693,57 @@ public class SolicitudHechoService {
             tipo = "ELIMINAR";
         }
         return tipo;
+    }
+
+    public ResponseEntity<?> getAtributosSolicitudHecho(Long id_solicitud, String username){
+        ResponseEntity<?> rta = checkeoAdmin(username);
+
+        if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+            return rta;
+        }
+        if (id_solicitud!=null){
+            SolicitudModificarHecho solicitudModificarHecho = (SolicitudModificarHecho) solicitudModificarHechoRepo.findById(id_solicitud).orElse(null);
+            if (solicitudModificarHecho != null){
+                AtributosHechoModificar atributosHechoModificar = solicitudModificarHecho.getAtributosModificar();
+
+                Long id_ubicacion = atributosHechoModificar.getUbicacion_id();
+                Long pais_id = null;
+                Long provincia_id = null;
+                if (id_ubicacion != null){
+                    Ubicacion ubicacion = buscadorUbicacion.buscarUbicacion(id_ubicacion);
+                    if (ubicacion != null){
+                        Pais pais = ubicacion.getPais();
+                        if (pais != null){
+                            pais_id = pais.getId();
+                            Provincia provincia = ubicacion.getProvincia();
+                            if (provincia != null){
+                                provincia_id = provincia.getId();
+                            }
+                        }
+
+                    }
+                }
+
+                AtributosModificarDTO atributosModificarDTO = AtributosModificarDTO.builder()
+                        .titulo(atributosHechoModificar.getTitulo())
+                        .descripcion(atributosHechoModificar.getDescripcion())
+                        .latitud(atributosHechoModificar.getLatitud())
+                        .longitud(atributosHechoModificar.getLongitud())
+                        .fechaAcontecimiento(atributosHechoModificar.getFechaAcontecimiento().toString())
+                        .id_pais(pais_id)
+                        .id_provincia(provincia_id)
+                        .id_categoria(atributosHechoModificar.getCategoria_id())
+                        .build();
+
+                return ResponseEntity.ok(atributosModificarDTO);
+
+            }
+        }
+        return ResponseEntity.notFound().build();
+
+
+
+
     }
 
 }

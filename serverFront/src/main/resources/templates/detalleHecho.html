@@ -1,18 +1,181 @@
+<!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
 <main th:fragment="contenido" class="container py-4">
 
-    <!-- Header -->
-    <div class="p-4 mb-4 mx-auto" style="max-width:900px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;box-shadow:0 10px 24px rgba(2,6,23,.05)" th:if="${hecho != null}">
+    <!-- CARD SUPERIOR: categoría, título y tabs ANTES / PROPUESTA -->
+    <div class="p-4 mb-4 mx-auto"
+         style="max-width:900px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;box-shadow:0 10px 24px rgba(2,6,23,.05)"
+         th:if="${hecho != null}">
+
+        <!-- Tabs solo si hay atributos a modificar -->
+        <div th:if="${AtributosModificarDTO != null}"
+             class="d-flex justify-content-center mb-3">
+            <div class="btn-group" role="group" aria-label="Vista del hecho">
+                <button type="button"
+                        id="btn-tab-antes"
+                        class="btn btn-sm btn-primary">
+                    Antes
+                </button>
+                <button type="button"
+                        id="btn-tab-propuesta"
+                        class="btn btn-sm btn-outline-primary">
+                    Propuesta
+                </button>
+            </div>
+        </div>
+
         <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 mb-2">
             <span class="badge text-bg-light border" th:text="${hecho.categoria ?: ''}"></span>
         </div>
 
         <h1 class="h3 text-center mb-0" th:text="${hecho.titulo ?: ''}">Título del hecho</h1>
-
     </div>
 
-    <!-- Datos del hecho (todos los campos requeridos) -->
-    <div class="p-4 mb-4 mx-auto" style="max-width:980px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;box-shadow:0 10px 24px rgba(2,6,23,.05)">
+    <!-- TITULAR de revisión de solicitud de modificación -->
+    <div th:if="${AtributosModificarDTO != null}" class="mb-3">
+        <h2 class="text-center mb-0 text-warning">
+            <i class="bi bi-code-square me-2"></i>
+            Revisión de Solicitud de Modificación
+        </h2>
+    </div>
+
+    <!-- VISTA CON TABS: ANTES / PROPUESTA -->
+    <div th:if="${AtributosModificarDTO != null}">
+        <!-- Vista ANTES (original) -->
+        <div id="vista-antes"
+             class="p-4 mb-4 mx-auto"
+             style="max-width:980px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;box-shadow:0 10px 24px rgba(2,6,23,.05)">
+            <h6 class="text-uppercase text-muted mb-3 text-center">Datos del hecho (versión original)</h6>
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Título</div>
+                    <div th:text="${hecho.titulo ?: ''}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Descripción</div>
+                    <div th:text="${hecho.descripcion ?: ''}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Fuente</div>
+                    <div th:text="${hecho.fuente ?: ''}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Contribuyente</div>
+                    <div th:text="${hecho.username ?: ''}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Fecha de carga</div>
+                    <div th:text="${hecho.fechaCarga != null ? hecho.fechaCarga : ''}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Categoría</div>
+                    <div th:text="${hecho.categoria ?: ''}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">País</div>
+                    <div th:text="${hecho.pais ?: ''}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Provincia</div>
+                    <div th:text="${hecho.provincia ?: ''}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Fecha del acontecimiento</div>
+                    <div th:text="${hecho.fechaAcontecimiento != null ? hecho.fechaAcontecimiento : ''}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Latitud</div>
+                    <div th:text="${hecho.latitud != null ? hecho.latitud : ''}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Longitud</div>
+                    <div th:text="${hecho.longitud != null ? hecho.longitud : ''}"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Vista PROPUESTA (hecho con atributos modificados) -->
+        <div id="vista-propuesta"
+             class="p-4 mb-4 mx-auto d-none"
+             style="max-width:980px;background:#fff3cd;border:1px solid #e5e7eb;border-radius:16px;box-shadow:0 10px 24px rgba(2,6,23,.05)">
+            <h6 class="text-uppercase text-muted mb-3 text-center">Datos del hecho (versión propuesta)</h6>
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Título</div>
+                    <div th:text="${AtributosModificarDTO.titulo != null ? AtributosModificarDTO.titulo : hecho.titulo}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Descripción</div>
+                    <div th:text="${AtributosModificarDTO.descripcion != null ? AtributosModificarDTO.descripcion : hecho.descripcion}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Fuente</div>
+                    <div th:text="${hecho.fuente ?: ''}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Contribuyente</div>
+                    <div th:text="${hecho.username ?: ''}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Fecha de carga</div>
+                    <div th:text="${hecho.fechaCarga != null ? hecho.fechaCarga : ''}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Categoría</div>
+                    <div th:text="${AtributosModificarDTO.categoria != null ? AtributosModificarDTO.categoria : hecho.categoria}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">País</div>
+                    <div th:text="${AtributosModificarDTO.pais != null ? AtributosModificarDTO.pais : hecho.pais}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Provincia</div>
+                    <div th:text="${AtributosModificarDTO.provincia != null ? AtributosModificarDTO.provincia : hecho.provincia}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Fecha del acontecimiento</div>
+                    <div th:text="${AtributosModificarDTO.fechaAcontecimiento != null ? AtributosModificarDTO.fechaAcontecimiento : hecho.fechaAcontecimiento}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Latitud</div>
+                    <div th:text="${AtributosModificarDTO.latitud != null ? AtributosModificarDTO.latitud : hecho.latitud}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="text-muted small mb-1">Longitud</div>
+                    <div th:text="${AtributosModificarDTO.longitud != null ? AtributosModificarDTO.longitud : hecho.longitud}"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- VISTA NORMAL (sin solicitud de modificación) -->
+    <div th:if="${AtributosModificarDTO == null}"
+         class="p-4 mb-4 mx-auto"
+         style="max-width:980px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;box-shadow:0 10px 24px rgba(2,6,23,.05)">
         <h6 class="text-uppercase text-muted mb-3 text-center">Datos del hecho</h6>
         <div class="row g-3">
 
@@ -74,9 +237,8 @@
         </div>
     </div>
 
-    <!-- Acciones -->
+    <!-- ACCIONES -->
     <div class="d-flex justify-content-center gap-2 mb-4">
-
         <a class="btn btn-outline-dark" th:href="@{/hechos/public/get-all}">
             <i class="bi bi-list me-1"></i> Volver al listado
         </a>
@@ -95,12 +257,26 @@
             <i class="bi bi-trash3 me-1"></i> Solicitar eliminación
         </button>
 
-
         <form th:if="${SolicitudHechoModificarInputDTO != null}"
               th:object="${SolicitudHechoModificarInputDTO}"
               th:action="@{/solicitud-modificacion}"
               method="post"
               class="d-inline">
+
+            <!-- Campos necesarios para que el DTO llegue completo -->
+            <input type="hidden" th:field="*{id_hecho}" />
+            <input type="hidden" th:field="*{titulo}" />
+            <input type="hidden" th:field="*{descripcion}" />
+            <input type="hidden" th:field="*{latitud}" />
+            <input type="hidden" th:field="*{longitud}" />
+            <input type="hidden" th:field="*{fechaAcontecimiento}" />
+            <input type="hidden" th:field="*{id_pais}" />
+            <input type="hidden" th:field="*{id_provincia}" />
+            <input type="hidden" th:field="*{id_categoria}" />
+
+            <!-- CSRF -->
+            <input type="hidden" th:if="${_csrf != null}"
+                   th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
             <button type="submit" class="btn btn-outline-warning">
                 <i class="bi bi-pencil-square me-1"></i> Solicitar modificación
@@ -108,9 +284,49 @@
         </form>
     </div>
 
+    <script>
+        (function () {
+            const btnAntes = document.getElementById('btn-tab-antes');
+            const btnPropuesta = document.getElementById('btn-tab-propuesta');
+            const vistaAntes = document.getElementById('vista-antes');
+            const vistaPropuesta = document.getElementById('vista-propuesta');
+
+            // Si por lo que sea no existen (no hay solicitud), salimos y listo
+            if (!btnAntes || !btnPropuesta || !vistaAntes || !vistaPropuesta) {
+                return;
+            }
+
+            function activar(tab) {
+                const esAntes = (tab === 'antes');
+
+                // Mostrar / ocultar vistas
+                vistaAntes.classList.toggle('d-none', !esAntes);
+                vistaPropuesta.classList.toggle('d-none', esAntes);
+
+                // Estilos de los botones
+                btnAntes.classList.toggle('btn-primary', esAntes);
+                btnAntes.classList.toggle('btn-outline-primary', !esAntes);
+
+                btnPropuesta.classList.toggle('btn-primary', !esAntes);
+                btnPropuesta.classList.toggle('btn-outline-primary', esAntes);
+            }
+
+            // Vista por defecto: ANTES
+            activar('antes');
+
+            // Listeners de click
+            btnAntes.addEventListener('click', function () {
+                activar('antes');
+            });
+
+            btnPropuesta.addEventListener('click', function () {
+                activar('propuesta');
+            });
+        })();
+    </script>
 
 
-    <!-- Modal REPORTAR -->
+    <!-- MODAL REPORTAR -->
     <div class="modal fade" id="modalReportar" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <form class="modal-content" th:action="@{/solicitudes-hecho/reportes/reportar}" method="post">
@@ -137,6 +353,7 @@
         </div>
     </div>
 
+    <!-- MODAL SOLICITAR ELIMINACIÓN -->
     <div class="modal fade" id="modalSolicitarEliminacion" tabindex="-1" aria-hidden="true"
          th:if="${SolicitudHechoEliminarInputDTO != null}">
         <div class="modal-dialog modal-dialog-centered">
@@ -176,7 +393,7 @@
 
                     <div class="form-text text-end mt-2">
                         <i class="bi bi-info-circle me-1"></i>
-                        Mínimo **500 caracteres** (describí bien el motivo).
+                        Mínimo 500 caracteres (describí bien el motivo).
                     </div>
                 </div>
 
@@ -199,8 +416,9 @@
         </div>
     </div>
 
-
-    <style>.btn:hover{transform:translateY(-1px);transition:transform .08s ease}</style>
+    <style>
+        .btn:hover{transform:translateY(-1px);transition:transform .08s ease}
+    </style>
 
 </main>
 </html>

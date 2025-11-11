@@ -195,13 +195,18 @@ public class WebApiCallerService {
         );
     }
 
-    public <T> ResponseEntity<List<T>> getListSinToken(String url, Class<T> elementType) {
-        return webClient.get()
-                        .uri(url)
-                        .retrieve()
-                        .toEntityList(elementType)
-                        .block()
-        ;
+    public <T> ResponseEntity<List<T>> getListTokenOpcional(String url, Class<T> elementType) {
+        if (getUsernameFromSession()==null||getUsernameFromSession().equals("anonymousUser")) {
+            return webClient.get()
+                    .uri(url)
+                    .retrieve()
+                    .toEntityList(elementType)
+                    .block()
+                    ;
+        }
+        else{
+            return getList(url, elementType);
+        }
     }
 
 
@@ -216,13 +221,19 @@ public class WebApiCallerService {
         );
     }
 
-    public <T> ResponseEntity<T> getEntitySinToken(String url, Class<T> elementType){
-        return
-                webClient.get()
-                        .uri(url)
-                        .retrieve()
-                        .toEntity(elementType)
-                        .block();
+    public <T> ResponseEntity<T> getEntityTokenOpcional(String url, Class<T> elementType){
+
+        if (getUsernameFromSession()==null) {
+            return
+                    webClient.get()
+                            .uri(url)
+                            .retrieve()
+                            .toEntity(elementType)
+                            .block();
+        }
+        else{
+            return getEntity(url, elementType);
+        }
     }
 
 
@@ -238,8 +249,8 @@ public class WebApiCallerService {
         );
     }
 
-    public <T> ResponseEntity<T> postEntitySinToken(String url, Object body, Class<T> elementType){
-        if (getUsernameFromSession()==null||getUsernameFromSession().equals("anonymousUser")) {
+    public <T> ResponseEntity<T> postEntityTokenOpcional(String url, Object body, Class<T> elementType){
+        if (getUsernameFromSession()==null) {
             return webClient
                     .post()
                     .uri(url)

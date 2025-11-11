@@ -52,6 +52,7 @@
                      th:with="
             esSubir=${s.tipo} == 'SUBIR',
             esEliminar=${s.tipo} == 'ELIMINAR',
+            esModificar = ${s.tipo} == 'MODIFICAR',
             actionUrl=${esSubir} ? '/solicitudes-hecho/evaluar/subir'
                      : (${esEliminar} ? '/solicitudes-hecho/evaluar/eliminar'
                                       : '/solicitudes-hecho/evaluar/modificar')
@@ -60,9 +61,21 @@
                 <!-- Contenido principal (clickeable si hay hechoId) -->
                 <a class="request-content"
                    th:if="${s.hechoId != null}"
-                   th:href="@{/hechos/public/get(id_hecho=${s.hechoId}, fuente='DINAMICA')}">
+                   th:href="${esModificar} ?
+        @{/hechos/public/get(
+            id_hecho=${s.hechoId},
+            fuente='DINAMICA',
+            id_solicitud=${s.id}
+        )}
+        :
+        @{/hechos/public/get(
+            id_hecho=${s.hechoId},
+            fuente='DINAMICA'
+        )}">
 
-                    <div class="request-header">
+
+
+                <div class="request-header">
                         <span class="request-type-badge"
                               th:classappend="${esSubir} ? 'badge-subir' : (${esEliminar} ? 'badge-eliminar' : 'badge-modificar')"
                               th:text="${s.tipo}">SUBIR</span>
@@ -89,7 +102,6 @@
                     </div>
                 </a>
 
-                <!-- Contenido no clickeable si NO hay hechoId -->
                 <div class="request-content request-content-inactive"
                      th:if="${s.hechoId == null}">
 
@@ -118,10 +130,10 @@
                             <i class="bi bi-chat-left-text me-1"></i>Justificación
                         </div>
                         <div class="justification-text" th:text="${s.justificacion}">—</div>
+                        <div class="justification-text" th:text="${s.justificacion}">—</div>
                     </div>
                 </div>
 
-                <!-- Acciones -->
                 <div class="request-actions">
                     <form method="post" th:action="${actionUrl}">
                         <input type="hidden" name="id_solicitud" th:value="${s.id}">
@@ -144,7 +156,6 @@
         </div>
     </div>
 
-    <!-- MODAL RECHAZO -->
     <div class="modal fade" id="modalRechazo" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <form class="modal-content border-0"

@@ -3,6 +3,7 @@ package modulos.Front.services;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import modulos.Front.dtos.input.*;
+import modulos.Front.dtos.output.AtributosModificarDTO;
 import modulos.Front.dtos.output.RolCambiadoDTO;
 import modulos.Front.dtos.output.SolicitudHechoOutputDTO;
 import modulos.Front.sessionHandlers.ActiveSessionTracker;
@@ -72,7 +73,7 @@ public class SolicitudHechoService {
     }
 
     public ResponseEntity<?> enviarSolicitudSubirHecho(SolicitudHechoInputDTO dto) {
-        return webApiCallerService.postEntitySinToken(this.solicitudHechoServiceUrl + "/public/subir-hecho", dto, Void.class);
+        return webApiCallerService.postEntityTokenOpcional(this.solicitudHechoServiceUrl + "/public/subir-hecho", dto, Void.class);
     }
 
     public ResponseEntity<?> reportarHecho(String motivo, Long idHecho, String fuente) {
@@ -124,6 +125,10 @@ public class SolicitudHechoService {
 
     public ResponseEntity<Integer> getPorcentajeSolicitudesProcesadas() {
         System.out.println("VOY A ENTRAR A SOLICITUD!!");
-        return webApiCallerService.getEntitySinToken(this.solicitudHechoServiceUrl + "/public/porcentajeSolicitudes", Integer.class);
+        return webApiCallerService.getEntityTokenOpcional(this.solicitudHechoServiceUrl + "/public/porcentajeSolicitudes", Integer.class);
+    }
+
+    public ResponseEntity<?> getAtributosHechoAModificar(Long id_solicitud){
+        return webApiCallerService.getEntity(this.solicitudHechoServiceUrl + "/atributos-hecho?id_solicitud=" + id_solicitud, AtributosModificarDTO.class);
     }
 }

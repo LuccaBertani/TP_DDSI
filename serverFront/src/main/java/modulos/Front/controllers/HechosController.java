@@ -5,10 +5,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import modulos.Front.BodyToListConverter;
 import modulos.Front.dtos.input.*;
+import modulos.Front.dtos.output.AtributosModificarDTO;
 import modulos.Front.dtos.output.HechosResponse;
 import modulos.Front.dtos.output.UsuarioOutputDto;
 import modulos.Front.dtos.output.VisualizarHechosOutputDTO;
 import modulos.Front.services.HechosService;
+import modulos.Front.services.SolicitudHechoService;
 import modulos.Front.services.UsuarioService;
 import modulos.Front.usuario.Rol;
 import modulos.Front.usuario.Usuario;
@@ -29,6 +31,7 @@ public class HechosController {
     private final HechosService hechosService;
     private final UsuarioService usuarioService;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final SolicitudHechoService solicitudHechoService;
 
     @PreAuthorize("isAuthenticated()") // Solo usuarios logueados
     @GetMapping("/mis-hechos")
@@ -127,29 +130,28 @@ public class HechosController {
     }
 
     @GetMapping("/public/get")
-    public String getHecho(Model model, Long id_hecho, String fuente){
+    public String getHecho(Model model, Long id_hecho, String fuente,
+    @RequestParam(name = "id_solicitud", required = false) Long id_solicitud){
         ResponseEntity<?> rtaDto = this.hechosService.getHecho(id_hecho, fuente);
-
+        System.out.println("ID DE SOLICITUD DEL CULO: " + id_solicitud);
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
             VisualizarHechosOutputDTO hecho = (VisualizarHechosOutputDTO) rtaDto.getBody();
             model.addAttribute("hecho", hecho);
 
-            // Asumimos que NO puede reportar ni modificar/eliminar hasta que se verifique el rol/propiedad
+
             model.addAttribute("puedeReportar", false);
 
-            // Bandera de control inicial
+
             boolean esContribuyenteDelHecho = false;
 
-            // Obtenemos la información del usuario autenticado (si la hay)
-            ResponseEntity<?> rtaUsuario = usuarioService.getUsuario();
 
-            if (rtaUsuario.getStatusCode().is2xxSuccessful() && rtaUsuario.hasBody()){
-                UsuarioOutputDto usuarioActual = (UsuarioOutputDto) rtaUsuario.getBody();
+            String usuarioActual = usuarioService.getUsernameFromSession();
+
+            if (usuarioActual != null){
 
                 if (hecho.getUsername() != null){
-                    esContribuyenteDelHecho = hecho.getUsername().equals(usuarioActual.getNombreDeUsuario());
+                    esContribuyenteDelHecho = hecho.getUsername().equals(usuarioActual);
                 }
-
 
                 if (esContribuyenteDelHecho) {
 
@@ -157,20 +159,42 @@ public class HechosController {
                     solicitudHechoEliminarInputDTO.setId_hecho(hecho.getId());
                     model.addAttribute("SolicitudHechoEliminarInputDTO", solicitudHechoEliminarInputDTO);
 
+
+                    System.out.println("ID DEL HECHO DE RE MIL MIERDA: " + hecho.getId());
+
                     SolicitudHechoModificarInputDTO dtoModificar = SolicitudHechoModificarInputDTO.builder()
                             .id_hecho(hecho.getId())
                             .titulo(hecho.getTitulo())
-                            // ... (resto de campos)
+                            .descripcion(hecho.getDescripcion())
+                            .latitud(hecho.getLatitud())
+                            .longitud(hecho.getLongitud())
+                            .fechaAcontecimiento(hecho.getFechaAcontecimiento())
+                            .id_pais(hecho.getId_pais())
+                            .id_provincia(hecho.getId_provincia())
+                            .id_categoria(hecho.getId_categoria())
                             .build();
 
                     model.addAttribute("SolicitudHechoModificarInputDTO", dtoModificar);
 
 
-                } else {
+
+                }
+                else {
+
+                    if (id_solicitud != null){
+                        System.out.println("ID SOLICITUD: " + id_solicitud);
+                        ResponseEntity<?> rtaAtributosModificar = solicitudHechoService.getAtributosHechoAModificar(id_solicitud);
+                        if (rtaAtributosModificar.getStatusCode().is2xxSuccessful() && rtaAtributosModificar.hasBody()){
+                            AtributosModificarDTO atributosModificarDTO = (AtributosModificarDTO) rtaAtributosModificar.getBody();
+                            System.out.println("TITULO A MODIFICAR: " + atributosModificarDTO.getTitulo());
+                            model.addAttribute("AtributosModificarDTO", atributosModificarDTO);
+                        }
+                    }
 
                     model.addAttribute("puedeReportar", true);
                 }
-            } else {
+            }
+            else {
                 model.addAttribute("puedeReportar", true);
             }
 

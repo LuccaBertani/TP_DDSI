@@ -60,7 +60,7 @@ public class UsuarioService {
     }
 
     public ResponseEntity<?> crearUsuario(UsuarioInputDTO inputDTO){
-        return webApiCallerService.postEntitySinToken(this.usuarioServiceUrl + "/public/crear", inputDTO, Void.class);
+        return webApiCallerService.postEntityTokenOpcional(this.usuarioServiceUrl + "/public/crear", inputDTO, Void.class);
     }
 
     public ResponseEntity<?> cambiarContrasenia(CambiarContraseniaDtoInput dto) {

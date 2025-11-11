@@ -19,7 +19,7 @@ public class HechosService {
 
 
     public ResponseEntity<?> getHecho(Long id_hecho, String fuente) {
-        return webApiCallerService.getEntitySinToken(this.hechoServiceUrl + "/public/get?id_hecho=" + id_hecho + "&fuente=" + fuente, VisualizarHechosOutputDTO.class);
+        return webApiCallerService.getEntityTokenOpcional(this.hechoServiceUrl + "/public/get?id_hecho=" + id_hecho + "&fuente=" + fuente, VisualizarHechosOutputDTO.class);
     }
 
     public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO hechoInputDTO) {
@@ -31,7 +31,7 @@ public class HechosService {
     }
 
     public ResponseEntity<?> getHechos() {
-        return webApiCallerService.getListSinToken(this.hechoServiceUrl + "/public/get-all?origen=0", VisualizarHechosOutputDTO.class);
+        return webApiCallerService.getListTokenOpcional(this.hechoServiceUrl + "/public/get-all?origen=0", VisualizarHechosOutputDTO.class);
     }
 
     public ResponseEntity<?> getHechosFiltradosColeccion(GetHechosColeccionInputDTO inputDTO) {
@@ -39,27 +39,27 @@ public class HechosService {
     }
 
     public ResponseEntity<?> getHechosConLatitudYLongitud(){
-        return webApiCallerService.getListSinToken(this.hechoServiceUrl + "/public/get-mapa?origen=0", VisualizarHechosOutputDTO.class);
+        return webApiCallerService.getListTokenOpcional(this.hechoServiceUrl + "/public/get-mapa?origen=0", VisualizarHechosOutputDTO.class);
     }
 
     public ResponseEntity<?> getPaises() {
-        return webApiCallerService.getListSinToken(this.hechoServiceUrl + "/public/paises/get-all", PaisDto.class);
+        return webApiCallerService.getListTokenOpcional(this.hechoServiceUrl + "/public/paises/get-all", PaisDto.class);
     }
 
     public ResponseEntity<?> getProvinciasByIdPais(Long id_pais) {
-        return webApiCallerService.getListSinToken(this.hechoServiceUrl + "/public/provincias?id_pais="+id_pais, ProvinciaDto.class);
+        return webApiCallerService.getListTokenOpcional(this.hechoServiceUrl + "/public/provincias?id_pais="+id_pais, ProvinciaDto.class);
     }
 
     public ResponseEntity<?> getCategorias() {
-        return webApiCallerService.getListSinToken(this.hechoServiceUrl + "/public/categorias/get-all", CategoriaDto.class);
+        return webApiCallerService.getListTokenOpcional(this.hechoServiceUrl + "/public/categorias/get-all", CategoriaDto.class);
     }
 
     public ResponseEntity<Long> getCantHechos() {
-        return webApiCallerService.getEntitySinToken(this.hechoServiceUrl + "/public/cantHechos", Long.class);
+        return webApiCallerService.getEntityTokenOpcional(this.hechoServiceUrl + "/public/cantHechos", Long.class);
     }
 
     public ResponseEntity<?> getPaisYProvincia(Double latitud, Double longitud){
-        return webApiCallerService.getEntitySinToken(this.hechoServiceUrl + "/public/pais-provincia?latitud=" + latitud + "&longitud=" + longitud
+        return webApiCallerService.getEntityTokenOpcional(this.hechoServiceUrl + "/public/pais-provincia?latitud=" + latitud + "&longitud=" + longitud
                 , PaisProvinciaDTO.class);
     }
 
@@ -70,4 +70,5 @@ public class HechosService {
                 VisualizarHechosOutputDTO.class
         );
     }
+
 }

@@ -6,14 +6,31 @@
   <component name="ChangeListManager">
     <list default="true" id="f850432b-1600-446e-abba-2862d1cc44e3" name="Changes" comment="Merge branch 'entrega_6' of https://github.com/dds-utn/2025-tpa-mi-no-grupo-17 into entrega_6&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/SolicitudHechoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/SolicitudHechoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/SolicitudHechoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/SolicitudHechoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/services/SolicitudHechoService.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/services/SolicitudHechoService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HechosController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HechosController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/detalleHecho.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/detalleHecho.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HomeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/ColeccionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/ColeccionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/HechosService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/HechosService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/SolicitudHechoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/SolicitudHechoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/UsuarioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/UsuarioService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/WebApiCallerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/WebApiCallerService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/gestion.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/gestion.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/solicitudes.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/solicitudes.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/controllers/HechosController.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/controllers/HechosController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/controllers/HomeController.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/controllers/HomeController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/detalleHecho.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/detalleHecho.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/solicitudes.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/solicitudes.html" afterDir="false" />
     </list>
     <list id="3bb68fa4-4cba-440f-a626-e70e60e396a9" name="Changes by germa" comment="" />
-    <list id="f13608ce-ca7b-462a-b1c3-e6566403784d" name="Changes by Lucas" comment="" />
+    <list id="f13608ce-ca7b-462a-b1c3-e6566403784d" name="Changes by Lucas" comment="">
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/SolicitudHechoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/SolicitudHechoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HechosController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HechosController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/HechosService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/HechosService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/detalleHecho.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/detalleHecho.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/solicitudes.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/solicitudes.html" afterDir="false" />
+    </list>
     <list id="bd2f9c59-412c-4d85-95af-559cd31f93a3" name="Changes by merce" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,8 +42,8 @@
       <list>
         <option value="Enum" />
         <option value="Interface" />
-        <option value="Class" />
         <option value="HTML File" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -45,6 +62,58 @@
     &quot;accountId&quot;: &quot;ad6c2145-da9b-4f6d-a29b-88bea5e350a0&quot;
   }
 }</component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/serverFront/src/main/resources/templates/solicitudes.html">
+      <ranges>
+        <range start1="54" end1="54" start2="54" end2="55" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="62" end1="63" start2="63" end2="76" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="64" end1="65" start2="77" end2="78" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="91" end1="92" start2="104" end2="104" changelist="f13608ce-ca7b-462a-b1c3-e6566403784d" />
+        <range start1="120" end1="120" start2="132" end2="133" changelist="f13608ce-ca7b-462a-b1c3-e6566403784d" />
+        <range start1="123" end1="124" start2="136" end2="136" changelist="f13608ce-ca7b-462a-b1c3-e6566403784d" />
+        <range start1="146" end1="147" start2="158" end2="158" changelist="f13608ce-ca7b-462a-b1c3-e6566403784d" />
+      </ranges>
+    </file>
+    <file path="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/HechosService.java">
+      <ranges>
+        <range start1="21" end1="22" start2="21" end2="22" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="33" end1="34" start2="33" end2="34" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="41" end1="42" start2="41" end2="42" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="45" end1="46" start2="45" end2="46" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="49" end1="50" start2="49" end2="50" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="53" end1="54" start2="53" end2="54" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="57" end1="58" start2="57" end2="58" changelist="f13608ce-ca7b-462a-b1c3-e6566403784d" />
+        <range start1="61" end1="62" start2="61" end2="62" changelist="f13608ce-ca7b-462a-b1c3-e6566403784d" />
+        <range start1="72" end1="72" start2="72" end2="73" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+      </ranges>
+    </file>
+    <file path="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HechosController.java">
+      <ranges>
+        <range start1="7" end1="7" start2="7" end2="8" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="11" end1="11" start2="12" end2="13" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="31" end1="31" start2="33" end2="34" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="129" end1="130" start2="132" end2="134" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="131" end1="132" start2="135" end2="136" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="136" end1="137" start2="140" end2="141" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="139" end1="140" start2="143" end2="144" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="142" end1="144" start2="146" end2="146" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="145" end1="147" start2="147" end2="150" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="149" end1="150" start2="152" end2="153" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="151" end1="152" start2="154" end2="154" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="159" end1="159" start2="161" end2="164" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="162" end1="163" start2="167" end2="174" changelist="f13608ce-ca7b-462a-b1c3-e6566403784d" />
+        <range start1="168" end1="169" start2="179" end2="192" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="172" end1="173" start2="195" end2="197" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+      </ranges>
+    </file>
+    <file path="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/SolicitudHechoController.java">
+      <ranges>
+        <range start1="88" end1="89" start2="88" end2="88" changelist="f13608ce-ca7b-462a-b1c3-e6566403784d" />
+        <range start1="94" end1="95" start2="93" end2="93" changelist="f13608ce-ca7b-462a-b1c3-e6566403784d" />
+        <range start1="99" end1="99" start2="97" end2="103" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+      </ranges>
+    </file>
+  </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -129,6 +198,43 @@
     </option>
   </component>
   <component name="RunManager" selected="Application.ServerFrontApplication">
+    <configuration name="ServerBackApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="modulos.ServerBackApplication" />
+      <module name="serverBack" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="modulos.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ServerFrontApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="modulos.ServerFrontApplication" />
+      <module name="serverFront" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="modulos.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="2025-tpa-mi-no-grupo-17" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="2025-tpa-mi-no-grupo-17" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="2025-tpa-mi-no-grupo-17" />
       <option name="ENV_FILES" value="" />
@@ -188,43 +294,6 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <method v="2" />
-    </configuration>
-    <configuration name="ServerBackApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="modulos.ServerBackApplication" />
-      <module name="serverBack" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="modulos.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ServerFrontApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="modulos.ServerFrontApplication" />
-      <module name="serverFront" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="modulos.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="2025-tpa-mi-no-grupo-17" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="2025-tpa-mi-no-grupo-17" />
-      <option name="filePath" />
       <method v="2" />
     </configuration>
     <list>

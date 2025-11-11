@@ -137,6 +137,7 @@ public class HomeController {
     @PostMapping("/solicitud-modificacion")
     public String solicitudModificacion(@Valid @ModelAttribute SolicitudHechoModificarInputDTO dto, Model model){
         // Catálogos base
+        System.out.println("JAAA SOY UN SORETITO");
         ResponseEntity<?> rtaPaises = hechosService.getPaises();
         ResponseEntity<?> rtaCategorias = hechosService.getCategorias();
         if (!rtaPaises.getStatusCode().is2xxSuccessful() || !rtaCategorias.getStatusCode().is2xxSuccessful()) {
