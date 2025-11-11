@@ -168,4 +168,11 @@ LIMIT 1;
     SELECT COUNT(h) FROM HechoEstatica h WHERE h.activo = true
     """)
     Long getCantHechos();
+
+    @Query(value = """
+    SELECT h FROM HechoEstatica h
+    order by h.cant_accesos DESC
+    LIMIT 3
+    """)
+    List<HechoEstatica> findHechosDestacados();
 }

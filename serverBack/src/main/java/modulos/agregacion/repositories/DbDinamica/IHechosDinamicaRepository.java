@@ -120,4 +120,10 @@ LIMIT 1;
     """)
     List<HechoDinamica> findAllByUsuarioIdAndActivoTrue(@Param("usuarioId") Long usuarioId);
 
+    @Query(value = """
+    SELECT h FROM HechoDinamica h
+    order by h.cant_accesos DESC
+    LIMIT 3
+    """)
+    List<HechoDinamica> findHechosDestacados();
 }

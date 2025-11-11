@@ -32,12 +32,24 @@ public abstract class Hecho {
     @Embedded
     private AtributosHecho atributosHecho;
 
+    @Column(name = "cant_accesos")
+    private Long cant_accesos;
+
+    @PrePersist
+    protected void onCreate() {
+        if (cant_accesos == null) {
+            cant_accesos = 0L;
+        }
+    }
 
     public Hecho() {
         this.atributosHecho = new AtributosHecho();
         this.activo = false;
     }
 
+    public void incrementarAccesos(){
+        this.cant_accesos++;
+    }
 }
 
 

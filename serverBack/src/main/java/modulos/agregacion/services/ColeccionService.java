@@ -23,6 +23,7 @@ import modulos.agregacion.repositories.DbMain.IFiltroRepository;
 import modulos.agregacion.repositories.DbMain.IHechoRefRepository;
 import modulos.agregacion.repositories.DbMain.IUsuarioRepository;
 import modulos.agregacion.repositories.DbProxy.IHechosProxyRepository;
+import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.shared.utils.FormateadorHecho;
 import modulos.agregacion.entities.DbEstatica.Dataset;
 import modulos.agregacion.entities.fuentes.FuenteEstatica;
@@ -38,11 +39,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import modulos.shared.dtos.output.ColeccionOutputDTO;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static modulos.JwtClaimExtractor.getUsernameFromToken;
 
@@ -207,6 +207,8 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la colección");
         }
 
+        coleccion.incrementarAccesos();
+
         ColeccionOutputDTO dto = new ColeccionOutputDTO();
 
         dto.setId(coleccion.getId());
@@ -369,8 +371,9 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Async
     @Transactional
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 3 * * *")
     public void ejecutarAlgoritmoConsenso(){
         System.out.println("ENTRO a algoritmo de consenso");
         List<Coleccion> colecciones = coleccionesRepo.findAllByActivoTrue();
@@ -415,7 +418,7 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
     }
 
     @Async
-    @Scheduled(cron = "0 * * * * *") // cada hora
+    @Scheduled(cron = "0 0 * * * *") // cada hora
     @Transactional
     public void refrescarColeccionesCronjob() {
 
@@ -577,6 +580,22 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
     public ResponseEntity<?> getCantColecciones() {
     return ResponseEntity.ok(coleccionesRepo.cantColecciones());
     }
+
+    public ResponseEntity<?> getColeccionDestacados() {
+        List<Coleccion> coleccionesEstatica = coleccionesRepo.findColeccionesDestacadas();
+
+        List<ColeccionOutputDTO> coleccionesDto = new ArrayList<>();
+
+        for(Coleccion coleccion : coleccionesEstatica){
+            ColeccionOutputDTO coleccionDto = new  ColeccionOutputDTO();
+            coleccionDto.setId(coleccion.getId());
+            coleccionDto.setTitulo(coleccion.getTitulo());
+            coleccionDto.setDescripcion(coleccion.getDescripcion());
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(coleccionesDto);
+    }
+
 }
 
 /*
