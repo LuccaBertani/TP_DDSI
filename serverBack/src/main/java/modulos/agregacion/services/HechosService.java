@@ -45,6 +45,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 public class HechosService {
@@ -75,7 +76,8 @@ public class HechosService {
                          IPaisRepository repoPais,
                          BuscadoresRegistry buscadores, ISinonimoRepository repoSinonimo,
                          IHechoRefRepository hechoRefRepository,
-                         FormateadorHechoMemoria formateadorHechoMemoria){
+                         FormateadorHechoMemoria formateadorHechoMemoria
+    ){
         this.repoProvincia = repoProvincia;
         this.repoPais = repoPais;
         this.hechosDinamicaRepo = hechosDinamicaRepo;
@@ -781,6 +783,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         switch (fuente){
             case "ESTATICA":{
                 HechoEstatica hecho = hechosEstaticaRepo.findById(id_hecho).orElse(null);
+                hecho.incrementarAccesos();
                 VisualizarHechosOutputDTO visualizarHechosOutputDTO = crearHechoDto(hecho, VisualizarHechosOutputDTO.class);
                 return ResponseEntity.ok(visualizarHechosOutputDTO);
             }
@@ -913,4 +916,29 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
         return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
     }
+
+    public ResponseEntity<?> getHechosDestacados() {
+        List<HechoEstatica> hechosEstatica = hechosEstaticaRepo.findHechosDestacados();
+        List<HechoDinamica> hechosDinamica = hechosDinamicaRepo.findHechosDestacados();
+        List<HechoProxy> hechosProxy = hechosProxyRepo.findHechosDestacados();
+
+        List<Hecho> top3Hechos = Stream.of(hechosEstatica, hechosDinamica, hechosProxy)
+                .flatMap(list -> list.stream().map(h -> (Hecho) h))  // 👈 conversión explícita
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparingLong(Hecho::getCant_accesos).reversed())
+                .limit(3)
+                .toList();
+        // Devuelve lista inmutable
+
+        List<VisualizarHechosOutputDTO> hechosDto = new ArrayList<>();
+
+        for(Hecho hecho : top3Hechos){
+            VisualizarHechosOutputDTO hechoDto = this.crearHechoDto(hecho, VisualizarHechosOutputDTO.class);
+            hechosDto.add(hechoDto);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(hechosDto);
+    }
+
+
 }

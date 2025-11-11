@@ -79,5 +79,10 @@ public class ColeccionController {
         return coleccionService.refrescarColecciones(principal);
     }
 
+    @GetMapping("/public/ColeccionesDestacadas")
+    public ResponseEntity<?> getHechosDestacados(){
+        return coleccionService.getColeccionDestacados();
+    }
+
 }
 

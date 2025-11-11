@@ -86,9 +86,8 @@ LIMIT 1;
     Optional<List<HoraCategoriaProjection>> horaMayorCantHechos();
 
     @Query(value = """
-        select count(d.id) from hecho_estatica h
+        select count(*) from hecho_estatica h
         join hecho_dataset hd on h.id = hd.hecho_id
-        join dataset d on hd.dataset_id = d.id
         where h.id = :hecho_id
 """, nativeQuery = true)
     Long findCantDatasetsHecho(@Param("hecho_id") Long hecho_id);
@@ -106,17 +105,11 @@ LIMIT 1;
       and COALESCE(h1.titulo, '') = COALESCE(h2.titulo, '')
       and (
             COALESCE(h1.categoria_id, -1) <> COALESCE(h2.categoria_id, -1)
-         or COALESCE(h1.tipoContenidoMultimedia, '') <> COALESCE(h2.tipoContenidoMultimedia, '')
          or COALESCE(h1.descripcion, '') <> COALESCE(h2.descripcion, '')
          or COALESCE(h1.ubicacion_id, -1) <> COALESCE(h2.ubicacion_id, -1)
-         or COALESCE(h1.origen, '') <> COALESCE(h2.origen, '')
-         or COALESCE(h1.fuente, '') <> COALESCE(h2.fuente, '')
          or COALESCE(h1.fechaAcontecimiento, '1900-01-01') <> COALESCE(h2.fechaAcontecimiento, '1900-01-01')
-         or COALESCE(h1.fechaCarga, '1900-01-01') <> COALESCE(h2.fechaCarga, '1900-01-01')
-         or COALESCE(h1.fechaUltimaActualizacion, '1900-01-01') <> COALESCE(h2.fechaUltimaActualizacion, '1900-01-01')
          or COALESCE(h1.latitud, -9999) <> COALESCE(h2.latitud, -9999)
          or COALESCE(h1.longitud, -9999) <> COALESCE(h2.longitud, -9999)
-         or COALESCE(h1.modificado, 0) <> COALESCE(h2.modificado, 0)
       )
     """, nativeQuery = true)
     Long findCantHechosIgualTituloDiferentesAtributos(@Param("hecho_id") Long hechoId);
@@ -175,4 +168,11 @@ LIMIT 1;
     SELECT COUNT(h) FROM HechoEstatica h WHERE h.activo = true
     """)
     Long getCantHechos();
+
+    @Query(value = """
+    SELECT h FROM HechoEstatica h
+    order by h.cant_accesos DESC
+    LIMIT 3
+    """)
+    List<HechoEstatica> findHechosDestacados();
 }

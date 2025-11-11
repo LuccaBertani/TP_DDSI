@@ -31,4 +31,11 @@ public interface IColeccionRepository extends JpaRepository<Coleccion, Long> {
     SELECT COUNT(c) FROM Coleccion c WHERE c.activo = true
     """)
     Long cantColecciones();
+
+    @Query(value = """
+    SELECT c FROM Coleccion c
+    order by c.cant_accesos DESC
+    LIMIT 3
+    """)
+    List<Coleccion> findColeccionesDestacadas();
 }

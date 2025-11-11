@@ -23,6 +23,7 @@ import modulos.agregacion.repositories.DbMain.IFiltroRepository;
 import modulos.agregacion.repositories.DbMain.IHechoRefRepository;
 import modulos.agregacion.repositories.DbMain.IUsuarioRepository;
 import modulos.agregacion.repositories.DbProxy.IHechosProxyRepository;
+import modulos.shared.dtos.output.VisualizarHechosOutputDTO;
 import modulos.shared.utils.FormateadorHecho;
 import modulos.agregacion.entities.DbEstatica.Dataset;
 import modulos.agregacion.entities.fuentes.FuenteEstatica;
@@ -38,11 +39,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import modulos.shared.dtos.output.ColeccionOutputDTO;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static modulos.JwtClaimExtractor.getUsernameFromToken;
 
@@ -207,11 +207,23 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la colección");
         }
 
+        coleccion.incrementarAccesos();
+
         ColeccionOutputDTO dto = new ColeccionOutputDTO();
 
         dto.setId(coleccion.getId());
         dto.setTitulo(coleccion.getTitulo());
         dto.setDescripcion(coleccion.getDescripcion());
+
+        if(coleccion.getAlgoritmoConsenso() instanceof AlgoritmoConsensoMayoriaAbsoluta){
+            dto.setAlgoritmoDeConsenso("Mayoría absoluta");
+        } else if (coleccion.getAlgoritmoConsenso() instanceof AlgoritmoConsensoMayoriaSimple){
+            dto.setAlgoritmoDeConsenso("Mayoría simple");
+        } else if (coleccion.getAlgoritmoConsenso() instanceof AlgoritmoConsensoMultiplesMenciones){
+            dto.setAlgoritmoDeConsenso("Múltiples menciones");
+        }
+
+        System.out.println("ALGORITMO DE CONSENSO: " + dto.getAlgoritmoDeConsenso());
 
         dto.setCriterios(FormateadorHecho.filtrosColeccionToString(coleccion.getCriterios()));
 
@@ -359,11 +371,14 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Async
+    @Transactional
     @Scheduled(cron = "0 0 3 * * *")
     public void ejecutarAlgoritmoConsenso(){
+        System.out.println("ENTRO a algoritmo de consenso");
         List<Coleccion> colecciones = coleccionesRepo.findAllByActivoTrue();
         List<Dataset> datasets = datasetsRepo.findAll();
-        colecciones.forEach(coleccion->coleccion.getAlgoritmoConsenso().ejecutarAlgoritmoConsenso(buscadores.getBuscadorHecho(), datasets, coleccion));
+        colecciones.forEach(coleccion-> {if(coleccion.getAlgoritmoConsenso() != null) coleccion.getAlgoritmoConsenso().ejecutarAlgoritmoConsenso(buscadores.getBuscadorHecho(), datasets, coleccion);});
     }
 
     public ResponseEntity<?> modificarAlgoritmoConsenso(ModificarConsensoInputDTO input, Jwt principal) {
@@ -565,6 +580,22 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
     public ResponseEntity<?> getCantColecciones() {
     return ResponseEntity.ok(coleccionesRepo.cantColecciones());
     }
+
+    public ResponseEntity<?> getColeccionDestacados() {
+        List<Coleccion> coleccionesEstatica = coleccionesRepo.findColeccionesDestacadas();
+
+        List<ColeccionOutputDTO> coleccionesDto = new ArrayList<>();
+
+        for(Coleccion coleccion : coleccionesEstatica){
+            ColeccionOutputDTO coleccionDto = new  ColeccionOutputDTO();
+            coleccionDto.setId(coleccion.getId());
+            coleccionDto.setTitulo(coleccion.getTitulo());
+            coleccionDto.setDescripcion(coleccion.getDescripcion());
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(coleccionesDto);
+    }
+
 }
 
 /*
