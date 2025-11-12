@@ -511,7 +511,7 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró el usuario");
         }
         else if (!usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         return ResponseEntity.ok(usuario);
@@ -521,7 +521,7 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
 
         ResponseEntity<?> respuesta = this.checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
 
-        if (respuesta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+        if (respuesta.getStatusCode().equals(HttpStatus.FORBIDDEN)){
             return respuesta;
         }
         this.refrescarColeccionesCronjob();
@@ -609,7 +609,7 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
 * public ResponseEntity<?> refrescarColecciones(Long idUsuario){
         Usuario usuario = usuariosRepo.findById(idUsuario).orElse(null);
         if (usuario!= null && !usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tenés permisos para ejecutar esta acción");
         }
         this.refrescarColeccionesCronjob();
         return ResponseEntity.status(HttpStatus.OK).body("Se refrescaron las colecciones correctamente");

@@ -3,6 +3,7 @@ modulos\Front\ApiCall.class
 modulos\Front\dtos\input\CriteriosColeccionDTO.class
 modulos\Front\dtos\output\CategoriaDto.class
 modulos\Front\controllers\ColeccionController.class
+modulos\Front\dtos\input\HechoModificarInputDTO$HechoModificarInputDTOBuilder.class
 modulos\Front\dtos\output\DatosPersonalesOutputDTO.class
 modulos\Front\dtos\input\CriteriosColeccionDTO$CriteriosColeccionDTOBuilder.class
 modulos\Front\dtos\output\PaisProvinciaDTO.class
@@ -35,6 +36,7 @@ modulos\Front\dtos\output\MensajeOutputDTO$MensajeOutputDTOBuilder.class
 modulos\Front\dtos\input\EditarUsuarioDtoInput.class
 modulos\Front\dtos\output\ReporteHechoOutputDTO.class
 modulos\Front\dtos\output\ProvinciaDto.class
+modulos\Front\dtos\input\HechoModificarInputDTO.class
 modulos\Front\ContenidoMultimedia.class
 modulos\Front\services\ColeccionService.class
 modulos\Front\dtos\input\SolicitudHechoEliminarInputDTO.class

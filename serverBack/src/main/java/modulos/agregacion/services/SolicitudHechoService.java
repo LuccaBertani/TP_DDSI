@@ -86,7 +86,7 @@ public class SolicitudHechoService {
         Usuario usuario = username != null ? usuariosRepository.findByNombreDeUsuario(username).orElse(null) : null;
 
         if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tenés permisos para ejecutar esta acción");
         }
         return ResponseEntity.ok(usuario);
     }
@@ -95,7 +95,7 @@ public class SolicitudHechoService {
         Usuario usuario = username != null ? usuariosRepository.findByNombreDeUsuario(username).orElse(null) : null;
 
         if (usuario == null || !usuario.getRol().equals(Rol.CONTRIBUYENTE)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tenés permisos para ejecutar esta acción");
         }
         return ResponseEntity.ok(usuario);
     }
@@ -107,7 +107,7 @@ public class SolicitudHechoService {
         if (usuario == null || !usuario.getRol().equals(Rol.ADMINISTRADOR)){
             return ResponseEntity.ok(usuario);
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tenés permisos para ejecutar esta acción");
     }
 
     @Transactional
@@ -118,7 +118,7 @@ public class SolicitudHechoService {
         if (username!=null && !username.isEmpty()){
             ResponseEntity<?> rta = this.checkeoNoAdmin(username);
 
-            if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+            if (rta.getStatusCode().equals(HttpStatus.FORBIDDEN)){
                 return rta;
             }
 
@@ -195,7 +195,7 @@ public class SolicitudHechoService {
 
             ResponseEntity<?> rta = this.checkeoNoAdmin(username);
             Usuario usuario = (Usuario) rta.getBody();
-            if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+            if (rta.getStatusCode().equals(HttpStatus.FORBIDDEN)){
                 return rta;
             }
 
@@ -203,7 +203,7 @@ public class SolicitudHechoService {
         HechoDinamica hecho = hechosDinamicaRepository.findByIdAndUsuario(dto.getId_hecho(), usuario.getId()).orElse(null);
         if (hecho == null){
             // Puede ser que se haya encontrado el hecho pero que el usuario no esté asociado al hecho
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tenés permisos para ejecutar esta acción");
         }
 
         SolicitudEliminarHecho solicitud = new SolicitudEliminarHecho(usuario.getId(), hecho, dto.getJustificacion());
@@ -225,7 +225,7 @@ public class SolicitudHechoService {
         
         ResponseEntity<?> rta = checkeoContribuyente(username);
 
-        if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+        if (rta.getStatusCode().equals(HttpStatus.FORBIDDEN)){
             return rta;
         }
 
@@ -239,7 +239,7 @@ public class SolicitudHechoService {
 
         if (hecho == null){
             // El hecho no existe o el usuario no tiene permiso
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No tenés permisos para ejecutar esta acción");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tenés permisos para ejecutar esta acción");
         }
 
         SolicitudModificarHecho solicitud = new SolicitudModificarHecho(usuario.getId(), hecho);
@@ -328,7 +328,7 @@ public class SolicitudHechoService {
 
         ResponseEntity<?> rta = checkeoAdmin(username);
 
-        if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+        if (rta.getStatusCode().equals(HttpStatus.FORBIDDEN)){
             return rta;
         }
         Usuario usuario = null;
@@ -382,7 +382,7 @@ public class SolicitudHechoService {
 
         ResponseEntity<?> rta = checkeoAdmin(username);
 
-        if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+        if (rta.getStatusCode().equals(HttpStatus.FORBIDDEN)){
             return rta;
         }
 
@@ -436,7 +436,7 @@ public class SolicitudHechoService {
 
         ResponseEntity<?> rta = checkeoAdmin(username);
 
-        if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+        if (rta.getStatusCode().equals(HttpStatus.FORBIDDEN)){
             return rta;
         }
 
@@ -504,7 +504,7 @@ public class SolicitudHechoService {
 
         ResponseEntity<?> rta = checkeoAdmin(username);
 
-        if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+        if (rta.getStatusCode().equals(HttpStatus.FORBIDDEN)){
             return rta;
         }
 
@@ -529,7 +529,7 @@ public class SolicitudHechoService {
     public ResponseEntity<?> obtenerSolicitudesPendientes(String username) {
         ResponseEntity<?> rta = checkeoAdmin(username);
 
-        if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+        if (rta.getStatusCode().equals(HttpStatus.FORBIDDEN)){
             return rta;
         }
 
@@ -697,7 +697,7 @@ public class SolicitudHechoService {
     public ResponseEntity<?> getAtributosSolicitudHecho(Long id_solicitud, String username){
         ResponseEntity<?> rta = checkeoAdmin(username);
 
-        if (rta.getStatusCode().equals(HttpStatus.UNAUTHORIZED)){
+        if (rta.getStatusCode().equals(HttpStatus.FORBIDDEN)){
             return rta;
         }
         if (id_solicitud!=null){

@@ -76,4 +76,8 @@ public class HechosService {
     public ResponseEntity<List<VisualizarHechosOutputDTO>> getHechosDestacados() {
         return webApiCallerService.getListTokenOpcional(this.hechoServiceUrl + "/public/destacados", VisualizarHechosOutputDTO.class);
     }
+
+    public ResponseEntity<?> eliminarHecho(Long id, String fuente){
+        return webApiCallerService.postEntity(this.hechoServiceUrl + "/eliminar-hecho?id=" + id + "&fuente=" + fuente, Void.class);
+    }
 }

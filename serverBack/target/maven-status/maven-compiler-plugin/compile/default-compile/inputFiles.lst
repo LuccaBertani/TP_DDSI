@@ -18,6 +18,7 @@ C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\se
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\servicioEstadistica\controller\EstadisticasController.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\DbMain\Reporte.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\servicioEstadistica\repositories\ICategoriaCantidadRepository.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\dtos\output\AtributosModificarDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\repositories\DbDinamica\IHechosDinamicaRepository.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\dtos\input\SolicitudHechoModificarInputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\DbMain\filtros\FiltroFechaAcontecimiento.java
@@ -26,6 +27,7 @@ C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\se
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\DbMain\Fuente.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\repositories\DbDinamica\ISolicitudRepository.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\DbProxy\HechoProxy.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\dtos\input\HechoModificarInputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\repositories\DbMain\IAtributosHechoModificarRepository.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\utils\DetectorDeSpam.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\AtributosHechoModificarMemoria.java
@@ -52,6 +54,7 @@ C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\se
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\utils\FechaParser.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\DbMain\algoritmosConsenso\AlgoritmoConsensoMultiplesMenciones.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\servicioEstadistica\config\DbEstadisticaConfig.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\DbMain\filtros\FiltroFuente.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\DbMain\filtros\IFiltro.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\controllers\HechosController.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\DbEstatica\HechoEstatica.java
@@ -84,7 +87,6 @@ C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\se
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\utils\Geocodificador.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\repositories\DbMain\IFiltroRepository.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\dtos\input\LoginDtoInput.java
-C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\DbMain\filtros\FiltroOrigen.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\repositories\DbMain\IMensajeRepository.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\agregacion\entities\DbMain\filtros\Filtro.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverBack\src\main\java\modulos\shared\dtos\output\ReporteHechoOutputDTO.java

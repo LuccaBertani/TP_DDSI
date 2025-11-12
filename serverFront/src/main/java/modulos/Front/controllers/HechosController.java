@@ -145,36 +145,65 @@ public class HechosController {
             boolean esContribuyenteDelHecho = false;
 
 
+
             String usuarioActual = usuarioService.getUsernameFromSession();
+
 
             if (usuarioActual != null){
 
-                if (hecho.getUsername() != null){
-                    esContribuyenteDelHecho = hecho.getUsername().equals(usuarioActual);
+                ResponseEntity<?> rtaUsuario = usuarioService.getUsuario();
+
+                if (rtaUsuario.getStatusCode().is2xxSuccessful() && rtaUsuario.hasBody()){
+
+                    UsuarioOutputDto usuarioOutputDto = (UsuarioOutputDto) rtaUsuario.getBody();
+
+                    if (hecho.getUsername() != null){
+                        esContribuyenteDelHecho = hecho.getUsername().equals(usuarioActual);
+                    }
+
+                    if (esContribuyenteDelHecho) {
+
+                        if (usuarioOutputDto.getRol().equals(Rol.CONTRIBUYENTE)){
+                            SolicitudHechoEliminarInputDTO solicitudHechoEliminarInputDTO = new SolicitudHechoEliminarInputDTO();
+                            solicitudHechoEliminarInputDTO.setId_hecho(hecho.getId());
+                            model.addAttribute("SolicitudHechoEliminarInputDTO", solicitudHechoEliminarInputDTO);
+
+
+                            System.out.println("ID DEL HECHO DE RE MIL MIERDA: " + hecho.getId());
+
+                            SolicitudHechoModificarInputDTO dtoModificar = SolicitudHechoModificarInputDTO.builder()
+                                    .id_hecho(hecho.getId())
+                                    .titulo(hecho.getTitulo())
+                                    .descripcion(hecho.getDescripcion())
+                                    .latitud(hecho.getLatitud())
+                                    .longitud(hecho.getLongitud())
+                                    .fechaAcontecimiento(hecho.getFechaAcontecimiento())
+                                    .id_pais(hecho.getId_pais())
+                                    .id_provincia(hecho.getId_provincia())
+                                    .id_categoria(hecho.getId_categoria())
+                                    .build();
+
+                            model.addAttribute("SolicitudHechoModificarInputDTO", dtoModificar);
+                        }
+                        else if (usuarioOutputDto.getRol().equals(Rol.ADMINISTRADOR)){
+                            HechoModificarInputDTO dtoModificar = HechoModificarInputDTO.builder()
+                                    .id_hecho(hecho.getId())
+                                    .titulo(hecho.getTitulo())
+                                    .descripcion(hecho.getDescripcion())
+                                    .latitud(hecho.getLatitud())
+                                    .longitud(hecho.getLongitud())
+                                    .fechaAcontecimiento(hecho.getFechaAcontecimiento())
+                                    .id_pais(hecho.getId_pais())
+                                    .id_provincia(hecho.getId_provincia())
+                                    .id_categoria(hecho.getId_categoria())
+                                    .build();
+                            model.addAttribute("HechoModificarInputDTO", dtoModificar);
+                        }
+
+
                 }
 
-                if (esContribuyenteDelHecho) {
 
-                    SolicitudHechoEliminarInputDTO solicitudHechoEliminarInputDTO = new SolicitudHechoEliminarInputDTO();
-                    solicitudHechoEliminarInputDTO.setId_hecho(hecho.getId());
-                    model.addAttribute("SolicitudHechoEliminarInputDTO", solicitudHechoEliminarInputDTO);
-
-
-                    System.out.println("ID DEL HECHO DE RE MIL MIERDA: " + hecho.getId());
-
-                    SolicitudHechoModificarInputDTO dtoModificar = SolicitudHechoModificarInputDTO.builder()
-                            .id_hecho(hecho.getId())
-                            .titulo(hecho.getTitulo())
-                            .descripcion(hecho.getDescripcion())
-                            .latitud(hecho.getLatitud())
-                            .longitud(hecho.getLongitud())
-                            .fechaAcontecimiento(hecho.getFechaAcontecimiento())
-                            .id_pais(hecho.getId_pais())
-                            .id_provincia(hecho.getId_provincia())
-                            .id_categoria(hecho.getId_categoria())
-                            .build();
-
-                    model.addAttribute("SolicitudHechoModificarInputDTO", dtoModificar);
 
 
 
@@ -231,6 +260,21 @@ public class HechosController {
         }
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
+
+    @PostMapping("/eliminar-hecho")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public String eliminarHecho(@RequestParam Long id, @RequestParam String fuente, RedirectAttributes ra) {
+        ResponseEntity<?> rta = this.hechosService.eliminarHecho(id, fuente);
+
+        if(rta.getStatusCode().is2xxSuccessful()){
+            return "redirect:/hechos/public/get-all";
+        }
+        else if(rta.getBody() != null){
+            ra.addFlashAttribute(rta.getBody().toString());
+        }
+        return "redirect:/" + rta.getStatusCode().value();
+    }
+
 
 
 

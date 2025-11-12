@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 import java.io.IOException;
@@ -162,6 +163,11 @@ fecha_acontecimiento_desde, fecha_acontecimiento_hasta, ubicacion BARBARO!!.
     public ResponseEntity<?> getHechosDelUsuario(@AuthenticationPrincipal String username){
         System.out.println("ENTRO A GET HECHOS DEL USUARIO: " + username);
         return hechosService.getHechosDelUsuario(username);
+    }
+
+    @PostMapping("/eliminar-hecho")
+    public ResponseEntity<?> eliminarHecho(@RequestParam Long id, @RequestParam String fuente, @AuthenticationPrincipal String username){
+        return hechosService.eliminarHecho(id, fuente, username);
     }
 
 }

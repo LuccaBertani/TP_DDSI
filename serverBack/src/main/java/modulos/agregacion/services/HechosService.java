@@ -3,6 +3,7 @@ package modulos.agregacion.services;
 import io.jsonwebtoken.Jwt;
 import modulos.JwtClaimExtractor;
 import modulos.agregacion.entities.DbDinamica.HechoDinamica;
+import modulos.agregacion.entities.DbDinamica.solicitudes.SolicitudHecho;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
 import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
@@ -124,7 +125,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró el usuario");
         }
         else if (!usuario.getRol().equals(Rol.ADMINISTRADOR)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         return ResponseEntity.ok(usuario);
@@ -770,7 +771,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         }
 
         if (!Objects.equals(hecho.getUsuario_id(), id_usuario)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         this.guardarContenidoMultimedia(file, hecho);
@@ -804,6 +805,21 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 return ResponseEntity.ok(visualizarHechosOutputDTO);
             }
             default: return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    public Hecho getHechoEntity(Long id_hecho, String fuente){
+        switch (fuente){
+            case "ESTATICA":{
+                return hechosEstaticaRepo.findById(id_hecho).orElse(null);
+            }
+            case "DINAMICA":{
+                return hechosDinamicaRepo.findById(id_hecho).orElse(null);
+            }
+            case "PROXY":{
+                return hechosProxyRepo.findById(id_hecho).orElse(null);
+            }
+            default: return null;
         }
     }
 
@@ -944,6 +960,51 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(hechosDto);
+    }
+
+    @Transactional
+    public ResponseEntity<?> eliminarHecho(Long id, String fuente, String username) {
+
+        ResponseEntity<?> rta = checkeoAdmin(username);
+
+        if (rta.getStatusCode().equals(HttpStatus.FORBIDDEN)){
+            return rta;
+        }
+
+        ResponseEntity<?> rtaHecho = this.getHecho(id, fuente);
+
+        if (!rtaHecho.getStatusCode().is2xxSuccessful() || !rtaHecho.hasBody()){
+            return rtaHecho;
+        }
+
+        Hecho hecho = this.getHechoEntity(id, fuente);
+
+        if (hecho == null){
+            return ResponseEntity.notFound().build();
+        }
+
+        hecho.setActivo(false);
+        hecho.getAtributosHecho().setModificado(true);
+        if (hecho instanceof HechoEstatica){
+            hechosEstaticaRepo.save((HechoEstatica) hecho);
+        }
+
+        if (hecho instanceof HechoDinamica){
+            hechosDinamicaRepo.save((HechoDinamica) hecho);
+        }
+
+        if (hecho instanceof HechoProxy){
+            hechosProxyRepo.save((HechoProxy) hecho);
+        }
+
+        Usuario usuario = usuariosRepo.findByNombreDeUsuario(username).orElse(null);
+
+        if (usuario != null) {
+            usuario.disminuirHechosSubidos();
+            usuariosRepo.save(usuario);
+        }
+
+        return ResponseEntity.ok().build();
     }
 
 

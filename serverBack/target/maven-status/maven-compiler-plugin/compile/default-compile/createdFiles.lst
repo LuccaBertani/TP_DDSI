@@ -38,6 +38,7 @@ modulos\agregacion\config\DbMainConfig.class
 modulos\apis\DatosQuery.class
 modulos\shared\utils\Geocodificador.class
 modulos\shared\dtos\output\AuthResponseDTO$AuthResponseDTOBuilder.class
+modulos\agregacion\entities\DbMain\filtros\FiltroFuente.class
 modulos\shared\dtos\output\ReporteHechoOutputDTO$ReporteHechoOutputDTOBuilder.class
 modulos\agregacion\entities\DbMain\filtros\FiltroDescripcion.class
 modulos\agregacion\entities\DbMain\projections\HoraCategoriaProjection.class
@@ -85,7 +86,6 @@ modulos\agregacion\entities\DbMain\projections\ColeccionProvinciaProjection.clas
 modulos\buscadores\BuscadorUbicacion.class
 modulos\agregacion\entities\DbDinamica\solicitudes\SolicitudEliminarHecho.class
 modulos\agregacion\repositories\DbDinamica\ISolicitudEliminarHechoRepository.class
-modulos\agregacion\entities\DbMain\filtros\FiltroOrigen.class
 modulos\agregacion\entities\fuentes\Responses\HechosResponse.class
 modulos\agregacion\controllers\ColeccionController.class
 modulos\agregacion\entities\atributosHecho\ContenidoMultimedia.class
@@ -135,6 +135,7 @@ modulos\agregacion\entities\DbMain\Hecho$HechoBuilder.class
 modulos\config\SecurityConfig.class
 modulos\agregacion\entities\DbMain\RespuestaHttp.class
 modulos\shared\dtos\output\DatosPersonalesOutputDTO.class
+modulos\shared\dtos\input\HechoModificarInputDTO$HechoModificarInputDTOBuilder.class
 modulos\shared\dtos\input\EditarNombreDeUsuarioDtoInput.class
 modulos\shared\dtos\input\EditarUsuarioDtoInput.class
 modulos\agregacion\entities\DbDinamica\solicitudes\SolicitudHecho.class
@@ -150,6 +151,7 @@ modulos\agregacion\entities\DbMain\UbicacionString.class
 modulos\servicioEstadistica\entities\CategoriaHora.class
 modulos\servicioEstadistica\repositories\IColeccionProvinciaRepository.class
 modulos\agregacion\converters\LocalDateTimeConverter.class
+modulos\shared\dtos\input\HechoModificarInputDTO.class
 modulos\shared\dtos\output\MensajeOutputDTO.class
 modulos\agregacion\entities\DbMain\Categoria.class
 modulos\agregacion\entities\DbMain\Pais.class

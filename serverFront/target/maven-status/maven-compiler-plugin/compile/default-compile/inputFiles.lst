@@ -24,6 +24,7 @@ C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\se
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\output\PaisDto.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\controllers\SolicitudHechoController.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\GetHechosColeccionInputDTO.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\HechoModificarInputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\sessionHandlers\ActiveSessionTracker.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\output\PaisProvinciaDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\ContenidoMultimediaDto.java
@@ -31,6 +32,7 @@ C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\se
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\ModificarConsensoInputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\EditarNombreDeUsuarioDtoInput.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\SolicitudHechoModificarInputDTO.java
+C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\output\AtributosModificarDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\CriteriosColeccionProxyDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\output\SolicitudHechoOutputDTO.java
 C:\Users\nehue\Escritorio\Facultad\Diseño de Sistemas\2025-tpa-mi-no-grupo-17\serverFront\src\main\java\modulos\Front\dtos\input\TokenResponse.java
