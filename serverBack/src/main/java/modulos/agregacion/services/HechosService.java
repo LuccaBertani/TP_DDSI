@@ -65,6 +65,7 @@ public class HechosService {
     private final ISinonimoRepository repoSinonimo;
     private final IHechoRefRepository hechoRefRepository;
     private FormateadorHechoMemoria formateadorHechoMemoria;
+    private final IMensajeRepository mensajeRepository;
 
     public HechosService(IHechosEstaticaRepository hechosEstaticaRepo,
                          IHechosDinamicaRepository hechosDinamicaRepo,
@@ -77,7 +78,8 @@ public class HechosService {
                          IPaisRepository repoPais,
                          BuscadoresRegistry buscadores, ISinonimoRepository repoSinonimo,
                          IHechoRefRepository hechoRefRepository,
-                         FormateadorHechoMemoria formateadorHechoMemoria
+                         FormateadorHechoMemoria formateadorHechoMemoria,
+                         IMensajeRepository mensajeRepository
     ){
         this.repoProvincia = repoProvincia;
         this.repoPais = repoPais;
@@ -92,6 +94,7 @@ public class HechosService {
         this.buscadores = buscadores;
         this.hechoRefRepository = hechoRefRepository;
         this.formateadorHechoMemoria = formateadorHechoMemoria;
+        this.mensajeRepository = mensajeRepository;
     }
 
     /*
@@ -997,11 +1000,14 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             hechosProxyRepo.save((HechoProxy) hecho);
         }
 
-        Usuario usuario = usuariosRepo.findByNombreDeUsuario(username).orElse(null);
+        Usuario usuario = usuariosRepo.findById(hecho.getUsuario_id()).orElse(null);
 
         if (usuario != null) {
             usuario.disminuirHechosSubidos();
-            usuariosRepo.save(usuario);
+            Mensaje mensaje = new Mensaje();
+            mensaje.setTextoMensaje("Se eliminó su hecho de título " + hecho.getAtributosHecho().getTitulo());
+            mensaje.setReceptor(usuario);
+            mensajeRepository.save(mensaje);
         }
 
         return ResponseEntity.ok().build();

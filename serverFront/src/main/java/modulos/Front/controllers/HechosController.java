@@ -157,6 +157,22 @@ public class HechosController {
 
                     UsuarioOutputDto usuarioOutputDto = (UsuarioOutputDto) rtaUsuario.getBody();
 
+
+                    if (usuarioOutputDto.getRol().equals(Rol.ADMINISTRADOR)){
+                        HechoModificarInputDTO dtoModificar = HechoModificarInputDTO.builder()
+                                .id_hecho(hecho.getId())
+                                .titulo(hecho.getTitulo())
+                                .descripcion(hecho.getDescripcion())
+                                .latitud(hecho.getLatitud())
+                                .longitud(hecho.getLongitud())
+                                .fechaAcontecimiento(hecho.getFechaAcontecimiento())
+                                .id_pais(hecho.getId_pais())
+                                .id_provincia(hecho.getId_provincia())
+                                .id_categoria(hecho.getId_categoria())
+                                .build();
+                        model.addAttribute("HechoModificarInputDTO", dtoModificar);
+                    }
+
                     if (hecho.getUsername() != null){
                         esContribuyenteDelHecho = hecho.getUsername().equals(usuarioActual);
                     }
@@ -185,26 +201,9 @@ public class HechosController {
 
                             model.addAttribute("SolicitudHechoModificarInputDTO", dtoModificar);
                         }
-                        else if (usuarioOutputDto.getRol().equals(Rol.ADMINISTRADOR)){
-                            HechoModificarInputDTO dtoModificar = HechoModificarInputDTO.builder()
-                                    .id_hecho(hecho.getId())
-                                    .titulo(hecho.getTitulo())
-                                    .descripcion(hecho.getDescripcion())
-                                    .latitud(hecho.getLatitud())
-                                    .longitud(hecho.getLongitud())
-                                    .fechaAcontecimiento(hecho.getFechaAcontecimiento())
-                                    .id_pais(hecho.getId_pais())
-                                    .id_provincia(hecho.getId_provincia())
-                                    .id_categoria(hecho.getId_categoria())
-                                    .build();
-                            model.addAttribute("HechoModificarInputDTO", dtoModificar);
-                        }
 
 
                 }
-
-
-
 
 
                 }
