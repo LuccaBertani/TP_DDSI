@@ -196,7 +196,7 @@ public class WebApiCallerService {
     }
 
     public <T> ResponseEntity<List<T>> getListTokenOpcional(String url, Class<T> elementType) {
-        if (getUsernameFromSession()==null||getUsernameFromSession().equals("anonymousUser")) {
+        if (getUsernameFromSession()==null) {
             return webClient.get()
                     .uri(url)
                     .retrieve()
@@ -210,7 +210,7 @@ public class WebApiCallerService {
     }
 
     public <T> ResponseEntity<List<T>> postListTokenOpcional(String url, Object body, Class<T> elementType) {
-        if (getUsernameFromSession()==null||getUsernameFromSession().equals("anonymousUser")) {
+        if (getUsernameFromSession()==null) {
             return webClient.post()
                     .uri(url)
                     .bodyValue(body)
@@ -220,7 +220,7 @@ public class WebApiCallerService {
                     ;
         }
         else{
-            return getList(url, elementType);
+            return postList(url, body, elementType);
         }
     }
 
