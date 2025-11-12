@@ -194,6 +194,18 @@
                 <input class="form-control" id="descripcion" type="text" th:field="*{descripcion}" placeholder="Texto a buscar en la descripción">
             </div>
 
+            <div class="col-md-6">
+                <label class="form-label" for="fuente">Fuente</label>
+                <select class="form-select js-choices" id="fuente" th:field="*{fuentes}" multiple>
+                    <option th:value="1">DINÁMICA</option>
+                    <option th:value="2">ESTÁTICA</option>
+                    <option th:value="3">PROXY</option>
+                </select>
+                <small class="text-muted d-block">
+                    Elegí una o varias fuentes. Esto filtrará los hechos según su origen.
+                </small>
+            </div>
+
             <!-- Fecha del acontecimiento (desde/hasta) -->
             <div class="col-md-3">
                 <label class="form-label" for="fechaAcontecimientoInicial">Fecha del hecho (desde)</label>
@@ -216,11 +228,6 @@
 
             <!-- Origen de conexión (hidden requerido por DTO) -->
             <input type="hidden" th:field="*{origenConexion}" th:value="0"/>
-
-            <!-- Navegación curada (Boolean) -->
-
-            <!-- Navegación curada forzada a false -->
-            <input type="hidden" name="navegacionCurada" value="false" />
 
             <!-- id_coleccion corregido -->
             <input type="hidden" name="id_coleccion" th:value="${coleccion.id}"/>

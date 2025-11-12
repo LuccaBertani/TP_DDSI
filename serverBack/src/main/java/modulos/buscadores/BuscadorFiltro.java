@@ -1,5 +1,6 @@
 package modulos.buscadores;
 
+import modulos.agregacion.entities.DbMain.Fuente;
 import modulos.agregacion.entities.atributosHecho.Origen;
 import modulos.agregacion.entities.atributosHecho.TipoContenido;
 import modulos.agregacion.repositories.DbMain.IFiltroRepository;
@@ -51,9 +52,9 @@ public class BuscadorFiltro {
     }
 
     /* ================== Origen (Integer/enum) ================= */
-    public Optional<FiltroOrigen> buscarFiltroOrigenPorValor(Integer origen) {
-        if (origen == null) return Optional.empty();
-        return filtrosRepo.findFiltroOrigenByOrigen(Origen.fromCodigo(origen));
+    public Optional<FiltroFuente> buscarFiltroFuentePorValor(Integer fuente) {
+        if (fuente == null) return Optional.empty();
+        return filtrosRepo.findFiltroFuenteByFuente(Fuente.fromCodigo(fuente));
     }
 
     /* ================== País (entidad) ================= */

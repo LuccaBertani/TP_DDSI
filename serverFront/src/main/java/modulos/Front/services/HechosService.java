@@ -37,7 +37,7 @@ public class HechosService {
     }
 
     public ResponseEntity<?> getHechosFiltradosColeccion(GetHechosColeccionInputDTO inputDTO) {
-        return webApiCallerService.postList(this.hechoServiceUrl + "/public/get/filtrar", inputDTO, VisualizarHechosOutputDTO.class);
+        return webApiCallerService.postListTokenOpcional(this.hechoServiceUrl + "/public/get/filtrar", inputDTO, VisualizarHechosOutputDTO.class);
     }
 
     public ResponseEntity<?> getHechosConLatitudYLongitud(){

@@ -152,8 +152,8 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
                 } else if (filtro instanceof FiltroFechaCarga ffc) {
                     System.out.println("  [FiltroFechaCarga] desde=" + ffc.getFechaInicial() +
                             ", hasta=" + ffc.getFechaFinal());
-                } else if (filtro instanceof FiltroOrigen fo) {
-                    System.out.println("  [FiltroOrigen] origen=" + fo.getOrigenDeseado());
+                } else if (filtro instanceof FiltroFuente ff) {
+                    System.out.println("  [FiltroFuente] fuente=" + ff.getFuenteDeseada());
                 } else if (filtro instanceof FiltroPais fp) {
                     System.out.println("  [FiltroPais] id=" + fp.getPais().getId() +
                             ", nombre=" + fp.getPais().getPais());
@@ -366,7 +366,7 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
             coleccion.setDescripcion(dto.getDescripcion());
         }
 
-        List<List<IFiltro>> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccion(buscadores, dto.getCriterios()));
+        List<List<IFiltro>> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadores, dto.getCriterios()));
         List<Filtro> filtrosJuntos = new ArrayList<>();
         filtros.forEach(f -> filtrosJuntos.add((Filtro) f));
         coleccion.setCriterios(filtrosJuntos);

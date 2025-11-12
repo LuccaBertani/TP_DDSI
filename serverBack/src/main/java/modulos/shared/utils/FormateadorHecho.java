@@ -422,7 +422,7 @@ public class FormateadorHecho {
                     .orElseGet(() -> new FiltroFechaCarga(fcIni, fcFin));
             filtros.setFiltroFechaCarga(filtro);
         }
-
+        /*
         // ---------- ORIGEN ----------
         if (inputDTO.getOrigen() != null && !inputDTO.getOrigen().isEmpty()) {
             List<FiltroOrigen> filtrosOrigen = inputDTO.getOrigen().stream()
@@ -432,7 +432,7 @@ public class FormateadorHecho {
                     .toList();
             filtros.setFiltroOrigen(filtrosOrigen);
         }
-
+        */
         // ---------- PAÍSES (por nombre) ----------
         if (inputDTO.getPais() != null && !inputDTO.getPais().isEmpty()) {
             List<FiltroPais> filtrosPais = inputDTO.getPais().stream()
@@ -504,14 +504,14 @@ public class FormateadorHecho {
             filtros.setFiltroContenidoMultimedia(filtrosMultimedia);
         }
 
-        // ---------- ORIGEN ----------
-        if (inputDTO.getOrigen() != null && !inputDTO.getOrigen().isEmpty()) {
-            List<FiltroOrigen> filtrosOrigen = inputDTO.getOrigen().stream()
-                    .map(Origen::fromCodigo)
-                    .map(origen -> buscadorFiltro.buscarFiltroOrigenPorValor(origen.getCodigo())
-                            .orElseGet(() -> new FiltroOrigen(origen)))
+        // ---------- Fuente ----------
+        if (inputDTO.getFuentes() != null && !inputDTO.getFuentes().isEmpty()) {
+            List<FiltroFuente> filtrosFuentes = inputDTO.getFuentes().stream()
+                    .map(Fuente::fromCodigo)
+                    .map(fuente -> buscadorFiltro.buscarFiltroFuentePorValor(fuente.getCodigo())
+                            .orElseGet(() -> new FiltroFuente(fuente)))
                     .toList();
-            filtros.setFiltroOrigen(filtrosOrigen);
+            filtros.setFiltroFuentes(filtrosFuentes);
         }
 
         // ---------- PAÍSES ----------
@@ -600,7 +600,7 @@ public class FormateadorHecho {
             criterios.setCategoria(new ArrayList<>());
             criterios.setPais(new ArrayList<>());
             criterios.setProvincia(new ArrayList<>());
-            criterios.setOrigen(new ArrayList<>());
+            criterios.setFuentes(new ArrayList<>());
             criterios.setContenidoMultimedia(new ArrayList<>());
 
             for (Filtro filtro : filtros) {
@@ -637,10 +637,10 @@ public class FormateadorHecho {
                 }
 
                 // ---------- ORIGEN ----------
-                else if (filtro instanceof FiltroOrigen filtroOrigen) {
-                    Origen origen = filtroOrigen.getOrigenDeseado();
-                    if (origen != null)
-                        criterios.getOrigen().add(origen.getCodigo());
+                else if (filtro instanceof FiltroFuente filtroOrigen) {
+                    Fuente fuente = filtroOrigen.getFuenteDeseada();
+                    if (fuente != null)
+                        criterios.getFuentes().add(fuente.getCodigo());
                 }
 
                 // ---------- PAÍS ----------
@@ -694,7 +694,7 @@ public class FormateadorHecho {
             agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroCategoria());
             agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroPais());
             agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroProvincia());
-            agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroOrigen());
+            agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroFuentes());
             agregarSiNoVacia(filtrosPorCategoria, filtrosColeccion.getFiltroContenidoMultimedia());
             if (filtrosColeccion.getFiltroDescripcion()!=null)
                 filtrosIndividual.add(filtrosColeccion.getFiltroDescripcion());

@@ -211,6 +211,8 @@ public class HechosController {
     @PostMapping("/public/get/filtrar")
     public String getHechosFiltradosColeccion(@Valid @ModelAttribute GetHechosColeccionInputDTO inputDTO, Model model){
 
+        System.out.println("HOLA!");
+
         inputDTO.setOrigenConexion(0);
 
         ResponseEntity<?> rtaDto = this.hechosService.getHechosFiltradosColeccion(inputDTO);

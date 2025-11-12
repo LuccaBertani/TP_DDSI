@@ -6,18 +6,37 @@
   <component name="ChangeListManager">
     <list default="true" id="f850432b-1600-446e-abba-2862d1cc44e3" name="Changes" comment="Merge branch 'entrega_6' of https://github.com/dds-utn/2025-tpa-mi-no-grupo-17 into entrega_6&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/ColeccionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/ColeccionController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/HechosController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/HechosController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/entities/DbMain/FiltrosColeccion.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/entities/DbMain/FiltrosColeccion.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/entities/DbMain/filtros/FiltroOrigen.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/entities/DbMain/filtros/FiltroFuente.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/entities/fuentes/FuenteProxy.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/entities/fuentes/FuenteProxy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbMain/IFiltroRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/repositories/DbMain/IFiltroRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/ColeccionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/ColeccionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/HechosService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/HechosService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/buscadores/BuscadorFiltro.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/buscadores/BuscadorFiltro.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/shared/dtos/input/CriteriosColeccionDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/shared/dtos/input/CriteriosColeccionDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/shared/dtos/input/GetHechosColeccionInputDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/shared/dtos/input/GetHechosColeccionInputDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/shared/utils/FormateadorHecho.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/shared/utils/FormateadorHecho.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/entities/DbMain/FiltrosColeccion.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/entities/DbMain/FiltrosColeccion.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/entities/DbMain/filtros/FiltroOrigen.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/entities/fuentes/FuenteProxy.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/entities/fuentes/FuenteProxy.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/repositories/DbMain/IFiltroRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/repositories/DbMain/IFiltroRepository.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/services/ColeccionService.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/services/ColeccionService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HomeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/ColeccionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/ColeccionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/services/HechosService.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/services/HechosService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/buscadores/BuscadorFiltro.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/buscadores/BuscadorFiltro.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/shared/dtos/input/CriteriosColeccionDTO$CriteriosColeccionDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/shared/dtos/input/CriteriosColeccionDTO$CriteriosColeccionDTOBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/shared/dtos/input/CriteriosColeccionDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/shared/dtos/input/CriteriosColeccionDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/shared/dtos/input/GetHechosColeccionInputDTO$GetHechosColeccionInputDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/shared/dtos/input/GetHechosColeccionInputDTO$GetHechosColeccionInputDTOBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/shared/dtos/input/GetHechosColeccionInputDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/shared/dtos/input/GetHechosColeccionInputDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/shared/utils/FormateadorHecho.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/shared/utils/FormateadorHecho.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HechosController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/HechosController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/dtos/input/GetHechosColeccionInputDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/dtos/input/GetHechosColeccionInputDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/HechosService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/HechosService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/SolicitudHechoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/SolicitudHechoService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/controllers/HomeController.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/controllers/HomeController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/services/SolicitudHechoService.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/services/SolicitudHechoService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/WebApiCallerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/WebApiCallerService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/detalleColeccion.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/detalleColeccion.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/controllers/HechosController.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/controllers/HechosController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/dtos/input/GetHechosColeccionInputDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/dtos/input/GetHechosColeccionInputDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/detalleColeccion.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/detalleColeccion.html" afterDir="false" />
     </list>
     <list id="3bb68fa4-4cba-440f-a626-e70e60e396a9" name="Changes by germa" comment="" />
     <list id="f13608ce-ca7b-462a-b1c3-e6566403784d" name="Changes by Lucas" comment="" />
@@ -89,7 +108,7 @@
     "ignore.virus.scanning.warn.message": "true",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/nehue/Escritorio/Facultad/Diseño de Sistemas/2025-tpa-mi-no-grupo-17/serverBack/src/main/java/modulos/shared/dtos/output",
+    "last_opened_file_path": "C:/Users/germa/2025-tpa-mi-no-grupo-17/serverFront/src",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -308,7 +327,9 @@
       <workItem from="1762365499111" duration="11095000" />
       <workItem from="1762412710394" duration="2431000" />
       <workItem from="1762792244316" duration="8203000" />
-      <workItem from="1762874111177" duration="4722000" />
+      <workItem from="1762874111177" duration="4994000" />
+      <workItem from="1762914150672" duration="756000" />
+      <workItem from="1762958352616" duration="3045000" />
     </task>
     <task id="LOCAL-00001" summary="Merge branch 'entrega_6' of https://github.com/dds-utn/2025-tpa-mi-no-grupo-17 into entrega_6&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
       <option name="closed" value="true" />

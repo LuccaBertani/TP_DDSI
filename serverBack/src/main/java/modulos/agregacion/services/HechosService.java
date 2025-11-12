@@ -270,11 +270,12 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                     .fechaAcontecimientoFinal(inputDTO.getFechaAcontecimientoFinal())
                     .fechaCargaInicial(inputDTO.getFechaCargaInicial())
                     .fechaCargaFinal(inputDTO.getFechaCargaFinal())
-                    .origen(inputDTO.getOrigen())
+                    .fuentes(inputDTO.getFuentes())
                     .paisId(inputDTO.getPaisId())
                     .titulo(inputDTO.getTitulo())
                     .provinciaId(inputDTO.getProvinciaId())
                     .build();
+
         } else if (OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.PROXY)){
 
             List<Long> categoriasId = new ArrayList<>();
@@ -306,7 +307,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                     .fechaAcontecimientoFinal(inputDTO.getFechaAcontecimientoFinal())
                     .fechaCargaInicial(inputDTO.getFechaCargaInicial())
                     .fechaCargaFinal(inputDTO.getFechaCargaFinal())
-                    .origen(inputDTO.getOrigen())
+                    .fuentes(inputDTO.getFuentes())
                     .titulo(inputDTO.getTitulo())
                     .categoriaId(categoriasId)
                     .paisId(paisesId)
@@ -337,8 +338,8 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 } else if (filtro instanceof FiltroFechaCarga ffc) {
                     System.out.println("  [FiltroFechaCarga] desde=" + ffc.getFechaInicial() +
                             ", hasta=" + ffc.getFechaFinal());
-                } else if (filtro instanceof FiltroOrigen fo) {
-                    System.out.println("  [FiltroOrigen] origen=" + fo.getOrigenDeseado());
+                } else if (filtro instanceof FiltroFuente ff) {
+                    System.out.println("  [FiltroFuente] fuente=" + ff.getFuenteDeseada().codigoEnString());
                 } else if (filtro instanceof FiltroPais fp) {
                     System.out.println("  [FiltroPais] id=" + fp.getPais().getId() +
                             ", nombre=" + fp.getPais().getPais());

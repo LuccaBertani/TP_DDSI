@@ -209,7 +209,20 @@ public class WebApiCallerService {
         }
     }
 
-
+    public <T> ResponseEntity<List<T>> postListTokenOpcional(String url, Object body, Class<T> elementType) {
+        if (getUsernameFromSession()==null||getUsernameFromSession().equals("anonymousUser")) {
+            return webClient.post()
+                    .uri(url)
+                    .bodyValue(body)
+                    .retrieve()
+                    .toEntityList(elementType)
+                    .block()
+                    ;
+        }
+        else{
+            return getList(url, elementType);
+        }
+    }
 
     public <T> ResponseEntity<T> getEntity(String url, Class<T> elementType){
         return executeWithTokenRetry(token ->

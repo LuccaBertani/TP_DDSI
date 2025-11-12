@@ -1,5 +1,6 @@
 package modulos.agregacion.repositories.DbMain;
 
+import modulos.agregacion.entities.DbMain.Fuente;
 import modulos.agregacion.entities.DbMain.filtros.*;
 import modulos.agregacion.entities.atributosHecho.Origen;
 import modulos.agregacion.entities.atributosHecho.TipoContenido;
@@ -75,11 +76,11 @@ public interface IFiltroRepository extends JpaRepository<Filtro, Long> {
 
     /* ========== FiltroOrigen ========== */
     @Query("""
-           select fo
-           from FiltroOrigen fo
-           where fo.origenDeseado = :origen
+           select ff
+           from FiltroFuente ff
+           where ff.fuenteDeseada = :fuente
            """)
-    Optional<FiltroOrigen> findFiltroOrigenByOrigen(@Param("origen") Origen origen);
+    Optional<FiltroFuente> findFiltroFuenteByFuente(@Param("fuente") Fuente fuente);
     // Si 'origenDeseado' es un enum, cambiá el tipo a tu enum.
 
     /* ========== FiltroPais ========== */

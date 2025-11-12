@@ -75,6 +75,7 @@ public class HechosController {
     public ResponseEntity<?> getHechosFiltradosColeccion(
             @RequestBody GetHechosColeccionInputDTO inputDTO)
     {
+        System.out.println("HOLA hechos filtrar");
         return hechosService.getHechosColeccion(inputDTO);
     }
 
