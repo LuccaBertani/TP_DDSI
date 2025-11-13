@@ -50,13 +50,13 @@ public class ColeccionController {
     }
     //anda
     @PostMapping("/delete/{id_coleccion}")
-    public ResponseEntity<?> deleteColeccion(@PathVariable Long id_coleccion, @AuthenticationPrincipal Jwt principal){
-        return coleccionService.deleteColeccion(id_coleccion, principal);
+    public ResponseEntity<?> deleteColeccion(@PathVariable Long id_coleccion, @AuthenticationPrincipal String username){
+        return coleccionService.deleteColeccion(id_coleccion, username);
     }
     //anda
     @PostMapping("/update")
-    public ResponseEntity<?> updateColeccion(@Valid @RequestBody ColeccionUpdateInputDTO dto, @AuthenticationPrincipal Jwt principal){
-        return coleccionService.updateColeccion(dto, principal);
+    public ResponseEntity<?> updateColeccion(@Valid @RequestBody ColeccionUpdateInputDTO dto, @AuthenticationPrincipal String username){
+        return coleccionService.updateColeccion(dto, username);
     }
 
     @PostMapping("/add/fuente")

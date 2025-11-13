@@ -154,8 +154,13 @@
                 </div>
 
                 <div class="col-md-6">
-                    <div class="text-muted small mb-1">Fecha del acontecimiento</div>
-                    <div th:text="${AtributosModificarDTO.fechaAcontecimiento != null ? AtributosModificarDTO.fechaAcontecimiento : hecho.fechaAcontecimiento}"></div>
+                    <div class="col-md-6">
+                        <div class="text-muted small mb-1">Fecha del acontecimiento</div>
+                        <div th:text="${AtributosModificarDTO.fechaAcontecimiento != null ?
+                        #temporals.format(AtributosModificarDTO.fechaAcontecimiento, 'dd/MM/yyyy HH:mm') :
+                        hecho.fechaAcontecimiento}">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-md-6">

@@ -10,10 +10,14 @@
                     <div class="collection-badge mb-3">
                         <i class="bi bi-collection-fill me-2"></i>Gestión de Colecciones
                     </div>
-                    <h1 class="display-5 fw-bold mb-2 animated-gradient-text">
+                    <h1 class="display-5 fw-bold mb-2 animated-gradient-text"
+                        th:text="${ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.id_coleccion != null} ? 'Editar Colección' : 'Nueva Colección'">
                         Nueva Colección
                     </h1>
-                    <p class="lead text-muted mb-0">
+                    <p class="lead text-muted mb-0"
+                       th:text="${ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.id_coleccion != null}
+                                ? 'Actualizá el contenido y los filtros de tu colección'
+                                : 'Definí los criterios y filtros para tu colección temática de hechos históricos'">
                         Definí los criterios y filtros para tu colección temática de hechos históricos
                     </p>
                 </div>
@@ -27,13 +31,19 @@
                 <!-- Formulario -->
                 <form id="crearColeccionForm"
                       class="mt-4"
-                      th:object="${coleccionForm}"
-                      th:action="@{/colecciones/crear}"
+                      th:action="${ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.id_coleccion != null}
+                                   ? @{/colecciones/update}
+                                   : @{/colecciones/crear}"
                       method="post"
                       th:attr="data-refresh-url=@{/colecciones/crear}">
 
                     <!-- CSRF -->
                     <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                    <!-- ID (solo update) -->
+                    <input type="hidden" name="id_coleccion"
+                           th:if="${ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.id_coleccion != null}"
+                           th:value="${ColeccionUpdateInputDTO.id_coleccion}"/>
 
                     <!-- Información básica -->
                     <div class="form-card-collection mb-4">
@@ -45,34 +55,64 @@
                         </div>
                         <div class="form-card-body-collection">
                             <div class="row g-4">
+                                <!-- Título -->
                                 <div class="col-12">
                                     <label class="form-label-collection" for="titulo">
                                         <i class="bi bi-text-left me-2"></i>Título de la colección
                                         <span class="text-danger">*</span>
                                     </label>
-                                    <input class="form-control-collection" id="titulo" th:field="*{titulo}"
-                                           required minlength="3" placeholder="Ej: Guerra de la Independencia Argentina">
+                                    <input class="form-control-collection" id="titulo" name="titulo"
+                                           required minlength="3"
+                                           th:value="${
+                                             (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.titulo != null) ? ColeccionUpdateInputDTO.titulo
+                                             : (coleccionForm != null and coleccionForm.titulo != null) ? coleccionForm.titulo
+                                             : ''
+                                           }"
+                                           placeholder="Ej: Guerra de la Independencia Argentina">
                                 </div>
 
+                                <!-- Descripción -->
                                 <div class="col-12">
                                     <label class="form-label-collection" for="descripcion">
                                         <i class="bi bi-card-text me-2"></i>Descripción
                                         <span class="text-danger">*</span>
                                     </label>
-                                    <textarea class="form-control-collection" id="descripcion" th:field="*{descripcion}"
+                                    <textarea class="form-control-collection" id="descripcion" name="descripcion"
                                               rows="3" required minlength="10"
+                                              th:text="${
+                                                (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.descripcion != null) ? ColeccionUpdateInputDTO.descripcion
+                                                : (coleccionForm != null and coleccionForm.descripcion != null) ? coleccionForm.descripcion
+                                                : ''
+                                              }"
                                               placeholder="Describí brevemente el tema de esta colección..."></textarea>
                                 </div>
 
+                                <!-- Algoritmo de consenso -->
                                 <div class="col-md-6">
                                     <label class="form-label-collection" for="algoritmoConsenso">
                                         <i class="bi bi-diagram-3 me-2"></i>Algoritmo de consenso
                                     </label>
-                                    <select class="form-select-collection" id="algoritmoConsenso" th:field="*{algoritmoConsenso}">
-                                        <option value="">— Sin algoritmo —</option>
-                                        <option value="MAYORIA_ABSOLUTA">Mayoría absoluta</option>
-                                        <option value="MAYORIA_SIMPLE">Mayoría simple</option>
-                                        <option value="MULTIPLES_MENCIONES">Múltiples menciones</option>
+                                    <select class="form-select-collection" id="algoritmoConsenso" name="algoritmoConsenso">
+                                        <option value=""
+                                                th:selected="${
+                                                  (ColeccionUpdateInputDTO == null or ColeccionUpdateInputDTO.algoritmoConsenso == null)
+                                                  and (coleccionForm == null or coleccionForm.algoritmoConsenso == null)
+                                                }">— Sin algoritmo —</option>
+                                        <option value="MAYORIA_ABSOLUTA"
+                                                th:selected="${
+                                                  (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.algoritmoConsenso == 'MAYORIA_ABSOLUTA')
+                                                  or (coleccionForm != null and coleccionForm.algoritmoConsenso == 'MAYORIA_ABSOLUTA')
+                                                }">Mayoría absoluta</option>
+                                        <option value="MAYORIA_SIMPLE"
+                                                th:selected="${
+                                                  (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.algoritmoConsenso == 'MAYORIA_SIMPLE')
+                                                  or (coleccionForm != null and coleccionForm.algoritmoConsenso == 'MAYORIA_SIMPLE')
+                                                }">Mayoría simple</option>
+                                        <option value="MULTIPLES_MENCIONES"
+                                                th:selected="${
+                                                  (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.algoritmoConsenso == 'MULTIPLES_MENCIONES')
+                                                  or (coleccionForm != null and coleccionForm.algoritmoConsenso == 'MULTIPLES_MENCIONES')
+                                                }">Múltiples menciones</option>
                                     </select>
                                     <small class="form-text-collection">
                                         <i class="bi bi-info-circle me-1"></i>Define cómo se validan los hechos en esta colección
@@ -102,8 +142,13 @@
                                     <label class="form-label-collection" for="criterios_titulo">
                                         <i class="bi bi-search me-2"></i>Título contiene
                                     </label>
-                                    <input class="form-control-collection" id="criterios_titulo"
-                                           th:field="*{criterios.titulo}" placeholder="Buscar en títulos...">
+                                    <input class="form-control-collection" id="criterios_titulo" name="criterios.titulo"
+                                           th:value="${
+                                             (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.titulo != null) ? ColeccionUpdateInputDTO.criterios.titulo
+                                             : (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.titulo != null) ? coleccionForm.criterios.titulo
+                                             : ''
+                                           }"
+                                           placeholder="Buscar en títulos...">
                                 </div>
 
                                 <!-- Descripción contiene -->
@@ -111,8 +156,13 @@
                                     <label class="form-label-collection" for="criterios_descripcion">
                                         <i class="bi bi-search me-2"></i>Descripción contiene
                                     </label>
-                                    <input class="form-control-collection" id="criterios_descripcion"
-                                           th:field="*{criterios.descripcion}" placeholder="Buscar en descripciones...">
+                                    <input class="form-control-collection" id="criterios_descripcion" name="criterios.descripcion"
+                                           th:value="${
+                                             (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.descripcion != null) ? ColeccionUpdateInputDTO.criterios.descripcion
+                                             : (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.descripcion != null) ? coleccionForm.criterios.descripcion
+                                             : ''
+                                           }"
+                                           placeholder="Buscar en descripciones...">
                                 </div>
 
                                 <!-- Categorías -->
@@ -121,8 +171,13 @@
                                         <i class="bi bi-tags me-2"></i>Categorías
                                     </label>
                                     <select class="form-select-collection js-choices" id="criterios_categoriaId"
-                                            th:field="*{criterios.categoriaId}" multiple>
-                                        <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.categoria}">Categoría</option>
+                                            name="criterios.categoriaId" multiple>
+                                        <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.categoria}"
+                                                th:selected="${
+                                                  (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.categoriaId != null and ColeccionUpdateInputDTO.criterios.categoriaId.contains(c.id))
+                                                  or
+                                                  (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.categoriaId != null and coleccionForm.criterios.categoriaId.contains(c.id))
+                                                }">Categoría</option>
                                     </select>
                                     <small class="form-text-collection">
                                         <i class="bi bi-info-circle me-1"></i>Selección múltiple con búsqueda
@@ -135,11 +190,31 @@
                                         <i class="bi bi-file-earmark-play me-2"></i>Contenido multimedia
                                     </label>
                                     <select class="form-select-collection js-choices" id="criterios_contenidoMultimedia"
-                                            th:field="*{criterios.contenidoMultimedia}" multiple>
-                                        <option th:value="0">TEXTO</option>
-                                        <option th:value="1">IMAGEN</option>
-                                        <option th:value="2">AUDIO</option>
-                                        <option th:value="3">VIDEO</option>
+                                            name="criterios.contenidoMultimedia" multiple>
+                                        <option th:value="0"
+                                                th:selected="${
+                                                  (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.contenidoMultimedia != null and ColeccionUpdateInputDTO.criterios.contenidoMultimedia.contains(0))
+                                                  or
+                                                  (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.contenidoMultimedia != null and coleccionForm.criterios.contenidoMultimedia.contains(0))
+                                                }">TEXTO</option>
+                                        <option th:value="1"
+                                                th:selected="${
+                                                  (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.contenidoMultimedia != null and ColeccionUpdateInputDTO.criterios.contenidoMultimedia.contains(1))
+                                                  or
+                                                  (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.contenidoMultimedia != null and coleccionForm.criterios.contenidoMultimedia.contains(1))
+                                                }">IMAGEN</option>
+                                        <option th:value="2"
+                                                th:selected="${
+                                                  (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.contenidoMultimedia != null and ColeccionUpdateInputDTO.criterios.contenidoMultimedia.contains(2))
+                                                  or
+                                                  (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.contenidoMultimedia != null and coleccionForm.criterios.contenidoMultimedia.contains(2))
+                                                }">AUDIO</option>
+                                        <option th:value="3"
+                                                th:selected="${
+                                                  (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.contenidoMultimedia != null and ColeccionUpdateInputDTO.criterios.contenidoMultimedia.contains(3))
+                                                  or
+                                                  (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.contenidoMultimedia != null and coleccionForm.criterios.contenidoMultimedia.contains(3))
+                                                }">VIDEO</option>
                                     </select>
                                 </div>
 
@@ -149,8 +224,13 @@
                                         <i class="bi bi-globe-americas me-2"></i>País
                                     </label>
                                     <select class="form-select-collection js-choices" id="criterios_paisId"
-                                            th:field="*{criterios.paisId}" multiple>
-                                        <option th:each="p : ${paises}" th:value="${p.id}" th:text="${p.pais}">País</option>
+                                            name="criterios.paisId" multiple>
+                                        <option th:each="p : ${paises}" th:value="${p.id}" th:text="${p.pais}"
+                                                th:selected="${
+                                                  (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.paisId != null and ColeccionUpdateInputDTO.criterios.paisId.contains(p.id))
+                                                  or
+                                                  (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.paisId != null and coleccionForm.criterios.paisId.contains(p.id))
+                                                }">País</option>
                                     </select>
                                     <small class="form-text-collection">
                                         <i class="bi bi-arrow-clockwise me-1"></i>Al cambiar, se recargará la página conservando los datos
@@ -163,12 +243,14 @@
                                         <i class="bi bi-signpost me-2"></i>Provincia / Estado
                                     </label>
                                     <select class="form-select-collection js-choices" id="criterios_provinciaId"
-                                            th:field="*{criterios.provinciaId}" multiple
+                                            name="criterios.provinciaId" multiple
                                             th:disabled="${provincias == null}">
                                         <option th:each="pr : ${provincias}" th:value="${pr.id}" th:text="${pr.provincia}"
-                                                th:selected="${coleccionForm.criterios != null && coleccionForm.criterios.provinciaId != null && coleccionForm.criterios.provinciaId.contains(pr.id)}">
-                                            Provincia
-                                        </option>
+                                                th:selected="${
+                                                  (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.provinciaId != null and ColeccionUpdateInputDTO.criterios.provinciaId.contains(pr.id))
+                                                  or
+                                                  (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.provinciaId != null and coleccionForm.criterios.provinciaId.contains(pr.id))
+                                                }">Provincia</option>
                                     </select>
                                     <small class="form-text-collection">
                                         <i class="bi bi-info-circle me-1"></i>Se habilita según los países seleccionados
@@ -181,11 +263,19 @@
                                         <i class="bi bi-calendar-event me-2"></i>Fecha del acontecimiento
                                     </label>
                                     <div class="date-range-group">
-                                        <input type="date" class="form-control-collection"
-                                               th:field="*{criterios.fechaAcontecimientoInicial}">
+                                        <input type="date" class="form-control-collection" name="criterios.fechaAcontecimientoInicial"
+                                               th:value="${
+                                                 (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.fechaAcontecimientoInicial != null) ? ColeccionUpdateInputDTO.criterios.fechaAcontecimientoInicial
+                                                 : (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.fechaAcontecimientoInicial != null) ? coleccionForm.criterios.fechaAcontecimientoInicial
+                                                 : ''
+                                               }">
                                         <span class="date-separator">hasta</span>
-                                        <input type="date" class="form-control-collection"
-                                               th:field="*{criterios.fechaAcontecimientoFinal}">
+                                        <input type="date" class="form-control-collection" name="criterios.fechaAcontecimientoFinal"
+                                               th:value="${
+                                                 (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.fechaAcontecimientoFinal != null) ? ColeccionUpdateInputDTO.criterios.fechaAcontecimientoFinal
+                                                 : (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.fechaAcontecimientoFinal != null) ? coleccionForm.criterios.fechaAcontecimientoFinal
+                                                 : ''
+                                               }">
                                     </div>
                                 </div>
 
@@ -195,11 +285,19 @@
                                         <i class="bi bi-calendar-plus me-2"></i>Fecha de carga
                                     </label>
                                     <div class="date-range-group">
-                                        <input type="date" class="form-control-collection"
-                                               th:field="*{criterios.fechaCargaInicial}">
+                                        <input type="date" class="form-control-collection" name="criterios.fechaCargaInicial"
+                                               th:value="${
+                                                 (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.fechaCargaInicial != null) ? ColeccionUpdateInputDTO.criterios.fechaCargaInicial
+                                                 : (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.fechaCargaInicial != null) ? coleccionForm.criterios.fechaCargaInicial
+                                                 : ''
+                                               }">
                                         <span class="date-separator">hasta</span>
-                                        <input type="date" class="form-control-collection"
-                                               th:field="*{criterios.fechaCargaFinal}">
+                                        <input type="date" class="form-control-collection" name="criterios.fechaCargaFinal"
+                                               th:value="${
+                                                 (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.fechaCargaFinal != null) ? ColeccionUpdateInputDTO.criterios.fechaCargaFinal
+                                                 : (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.fechaCargaFinal != null) ? coleccionForm.criterios.fechaCargaFinal
+                                                 : ''
+                                               }">
                                     </div>
                                 </div>
                             </div>
@@ -211,7 +309,10 @@
                         <a class="btn btn-secondary-collection" th:href="@{/colecciones/public/get-all}">
                             <i class="bi bi-arrow-left me-2"></i>Cancelar
                         </a>
-                        <button class="btn btn-primary-collection" type="submit">
+                        <button class="btn btn-primary-collection" type="submit"
+                                th:text="${ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.id_coleccion != null}
+                                         ? 'Actualizar colección'
+                                         : 'Crear colección'">
                             <i class="bi bi-check-circle me-2"></i>Crear colección
                         </button>
                     </div>
@@ -329,7 +430,8 @@
                 window.location.assign(url);
             }
 
-            paisSelect?.addEventListener('change', () => {
+            // Cuando cambia País -> refresca para traer provincias
+            document.getElementById('criterios_paisId')?.addEventListener('change', () => {
                 setProvinciasEnabled(true);
                 refreshWithCurrentState();
             });

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import modulos.Front.BodyToListConverter;
+import modulos.Front.FechaParser;
 import modulos.Front.dtos.input.*;
 import modulos.Front.dtos.output.AtributosModificarDTO;
 import modulos.Front.dtos.output.HechosResponse;
@@ -22,6 +23,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -131,7 +134,7 @@ public class HechosController {
 
     @GetMapping("/public/get")
     public String getHecho(Model model, Long id_hecho, String fuente,
-    @RequestParam(name = "id_solicitud", required = false) Long id_solicitud){
+                           @RequestParam(name = "id_solicitud", required = false) Long id_solicitud){
         ResponseEntity<?> rtaDto = this.hechosService.getHecho(id_hecho, fuente);
         System.out.println("ID DE SOLICITUD DEL CULO: " + id_solicitud);
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
@@ -157,6 +160,9 @@ public class HechosController {
 
                     UsuarioOutputDto usuarioOutputDto = (UsuarioOutputDto) rtaUsuario.getBody();
 
+                    System.out.println("FECHA SIN PARSEAR: " + hecho.getFechaAcontecimiento());
+                    System.out.println("FECHA PARSEADA DE MIERDA: " + FechaParser.parsearFecha(hecho.getFechaAcontecimiento()));
+
 
                     if (usuarioOutputDto.getRol().equals(Rol.ADMINISTRADOR)){
                         HechoModificarInputDTO dtoModificar = HechoModificarInputDTO.builder()
@@ -171,6 +177,16 @@ public class HechosController {
                                 .id_categoria(hecho.getId_categoria())
                                 .build();
                         model.addAttribute("HechoModificarInputDTO", dtoModificar);
+
+                        if (id_solicitud != null){
+                            System.out.println("ID SOLICITUD: " + id_solicitud);
+                            ResponseEntity<?> rtaAtributosModificar = solicitudHechoService.getAtributosHechoAModificar(id_solicitud);
+                            if (rtaAtributosModificar.getStatusCode().is2xxSuccessful() && rtaAtributosModificar.hasBody()){
+                                AtributosModificarDTO atributosModificarDTO = (AtributosModificarDTO) rtaAtributosModificar.getBody();
+                                System.out.println("TITULO A MODIFICAR: " + atributosModificarDTO.getTitulo());
+                                model.addAttribute("AtributosModificarDTO", atributosModificarDTO);
+                            }
+                        }
                     }
 
                     if (hecho.getUsername() != null){
@@ -203,22 +219,9 @@ public class HechosController {
                         }
 
 
-                }
-
-
+                    }
                 }
                 else {
-
-                    if (id_solicitud != null){
-                        System.out.println("ID SOLICITUD: " + id_solicitud);
-                        ResponseEntity<?> rtaAtributosModificar = solicitudHechoService.getAtributosHechoAModificar(id_solicitud);
-                        if (rtaAtributosModificar.getStatusCode().is2xxSuccessful() && rtaAtributosModificar.hasBody()){
-                            AtributosModificarDTO atributosModificarDTO = (AtributosModificarDTO) rtaAtributosModificar.getBody();
-                            System.out.println("TITULO A MODIFICAR: " + atributosModificarDTO.getTitulo());
-                            model.addAttribute("AtributosModificarDTO", atributosModificarDTO);
-                        }
-                    }
-
                     model.addAttribute("puedeReportar", true);
                 }
             }
@@ -234,7 +237,6 @@ public class HechosController {
         }
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
-
 
     @PostMapping("/public/get/filtrar")
     public String getHechosFiltradosColeccion(@Valid @ModelAttribute GetHechosColeccionInputDTO inputDTO, Model model){

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" th:replace="~{layout/base :: html}" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" th:replace="~{layout/base :: html}" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
 <main th:fragment="contenido">
 
     <!-- Hero Header -->
@@ -272,9 +273,81 @@
                             <button class="btn btn-primary-filter" type="submit">
                                 <i class="bi bi-search me-2"></i>Aplicar filtros
                             </button>
+
+
+
                         </div>
                     </div>
                 </form>
+                <form th:action="@{/colecciones/delete/{id_coleccion}(id_coleccion=${coleccion.id})}"
+                      method="post"
+                      style="display:inline;">
+
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                    <button type="submit" style="color: #b91c1c" class="btn btn-danger-filter">
+                        <i class="bi bi-trash3 me-2"></i>Eliminar colección
+                    </button>
+                </form>
+
+                <form th:action="@{/colecciones/crear}"
+                      method="get"
+                      style="display:inline;"
+                      th:if="${ColeccionUpdateInputDTO != null}">
+
+                    <!-- Campos raíz -->
+                    <input type="hidden" name="id_coleccion"
+                           th:value="${ColeccionUpdateInputDTO.id_coleccion}" />
+                    <input type="hidden" name="titulo"
+                           th:value="${ColeccionUpdateInputDTO.titulo}" />
+                    <input type="hidden" name="descripcion"
+                           th:value="${ColeccionUpdateInputDTO.descripcion}" />
+                    <input type="hidden" name="algoritmoConsenso"
+                           th:value="${ColeccionUpdateInputDTO.algoritmoConsenso}" />
+
+                    <!-- Criterios (simples) -->
+                    <input type="hidden" name="criterios.titulo"
+                           th:value="${ColeccionUpdateInputDTO.criterios != null ? ColeccionUpdateInputDTO.criterios.titulo : null}" />
+                    <input type="hidden" name="criterios.descripcion"
+                           th:value="${ColeccionUpdateInputDTO.criterios != null ? ColeccionUpdateInputDTO.criterios.descripcion : null}" />
+                    <input type="hidden" name="criterios.fechaAcontecimientoInicial"
+                           th:value="${ColeccionUpdateInputDTO.criterios != null ? ColeccionUpdateInputDTO.criterios.fechaAcontecimientoInicial : null}" />
+                    <input type="hidden" name="criterios.fechaAcontecimientoFinal"
+                           th:value="${ColeccionUpdateInputDTO.criterios != null ? ColeccionUpdateInputDTO.criterios.fechaAcontecimientoFinal : null}" />
+                    <input type="hidden" name="criterios.fechaCargaInicial"
+                           th:value="${ColeccionUpdateInputDTO.criterios != null ? ColeccionUpdateInputDTO.criterios.fechaCargaInicial : null}" />
+                    <input type="hidden" name="criterios.fechaCargaFinal"
+                           th:value="${ColeccionUpdateInputDTO.criterios != null ? ColeccionUpdateInputDTO.criterios.fechaCargaFinal : null}" />
+
+                    <!-- Criterios (listas) -->
+                    <th:block th:if="${ColeccionUpdateInputDTO.criterios != null}">
+                        <!-- País -->
+                        <input type="hidden" name="criterios.paisId"
+                               th:each="v : ${ColeccionUpdateInputDTO.criterios.paisId}"
+                               th:value="${v}" />
+                        <!-- Provincia -->
+                        <input type="hidden" name="criterios.provinciaId"
+                               th:each="v : ${ColeccionUpdateInputDTO.criterios.provinciaId}"
+                               th:value="${v}" />
+                        <!-- Categoría -->
+                        <input type="hidden" name="criterios.categoriaId"
+                               th:each="v : ${ColeccionUpdateInputDTO.criterios.categoriaId}"
+                               th:value="${v}" />
+                        <!-- Contenido Multimedia -->
+                        <input type="hidden" name="criterios.contenidoMultimedia"
+                               th:each="v : ${ColeccionUpdateInputDTO.criterios.contenidoMultimedia}"
+                               th:value="${v}" />
+                        <!-- Fuentes -->
+                        <input type="hidden" name="criterios.fuentes"
+                               th:each="v : ${ColeccionUpdateInputDTO.criterios.fuentes}"
+                               th:value="${v}" />
+                    </th:block>
+
+                    <button type="submit" class="btn btn-danger-filter" style="color:#4f46e5">
+                        <i class="bi bi-pencil-square me-2"></i>Modificar colección
+                    </button>
+                </form>
+
             </div>
         </div>
     </div>

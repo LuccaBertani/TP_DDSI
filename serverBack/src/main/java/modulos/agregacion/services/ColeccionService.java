@@ -233,9 +233,9 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
-    public ResponseEntity<?> deleteColeccion(Long id_coleccion, Jwt principal) {
+    public ResponseEntity<?> deleteColeccion(Long id_coleccion, String username) {
 
-        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
+        ResponseEntity<?> rta = checkeoAdmin(username);
 
         if (!rta.getStatusCode().is2xxSuccessful()){
             return rta;
@@ -344,9 +344,10 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    public ResponseEntity<?> updateColeccion(ColeccionUpdateInputDTO dto, Jwt principal) {
+    @Transactional
+    public ResponseEntity<?> updateColeccion(ColeccionUpdateInputDTO dto, String username) {
 
-        ResponseEntity<?> respuesta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
+        ResponseEntity<?> respuesta = checkeoAdmin(username);
 
         if(!respuesta.getStatusCode().equals(HttpStatus.OK)){
             return respuesta;
@@ -367,9 +368,33 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
         }
 
         List<List<IFiltro>> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadores, dto.getCriterios()));
-        List<Filtro> filtrosJuntos = new ArrayList<>();
-        filtros.forEach(f -> filtrosJuntos.add((Filtro) f));
+
+
+        List<Filtro> filtrosJuntos = filtros.stream()
+                .flatMap(List::stream)     // aplana las sublistas
+                .map(f -> (Filtro) f)      // castea cada elemento individual
+                .collect(Collectors.toCollection(ArrayList::new)); // mutable ✅
         coleccion.setCriterios(filtrosJuntos);
+
+        coleccion.setCriterios(filtrosJuntos);
+
+        if (dto.getAlgoritmoConsenso() != null){
+            switch (dto.getAlgoritmoConsenso()) {
+                case "MAYORIA_ABSOLUTA":
+                    coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaAbsoluta());
+                    break;
+                case "MAYORIA_SIMPLE":
+                    coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMayoriaSimple());
+                    break;
+                case "MULTIPLES_MENCIONES":
+                    coleccion.setAlgoritmoConsenso(new AlgoritmoConsensoMultiplesMenciones());
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        coleccionesRepo.save(coleccion);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
