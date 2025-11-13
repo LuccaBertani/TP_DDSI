@@ -636,11 +636,14 @@ public class FormateadorHecho {
                     criterios.setFechaCargaFinal(filtroFechaCarga.getFechaFinal().toString());
                 }
 
-                // ---------- ORIGEN ----------
-                else if (filtro instanceof FiltroFuente filtroOrigen) {
-                    Fuente fuente = filtroOrigen.getFuenteDeseada();
-                    if (fuente != null)
+                // ---------- FUENTE ----------
+                else if (filtro instanceof FiltroFuente filtroFuente) {
+                    Fuente fuente = filtroFuente.getFuenteDeseada();
+                    System.out.println("FILTRO ACA HOLA SOY YO: " + fuente);
+                    if (fuente != null) {
+                        System.out.println("HOLA ENTRE A FUENTE ESTOY FELIZ");
                         criterios.getFuentes().add(fuente.getCodigo());
+                    }
                 }
 
                 // ---------- PAÍS ----------
