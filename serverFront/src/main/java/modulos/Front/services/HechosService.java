@@ -25,7 +25,7 @@ public class HechosService {
     }
 
     public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO hechoInputDTO) {
-        return webApiCallerService.postEntity(this.hechoServiceUrl + "/subir", hechoInputDTO, Void.class);
+        return webApiCallerService.postMultipartHecho(this.hechoServiceUrl + "/subir", hechoInputDTO, Void.class);
     }
 
     public ResponseEntity<?> importarHechos(ImportacionHechosInputDTO dtoInput, MultipartFile file) {

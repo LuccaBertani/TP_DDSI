@@ -71,6 +71,11 @@ public class HechosController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/subir")
     public String subirHecho(RedirectAttributes ra, @Valid @ModelAttribute SolicitudHechoInputDTO hechoInputDTO){
+        System.out.println("ARCHIVO: " + hechoInputDTO.getContenidosMultimedia());
+
+        if(!hechoInputDTO.getContenidosMultimedia().isEmpty()){
+            System.out.println("SIZE LISTA DE ARCHIVOS: " + hechoInputDTO.getContenidosMultimedia().size());
+        }
         ResponseEntity<?> rtaDto = this.hechosService.subirHecho(hechoInputDTO);
         if(rtaDto.getStatusCode().is2xxSuccessful()){
             return "redirect:/public/contribuir";

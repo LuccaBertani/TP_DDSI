@@ -111,7 +111,7 @@ public class SolicitudHechoService {
     }
 
     @Transactional
-    public ResponseEntity<?> solicitarSubirHecho(SolicitudHechoInputDTO dto, String username){
+    public ResponseEntity<?> solicitarSubirHecho(SolicitudHechoInputDTO dto, List<MultipartFile> files, String username){
         // Los visualizadores o contribuyentes llaman al metodo, no los admins
         Usuario usuario = null;
         usuario = usuariosRepository.findByNombreDeUsuario(username).orElse(null);
@@ -135,8 +135,10 @@ public class SolicitudHechoService {
 
         List<ContenidoMultimedia> contenidosMultimedia = new ArrayList<>();
 
-        if (dto.getContenidosMultimedia() != null){
-            for(MultipartFile file : dto.getContenidosMultimedia()) {
+        System.out.println("VOY A ENTRAR A CONTENIDO MULTIMIERDA");
+        if (files != null){
+            System.out.println("ENTRE!! QUE EMOCION");
+            for(MultipartFile file : files) {
                 try {
                     String url = GestorArchivos.guardarArchivo(file);
 
@@ -145,8 +147,10 @@ public class SolicitudHechoService {
                     contenidoMultimedia.setUrl(url);
                     contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
                     contenidosMultimedia.add(contenidoMultimedia);
-                } catch (IOException ignore) {
+                } catch (IOException e) {
+                    System.err.println("❌ Error al procesar archivos multimedia:");
                 }
+
             }
         }
 

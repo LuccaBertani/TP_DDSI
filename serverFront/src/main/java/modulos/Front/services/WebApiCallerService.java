@@ -3,6 +3,7 @@ package modulos.Front.services;
 import jakarta.servlet.http.HttpServletRequest;
 import modulos.Front.dtos.input.AuthResponseDTO;
 import modulos.Front.dtos.input.ImportacionHechosInputDTO;
+import modulos.Front.dtos.input.SolicitudHechoInputDTO;
 import modulos.Front.dtos.input.TokenResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -262,6 +263,122 @@ public class WebApiCallerService {
         );
     }
 
+    public <T> ResponseEntity<T> postMultipartHecho(
+            String url,
+            SolicitudHechoInputDTO dto,
+            Class<T> type
+    ) {
+
+        MultipartBodyBuilder builder = new MultipartBodyBuilder();
+
+        System.out.println("→ Construyendo multipart para subir hecho");
+
+        // =========================================
+        // 1) PARTE META (SIEMPRE JSON)
+        // =========================================
+        builder
+                .part("meta", dto)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        // =========================================
+        // 2) ARCHIVOS contenidosMultimedia
+        // =========================================
+        if (dto.getContenidosMultimedia() != null) {
+
+            for (MultipartFile file : dto.getContenidosMultimedia()) {
+
+                if (!file.isEmpty()) {
+
+                    String originalName = file.getOriginalFilename();
+                    String safeName = (originalName == null || originalName.isBlank())
+                            ? "archivo_" + System.currentTimeMillis()
+                            : originalName;
+
+                    builder
+                            .part("contenidosMultimedia", file.getResource())
+                            .filename(safeName)
+                            .contentType(
+                                    file.getContentType() != null
+                                            ? MediaType.parseMediaType(file.getContentType())
+                                            : MediaType.APPLICATION_OCTET_STREAM
+                            );
+                }
+            }
+        }
+
+        // =========================================
+        // 3) EJECUTAR REQUEST CON TOKEN
+        // =========================================
+        return executeWithTokenRetry(token ->
+                webClient.post()
+                        .uri(url)
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .body(BodyInserters.fromMultipartData(builder.build()))
+                        .retrieve()
+                        .toEntity(type)
+        );
+    }
+
+
+    public <T> ResponseEntity<T> postMultipartHechoTokenOpcional(
+            String url,
+            SolicitudHechoInputDTO dto,
+            Class<T> type
+    ) {
+
+        // Si NO hay usuario logueado → NO se envía token
+        if (getUsernameFromSession() == null) {
+
+            MultipartBodyBuilder builder = new MultipartBodyBuilder();
+
+            // =========================================
+            // 1) META (JSON)
+            // =========================================
+            builder
+                    .part("meta", dto)
+                    .contentType(MediaType.APPLICATION_JSON);
+
+            // =========================================
+            // 2) ARCHIVOS contenidosMultimedia
+            // =========================================
+            if (dto.getContenidosMultimedia() != null) {
+
+                for (MultipartFile file : dto.getContenidosMultimedia()) {
+                    if (!file.isEmpty()) {
+
+                        String originalName = file.getOriginalFilename();
+                        String safeName = (originalName == null || originalName.isBlank())
+                                ? "archivo_" + System.currentTimeMillis()
+                                : originalName;
+
+                        builder
+                                .part("contenidosMultimedia", file.getResource())
+                                .filename(safeName)
+                                .contentType(
+                                        file.getContentType() != null
+                                                ? MediaType.parseMediaType(file.getContentType())
+                                                : MediaType.APPLICATION_OCTET_STREAM
+                                );
+                    }
+                }
+            }
+
+            // =========================================
+            // 3) REQUEST SIN TOKEN
+            // =========================================
+            return webClient.post()
+                    .uri(url)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .body(BodyInserters.fromMultipartData(builder.build()))
+                    .retrieve()
+                    .toEntity(type)
+                    .block();
+        }
+        // Si HAY token → usar método con token
+        return postMultipartHecho(url, dto, type);
+    }
+
     public <T> ResponseEntity<T> postEntityTokenOpcional(String url, Object body, Class<T> elementType){
         if (getUsernameFromSession()==null) {
             return webClient
@@ -288,6 +405,8 @@ public class WebApiCallerService {
                         .toEntity(elementType)
         );
     }
+
+
 
     public <T> ResponseEntity<List<T>> postList(String url, Object body, Class<T> elementType){
         return executeWithTokenRetry(token ->

@@ -9,6 +9,7 @@ import modulos.agregacion.entities.DbMain.Fuente;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -61,6 +62,6 @@ public class AtributosHecho {
     private Double longitud;
 
     public AtributosHecho() {
-
+    this.contenidosMultimedia = new ArrayList<>();
     }
 }

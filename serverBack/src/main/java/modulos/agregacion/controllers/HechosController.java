@@ -36,9 +36,12 @@ public class HechosController {
     }
 
     //anda
-    @PostMapping("/subir")
-    public ResponseEntity<?> subirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput, @AuthenticationPrincipal String username){
-        return hechosService.subirHecho(dtoInput, username); // 201 o 401
+    @PostMapping(value="/subir", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> subirHecho(
+            @RequestPart("meta") SolicitudHechoInputDTO dto,
+            @RequestPart("contenidosMultimedia") List<MultipartFile> files,
+            @AuthenticationPrincipal String username){
+        return hechosService.subirHecho(dto, files, username); // 201 o 401
     }
 
     @PostMapping(

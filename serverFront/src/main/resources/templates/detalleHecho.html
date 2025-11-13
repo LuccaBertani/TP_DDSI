@@ -242,6 +242,66 @@
         </div>
     </div>
 
+    <div class="col-12 mt-4">
+        <h6 class="text-uppercase text-muted mb-3 text-center">Contenido multimedia</h6>
+
+        <div class="row g-3 justify-content-center">
+
+            <!-- Si no hay contenido -->
+            <div th:if="${hecho.contenido == null or #lists.isEmpty(hecho.contenido)}"
+                 class="text-center text-muted">
+                No hay contenido multimedia asociado a este hecho.
+            </div>
+
+            <!-- Si hay contenido -->
+            <div th:each="media : ${hecho.contenido}"
+                 class="col-md-6 col-lg-4">
+
+                <div class="p-2 border rounded"
+                     style="background:#fafafa; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.05)">
+
+                    <!-- Mostrar IMAGEN -->
+                    <img th:if="${#strings.endsWith(media.url, '.png')
+                             or #strings.endsWith(media.url, '.jpg')
+                             or #strings.endsWith(media.url, '.jpeg')
+                             or #strings.endsWith(media.url, '.gif')}"
+                         th:src="${media.url}"
+                         class="img-fluid rounded"
+                         style="max-height:220px; object-fit:cover" />
+
+                    <!-- Mostrar VIDEO -->
+                    <video th:if="${#strings.endsWith(media.url, '.mp4')
+                               or #strings.endsWith(media.url, '.webm')
+                               or #strings.endsWith(media.url, '.ogg')}"
+                           class="img-fluid rounded"
+                           style="max-height:220px; object-fit:cover"
+                           controls>
+                        <source th:src="${media.url}">
+                        Tu navegador no soporta video.
+                    </video>
+
+                    <!-- Mostrar TEXTO / ARCHIVOS DESCARGABLES -->
+                    <div th:if="${#strings.endsWith(media.url, '.txt')
+                             or #strings.endsWith(media.url, '.pdf')
+                             or #strings.endsWith(media.url, '.docx')
+                             or #strings.endsWith(media.url, '.csv')
+                             or #strings.endsWith(media.url, '.xlsx')}"
+                         class="p-2 text-center">
+
+                        <i class="bi bi-file-earmark-text fs-1 text-secondary"></i>
+                        <div class="mt-1">
+                            <a th:href="${media.url}" target="_blank" class="small fw-bold">
+                                Descargar archivo
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <!-- ACCIONES -->
     <div class="d-flex justify-content-center gap-2 mb-4">
         <a class="btn btn-outline-dark" th:href="@{/hechos/public/get-all}">
@@ -301,6 +361,8 @@
             </button>
         </form>
     </div>
+
+
 
     <script>
         (function () {

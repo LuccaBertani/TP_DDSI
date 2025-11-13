@@ -137,7 +137,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
     //lo sube un administrador (lo considero carga dinamica)
     @Transactional
-    public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO dtoInput, String username){
+    public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO dtoInput, List<MultipartFile> files, String username){
 
         if(dtoInput.getTitulo() == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -150,6 +150,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         }
 
         Usuario usuario = (Usuario)rta.getBody();
+        assert usuario != null;
         usuario.incrementarHechosSubidos();
 
         HechoDinamica hecho = new HechoDinamica();
@@ -168,8 +169,9 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         System.out.println("FECHA:" + fecha);
         hecho.getAtributosHecho().setFechaUltimaActualizacion(hecho.getAtributosHecho().getFechaCarga());
 
-        if (dtoInput.getContenidosMultimedia() != null){
-            for(MultipartFile contenidoMultimedia : dtoInput.getContenidosMultimedia()){
+        if (files != null){
+            for(MultipartFile contenidoMultimedia : files){
+                System.out.println("VOY A GUARDAR UN CONTENIDO MULTIMIERDA");
                 this.guardarContenidoMultimedia(contenidoMultimedia, hecho);
             }
         }
@@ -190,7 +192,9 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             contenidoMultimedia.setUrl(url);
             contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
             hecho.getAtributosHecho().getContenidosMultimedia().add(contenidoMultimedia);
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            System.err.println("❌ Error al procesar archivos multimedia:");
+            e.printStackTrace();
         }
     }
 
@@ -804,6 +808,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             }
             case "PROXY":{
                 HechoProxy hecho = hechosProxyRepo.findById(id_hecho).orElse(null);
+                assert hecho != null;
                 hecho.incrementarAccesos();
                 hechosProxyRepo.save(hecho);
                 VisualizarHechosOutputDTO visualizarHechosOutputDTO = crearHechoDto(hecho, VisualizarHechosOutputDTO.class);

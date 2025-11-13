@@ -9,8 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -52,10 +54,12 @@ public class SolicitudHechoController {
 
     // Anda
     @PostMapping("/public/subir-hecho")
-    public ResponseEntity<?> enviarSolicitudSubirHecho(@Valid @RequestBody SolicitudHechoInputDTO dtoInput, @AuthenticationPrincipal String username){
+    public ResponseEntity<?> enviarSolicitudSubirHecho(@RequestPart("meta") SolicitudHechoInputDTO dto,
+                                                       @RequestPart("contenidosMultimedia") List<MultipartFile> files,
+                                                       @AuthenticationPrincipal String username){
         System.out.println("HOLAAA");
         System.out.println("SOY UN PELOTUDO DE MIERDA " + username);
-        return solicitudHechoService.solicitarSubirHecho(dtoInput, username); // 200 o 401
+        return solicitudHechoService.solicitarSubirHecho(dto, files, username); // 200 o 401
     }
 
     // Anda

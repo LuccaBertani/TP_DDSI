@@ -71,7 +71,7 @@ public class SolicitudHechoService {
     }
 
     public ResponseEntity<?> enviarSolicitudSubirHecho(SolicitudHechoInputDTO dto) {
-        return webApiCallerService.postEntityTokenOpcional(this.solicitudHechoServiceUrl + "/public/subir-hecho", dto, Void.class);
+        return webApiCallerService.postMultipartHechoTokenOpcional(this.solicitudHechoServiceUrl + "/public/subir-hecho", dto, Void.class);
     }
 
     public ResponseEntity<?> reportarHecho(String motivo, Long idHecho, String fuente) {

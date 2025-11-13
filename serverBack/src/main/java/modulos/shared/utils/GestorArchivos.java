@@ -15,6 +15,7 @@ public class GestorArchivos {
 
     public static String guardarArchivo(MultipartFile file) throws IOException {
         // Crear carpeta si no existe
+        System.out.println("Guardando archivo");
         Path uploadPath = Paths.get(UPLOAD_DIR);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
