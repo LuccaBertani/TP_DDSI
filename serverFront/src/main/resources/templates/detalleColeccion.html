@@ -1,338 +1,394 @@
 <!DOCTYPE html>
 <html lang="es" th:replace="~{layout/base :: html}" xmlns:th="http://www.thymeleaf.org">
-<main th:fragment="contenido" class="container py-4">
+<main th:fragment="contenido">
 
-
-<section class="container" style="max-width:960px">
-
-    <!-- Encabezado -->
-    <div class="header-ribbon text-center mb-4">
-        <h1 class="h3 mb-0" th:text="${coleccion != null ? coleccion.titulo : '—'}">Título de la Colección</h1>
-        <p class="mb-1" th:text="${coleccion != null ? coleccion.descripcion : '—'}">Descripción de la colección...</p>
-    </div>
-
-    <!-- Detalles principales -->
-    <div class="card-elev p-4 mb-4">
-        <div class="row g-3">
-            <div class="col-md-6">
-                <div class="text-label">Título</div>
-                <div class="text-value" th:text="${coleccion != null ? coleccion.titulo : '—'}">—</div>
-            </div>
-            <div class="col-md-6">
-                <div class="text-label">Descripción</div>
-                <div class="text-value" th:text="${coleccion != null ? coleccion.descripcion : '—'}">—</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Criterios -->
-    <div class="card-elev p-4 mb-4">
-        <h5 class="mb-3 text-center text-muted">Criterios de filtrado</h5>
-        <div class="row g-3">
-            <!-- Categorías -->
-            <div class="col-md-6">
-                <div class="text-label">Categorías</div>
-                <div class="text-value"
-                     th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.categoria != null
-                       ? #strings.listJoin(coleccion.criterios.categoria, ', ')
-                       : '—'}">—</div>
-            </div>
-            <!-- Países -->
-            <div class="col-md-6">
-                <div class="text-label">Países</div>
-                <div class="text-value"
-                     th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.pais != null
-                       ? #strings.listJoin(coleccion.criterios.pais, ', ')
-                       : '—'}">—</div>
-            </div>
-            <!-- Provincias -->
-            <div class="col-md-6">
-                <div class="text-label">Provincias</div>
-                <div class="text-value"
-                     th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.provincia != null
-                       ? #strings.listJoin(coleccion.criterios.provincia, ', ')
-                       : '—'}">—</div>
-            </div>
-            <!-- Contenido Multimedia -->
-            <div class="col-md-6">
-                <div class="text-label">Contenido Multimedia</div>
-                <div class="text-value">
-                    <span th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.contenidoMultimedia != null
-                                    ? #strings.listJoin(coleccion.criterios.contenidoMultimedia, ', ')
-                                    : '—'}">—</span>
+    <!-- Hero Header -->
+    <section class="collection-detail-hero">
+        <div class="container">
+            <div class="row align-items-center justify-content-center">
+                <div class="col-lg-10 text-center">
+                    <div class="collection-detail-badge mb-3">
+                        <i class="bi bi-collection-fill me-2"></i>Colección
+                    </div>
+                    <h1 class="display-5 fw-bold mb-3" th:text="${coleccion != null ? coleccion.titulo : '—'}">
+                        Título de la Colección
+                    </h1>
+                    <p class="lead text-muted mb-0" th:text="${coleccion != null ? coleccion.descripcion : '—'}">
+                        Descripción de la colección...
+                    </p>
                 </div>
             </div>
-            <!-- Fecha del Acontecimiento -->
-            <div class="col-md-6">
-                <div class="text-label">Fecha del Acontecimiento</div>
-                <div class="text-value">
-                    <span th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.fechaAcontecimientoInicial != null
-                                    ? coleccion.criterios.fechaAcontecimientoInicial : '—'}">—</span>
-                    <span class="text-muted">a</span>
-                    <span th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.fechaAcontecimientoFinal != null
-                                    ? coleccion.criterios.fechaAcontecimientoFinal : '—'}">—</span>
-                </div>
-            </div>
-            <!-- Fecha de Carga -->
-            <div class="col-md-6">
-                <div class="text-label">Fecha de Carga</div>
-                <div class="text-value">
-                    <span th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.fechaCargaInicial != null
-                                    ? coleccion.criterios.fechaCargaInicial : '—'}">—</span>
-                    <span class="text-muted">a</span>
-                    <span th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.fechaCargaFinal != null
-                                    ? coleccion.criterios.fechaCargaFinal : '—'}">—</span>
-                </div>
-            </div>
+        </div>
+    </section>
 
-            <!-- Título contiene -->
-            <div class="col-md-6">
-                <div class="text-label">Título contiene</div>
-                <div class="text-value"
-                     th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.titulo != null
-                       ? coleccion.criterios.titulo : '—'}">—</div>
+    <div class="container pb-5">
+        <!-- Información General -->
+        <div class="detail-card mb-4">
+            <div class="detail-card-header">
+                <div class="detail-card-icon">
+                    <i class="bi bi-info-circle-fill"></i>
+                </div>
+                <h5 class="mb-0">Información General</h5>
             </div>
-            <!-- Descripción contiene -->
-            <div class="col-md-12">
-                <div class="text-label">Descripción contiene</div>
-                <div class="text-value"
-                     th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.descripcion != null
-                       ? coleccion.criterios.descripcion : '—'}">—</div>
+            <div class="detail-card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label">Título</span>
+                            <span class="detail-value" th:text="${coleccion != null ? coleccion.titulo : '—'}">—</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label">Algoritmo de consenso</span>
+                            <span class="detail-value" th:text="${coleccion != null and coleccion.algoritmoDeConsenso != null ? coleccion.algoritmoDeConsenso : 'Sin algoritmo'}">—</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="detail-item">
+                            <span class="detail-label">Descripción</span>
+                            <span class="detail-value" th:text="${coleccion != null ? coleccion.descripcion : '—'}">—</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Criterios de Filtrado -->
+        <div class="detail-card mb-4">
+            <div class="detail-card-header">
+                <div class="detail-card-icon bg-gradient-amber">
+                    <i class="bi bi-funnel-fill"></i>
+                </div>
+                <h5 class="mb-0">Criterios de Filtrado Aplicados</h5>
+            </div>
+            <div class="detail-card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="bi bi-tags me-1"></i>Categorías</span>
+                            <span class="detail-value" th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.categoria != null ? #strings.listJoin(coleccion.criterios.categoria, ', ') : 'Todas'}">—</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="bi bi-globe-americas me-1"></i>Países</span>
+                            <span class="detail-value" th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.pais != null ? #strings.listJoin(coleccion.criterios.pais, ', ') : 'Todos'}">—</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="bi bi-signpost me-1"></i>Provincias</span>
+                            <span class="detail-value" th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.provincia != null ? #strings.listJoin(coleccion.criterios.provincia, ', ') : 'Todas'}">—</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="bi bi-file-earmark-play me-1"></i>Contenido Multimedia</span>
+                            <span class="detail-value" th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.contenidoMultimedia != null ? #strings.listJoin(coleccion.criterios.contenidoMultimedia, ', ') : 'Todos'}">—</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="bi bi-calendar-event me-1"></i>Fecha del Acontecimiento</span>
+                            <span class="detail-value">
+                                <span th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.fechaAcontecimientoInicial != null ? coleccion.criterios.fechaAcontecimientoInicial : '—'}">—</span>
+                                <span class="text-muted mx-1">a</span>
+                                <span th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.fechaAcontecimientoFinal != null ? coleccion.criterios.fechaAcontecimientoFinal : '—'}">—</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="bi bi-calendar-plus me-1"></i>Fecha de Carga</span>
+                            <span class="detail-value">
+                                <span th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.fechaCargaInicial != null ? coleccion.criterios.fechaCargaInicial : '—'}">—</span>
+                                <span class="text-muted mx-1">a</span>
+                                <span th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.fechaCargaFinal != null ? coleccion.criterios.fechaCargaFinal : '—'}">—</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="bi bi-search me-1"></i>Título contiene</span>
+                            <span class="detail-value" th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.titulo != null ? coleccion.criterios.titulo : 'Sin filtro'}">—</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="bi bi-card-text me-1"></i>Descripción contiene</span>
+                            <span class="detail-value" th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.descripcion != null ? coleccion.criterios.descripcion : 'Sin filtro'}">—</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de Filtros Adicionales -->
+        <div class="detail-card mb-4">
+            <div class="detail-card-header">
+                <div class="detail-card-icon bg-gradient-green">
+                    <i class="bi bi-sliders"></i>
+                </div>
+                <h5 class="mb-0">Filtros Adicionales</h5>
+            </div>
+            <div class="detail-card-body">
+                <form id="filtersForm"
+                      th:object="${getHechosColeccionInputDto}"
+                      th:action="@{/hechos/public/get/filtrar}"
+                      method="post"
+                      th:attr="data-refresh-url=@{/colecciones/public/get/{id_coleccion}(id_coleccion=${coleccion.id})}">
+
+                    <div class="row g-4">
+                        <!-- Título -->
+                        <div class="col-md-6">
+                            <label class="form-label-filter">
+                                <i class="bi bi-text-left me-2"></i>Título del hecho
+                            </label>
+                            <input class="form-control-filter" id="titulo" type="text" th:field="*{titulo}"
+                                   placeholder="Buscar por título...">
+                        </div>
+
+                        <!-- Categorías -->
+                        <div class="col-md-6" th:if="${categorias != null}">
+                            <label class="form-label-filter">
+                                <i class="bi bi-tags me-2"></i>Categorías
+                            </label>
+                            <select class="form-select-filter js-choices" id="categoriaId" th:field="*{categoriaId}" multiple>
+                                <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.categoria}">Categoría</option>
+                            </select>
+                            <small class="form-text-filter">Podés elegir varias</small>
+                        </div>
+
+                        <!-- Contenido multimedia -->
+                        <div class="col-md-6">
+                            <label class="form-label-filter">
+                                <i class="bi bi-file-earmark-play me-2"></i>Contenido multimedia
+                            </label>
+                            <select class="form-select-filter js-choices" id="contenidoMultimedia" th:field="*{contenidoMultimedia}" multiple>
+                                <option th:value="0">TEXTO</option>
+                                <option th:value="1">IMAGEN</option>
+                                <option th:value="2">AUDIO</option>
+                                <option th:value="3">VIDEO</option>
+                            </select>
+                        </div>
+
+                        <!-- País -->
+                        <div class="col-md-6" th:if="${paises != null}">
+                            <label class="form-label-filter">
+                                <i class="bi bi-globe-americas me-2"></i>País
+                            </label>
+                            <select class="form-select-filter js-choices" id="paisId" th:field="*{paisId}" multiple>
+                                <option th:each="p : ${paises}" th:value="${p.id}" th:text="${p.pais}">País</option>
+                            </select>
+                            <small class="form-text-filter">Recargará las provincias</small>
+                        </div>
+
+                        <!-- Provincia -->
+                        <div class="col-md-6">
+                            <label class="form-label-filter">
+                                <i class="bi bi-signpost me-2"></i>Provincia
+                            </label>
+                            <select class="form-select-filter js-choices" id="provinciaId" th:field="*{provinciaId}" multiple
+                                    th:disabled="${provincias == null}">
+                                <option th:each="pr : ${provincias}" th:value="${pr.id}" th:text="${pr.provincia}"
+                                        th:selected="${getHechosColeccionInputDto.provinciaId != null and getHechosColeccionInputDto.provinciaId.contains(pr.id)}">
+                                    Provincia
+                                </option>
+                            </select>
+                            <small class="form-text-filter">Según los países seleccionados</small>
+                        </div>
+
+                        <!-- Modo de navegación -->
+                        <div class="col-md-6">
+                            <label class="form-label-filter">
+                                <i class="bi bi-eye me-2"></i>Modo de navegación
+                            </label>
+                            <select class="form-select-filter" id="navegacionCurada" th:field="*{navegacionCurada}">
+                                <option th:value="false">Irrestricta</option>
+                                <option th:value="true">Curada</option>
+                            </select>
+                        </div>
+
+                        <!-- Fuente -->
+                        <div class="col-md-6">
+                            <label class="form-label-filter">
+                                <i class="bi bi-bookmark me-2"></i>Fuente
+                            </label>
+                            <select class="form-select-filter js-choices" id="fuente" th:field="*{fuentes}" multiple>
+                                <option th:value="1">DINÁMICA</option>
+                                <option th:value="2">ESTÁTICA</option>
+                                <option th:value="3">PROXY</option>
+                            </select>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="col-12">
+                            <label class="form-label-filter">
+                                <i class="bi bi-card-text me-2"></i>Descripción contiene
+                            </label>
+                            <input class="form-control-filter" id="descripcion" type="text" th:field="*{descripcion}"
+                                   placeholder="Buscar en descripción...">
+                        </div>
+
+                        <!-- Fechas del acontecimiento -->
+                        <div class="col-md-6">
+                            <label class="form-label-filter">
+                                <i class="bi bi-calendar-event me-2"></i>Fecha del hecho (desde)
+                            </label>
+                            <input type="date" class="form-control-filter" id="fechaAcontecimientoInicial" th:field="*{fechaAcontecimientoInicial}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-filter">
+                                <i class="bi bi-calendar-event me-2"></i>Fecha del hecho (hasta)
+                            </label>
+                            <input type="date" class="form-control-filter" id="fechaAcontecimientoFinal" th:field="*{fechaAcontecimientoFinal}">
+                        </div>
+
+                        <!-- Fechas de carga -->
+                        <div class="col-md-6">
+                            <label class="form-label-filter">
+                                <i class="bi bi-calendar-plus me-2"></i>Fecha de carga (desde)
+                            </label>
+                            <input type="date" class="form-control-filter" id="fechaCargaInicial" th:field="*{fechaCargaInicial}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-filter">
+                                <i class="bi bi-calendar-plus me-2"></i>Fecha de carga (hasta)
+                            </label>
+                            <input type="date" class="form-control-filter" id="fechaCargaFinal" th:field="*{fechaCargaFinal}">
+                        </div>
+
+                        <!-- Hidden fields -->
+                        <input type="hidden" th:field="*{origenConexion}" th:value="0"/>
+                        <input type="hidden" name="id_coleccion" th:value="${coleccion.id}"/>
+                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                        <!-- Botones -->
+                        <div class="col-12 d-flex gap-2 justify-content-end">
+                            <a class="btn btn-secondary-filter" th:href="@{/hechos/public/get-all}">
+                                <i class="bi bi-arrow-counterclockwise me-2"></i>Limpiar
+                            </a>
+                            <button class="btn btn-primary-filter" type="submit">
+                                <i class="bi bi-search me-2"></i>Aplicar filtros
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-
-    <div class="card-elev p-4 mb-4">
-        <h5 class="mb-3 text-center text-muted">Algoritmo de consenso</h5>
-        <div class="col-md-12">
-            <div class="text-value"
-                 th:text="${coleccion != null and coleccion.algoritmoDeConsenso != null
-                       ? coleccion.algoritmoDeConsenso : '—'}">—</div>
-        </div>
-    </div>
-
-    <!-- Formulario de filtros -->
-    <form id="filtersForm" class="card mb-4"
-          th:object="${getHechosColeccionInputDto}"
-          th:action="@{/hechos/public/get/filtrar}"
-          method="post"
-          th:attr="data-refresh-url=@{/colecciones/public/get/{id_coleccion}(id_coleccion=${coleccion.id})}">
-
-        <div class="card-body row g-3">
-
-            <!-- Título del hecho -->
-            <div class="col-md-6">
-                <label class="form-label" for="titulo">Título</label>
-                <input class="form-control" id="titulo" type="text" th:field="*{titulo}" placeholder="Título del hecho">
-            </div>
-
-            <!-- Categorías (List<Long>) -->
-            <div class="col-md-6" th:if="${categorias != null}">
-                <label class="form-label" for="categoriaId">Categorías</label>
-                <select class="form-select js-choices" id="categoriaId" th:field="*{categoriaId}" multiple>
-                    <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.categoria}">Categoría</option>
-                </select>
-                <small class="text-muted">Podés elegir varias y buscarlas por nombre.</small>
-            </div>
-            <div class="col-md-6" th:unless="${categorias != null}">
-                <label class="form-label" for="categoriaIdInput">Categorías (IDs, separadas por coma)</label>
-                <input class="form-control" id="categoriaIdInput" type="text" placeholder="Ej: 1,2,3">
-            </div>
-
-            <!-- Contenido multimedia (List<Integer>) -->
-            <div class="col-md-6">
-                <label class="form-label" for="contenidoMultimedia">Contenido multimedia</label>
-                <select class="form-select js-choices" id="contenidoMultimedia" th:field="*{contenidoMultimedia}" multiple>
-                    <option th:value="0">TEXTO</option>
-                    <option th:value="1">IMAGEN</option>
-                    <option th:value="2">AUDIO</option>
-                    <option th:value="3">VIDEO</option>
-                </select>
-                <small class="text-muted">Multiselección con búsqueda.</small>
-            </div>
-
-            <!-- País (List<Long>) -->
-            <div class="col-md-6" th:if="${paises != null}">
-                <label class="form-label" for="paisId">País</label>
-                <select class="form-select js-choices" id="paisId" th:field="*{paisId}" multiple>
-                    <option th:each="p : ${paises}" th:value="${p.id}" th:text="${p.pais}">País</option>
-                </select>
-                <small class="text-muted d-block">Elegí uno o varios países. Esto recargará las provincias (conservando lo que ya escribiste).</small>
-            </div>
-
-            <!-- Provincia (List<Long>) dependiente de País -->
-            <div class="col-md-6">
-                <label class="form-label" for="provinciaId">Provincia</label>
-                <select class="form-select js-choices" id="provinciaId" th:field="*{provinciaId}" multiple
-                        th:disabled="${provincias == null}">
-                    <option th:each="pr : ${provincias}" th:value="${pr.id}" th:text="${pr.provincia}"
-                            th:selected="${getHechosColeccionInputDto.provinciaId != null and getHechosColeccionInputDto.provinciaId.contains(pr.id)}">Provincia</option>
-                </select>
-                <small class="text-muted d-block">Se habilita y completa según los países seleccionados.</small>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label" for="navegacionCurada">Modo de navegación</label>
-                <select class="form-select" id="navegacionCurada" th:field="*{navegacionCurada}">
-                    <option th:value="false">Irrestricta</option>
-                    <option th:value="true">Curada</option>
-                </select>
-                <small class="text-muted">Elegí cómo se navegarán los hechos en la colección.</small>
-            </div>
-
-
-            <!-- Descripción (String) -->
-            <div class="col-md-12">
-                <label class="form-label" for="descripcion">Descripción (contiene)</label>
-                <input class="form-control" id="descripcion" type="text" th:field="*{descripcion}" placeholder="Texto a buscar en la descripción">
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label" for="fuente">Fuente</label>
-                <select class="form-select js-choices" id="fuente" th:field="*{fuentes}" multiple>
-                    <option th:value="1">DINÁMICA</option>
-                    <option th:value="2">ESTÁTICA</option>
-                    <option th:value="3">PROXY</option>
-                </select>
-                <small class="text-muted d-block">
-                    Elegí una o varias fuentes. Esto filtrará los hechos según su origen.
-                </small>
-            </div>
-
-            <!-- Fecha del acontecimiento (desde/hasta) -->
-            <div class="col-md-3">
-                <label class="form-label" for="fechaAcontecimientoInicial">Fecha del hecho (desde)</label>
-                <input type="date" class="form-control" id="fechaAcontecimientoInicial" th:field="*{fechaAcontecimientoInicial}">
-            </div>
-            <div class="col-md-3">
-                <label class="form-label" for="fechaAcontecimientoFinal">Fecha del hecho (hasta)</label>
-                <input type="date" class="form-control" id="fechaAcontecimientoFinal" th:field="*{fechaAcontecimientoFinal}">
-            </div>
-
-            <!-- Fecha de carga (desde/hasta) -->
-            <div class="col-md-3">
-                <label class="form-label" for="fechaCargaInicial">Fecha de carga (desde)</label>
-                <input type="date" class="form-control" id="fechaCargaInicial" th:field="*{fechaCargaInicial}">
-            </div>
-            <div class="col-md-3">
-                <label class="form-label" for="fechaCargaFinal">Fecha de carga (hasta)</label>
-                <input type="date" class="form-control" id="fechaCargaFinal" th:field="*{fechaCargaFinal}">
-            </div>
-
-            <!-- Origen de conexión (hidden requerido por DTO) -->
-            <input type="hidden" th:field="*{origenConexion}" th:value="0"/>
-
-            <!-- id_coleccion corregido -->
-            <input type="hidden" name="id_coleccion" th:value="${coleccion.id}"/>
-
-            <!-- Acciones -->
-            <div class="col-md-12 d-flex gap-2 justify-content-end">
-                <a class="btn btn-outline-secondary" th:href="@{/hechos/public/get-all}">
-                    <i class="bi bi-arrow-counterclockwise me-1"></i> Limpiar
-                </a>
-                <button class="btn btn-primary" type="submit">
-                    <i class="bi bi-funnel me-1"></i> Filtrar
-                </button>
-            </div>
-
-        </div>
-
-        <!-- CSRF -->
-        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-    </form>
 
     <style>
-        body { background: #f5f7fb; }
-        .card-elev { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 10px 24px rgba(2,6,23,.05); }
-        .header-ribbon { border-radius: 16px; padding: 18px; color: #fff; background: #0d6efd; box-shadow: 0 8px 24px rgba(2,6,23,.12); }
-        .text-label { font-weight: 600; font-size: 0.85rem; color: #6c757d; }
-        .text-value { font-size: 1rem; color: #212529; }
+        .collection-detail-hero{padding:80px 0 40px;background:radial-gradient(ellipse 1400px 800px at 50% -100px,rgba(139,92,246,.12) 0%,transparent 50%);position:relative;overflow:hidden}
+        .collection-detail-hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b5cf6' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
+        .collection-detail-badge{background:linear-gradient(135deg,rgba(139,92,246,.15),rgba(167,139,250,.15));color:#8b5cf6;padding:.65rem 1.5rem;border-radius:50px;font-size:.875rem;font-weight:600;display:inline-flex;align-items:center;border:1px solid rgba(139,92,246,.2)}
+        .detail-card{background:#fff;border-radius:20px;border:1px solid rgba(0,0,0,.06);box-shadow:0 4px 12px rgba(0,0,0,.05);overflow:hidden}
+        .detail-card-header{padding:1.5rem;background:linear-gradient(135deg,#f8f9ff 0%,#fff 100%);border-bottom:1px solid rgba(0,0,0,.05);display:flex;align-items:center;gap:1rem}
+        .detail-card-icon{width:48px;height:48px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.5rem;box-shadow:0 4px 12px rgba(102,126,234,.3)}
+        .detail-card-icon.bg-gradient-amber{background:linear-gradient(135deg,#f59e0b,#fbbf24)}
+        .detail-card-icon.bg-gradient-green{background:linear-gradient(135deg,#10b981,#059669)}
+        .detail-card-body{padding:2rem}
+        .detail-item{display:flex;flex-direction:column;gap:.5rem;padding:1rem;background:#f8f9ff;border-radius:12px;border:1px solid #e9ecef}
+        .detail-label{font-size:.85rem;font-weight:600;color:#64748b;display:flex;align-items:center}
+        .detail-value{font-size:.95rem;color:#1a202c;font-weight:500}
+        .form-label-filter{display:flex;align-items:center;font-size:.9rem;font-weight:600;color:#475569;margin-bottom:.75rem}
+        .form-control-filter,.form-select-filter{background:#f8f9ff;border:1px solid #e9ecef;border-radius:12px;padding:.875rem 1rem;font-size:.9rem;color:#1a202c;transition:all .2s ease}
+        .form-control-filter:focus,.form-select-filter:focus{border-color:#667eea;background:#fff;box-shadow:0 0 0 .2rem rgba(102,126,234,.1);outline:none}
+        .form-text-filter{display:block;margin-top:.5rem;font-size:.8rem;color:#64748b}
+        .btn-primary-filter{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff;padding:.875rem 2rem;border-radius:12px;font-weight:600;box-shadow:0 4px 12px rgba(102,126,234,.3);transition:all .2s ease}
+        .btn-primary-filter:hover{background:linear-gradient(135deg,#5568d3,#63408b);transform:translateY(-2px);box-shadow:0 6px 16px rgba(102,126,234,.4);color:#fff}
+        .btn-secondary-filter{background:#fff;border:2px solid #e9ecef;color:#64748b;padding:.875rem 2rem;border-radius:12px;font-weight:600;transition:all .2s ease}
+        .btn-secondary-filter:hover{border-color:#667eea;color:#667eea;transform:translateY(-2px);box-shadow:0 4px 12px rgba(102,126,234,.15)}
+        @media (max-width:768px){
+            .collection-detail-hero{padding:60px 0 30px}
+            .display-5{font-size:2rem}
+            .detail-card-body{padding:1.5rem}
+        }
     </style>
 
-</section>
+    <!-- Choices.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+    <!-- Choices.js JS -->
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
-<!-- JS: Bootstrap + Choices -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-
-<script>
-    (function() {
-        const choicesInstances = [];
-        document.querySelectorAll('.js-choices').forEach(el => {
-            const inst = new Choices(el, {
-                removeItemButton: true,
-                searchEnabled: true,
-                searchPlaceholderValue: 'Buscar…',
-                itemSelectText: '',
-                shouldSort: false
-            });
-            choicesInstances.push(inst);
-        });
-
-        const form = document.getElementById('filtersForm');
-        const paisSelect = document.getElementById('paisId');
-        const provinciaSelect = document.getElementById('provinciaId');
-
-        const getChoices = nativeSelect =>
-            choicesInstances.find(c => c.passedElement.element === nativeSelect);
-
-        const setProvinciasEnabled = enabled => {
-            const c = getChoices(provinciaSelect);
-            provinciaSelect.disabled = !enabled;
-            if (c) {
-                c.disable();
-                if (enabled) c.enable();
-            }
-        };
-
-        const hasPaisInicial = paisSelect && Array.from(paisSelect.options).some(o => o.selected);
-        if (!hasPaisInicial && (!provinciaSelect.options || provinciaSelect.options.length === 0)) {
-            setProvinciasEnabled(false);
-        }
-
-        function refreshWithCurrentState() {
-            const refreshUrl = form.getAttribute('data-refresh-url') || window.location.pathname;
-            const params = new URLSearchParams();
-
-            function appendAll(name, values) {
-                values.forEach(v => params.append(name, v));
-            }
-
-            Array.from(form.elements).forEach(el => {
-                if (!el.name || el.disabled) return;
-
-                if (el.tagName === 'SELECT' && el.multiple) {
-                    const selected = Array.from(el.selectedOptions).map(o => o.value).filter(Boolean);
-                    if (selected.length) appendAll(el.name, selected);
-                    return;
-                }
-
-                if (el.type === 'checkbox') {
-                    params.set(el.name, el.checked ? 'true' : 'false');
-                    return;
-                }
-
-                if (el.type === 'radio') {
-                    if (el.checked) params.set(el.name, el.value);
-                    return;
-                }
-
-                if (el.value !== null && el.value !== undefined && el.value !== '') {
-                    params.set(el.name, el.value);
-                }
+    <script>
+        (function() {
+            const choicesInstances = [];
+            document.querySelectorAll('.js-choices').forEach(el => {
+                const inst = new Choices(el, {
+                    removeItemButton: true,
+                    searchEnabled: true,
+                    searchPlaceholderValue: 'Buscar…',
+                    itemSelectText: '',
+                    shouldSort: false
+                });
+                choicesInstances.push(inst);
             });
 
-            const url = refreshUrl + (params.toString() ? ('?' + params.toString()) : '');
-            window.location.assign(url);
-        }
+            const form = document.getElementById('filtersForm');
+            const paisSelect = document.getElementById('paisId');
+            const provinciaSelect = document.getElementById('provinciaId');
 
-        paisSelect?.addEventListener('change', () => {
-            setProvinciasEnabled(true);
-            refreshWithCurrentState();
-        });
-    })();
-</script>
+            const getChoices = nativeSelect =>
+                choicesInstances.find(c => c.passedElement.element === nativeSelect);
+
+            const setProvinciasEnabled = enabled => {
+                const c = getChoices(provinciaSelect);
+                provinciaSelect.disabled = !enabled;
+                if (c) {
+                    c.disable();
+                    if (enabled) c.enable();
+                }
+            };
+
+            const hasPaisInicial = paisSelect && Array.from(paisSelect.options).some(o => o.selected);
+            if (!hasPaisInicial && (!provinciaSelect.options || provinciaSelect.options.length === 0)) {
+                setProvinciasEnabled(false);
+            }
+
+            function refreshWithCurrentState() {
+                const refreshUrl = form.getAttribute('data-refresh-url') || window.location.pathname;
+                const params = new URLSearchParams();
+
+                function appendAll(name, values) {
+                    values.forEach(v => params.append(name, v));
+                }
+
+                Array.from(form.elements).forEach(el => {
+                    if (!el.name || el.disabled) return;
+
+                    if (el.tagName === 'SELECT' && el.multiple) {
+                        const selected = Array.from(el.selectedOptions).map(o => o.value).filter(Boolean);
+                        if (selected.length) appendAll(el.name, selected);
+                        return;
+                    }
+
+                    if (el.type === 'checkbox') {
+                        params.set(el.name, el.checked ? 'true' : 'false');
+                        return;
+                    }
+
+                    if (el.type === 'radio') {
+                        if (el.checked) params.set(el.name, el.value);
+                        return;
+                    }
+
+                    if (el.value !== null && el.value !== undefined && el.value !== '') {
+                        params.set(el.name, el.value);
+                    }
+                });
+
+                const url = refreshUrl + (params.toString() ? ('?' + params.toString()) : '');
+                window.location.assign(url);
+            }
+
+            paisSelect?.addEventListener('change', () => {
+                setProvinciasEnabled(true);
+                refreshWithCurrentState();
+            });
+        })();
+    </script>
 
 </main>
 </html>
-
