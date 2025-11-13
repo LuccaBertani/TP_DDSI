@@ -259,10 +259,21 @@
 
                                 <div class="col-md-6">
                                     <label class="form-label" for="fuente">Fuente</label>
-                                    <select class="form-select js-choices" id="fuente" th:field="*{criterios.fuentes}" multiple>
-                                        <option th:value="1">DINÁMICA</option>
-                                        <option th:value="2">ESTÁTICA</option>
-                                        <option th:value="3">PROXY</option>
+                                    <select class="form-select js-choices" id="fuente" name="criterios.fuentes" multiple>
+                                        <option th:value="1" th:selected="${
+            (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.fuentes != null and ColeccionUpdateInputDTO.criterios.fuentes.contains(1))
+            or (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.fuentes != null and coleccionForm.criterios.fuentes.contains(1))
+        }">DINÁMICA</option>
+
+                                        <option th:value="2" th:selected="${
+            (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.fuentes != null and ColeccionUpdateInputDTO.criterios.fuentes.contains(2))
+            or (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.fuentes != null and coleccionForm.criterios.fuentes.contains(2))
+        }">ESTÁTICA</option>
+
+                                        <option th:value="3" th:selected="${
+            (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.fuentes != null and ColeccionUpdateInputDTO.criterios.fuentes.contains(3))
+            or (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.fuentes != null and coleccionForm.criterios.fuentes.contains(3))
+        }">PROXY</option>
                                     </select>
                                     <small class="text-muted d-block">
                                         Elegí una o varias fuentes. Esto filtrará los hechos según su origen.

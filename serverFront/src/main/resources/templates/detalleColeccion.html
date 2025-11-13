@@ -284,9 +284,8 @@
                 </form>
                 <form th:action="@{/colecciones/delete/{id_coleccion}(id_coleccion=${coleccion.id})}"
                       method="post"
-                      style="display:inline;">
-
-                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                      style="display:inline;"
+                      sec:authorize="hasRole('ADMINISTRADOR')"> <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
                     <button type="submit" style="color: #b91c1c" class="btn btn-danger-filter">
                         <i class="bi bi-trash3 me-2"></i>Eliminar colección
@@ -297,6 +296,7 @@
                       method="get"
                       style="display:inline;"
                       th:if="${ColeccionUpdateInputDTO != null}">
+
 
                     <!-- Campos raíz -->
                     <input type="hidden" name="id_coleccion"

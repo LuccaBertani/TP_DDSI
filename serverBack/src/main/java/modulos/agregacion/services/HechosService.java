@@ -476,6 +476,12 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             else
                 dto.setFuente(hecho.getAtributosHecho().getFuente().codigoEnString());
 
+
+            Optional.ofNullable(hecho.getAtributosHecho().getLatitud())
+                    .ifPresent(dto::setLatitud);
+            Optional.ofNullable(hecho.getAtributosHecho().getLongitud())
+                    .ifPresent(dto::setLongitud);
+
             Optional.ofNullable(hechoMemoria.getAtributosHecho().getUbicacion())
                     .ifPresent(ubicacion -> {
                         Optional.ofNullable(ubicacion.getPais())
@@ -488,10 +494,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                                     dto.setId_provincia(provincia.getId());
                                     dto.setProvincia(provincia.getProvincia());
                                 });
-                        Optional.ofNullable(hecho.getAtributosHecho().getLatitud())
-                                .ifPresent(dto::setLatitud);
-                        Optional.ofNullable(hecho.getAtributosHecho().getLongitud())
-                                .ifPresent(dto::setLongitud);
                     });
 
             dto.setTitulo(hecho.getAtributosHecho().getTitulo());
