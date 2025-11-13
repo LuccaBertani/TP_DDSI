@@ -155,6 +155,7 @@ modulos\shared\dtos\input\HechoModificarInputDTO.class
 modulos\shared\dtos\output\MensajeOutputDTO.class
 modulos\agregacion\entities\DbMain\Categoria.class
 modulos\agregacion\entities\DbMain\Pais.class
+modulos\shared\dtos\output\AtributosModificarDTO.class
 modulos\agregacion\entities\DbMain\Ubicacion.class
 modulos\agregacion\entities\DbMain\Provincia.class
 modulos\servicioEstadistica\repositories\IEstadisticasRepository.class
@@ -183,6 +184,7 @@ modulos\agregacion\config\DbHechosProxyConfig.class
 modulos\agregacion\repositories\DbMain\IProvinciaRepository.class
 modulos\agregacion\controllers\UsuarioController.class
 modulos\agregacion\entities\DbProxy\HechoProxy.class
+modulos\shared\dtos\output\AtributosModificarDTO$AtributosModificarDTOBuilder.class
 modulos\agregacion\repositories\DbMain\IMensajeRepository.class
 modulos\agregacion\services\ColeccionService.class
 modulos\agregacion\repositories\DbMain\ISinonimoRepository.class

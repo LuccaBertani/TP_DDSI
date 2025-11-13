@@ -32,6 +32,7 @@ modulos\Front\dtos\input\GetHechosColeccionInputDTO.class
 modulos\Front\usuario\Usuario.class
 modulos\Front\dtos\input\TokenResponse.class
 modulos\Front\dtos\input\LoginDtoInput$LoginDtoInputBuilder.class
+modulos\Front\dtos\input\SolicitudHechoModificarInputDTO$SolicitudHechoModificarInputDTOBuilder.class
 modulos\Front\dtos\output\MensajeOutputDTO$MensajeOutputDTOBuilder.class
 modulos\Front\dtos\input\EditarUsuarioDtoInput.class
 modulos\Front\dtos\output\ReporteHechoOutputDTO.class
@@ -58,6 +59,7 @@ modulos\Front\TipoContenido.class
 modulos\Front\dtos\output\MensajeOutputDTO.class
 modulos\Front\dtos\input\LoginDtoInput.class
 modulos\Front\dtos\input\ModificarConsensoInputDTO.class
+modulos\Front\dtos\output\AtributosModificarDTO.class
 modulos\Front\controllers\HomeController.class
 modulos\Front\services\HechosService.class
 modulos\Front\dtos\output\UsuarioOutputDto.class
