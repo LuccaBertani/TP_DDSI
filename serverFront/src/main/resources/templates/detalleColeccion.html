@@ -84,14 +84,7 @@
                                     ? coleccion.criterios.fechaCargaFinal : '—'}">—</span>
                 </div>
             </div>
-            <!-- Origen -->
-            <div class="col-md-6">
-                <div class="text-label">Origen</div>
-                <div class="text-value"
-                     th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.origen != null
-                       ? #strings.listJoin(coleccion.criterios.origen, ', ')
-                       : '—'}">—</div>
-            </div>
+
             <!-- Título contiene -->
             <div class="col-md-6">
                 <div class="text-label">Título contiene</div>
