@@ -44,12 +44,25 @@
                             <span class="detail-value" th:text="${coleccion != null and coleccion.algoritmoDeConsenso != null ? coleccion.algoritmoDeConsenso : 'Sin algoritmo'}">—</span>
                         </div>
                     </div>
-                    <div class="col-12">
+                    <div class="col-md-6">
                         <div class="detail-item">
                             <span class="detail-label">Descripción</span>
                             <span class="detail-value" th:text="${coleccion != null ? coleccion.descripcion : '—'}">—</span>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label">Fuentes</span>
+
+                            <div class="detail-value">
+                                <span th:if="${coleccion.datasets == null or #lists.isEmpty(coleccion.datasets)}">—</span>
+                                    <span th:each="ds : ${coleccion.datasets}" class="badge bg-primary me-1">
+                                    <span th:text="${ds}">Fuente</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -125,27 +138,22 @@
 
                     <div class="col-md-6">
                         <div class="detail-item">
-                            <span class="detail-label"><i class="bi bi-book me-1"></i>Fuente</span>
+                            <span class="detail-label"><i class="bi bi-book me-1"></i>Tipo de fuente</span>
                             <span class="detail-value">
-
-            <span th:if="${coleccion.criterios.fuentes == null or #lists.isEmpty(coleccion.criterios.fuentes)}">
-                Sin filtro
-            </span>
-
-            <th:block th:unless="${coleccion.criterios.fuentes == null or #lists.isEmpty(coleccion.criterios.fuentes)}">
-
-                <span th:each="fuenteId, stat : ${coleccion.criterios.fuentes}">
-                    <span th:switch="${fuenteId}">
-                        <span th:case="1">Dinámica</span>
-                        <span th:case="2">Estática</span>
-                        <span th:case="3">Proxy</span>
-                        <span th:case="*">Fuente Desconocida</span>
-                    </span>
-                    <span th:if="${!stat.last}">, </span>
-                </span>
-            </th:block>
-
-        </span>
+                                <span th:if="${coleccion.criterios.fuentes == null or #lists.isEmpty(coleccion.criterios.fuentes)}">Sin filtro
+                                </span>
+                                <th:block th:unless="${coleccion.criterios.fuentes == null or #lists.isEmpty(coleccion.criterios.fuentes)}">
+                                    <span th:each="fuenteId, stat : ${coleccion.criterios.fuentes}">
+                                        <span th:switch="${fuenteId}">
+                                            <span th:case="1">Dinámica</span>
+                                            <span th:case="2">Estática</span>
+                                            <span th:case="3">Proxy</span>
+                                            <span th:case="*">Fuente Desconocida</span>
+                                        </span>
+                                            <span th:if="${!stat.last}">, </span>
+                                    </span>
+                                </th:block>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -229,6 +237,18 @@
                                 <option th:value="false">Irrestricta</option>
                                 <option th:value="true">Curada</option>
                             </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-filter" for="fuente">Tipo de fuente</label>
+                            <select class="form-select js-choices" id="fuente" th:field="*{fuentes}" multiple>
+                                <option th:value="1">DINÁMICA</option>
+                                <option th:value="2">ESTÁTICA</option>
+                                <option th:value="3">PROXY</option>
+                            </select>
+                            <small class="text-muted d-block">
+                                Elegí una o varias fuentes. Esto filtrará los hechos según su origen.
+                            </small>
                         </div>
 
                         <div class="col-md-6">

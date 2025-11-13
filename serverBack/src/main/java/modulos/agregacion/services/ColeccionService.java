@@ -249,6 +249,7 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         dto.setId(coleccion.getId());
         dto.setTitulo(coleccion.getTitulo());
         dto.setDescripcion(coleccion.getDescripcion());
+        dto.setDatasets(datasetsRepo.findDistinctDatasetsByHechoIds(coleccion.getHechos().stream().map(h -> h.getKey().getId()).toList()));
 
         if(coleccion.getAlgoritmoConsenso() instanceof AlgoritmoConsensoMayoriaAbsoluta){
             dto.setAlgoritmoDeConsenso("Mayoría absoluta");

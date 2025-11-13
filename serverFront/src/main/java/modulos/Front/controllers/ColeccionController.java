@@ -187,11 +187,7 @@ public class ColeccionController {
 
         }
 
-
-
-
         return "detalleColeccion";
-
     }
 
     @PostMapping("/delete/{id_coleccion}")
