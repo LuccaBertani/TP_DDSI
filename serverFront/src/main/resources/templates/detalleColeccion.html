@@ -11,7 +11,7 @@
                     <div class="collection-detail-badge mb-3">
                         <i class="bi bi-collection-fill me-2"></i>Colección
                     </div>
-                    <h1 class="display-5 fw-bold mb-3" th:text="${coleccion != null ? coleccion.titulo : '—'}">
+                    <h1 class="display-5 fw-bold mb-2 animated-gradient-text" th:text="${coleccion != null ? coleccion.titulo : '—'}">
                         Título de la Colección
                     </h1>
                     <p class="lead text-muted mb-0" th:text="${coleccion != null ? coleccion.descripcion : '—'}">
@@ -23,7 +23,6 @@
     </section>
 
     <div class="container pb-5">
-        <!-- Información General -->
         <div class="detail-card mb-4">
             <div class="detail-card-header">
                 <div class="detail-card-icon">
@@ -115,17 +114,44 @@
                             <span class="detail-value" th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.titulo != null ? coleccion.criterios.titulo : 'Sin filtro'}">—</span>
                         </div>
                     </div>
-                    <div class="col-12">
+                    <div class="col-md-6">
                         <div class="detail-item">
                             <span class="detail-label"><i class="bi bi-card-text me-1"></i>Descripción contiene</span>
-                            <span class="detail-value" th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.descripcion != null ? coleccion.criterios.descripcion : 'Sin filtro'}">—</span>
+                            <span class="detail-value"
+                                  th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.descripcion != null ?
+                            coleccion.criterios.descripcion : 'Sin filtro'}">—</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="bi bi-book me-1"></i>Fuente</span>
+                            <span class="detail-value">
+
+            <span th:if="${coleccion.criterios.fuentes == null or #lists.isEmpty(coleccion.criterios.fuentes)}">
+                Sin filtro
+            </span>
+
+            <th:block th:unless="${coleccion.criterios.fuentes == null or #lists.isEmpty(coleccion.criterios.fuentes)}">
+
+                <span th:each="fuenteId, stat : ${coleccion.criterios.fuentes}">
+                    <span th:switch="${fuenteId}">
+                        <span th:case="1">Dinámica</span>
+                        <span th:case="2">Estática</span>
+                        <span th:case="3">Proxy</span>
+                        <span th:case="*">Fuente Desconocida</span>
+                    </span>
+                    <span th:if="${!stat.last}">, </span>
+                </span>
+            </th:block>
+
+        </span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Formulario de Filtros Adicionales -->
         <div class="detail-card mb-4">
             <div class="detail-card-header">
                 <div class="detail-card-icon bg-gradient-green">
@@ -141,7 +167,6 @@
                       th:attr="data-refresh-url=@{/colecciones/public/get/{id_coleccion}(id_coleccion=${coleccion.id})}">
 
                     <div class="row g-4">
-                        <!-- Título -->
                         <div class="col-md-6">
                             <label class="form-label-filter">
                                 <i class="bi bi-text-left me-2"></i>Título del hecho
@@ -150,7 +175,6 @@
                                    placeholder="Buscar por título...">
                         </div>
 
-                        <!-- Categorías -->
                         <div class="col-md-6" th:if="${categorias != null}">
                             <label class="form-label-filter">
                                 <i class="bi bi-tags me-2"></i>Categorías
@@ -161,7 +185,6 @@
                             <small class="form-text-filter">Podés elegir varias</small>
                         </div>
 
-                        <!-- Contenido multimedia -->
                         <div class="col-md-6">
                             <label class="form-label-filter">
                                 <i class="bi bi-file-earmark-play me-2"></i>Contenido multimedia
@@ -174,7 +197,6 @@
                             </select>
                         </div>
 
-                        <!-- País -->
                         <div class="col-md-6" th:if="${paises != null}">
                             <label class="form-label-filter">
                                 <i class="bi bi-globe-americas me-2"></i>País
@@ -185,7 +207,6 @@
                             <small class="form-text-filter">Recargará las provincias</small>
                         </div>
 
-                        <!-- Provincia -->
                         <div class="col-md-6">
                             <label class="form-label-filter">
                                 <i class="bi bi-signpost me-2"></i>Provincia
@@ -200,7 +221,6 @@
                             <small class="form-text-filter">Según los países seleccionados</small>
                         </div>
 
-                        <!-- Modo de navegación -->
                         <div class="col-md-6">
                             <label class="form-label-filter">
                                 <i class="bi bi-eye me-2"></i>Modo de navegación
@@ -211,20 +231,7 @@
                             </select>
                         </div>
 
-                        <!-- Fuente -->
                         <div class="col-md-6">
-                            <label class="form-label-filter">
-                                <i class="bi bi-bookmark me-2"></i>Fuente
-                            </label>
-                            <select class="form-select-filter js-choices" id="fuente" th:field="*{fuentes}" multiple>
-                                <option th:value="1">DINÁMICA</option>
-                                <option th:value="2">ESTÁTICA</option>
-                                <option th:value="3">PROXY</option>
-                            </select>
-                        </div>
-
-                        <!-- Descripción -->
-                        <div class="col-12">
                             <label class="form-label-filter">
                                 <i class="bi bi-card-text me-2"></i>Descripción contiene
                             </label>
@@ -232,7 +239,6 @@
                                    placeholder="Buscar en descripción...">
                         </div>
 
-                        <!-- Fechas del acontecimiento -->
                         <div class="col-md-6">
                             <label class="form-label-filter">
                                 <i class="bi bi-calendar-event me-2"></i>Fecha del hecho (desde)
@@ -246,7 +252,6 @@
                             <input type="date" class="form-control-filter" id="fechaAcontecimientoFinal" th:field="*{fechaAcontecimientoFinal}">
                         </div>
 
-                        <!-- Fechas de carga -->
                         <div class="col-md-6">
                             <label class="form-label-filter">
                                 <i class="bi bi-calendar-plus me-2"></i>Fecha de carga (desde)
@@ -260,12 +265,10 @@
                             <input type="date" class="form-control-filter" id="fechaCargaFinal" th:field="*{fechaCargaFinal}">
                         </div>
 
-                        <!-- Hidden fields -->
                         <input type="hidden" th:field="*{origenConexion}" th:value="0"/>
                         <input type="hidden" name="id_coleccion" th:value="${coleccion.id}"/>
                         <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
-                        <!-- Botones -->
                         <div class="col-12 d-flex gap-2 justify-content-end">
                             <a class="btn btn-secondary-filter" th:href="@{/hechos/public/get-all}">
                                 <i class="bi bi-arrow-counterclockwise me-2"></i>Limpiar
@@ -373,6 +376,9 @@
         .btn-primary-filter:hover{background:linear-gradient(135deg,#5568d3,#63408b);transform:translateY(-2px);box-shadow:0 6px 16px rgba(102,126,234,.4);color:#fff}
         .btn-secondary-filter{background:#fff;border:2px solid #e9ecef;color:#64748b;padding:.875rem 2rem;border-radius:12px;font-weight:600;transition:all .2s ease}
         .btn-secondary-filter:hover{border-color:#667eea;color:#667eea;transform:translateY(-2px);box-shadow:0 4px 12px rgba(102,126,234,.15)}
+        .animated-gradient-text{background:linear-gradient(120deg,#667eea,#8b5cf6,#ec4899);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:mm-gradient-move 6s ease infinite}
+        @keyframes mm-gradient-move{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
         @media (max-width:768px){
             .collection-detail-hero{padding:60px 0 30px}
             .display-5{font-size:2rem}
@@ -380,9 +386,7 @@
         }
     </style>
 
-    <!-- Choices.js CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
-    <!-- Choices.js JS -->
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
     <script>
@@ -465,3 +469,4 @@
 
 </main>
 </html>
+

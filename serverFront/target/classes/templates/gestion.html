@@ -257,6 +257,18 @@
                                     </small>
                                 </div>
 
+                                <div class="col-md-6">
+                                    <label class="form-label" for="fuente">Fuente</label>
+                                    <select class="form-select js-choices" id="fuente" th:field="*{criterios.fuentes}" multiple>
+                                        <option th:value="1">DINÁMICA</option>
+                                        <option th:value="2">ESTÁTICA</option>
+                                        <option th:value="3">PROXY</option>
+                                    </select>
+                                    <small class="text-muted d-block">
+                                        Elegí una o varias fuentes. Esto filtrará los hechos según su origen.
+                                    </small>
+                                </div>
+
                                 <!-- Fecha acontecimiento -->
                                 <div class="col-md-6">
                                     <label class="form-label-collection">

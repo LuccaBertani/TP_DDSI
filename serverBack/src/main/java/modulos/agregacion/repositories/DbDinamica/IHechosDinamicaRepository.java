@@ -122,7 +122,7 @@ LIMIT 1;
 
     @Query(value = """
     SELECT h FROM HechoDinamica h
-    order by h.cant_accesos DESC
+    WHERE h.activo = true order by h.cant_accesos DESC
     LIMIT 3
     """)
     List<HechoDinamica> findHechosDestacados();

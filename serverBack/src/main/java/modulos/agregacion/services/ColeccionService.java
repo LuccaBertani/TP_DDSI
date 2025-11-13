@@ -207,6 +207,40 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la colección");
         }
 
+        for (int i = 0; i < coleccion.getCriterios().size(); i++) {
+            List<IFiltro> grupo = Collections.singletonList(coleccion.getCriterios().get(i));
+            System.out.println("🧩 Grupo #" + i + " (" + grupo.size() + " filtro/s):");
+
+            for (IFiltro filtro : grupo) {
+                if (filtro instanceof FiltroCategoria fc) {
+                    System.out.println("  [FiltroCategoria] id=" + fc.getCategoria().getId() +
+                            ", nombre=" + fc.getCategoria().getTitulo());
+                } else if (filtro instanceof FiltroContenidoMultimedia fcm) {
+                    System.out.println("  [FiltroContenidoMultimedia] tipo=" + fcm.getTipoContenido());
+                } else if (filtro instanceof FiltroDescripcion fd) {
+                    System.out.println("  [FiltroDescripcion] texto=" + fd.getDescripcion());
+                } else if (filtro instanceof FiltroFechaAcontecimiento ffa) {
+                    System.out.println("  [FiltroFechaAcontecimiento] desde=" + ffa.getFechaInicial() +
+                            ", hasta=" + ffa.getFechaFinal());
+                } else if (filtro instanceof FiltroFechaCarga ffc) {
+                    System.out.println("  [FiltroFechaCarga] desde=" + ffc.getFechaInicial() +
+                            ", hasta=" + ffc.getFechaFinal());
+                } else if (filtro instanceof FiltroFuente ff) {
+                    System.out.println("  [FiltroFuente] fuente=" + ff.getFuenteDeseada());
+                } else if (filtro instanceof FiltroPais fp) {
+                    System.out.println("  [FiltroPais] id=" + fp.getPais().getId() +
+                            ", nombre=" + fp.getPais().getPais());
+                } else if (filtro instanceof FiltroProvincia fprov) {
+                    System.out.println("  [FiltroProvincia] id=" + fprov.getProvincia().getId() +
+                            ", nombre=" + fprov.getProvincia().getProvincia());
+                } else if (filtro instanceof FiltroTitulo ft) {
+                    System.out.println("  [FiltroTitulo] titulo=" + ft.getTitulo());
+                } else {
+                    System.out.println("  [Otro tipo de filtro] " + filtro.getClass().getSimpleName());
+                }
+            }
+        }
+
         coleccion.incrementarAccesos();
         coleccionesRepo.save(coleccion);
 
@@ -446,7 +480,7 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
     }
 
     @Async
-    @Scheduled(cron = "0 0 * * * *") // cada hora
+    @Scheduled(cron = "0 * * * * *") // cada hora
     @Transactional
     public void refrescarColeccionesCronjob() {
 

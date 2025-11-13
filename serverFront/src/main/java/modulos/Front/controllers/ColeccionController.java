@@ -15,6 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,11 +130,13 @@ public class ColeccionController {
 
         System.out.println("HOLAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
+
         ResponseEntity<?> rta = coleccionService.getColeccion(id_coleccion);
 
         if (rta.getStatusCode().is2xxSuccessful() && rta.getBody() != null) {
             System.out.println("HOLA CHICOS NO SOY NULL!!");
             ColeccionOutputDTO coleccion = (ColeccionOutputDTO) rta.getBody();
+            coleccion.getCriterios().getFuentes().forEach(f -> System.out.println("Fuente " + f));
             System.out.println("Algoritmo de consenso: " + coleccion.getAlgoritmoDeConsenso());
             model.addAttribute("coleccion", coleccion);
             ResponseEntity<?> rtaCategorias = hechosService.getCategorias();
