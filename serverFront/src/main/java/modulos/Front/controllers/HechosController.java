@@ -25,6 +25,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Controller
@@ -169,6 +170,8 @@ public class HechosController {
                     System.out.println("FECHA PARSEADA DE MIERDA: " + FechaParser.parsearFecha(hecho.getFechaAcontecimiento()));
 
 
+                    System.out.println("SOY UNA FUENTE FELIZ: " + hecho.getFuente());
+
                     if (usuarioOutputDto.getRol().equals(Rol.ADMINISTRADOR)){
                         HechoModificarInputDTO dtoModificar = HechoModificarInputDTO.builder()
                                 .id_hecho(hecho.getId())
@@ -180,6 +183,7 @@ public class HechosController {
                                 .id_pais(hecho.getId_pais())
                                 .id_provincia(hecho.getId_provincia())
                                 .id_categoria(hecho.getId_categoria())
+                                .fuente(hecho.getFuente())
                                 .build();
                         model.addAttribute("HechoModificarInputDTO", dtoModificar);
 
@@ -194,34 +198,40 @@ public class HechosController {
                         }
                     }
 
-                    if (hecho.getUsername() != null){
-                        esContribuyenteDelHecho = hecho.getUsername().equals(usuarioActual);
-                    }
-
-                    if (esContribuyenteDelHecho) {
-
-                        if (usuarioOutputDto.getRol().equals(Rol.CONTRIBUYENTE)){
-                            SolicitudHechoEliminarInputDTO solicitudHechoEliminarInputDTO = new SolicitudHechoEliminarInputDTO();
-                            solicitudHechoEliminarInputDTO.setId_hecho(hecho.getId());
-                            model.addAttribute("SolicitudHechoEliminarInputDTO", solicitudHechoEliminarInputDTO);
 
 
-                            System.out.println("ID DEL HECHO DE RE MIL MIERDA: " + hecho.getId());
-
-                            SolicitudHechoModificarInputDTO dtoModificar = SolicitudHechoModificarInputDTO.builder()
-                                    .id_hecho(hecho.getId())
-                                    .titulo(hecho.getTitulo())
-                                    .descripcion(hecho.getDescripcion())
-                                    .latitud(hecho.getLatitud())
-                                    .longitud(hecho.getLongitud())
-                                    .fechaAcontecimiento(hecho.getFechaAcontecimiento())
-                                    .id_pais(hecho.getId_pais())
-                                    .id_provincia(hecho.getId_provincia())
-                                    .id_categoria(hecho.getId_categoria())
-                                    .build();
-
-                            model.addAttribute("SolicitudHechoModificarInputDTO", dtoModificar);
+                        if (hecho.getUsername() != null){
+                            esContribuyenteDelHecho = hecho.getUsername().equals(usuarioActual);
                         }
+
+                        if (esContribuyenteDelHecho) {
+
+                            if (usuarioOutputDto.getRol().equals(Rol.CONTRIBUYENTE)){
+                                SolicitudHechoEliminarInputDTO solicitudHechoEliminarInputDTO = new SolicitudHechoEliminarInputDTO();
+                                solicitudHechoEliminarInputDTO.setId_hecho(hecho.getId());
+                                model.addAttribute("SolicitudHechoEliminarInputDTO", solicitudHechoEliminarInputDTO);
+
+
+                                System.out.println("ID DEL HECHO DE RE MIL MIERDA: " + hecho.getId());
+
+                                // 7 días máximo para solicitar modificar el hecho
+                                if (ChronoUnit.DAYS.between(FechaParser.parsearFecha(hecho.getFechaCarga()), LocalDateTime.now()) <= 7){
+                                SolicitudHechoModificarInputDTO dtoModificar = SolicitudHechoModificarInputDTO.builder()
+                                        .id_hecho(hecho.getId())
+                                        .titulo(hecho.getTitulo())
+                                        .descripcion(hecho.getDescripcion())
+                                        .latitud(hecho.getLatitud())
+                                        .longitud(hecho.getLongitud())
+                                        .fechaAcontecimiento(hecho.getFechaAcontecimiento())
+                                        .id_pais(hecho.getId_pais())
+                                        .id_provincia(hecho.getId_provincia())
+                                        .id_categoria(hecho.getId_categoria())
+                                        .build();
+
+                                model.addAttribute("SolicitudHechoModificarInputDTO", dtoModificar);
+                            }
+                        }
+
 
 
                     }
@@ -281,8 +291,19 @@ public class HechosController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
+    @PostMapping("/modificar-hecho")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public String modificarHecho(@Valid @ModelAttribute HechoModificarInputDTO dto, RedirectAttributes ra) {
+        ResponseEntity<?> rta = this.hechosService.modificarHecho(dto);
 
-
+        if(rta.getStatusCode().is2xxSuccessful()){
+            return "redirect:/hechos/public/get-all";
+        }
+        else if(rta.getBody() != null){
+            ra.addFlashAttribute(rta.getBody().toString());
+        }
+        return "redirect:/" + rta.getStatusCode().value();
+    }
 
 
     //todo falta

@@ -173,5 +173,10 @@ fecha_acontecimiento_desde, fecha_acontecimiento_hasta, ubicacion BARBARO!!.
         return hechosService.eliminarHecho(id, fuente, username);
     }
 
+    @PostMapping("/modificar-hecho")
+    public ResponseEntity<?> modificarHecho(@Valid @RequestBody HechoModificarInputDTO dtoInput, @AuthenticationPrincipal String username){
+        return hechosService.modificarHecho(dtoInput, username);
+    }
+
 }
 

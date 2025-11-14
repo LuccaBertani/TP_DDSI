@@ -1,12 +1,14 @@
 package modulos.agregacion.services;
 
 import io.jsonwebtoken.Jwt;
+import lombok.AllArgsConstructor;
 import modulos.JwtClaimExtractor;
 import modulos.agregacion.entities.DbDinamica.HechoDinamica;
 import modulos.agregacion.entities.DbDinamica.solicitudes.SolicitudHecho;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
 import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
+import modulos.agregacion.entities.atributosHecho.AtributosHechoModificar;
 import modulos.agregacion.entities.atributosHecho.ContenidoMultimedia;
 import modulos.agregacion.entities.DbMain.filtros.*;
 import modulos.agregacion.entities.DbProxy.HechoProxy;
@@ -49,6 +51,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 @Service
+@AllArgsConstructor
 public class HechosService {
 
 
@@ -66,36 +69,11 @@ public class HechosService {
     private final IHechoRefRepository hechoRefRepository;
     private FormateadorHechoMemoria formateadorHechoMemoria;
     private final IMensajeRepository mensajeRepository;
+    private final BuscadorUbicacion buscadorUbicacion;
+    private final BuscadorPais buscadorPais;
+    private final BuscadorProvincia buscadorProvincia;
 
-    public HechosService(IHechosEstaticaRepository hechosEstaticaRepo,
-                         IHechosDinamicaRepository hechosDinamicaRepo,
-                         IHechosProxyRepository hechosProxyRepo,
-                         IUsuarioRepository usuariosRepo,
-                         IColeccionRepository coleccionRepo,
-                         IDatasetsRepository datasetsRepo,
-                         ICategoriaRepository categoriaRepository,
-                         IProvinciaRepository repoProvincia,
-                         IPaisRepository repoPais,
-                         BuscadoresRegistry buscadores, ISinonimoRepository repoSinonimo,
-                         IHechoRefRepository hechoRefRepository,
-                         FormateadorHechoMemoria formateadorHechoMemoria,
-                         IMensajeRepository mensajeRepository
-    ){
-        this.repoProvincia = repoProvincia;
-        this.repoPais = repoPais;
-        this.hechosDinamicaRepo = hechosDinamicaRepo;
-        this.hechosEstaticaRepo = hechosEstaticaRepo;
-        this.hechosProxyRepo = hechosProxyRepo;
-        this.usuariosRepo = usuariosRepo;
-        this.coleccionRepo = coleccionRepo;
-        this.datasetsRepo = datasetsRepo;
-        this.categoriaRepository = categoriaRepository;
-        this.repoSinonimo = repoSinonimo;
-        this.buscadores = buscadores;
-        this.hechoRefRepository = hechoRefRepository;
-        this.formateadorHechoMemoria = formateadorHechoMemoria;
-        this.mensajeRepository = mensajeRepository;
-    }
+
 
     /*
 
@@ -981,12 +959,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             return rta;
         }
 
-        ResponseEntity<?> rtaHecho = this.getHecho(id, fuente);
-
-        if (!rtaHecho.getStatusCode().is2xxSuccessful() || !rtaHecho.hasBody()){
-            return rtaHecho;
-        }
-
         Hecho hecho = this.getHechoEntity(id, fuente);
 
         if (hecho == null){
@@ -1007,17 +979,135 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             hechosProxyRepo.save((HechoProxy) hecho);
         }
 
-        Usuario usuario = usuariosRepo.findById(hecho.getUsuario_id()).orElse(null);
+        if (hecho.getUsuario_id() != null) {
 
-        if (usuario != null) {
-            usuario.disminuirHechosSubidos();
-            Mensaje mensaje = new Mensaje();
-            mensaje.setTextoMensaje("Se eliminó su hecho de título " + hecho.getAtributosHecho().getTitulo());
-            mensaje.setReceptor(usuario);
-            mensajeRepository.save(mensaje);
+            Usuario usuario = usuariosRepo.findById(hecho.getUsuario_id()).orElse(null);
+
+            if (usuario != null) {
+                usuario.disminuirHechosSubidos();
+                Mensaje mensaje = new Mensaje();
+                mensaje.setTextoMensaje("Se eliminó su hecho de título " + hecho.getAtributosHecho().getTitulo());
+                mensaje.setReceptor(usuario);
+                mensajeRepository.save(mensaje);
+            }
+
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @Transactional
+    public ResponseEntity<?> modificarHecho(HechoModificarInputDTO dto, String username) {
+
+        ResponseEntity<?> rta = checkeoAdmin(username);
+
+        if (rta.getStatusCode().equals(HttpStatus.FORBIDDEN)){
+            return rta;
         }
 
+        Hecho hecho = this.getHechoEntity(dto.getId_hecho(), dto.getFuente());
+
+        if (hecho == null){
+            return ResponseEntity.notFound().build();
+        }
+
+        AtributosHechoModificar atributos = new AtributosHechoModificar();
+        Optional.ofNullable(dto.getTitulo()).ifPresent(atributos::setTitulo);
+
+        if(dto.getId_pais() !=null || dto.getId_provincia() != null){
+            Pais pais = buscadorPais.buscar(dto.getId_pais());
+            Provincia provincia = buscadorProvincia.buscar(dto.getId_provincia());
+            Ubicacion ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
+            atributos.setUbicacion_id(ubicacion != null ? ubicacion.getId() : null);
+        }
+
+        if (dto.getLongitud() != null && dto.getLatitud()!=null){
+            atributos.setLatitud(dto.getLatitud());
+            atributos.setLongitud(dto.getLongitud());
+        }
+
+        Optional.ofNullable(dto.getId_categoria()).flatMap(categoriaRepository::findById).
+                ifPresent(categoria -> atributos.setCategoria_id(categoria.getId()));
+
+
+        Optional.ofNullable(dto.getFechaAcontecimiento()).ifPresent(fechaStr -> {
+            atributos.setFechaAcontecimiento(FechaParser.parsearFecha(fechaStr));
+        });
+
+        List<ContenidoMultimedia> contenidosMultimediaParaAgregar = new ArrayList<>();
+
+        if(dto.getContenidosMultimediaParaAgregar() != null) {
+            for (MultipartFile file : dto.getContenidosMultimediaParaAgregar()) {
+                try {
+                    String url = GestorArchivos.guardarArchivo(file);
+
+                    ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
+
+                    contenidoMultimedia.setUrl(url);
+                    contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
+                    contenidosMultimediaParaAgregar.add(contenidoMultimedia);
+                } catch(IOException ignore){
+                }
+            }
+
+            atributos.setContenidoMultimediaAgregar(contenidosMultimediaParaAgregar);
+
+        }
+        Optional.ofNullable(dto.getContenidosMultimediaAEliminar()).ifPresent(atributos::setContenidoMultimediaEliminar);
+        Optional.ofNullable(dto.getDescripcion()).ifPresent(atributos::setDescripcion);
+        // hecho.getAtributosHechoAModificar().add(atributos);
+
+        this.setearModificadoAOficial(hecho, atributos);
+        hecho.getAtributosHecho().setFechaUltimaActualizacion(LocalDateTime.now());
+        hecho.getAtributosHecho().setModificado(true);
+
+        if (hecho instanceof HechoEstatica){
+            hechosEstaticaRepo.save((HechoEstatica) hecho);
+        }
+        else if (hecho instanceof HechoDinamica){
+            hechosDinamicaRepo.save((HechoDinamica) hecho);
+        }
+        else if (hecho instanceof HechoProxy){
+            hechosProxyRepo.save((HechoProxy) hecho);
+        }
+
+        if (hecho.getUsuario_id() != null){
+            Usuario usuario = usuariosRepo.findById(hecho.getUsuario_id()).orElse(null);
+
+            if (usuario != null) {
+                usuario.disminuirHechosSubidos();
+                Mensaje mensaje = new Mensaje();
+                mensaje.setTextoMensaje("Se modificó su hecho de título " + hecho.getAtributosHecho().getTitulo());
+                mensaje.setReceptor(usuario);
+                mensajeRepository.save(mensaje);
+            }
+        }
+
+
         return ResponseEntity.ok().build();
+    }
+
+    private void setearModificadoAOficial(Hecho hecho, AtributosHechoModificar atributos){
+
+        Optional.ofNullable(atributos.getCategoria_id()).ifPresent(hecho.getAtributosHecho()::setCategoria_id);
+        Optional.ofNullable(atributos.getDescripcion()).ifPresent(hecho.getAtributosHecho()::setDescripcion);
+        Optional.ofNullable(atributos.getFechaAcontecimiento()).ifPresent(hecho.getAtributosHecho()::setFechaAcontecimiento);
+        Optional.ofNullable(atributos.getTitulo()).ifPresent(hecho.getAtributosHecho()::setTitulo);
+        Optional.ofNullable(atributos.getUbicacion_id()).ifPresent(hecho.getAtributosHecho()::setUbicacion_id);
+
+        if(atributos.getContenidoMultimediaAgregar() != null){
+            hecho.getAtributosHecho().getContenidosMultimedia().addAll(atributos.getContenidoMultimediaAgregar());
+        }
+        if (atributos.getContenidoMultimediaEliminar() != null){
+            hecho.getAtributosHecho().getContenidosMultimedia()
+                    .removeIf(contenidoMultimedia ->
+                            atributos.getContenidoMultimediaEliminar()
+                                    .contains(contenidoMultimedia.getId())
+                    );
+        }
+
+
+        Optional.ofNullable(atributos.getLatitud()).ifPresent(hecho.getAtributosHecho()::setLatitud);
+        Optional.ofNullable(atributos.getLongitud()).ifPresent(hecho.getAtributosHecho()::setLongitud);
     }
 
 

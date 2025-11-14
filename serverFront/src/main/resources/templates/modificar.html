@@ -179,15 +179,18 @@
 
               <!-- botón para enviar la solicitud de modificación -->
               <button type="submit"
-                      class="btn btn-primary-collection">
+                      class="btn btn-primary-collection"
+                sec:authorize="hasRole('CONTRIBUYENTE')">
                 <i class="bi bi-send-fill me-2"></i>Enviar solicitud de modificación
               </button>
+
 
               <!-- opcional: si querés que el admin pueda modificar directo -->
               <button type="submit"
                       class="btn btn-primary-collection"
                       sec:authorize="hasRole('ADMINISTRADOR')"
-                      th:formaction="@{/hechos/modificar}">
+                      th:formaction="@{/hechos/modificar-hecho}">
+                <input type="hidden" th:field="*{fuente}" />
                 <i class="bi bi-pencil-square me-2"></i>Modificar hecho
               </button>
             </div>

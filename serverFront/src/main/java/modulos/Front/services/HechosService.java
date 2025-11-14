@@ -1,5 +1,6 @@
 package modulos.Front.services;
 
+import modulos.Front.dtos.input.HechoModificarInputDTO;
 import modulos.Front.dtos.output.*;
 import modulos.Front.dtos.input.GetHechosColeccionInputDTO;
 import modulos.Front.dtos.input.ImportacionHechosInputDTO;
@@ -79,5 +80,9 @@ public class HechosService {
 
     public ResponseEntity<?> eliminarHecho(Long id, String fuente){
         return webApiCallerService.postEntity(this.hechoServiceUrl + "/eliminar-hecho?id=" + id + "&fuente=" + fuente, Void.class);
+    }
+
+    public ResponseEntity<?> modificarHecho(HechoModificarInputDTO dto){
+        return webApiCallerService.postEntity(this.hechoServiceUrl + "/modificar-hecho", dto, Void.class);
     }
 }
