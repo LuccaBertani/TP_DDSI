@@ -41,43 +41,90 @@ public class ColeccionController {
 
     @GetMapping("/crear")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public String getFormularioColeccion(@ModelAttribute("coleccionForm") ColeccionInputDTO inputDTO, @ModelAttribute ColeccionUpdateInputDTO updateInputDTO, Model model){
-        System.out.println("SOY UN PELOTUDO");
+    public String getFormularioColeccion(
+            @ModelAttribute("coleccionForm") ColeccionInputDTO inputDTO,
+            @ModelAttribute("ColeccionUpdateInputDTO") ColeccionUpdateInputDTO updateInputDTO,
+            Model model) {
+
+        // Traigo cat y países como antes
         ResponseEntity<?> rtaCategorias = hechosService.getCategorias();
         ResponseEntity<?> rtaPaises = hechosService.getPaises();
-        if (rtaCategorias.getBody() != null){
+
+        if (rtaCategorias.getBody() != null) {
             List<CategoriaDto> categorias = BodyToListConverter.bodyToList(rtaCategorias, CategoriaDto.class);
             model.addAttribute("categorias", categorias);
         }
-        if (rtaPaises.getBody() != null){
+        if (rtaPaises.getBody() != null) {
             List<PaisDto> paises = BodyToListConverter.bodyToList(rtaPaises, PaisDto.class);
             model.addAttribute("paises", paises);
         }
 
-        if (inputDTO.getCriterios().getPaisId() == null){
-            model.addAttribute("coleccionForm", new ColeccionInputDTO());
+
+        if (updateInputDTO != null && updateInputDTO.getAlgoritmoConsenso() != null) {
+            switch (updateInputDTO.getAlgoritmoConsenso()) {
+                case "Mayoría absoluta":
+                    updateInputDTO.setAlgoritmoConsenso("MAYORIA_ABSOLUTA");
+                    break;
+                case "Mayoría simple":
+                    updateInputDTO.setAlgoritmoConsenso("MAYORIA_SIMPLE");
+                    break;
+                case "Múltiples menciones":
+                    updateInputDTO.setAlgoritmoConsenso("MULTIPLES_MENCIONES");
+                    break;
+                default:
+                    updateInputDTO.setAlgoritmoConsenso("");
+            }
         }
-        else{
+
+
+
+        // ---- Elegir de dónde saco los criterios (crear vs editar) ----
+        CriteriosColeccionDTO criterios = null;
+
+        // Si estoy editando, doy prioridad al updateInputDTO
+        if (updateInputDTO != null && updateInputDTO.getCriterios() != null
+                && updateInputDTO.getCriterios().getPaisId() != null
+                && !updateInputDTO.getCriterios().getPaisId().isEmpty()) {
+            System.out.println("UPDATE paisId: " +
+                    (updateInputDTO.getCriterios() != null ? updateInputDTO.getCriterios().getPaisId() : null));
+            System.out.println("UPDATE fechas: " +
+                    (updateInputDTO.getCriterios() != null ? updateInputDTO.getCriterios().getFechaAcontecimientoInicial() : null));
+
+            criterios = updateInputDTO.getCriterios();
+        } else if (inputDTO != null && inputDTO.getCriterios() != null
+                && inputDTO.getCriterios().getPaisId() != null
+                && !inputDTO.getCriterios().getPaisId().isEmpty()) {
+            criterios = inputDTO.getCriterios();
+        }
+
+        // ---- Si tengo países seleccionados, traigo las provincias ----
+        if (criterios != null && criterios.getPaisId() != null && !criterios.getPaisId().isEmpty()) {
             List<ProvinciaDto> provinciasTotales = new ArrayList<>();
-            for (Long idPais : inputDTO.getCriterios().getPaisId()) {
+            for (Long idPais : criterios.getPaisId()) {
                 ResponseEntity<?> rtaProvincia = hechosService.getProvinciasByIdPais(idPais);
                 if (rtaProvincia.getBody() != null) {
                     List<ProvinciaDto> provincias = BodyToListConverter.bodyToList(rtaProvincia, ProvinciaDto.class);
-                    if (provincias!=null)
+                    if (provincias != null) {
                         provinciasTotales.addAll(provincias);
+                    }
                 }
             }
-            model.addAttribute("coleccionForm", inputDTO);
             model.addAttribute("provincias", provinciasTotales);
         }
 
-        if (updateInputDTO.getId_coleccion()!=null){
-            System.out.println("TITULO DE MIERDA: " + updateInputDTO.getTitulo());
+        // ---- Setear coleccionForm para que el HTML tenga algo ----
+        if (inputDTO == null || inputDTO.getCriterios() == null) {
+            model.addAttribute("coleccionForm", new ColeccionInputDTO());
+        } else {
+            model.addAttribute("coleccionForm", inputDTO);
+        }
+
+        // ---- Si estoy editando, vuelvo a meter el DTO de update en el model ----
+        if (updateInputDTO != null && updateInputDTO.getId_coleccion() != null) {
             model.addAttribute("ColeccionUpdateInputDTO", updateInputDTO);
         }
 
         return "gestion";
-
     }
 
 

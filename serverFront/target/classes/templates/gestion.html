@@ -286,19 +286,27 @@
                                         <i class="bi bi-calendar-event me-2"></i>Fecha del acontecimiento
                                     </label>
                                     <div class="date-range-group">
-                                        <input type="date" class="form-control-collection" name="criterios.fechaAcontecimientoInicial"
+                                        <input type="date" class="form-control-collection" id="fechaAcontecimientoInicial" name="criterios.fechaAcontecimientoInicial"
                                                th:value="${
-                                                 (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.fechaAcontecimientoInicial != null) ? ColeccionUpdateInputDTO.criterios.fechaAcontecimientoInicial
-                                                 : (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.fechaAcontecimientoInicial != null) ? coleccionForm.criterios.fechaAcontecimientoInicial
-                                                 : ''
-                                               }">
+                 (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.fechaAcontecimientoInicial != null)
+                   ? #strings.substringBefore(ColeccionUpdateInputDTO.criterios.fechaAcontecimientoInicial.toString(), 'T')
+                 : (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.fechaAcontecimientoInicial != null)
+                   ? #strings.substringBefore(coleccionForm.criterios.fechaAcontecimientoInicial.toString(), 'T')
+                 : (param['criterios.fechaAcontecimientoInicial'] != null and !param['criterios.fechaAcontecimientoInicial'].isEmpty())
+                   ? param['criterios.fechaAcontecimientoInicial'][0]
+                 : ''
+               }">
                                         <span class="date-separator">hasta</span>
-                                        <input type="date" class="form-control-collection" name="criterios.fechaAcontecimientoFinal"
+                                        <input type="date" class="form-control-collection" id="fechaAcontecimientoFinal" name="criterios.fechaAcontecimientoFinal"
                                                th:value="${
-                                                 (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.fechaAcontecimientoFinal != null) ? ColeccionUpdateInputDTO.criterios.fechaAcontecimientoFinal
-                                                 : (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.fechaAcontecimientoFinal != null) ? coleccionForm.criterios.fechaAcontecimientoFinal
-                                                 : ''
-                                               }">
+                 (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.fechaAcontecimientoFinal != null)
+                   ? #strings.substringBefore(ColeccionUpdateInputDTO.criterios.fechaAcontecimientoFinal.toString(), 'T')
+                 : (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.fechaAcontecimientoFinal != null)
+                   ? #strings.substringBefore(coleccionForm.criterios.fechaAcontecimientoFinal.toString(), 'T')
+                 : (param['criterios.fechaAcontecimientoFinal'] != null and !param['criterios.fechaAcontecimientoFinal'].isEmpty())
+                   ? param['criterios.fechaAcontecimientoFinal'][0]
+                 : ''
+               }">
                                     </div>
                                 </div>
 
@@ -308,19 +316,27 @@
                                         <i class="bi bi-calendar-plus me-2"></i>Fecha de carga
                                     </label>
                                     <div class="date-range-group">
-                                        <input type="date" class="form-control-collection" name="criterios.fechaCargaInicial"
+                                        <input type="date" class="form-control-collection" id="fechaCargaInicial" name="criterios.fechaCargaInicial"
                                                th:value="${
-                                                 (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.fechaCargaInicial != null) ? ColeccionUpdateInputDTO.criterios.fechaCargaInicial
-                                                 : (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.fechaCargaInicial != null) ? coleccionForm.criterios.fechaCargaInicial
-                                                 : ''
-                                               }">
+                 (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.fechaCargaInicial != null)
+                   ? #strings.substringBefore(ColeccionUpdateInputDTO.criterios.fechaCargaInicial.toString(), 'T')
+                 : (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.fechaCargaInicial != null)
+                   ? #strings.substringBefore(coleccionForm.criterios.fechaCargaInicial.toString(), 'T')
+                 : (param['criterios.fechaCargaInicial'] != null and !param['criterios.fechaCargaInicial'].isEmpty())
+                   ? param['criterios.fechaCargaInicial'][0]
+                 : ''
+               }">
                                         <span class="date-separator">hasta</span>
-                                        <input type="date" class="form-control-collection" name="criterios.fechaCargaFinal"
+                                        <input type="date" class="form-control-collection" id="fechaCargaFinal" name="criterios.fechaCargaFinal"
                                                th:value="${
-                                                 (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.fechaCargaFinal != null) ? ColeccionUpdateInputDTO.criterios.fechaCargaFinal
-                                                 : (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.fechaCargaFinal != null) ? coleccionForm.criterios.fechaCargaFinal
-                                                 : ''
-                                               }">
+                 (ColeccionUpdateInputDTO != null and ColeccionUpdateInputDTO.criterios != null and ColeccionUpdateInputDTO.criterios.fechaCargaFinal != null)
+                   ? #strings.substringBefore(ColeccionUpdateInputDTO.criterios.fechaCargaFinal.toString(), 'T')
+                 : (coleccionForm != null and coleccionForm.criterios != null and coleccionForm.criterios.fechaCargaFinal != null)
+                   ? #strings.substringBefore(coleccionForm.criterios.fechaCargaFinal.toString(), 'T')
+                 : (param['criterios.fechaCargaFinal'] != null and !param['criterios.fechaCargaFinal'].isEmpty())
+                   ? param['criterios.fechaCargaFinal'][0]
+                 : ''
+               }">
                                     </div>
                                 </div>
                             </div>
@@ -384,16 +400,36 @@
     <script>
         (function() {
             const choicesInstances = [];
-            document.querySelectorAll('.js-choices').forEach(el => {
-                const inst = new Choices(el, {
-                    removeItemButton: true,
-                    searchEnabled: true,
-                    searchPlaceholderValue: 'Buscar…',
-                    itemSelectText: '',
-                    shouldSort: false
+
+            // Función para inicializar Choices.js con valores seleccionados
+            function initializeChoices() {
+                document.querySelectorAll('.js-choices').forEach(el => {
+                    // Obtener valores seleccionados antes de inicializar Choices
+                    const selectedValues = Array.from(el.selectedOptions).map(opt => opt.value);
+
+                    const inst = new Choices(el, {
+                        removeItemButton: true,
+                        searchEnabled: true,
+                        searchPlaceholderValue: 'Buscar…',
+                        itemSelectText: '',
+                        shouldSort: false
+                    });
+
+                    // Establecer valores seleccionados después de la inicialización
+                    if (selectedValues.length > 0) {
+                        inst.setChoiceByValue(selectedValues);
+                    }
+
+                    choicesInstances.push(inst);
                 });
-                choicesInstances.push(inst);
-            });
+            }
+
+            // Inicializar Choices después de que el DOM esté completamente cargado
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeChoices);
+            } else {
+                initializeChoices();
+            }
 
             const form = document.getElementById('crearColeccionForm');
             const paisSelect = document.getElementById('criterios_paisId');
@@ -441,6 +477,14 @@
 
                     if (el.type === 'radio') {
                         if (el.checked) params.set(el.name, el.value);
+                        return;
+                    }
+
+                    // Capturar campos de fecha incluso si están vacíos (para preservar valores)
+                    if (el.type === 'date') {
+                        if (el.value) {
+                            params.set(el.name, el.value);
+                        }
                         return;
                     }
 
