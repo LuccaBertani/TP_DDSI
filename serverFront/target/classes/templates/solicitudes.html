@@ -76,14 +76,14 @@
 
 
                 <div class="request-header">
-                        <span class="request-type-badge"
-                              th:classappend="${esSubir} ? 'badge-subir' : (${esEliminar} ? 'badge-eliminar' : 'badge-modificar')"
-                              th:text="${s.tipo}">SUBIR</span>
                         <span class="request-date">
-                            <i class="bi bi-calendar3 me-1"></i>
-                            <span th:text="${s.fecha}">2025-11-05</span>
-                        </span>
-                    </div>
+    <i class="bi bi-calendar3 me-1"></i>
+    <span th:text="${s.fecha != null ? #strings.substringBefore(s.fecha, 'T') : '—'}">
+        2025-11-05
+    </span>
+</span>
+
+                </div>
 
                     <h5 class="request-title">
                         Solicitud de <span th:text="${#strings.toLowerCase(s.tipo)}">subir</span>
@@ -110,9 +110,12 @@
                               th:classappend="${esSubir} ? 'badge-subir' : (${esEliminar} ? 'badge-eliminar' : 'badge-modificar')"
                               th:text="${s.tipo}">SUBIR</span>
                         <span class="request-date">
-                            <i class="bi bi-calendar3 me-1"></i>
-                            <span th:text="${s.fecha}">2025-11-05</span>
-                        </span>
+    <i class="bi bi-calendar3 me-1"></i>
+    <span th:text="${s.fecha != null ? #strings.substringBefore(s.fecha, 'T') : '—'}">
+        2025-11-05
+    </span>
+</span>
+
                     </div>
 
                     <h5 class="request-title">

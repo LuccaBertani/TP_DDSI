@@ -58,7 +58,14 @@
                         <div class="col-md-6"><div class="detail-item detail-item-multiline"><span class="detail-label">Descripción</span><div class="detail-value" th:text="${hecho.descripcion ?: '—'}"></div></div></div>
                         <div class="col-md-6"><div class="detail-item"><span class="detail-label">Fuente</span><div class="detail-value" th:text="${hecho.fuente ?: '—'}"></div></div></div>
                         <div class="col-md-6"><div class="detail-item"><span class="detail-label">Contribuyente</span><div class="detail-value" th:text="${hecho.username ?: '—'}"></div></div></div>
-                        <div class="col-md-6"><div class="detail-item"><span class="detail-label">Fecha de Carga</span><div class="detail-value" th:text="${hecho.fechaCarga != null ? hecho.fechaCarga : '—'}"></div></div></div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <span class="detail-label">Fecha de Carga</span>
+                                <div class="detail-value"
+                                     th:text="${hecho.fechaCarga != null ? #strings.substringBefore(hecho.fechaCarga, 'T') : '—'}">
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-6"><div class="detail-item"><span class="detail-label">Categoría</span><div class="detail-value" th:text="${hecho.categoria ?: '—'}"></div></div></div>
                         <div class="col-md-6"><div class="detail-item"><span class="detail-label">País</span><div class="detail-value" th:text="${hecho.pais ?: '—'}"></div></div></div>
                         <div class="col-md-6"><div class="detail-item"><span class="detail-label">Provincia</span><div class="detail-value" th:text="${hecho.provincia ?: '—'}"></div></div></div>
@@ -82,7 +89,14 @@
                         <div class="col-md-6"><div class="detail-item bg-light-soft"><span class="detail-label">Descripción</span><div class="detail-value" th:text="${AtributosModificarDTO.descripcion != null ? AtributosModificarDTO.descripcion : hecho.descripcion}"></div></div></div>
                         <div class="col-md-6"><div class="detail-item bg-light-soft"><span class="detail-label">Fuente</span><div class="detail-value" th:text="${hecho.fuente ?: '—'}"></div></div></div>
                         <div class="col-md-6"><div class="detail-item bg-light-soft"><span class="detail-label">Contribuyente</span><div class="detail-value" th:text="${hecho.username ?: '—'}"></div></div></div>
-                        <div class="col-md-6"><div class="detail-item bg-light-soft"><span class="detail-label">Fecha de Carga</span><div class="detail-value" th:text="${hecho.fechaCarga != null ? hecho.fechaCarga : '—'}"></div></div></div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <span class="detail-label">Fecha de Carga</span>
+                                <div class="detail-value"
+                                     th:text="${hecho.fechaCarga != null ? #strings.substringBefore(hecho.fechaCarga, 'T') : '—'}">
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-6"><div class="detail-item bg-light-soft"><span class="detail-label">Categoría</span><div class="detail-value" th:text="${AtributosModificarDTO.categoria != null ? AtributosModificarDTO.categoria : hecho.categoria}"></div></div></div>
                         <div class="col-md-6"><div class="detail-item bg-light-soft"><span class="detail-label">País</span><div class="detail-value" th:text="${AtributosModificarDTO.pais != null ? AtributosModificarDTO.pais : hecho.pais}"></div></div></div>
                         <div class="col-md-6"><div class="detail-item bg-light-soft"><span class="detail-label">Provincia</span><div class="detail-value" th:text="${AtributosModificarDTO.provincia != null ? AtributosModificarDTO.provincia : hecho.provincia}"></div></div></div>
@@ -107,7 +121,14 @@
                     <div class="col-md-6"><div class="detail-item detail-item-multiline"><span class="detail-label">Descripción</span><div class="detail-value" th:text="${hecho.descripcion ?: '—'}"></div></div></div>
                     <div class="col-md-6"><div class="detail-item"><span class="detail-label">Fuente</span><div class="detail-value" th:text="${hecho.fuente ?: '—'}"></div></div></div>
                     <div class="col-md-6"><div class="detail-item"><span class="detail-label">Contribuyente</span><div class="detail-value" th:text="${hecho.username ?: '—'}"></div></div></div>
-                    <div class="col-md-6"><div class="detail-item"><span class="detail-label">Fecha de Carga</span><div class="detail-value" th:text="${hecho.fechaCarga != null ? hecho.fechaCarga : '—'}"></div></div></div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label">Fecha de Carga</span>
+                            <div class="detail-value"
+                                 th:text="${hecho.fechaCarga != null ? #strings.substringBefore(hecho.fechaCarga, 'T') : '—'}">
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-md-6"><div class="detail-item"><span class="detail-label">Categoría</span><div class="detail-value" th:text="${hecho.categoria ?: '—'}"></div></div></div>
                     <div class="col-md-6"><div class="detail-item"><span class="detail-label">País</span><div class="detail-value" th:text="${hecho.pais ?: '—'}"></div></div></div>
                     <div class="col-md-6"><div class="detail-item"><span class="detail-label">Provincia</span><div class="detail-value" th:text="${hecho.provincia ?: '—'}"></div></div></div>
@@ -189,7 +210,7 @@
             <form th:if="${SolicitudHechoEliminarInputDTO == null}"
                   sec:authorize="hasRole('ADMINISTRADOR')"
                   th:action="@{/hechos/eliminar-hecho(id=${hecho.id}, fuente=${hecho.fuente})}"
-                  method="post" class:d-inline>
+                  method="post">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <button class="btn btn-danger-action">
                     <i class="bi bi-trash3 me-1"></i> Eliminar

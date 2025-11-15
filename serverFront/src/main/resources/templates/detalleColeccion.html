@@ -98,26 +98,45 @@
                             <span class="detail-value" th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.contenidoMultimedia != null ? #strings.listJoin(coleccion.criterios.contenidoMultimedia, ', ') : 'Todos'}">—</span>
                         </div>
                     </div>
+
                     <div class="col-md-6">
                         <div class="detail-item">
-                            <span class="detail-label"><i class="bi bi-calendar-event me-1 text-primary"></i>Fecha del Acontecimiento</span>
+                            <span class="detail-label">
+                                <i class="bi bi-calendar-event me-1 text-primary"></i>Fecha del Acontecimiento
+                            </span>
                             <span class="detail-value">
-                                <span th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.fechaAcontecimientoInicial != null ? coleccion.criterios.fechaAcontecimientoInicial : '—'}">—</span>
+                                <span th:text="${coleccion != null and coleccion.criterios != null
+                                    and coleccion.criterios.fechaAcontecimientoInicial != null
+                                    ? #strings.substringBefore(coleccion.criterios.fechaAcontecimientoInicial, 'T')
+                                    : '—'}">—</span>
                                 <span class="text-muted mx-1">a</span>
-                                <span th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.fechaAcontecimientoFinal != null ? coleccion.criterios.fechaAcontecimientoFinal : '—'}">—</span>
+                                <span th:text="${coleccion != null and coleccion.criterios != null
+                                    and coleccion.criterios.fechaAcontecimientoFinal != null
+                                    ? #strings.substringBefore(coleccion.criterios.fechaAcontecimientoFinal, 'T')
+                                    : '—'}">—</span>
                             </span>
                         </div>
                     </div>
+
                     <div class="col-md-6">
                         <div class="detail-item">
-                            <span class="detail-label"><i class="bi bi-calendar-plus me-1 text-primary"></i>Fecha de Carga</span>
+                            <span class="detail-label">
+                                <i class="bi bi-calendar-plus me-1 text-primary"></i>Fecha de Carga
+                            </span>
                             <span class="detail-value">
-                                <span th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.fechaCargaInicial != null ? coleccion.criterios.fechaCargaInicial : '—'}">—</span>
-                                <span class="text-muted mx-1">a</span>
-                                <span th:text="${coleccion != null and coleccion.criterios != null and coleccion.criterios.fechaCargaFinal != null ? coleccion.criterios.fechaCargaFinal : '—'}">—</span>
+                            <span th:text="${coleccion != null and coleccion.criterios != null
+                                and coleccion.criterios.fechaCargaInicial != null
+                                ? #strings.substringBefore(coleccion.criterios.fechaCargaInicial, 'T')
+                                : '—'}">—</span>
+                            <span class="text-muted mx-1">a</span>
+                            <span th:text="${coleccion != null and coleccion.criterios != null
+                                and coleccion.criterios.fechaCargaFinal != null
+                                ? #strings.substringBefore(coleccion.criterios.fechaCargaFinal, 'T')
+                                : '—'}">—</span>
                             </span>
                         </div>
                     </div>
+
                     <div class="col-md-6">
                         <div class="detail-item">
                             <span class="detail-label"><i class="bi bi-search me-1 text-primary"></i>Título contiene</span>
