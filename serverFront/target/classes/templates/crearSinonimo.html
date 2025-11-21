@@ -2,7 +2,6 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
 <main th:fragment="contenido" class="container py-4">
 
-    <!-- Encabezado -->
     <section class="text-center py-4"
              style="background: radial-gradient(1200px 600px at 50% -150px, #e8ecf6 0%, #f7f9fb 100%);
                   border-radius:12px;">
@@ -10,18 +9,15 @@
         <p class="text-muted mb-0">Agregá un sinónimo para categorías, países, provincias o ciudades</p>
     </section>
 
-    <!-- Formulario -->
     <div class="row justify-content-center mt-4">
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm" style="border-radius:14px;">
                 <div class="card-body p-4">
                     <form th:action="@{/sinonimos}" method="post" th:object="${sinonimoForm}">
-                        <!-- CSRF -->
                         <input type="hidden" th:if="${_csrf != null}"
                                th:name="${_csrf.parameterName}"
                                th:value="${_csrf.token}"/>
 
-                        <!-- Tipo -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="tipo">Tipo de sinónimo *</label>
                             <select class="form-select" id="tipo" th:field="*{tipo}" required>
@@ -33,7 +29,6 @@
                             </select>
                         </div>
 
-                        <!-- Principal -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="principal">Término principal *</label>
                             <input type="text" class="form-control" id="principal" th:field="*{principal}"
@@ -41,7 +36,6 @@
                             <div class="form-text">El nombre oficial o más comúnmente usado.</div>
                         </div>
 
-                        <!-- Un solo sinónimo -->
                         <div class="mb-3" style="background:#f8f9fa;border-radius:8px;padding:15px;">
                             <label class="form-label fw-semibold" for="sinonimo">Sinónimo *</label>
                             <input type="text" class="form-control" id="sinonimo" name="sinonimo"
@@ -51,7 +45,7 @@
 
                         <!-- Botones -->
                         <div class="d-flex justify-content-between mt-4">
-                            <a class="btn btn-outline-secondary" th:href="@{/sinonimos}">
+                            <a class="btn btn-outline-secondary" th:href="@{/usuarios/perfil}">
                                 <i class="bi bi-arrow-left me-1"></i> Cancelar
                             </a>
                             <button type="submit" class="btn btn-dark">
