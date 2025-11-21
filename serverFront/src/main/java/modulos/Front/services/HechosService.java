@@ -85,4 +85,8 @@ public class HechosService {
     public ResponseEntity<?> modificarHecho(HechoModificarInputDTO dto){
         return webApiCallerService.postEntity(this.hechoServiceUrl + "/modificar-hecho", dto, Void.class);
     }
+
+    public ResponseEntity<Integer> getCantFuentes() {
+        return webApiCallerService.getEntity(this.hechoServiceUrl + "/cantFuentes", Integer.class);
+    }
 }

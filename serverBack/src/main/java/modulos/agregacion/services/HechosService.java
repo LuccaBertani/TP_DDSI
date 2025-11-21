@@ -67,6 +67,7 @@ public class HechosService {
     private final ICategoriaRepository categoriaRepository;
     private final ISinonimoRepository repoSinonimo;
     private final IHechoRefRepository hechoRefRepository;
+    private final IDatasetsRepository repoFuentes;
     private FormateadorHechoMemoria formateadorHechoMemoria;
     private final IMensajeRepository mensajeRepository;
     private final BuscadorUbicacion buscadorUbicacion;
@@ -1092,4 +1093,12 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     }
 
 
+    public ResponseEntity<?> getCantFuentes(String username) {
+        ResponseEntity<?> rta = this.checkeoAdmin(username);
+        if(!rta.getStatusCode().is2xxSuccessful()){
+            return rta;
+        } else {
+            return ResponseEntity.ok().body(repoFuentes.getCantFuentes());
+        }
+    }
 }

@@ -239,6 +239,12 @@
                                 </div>
                             </div>
                             <div class="admin-panel-item">
+                                <div class="admin-panel-label">Cantidad de fuentes</div>
+                                <div class="admin-panel-value">
+                                    <span th:text="${statsFuentes} ?: 0">0</span>
+                                </div>
+                            </div>
+                            <div class="admin-panel-item">
                                 <div class="admin-panel-label">Solicitudes pendientes</div>
                                 <div class="admin-panel-value admin-panel-badge-pend">
                                     <span th:text="${solicitudesPendientes} ?: 0">0</span>

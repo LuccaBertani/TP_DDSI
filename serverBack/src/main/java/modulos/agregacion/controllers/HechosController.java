@@ -175,5 +175,10 @@ fecha_acontecimiento_desde, fecha_acontecimiento_hasta, ubicacion BARBARO!!.
         return hechosService.modificarHecho(dtoInput, username);
     }
 
+    @GetMapping("/cantFuentes")
+    public ResponseEntity<?>  getCantFuentes(@AuthenticationPrincipal String username){
+        return hechosService.getCantFuentes(username);
+    }
+
 }
 

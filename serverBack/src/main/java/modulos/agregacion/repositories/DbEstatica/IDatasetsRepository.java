@@ -23,4 +23,8 @@ public interface IDatasetsRepository extends JpaRepository<Dataset, Long> {
     """)
     List<String> findDistinctDatasetsByHechoIds(@Param("hechoIds") List<Long> hechoIds);
 
+    @Query("""
+    SELECT COUNT(d) FROM Dataset d
+    """)
+    Integer getCantFuentes();
 }

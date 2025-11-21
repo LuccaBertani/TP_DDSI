@@ -77,10 +77,12 @@ public class UsuarioController {
             ResponseEntity<Long> statsHechos = hechosService.getCantHechos();
             ResponseEntity<Long> statsColecciones = coleccionService.getCantColecciones();
             ResponseEntity<Integer> statsSolicitudes = solicitudHechoService.getPorcentajeSolicitudesProcesadas();
+            ResponseEntity<Integer> statsFuentes = hechosService.getCantFuentes();
 
             model.addAttribute("statsHechos", statsHechos.getBody());
             model.addAttribute("statsColecciones", statsColecciones.getBody());
             model.addAttribute("statsSolicitudes", statsSolicitudes.getBody());
+            model.addAttribute("statsFuentes", statsFuentes.getBody());
 
             Long cantPendientes = 0L;
             ResponseEntity<?> rtaPendientes = solicitudHechoService.getSolicitudesPendientes();
