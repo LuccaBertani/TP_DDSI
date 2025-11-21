@@ -6,21 +6,32 @@
   <component name="ChangeListManager">
     <list default="true" id="f850432b-1600-446e-abba-2862d1cc44e3" name="Changes" comment="Merge branch 'entrega_6' of https://github.com/dds-utn/2025-tpa-mi-no-grupo-17 into entrega_6&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/servicioEstadistica/ServicioDeEstadistica.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/servicioEstadistica/ServicioDeEstadistica.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/servicioEstadistica/ServicioDeEstadistica.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/servicioEstadistica/ServicioDeEstadistica.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/CategoriaController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/SinonimoController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/UsuarioController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/UsuarioController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/crearCategoria.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/crearCategoria.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/crearSinonimo.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/crearSinonimo.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/HechosController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/HechosController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/SolicitudHechoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/SolicitudHechoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/controllers/HechosController.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/controllers/HechosController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/controllers/SolicitudHechoController.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/controllers/SolicitudHechoController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/services/HechosService.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/target/classes/modulos/agregacion/services/HechosService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/GestionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/GestionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/dtos/input/CategoriaInputDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/login.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/perfil.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/perfil.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/controllers/UsuarioController.class" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/modulos/Front/controllers/UsuarioController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/register.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/crearCategoria.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/crearCategoria.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/login.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/perfil.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/perfil.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/solicitudes.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/solicitudes.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/target/classes/templates/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/target/classes/templates/register.html" afterDir="false" />
     </list>
     <list id="3bb68fa4-4cba-440f-a626-e70e60e396a9" name="Changes by germa" comment="" />
     <list id="f13608ce-ca7b-462a-b1c3-e6566403784d" name="Changes by Lucas" comment="" />
     <list id="bd2f9c59-412c-4d85-95af-559cd31f93a3" name="Changes by merce" comment="" />
+    <list id="a70a8645-c023-4ef9-b4ec-201dd6711b94" name="Changes by nehue" comment="">
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/HechosController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/HechosController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/HechosService.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/services/HechosService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/GestionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/GestionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/services/GestionService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/crearCategoria.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/crearCategoria.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/serverFront/src/main/resources/templates/perfil.html" beforeDir="false" afterPath="$PROJECT_DIR$/serverFront/src/main/resources/templates/perfil.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -51,6 +62,40 @@
     &quot;accountId&quot;: &quot;ad6c2145-da9b-4f6d-a29b-88bea5e350a0&quot;
   }
 }</component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/serverFront/src/main/java/modulos/Front/controllers/GestionController.java">
+      <ranges>
+        <range start1="4" end1="5" start2="4" end2="4" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="6" end1="7" start2="5" end2="7" changelist="a70a8645-c023-4ef9-b4ec-201dd6711b94" />
+        <range start1="15" end1="16" start2="15" end2="15" changelist="a70a8645-c023-4ef9-b4ec-201dd6711b94" />
+        <range start1="17" end1="17" start2="16" end2="17" changelist="a70a8645-c023-4ef9-b4ec-201dd6711b94" />
+        <range start1="19" end1="20" start2="19" end2="21" changelist="a70a8645-c023-4ef9-b4ec-201dd6711b94" />
+        <range start1="23" end1="25" start2="24" end2="25" changelist="a70a8645-c023-4ef9-b4ec-201dd6711b94" />
+        <range start1="28" end1="31" start2="28" end2="31" changelist="a70a8645-c023-4ef9-b4ec-201dd6711b94" />
+        <range start1="32" end1="33" start2="32" end2="35" changelist="a70a8645-c023-4ef9-b4ec-201dd6711b94" />
+        <range start1="52" end1="53" start2="54" end2="55" changelist="a70a8645-c023-4ef9-b4ec-201dd6711b94" />
+        <range start1="65" end1="66" start2="67" end2="68" changelist="a70a8645-c023-4ef9-b4ec-201dd6711b94" />
+      </ranges>
+    </file>
+    <file path="$PROJECT_DIR$/serverBack/src/main/java/modulos/agregacion/controllers/HechosController.java">
+      <ranges>
+        <range start1="41" end1="42" start2="41" end2="42" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="135" end1="139" start2="135" end2="136" changelist="a70a8645-c023-4ef9-b4ec-201dd6711b94" />
+      </ranges>
+    </file>
+    <file path="$PROJECT_DIR$/serverFront/src/main/resources/templates/perfil.html">
+      <ranges>
+        <range start1="15" end1="16" start2="15" end2="16" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="93" end1="95" start2="93" end2="94" changelist="a70a8645-c023-4ef9-b4ec-201dd6711b94" />
+        <range start1="105" end1="107" start2="104" end2="105" changelist="a70a8645-c023-4ef9-b4ec-201dd6711b94" />
+        <range start1="139" end1="141" start2="137" end2="138" changelist="a70a8645-c023-4ef9-b4ec-201dd6711b94" />
+        <range start1="149" end1="151" start2="146" end2="147" changelist="a70a8645-c023-4ef9-b4ec-201dd6711b94" />
+        <range start1="159" end1="160" start2="155" end2="156" changelist="a70a8645-c023-4ef9-b4ec-201dd6711b94" />
+        <range start1="276" end1="277" start2="272" end2="273" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+        <range start1="280" end1="281" start2="276" end2="277" changelist="f850432b-1600-446e-abba-2862d1cc44e3" />
+      </ranges>
+    </file>
+  </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -121,11 +166,11 @@
       <recent name="" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="modulos.shared.dtos.input" />
       <recent name="modulos.Front" />
       <recent name="modulos.shared.dtos.output" />
       <recent name="modulos" />
       <recent name="modulos.Front.dtos.output" />
-      <recent name="modulos.shared.dtos" />
     </key>
   </component>
   <component name="RunDashboard">

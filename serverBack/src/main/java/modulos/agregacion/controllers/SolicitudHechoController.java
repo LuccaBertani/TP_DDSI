@@ -55,7 +55,7 @@ public class SolicitudHechoController {
     // Anda
     @PostMapping("/public/subir-hecho")
     public ResponseEntity<?> enviarSolicitudSubirHecho(@RequestPart("meta") SolicitudHechoInputDTO dto,
-                                                       @RequestPart("contenidosMultimedia") List<MultipartFile> files,
+                                                       @RequestPart(value = "contenidosMultimedia", required = false) List<MultipartFile> files,
                                                        @AuthenticationPrincipal String username){
         System.out.println("HOLAAA");
         System.out.println("SOY UN PELOTUDO DE MIERDA " + username);

@@ -2,9 +2,9 @@ package modulos.Front.controllers;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import modulos.Front.dtos.input.CategoriaInputDTO;
 import modulos.Front.dtos.input.SinonimoInputDTO;
-import modulos.Front.services.GestionService;
+import modulos.Front.services.CategoriaService;
+import modulos.Front.services.SinonimoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -13,24 +13,26 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping
 @AllArgsConstructor
+@RequestMapping("/gestion")
 public class GestionController {
 
-    private final GestionService gestionService;
+    private final CategoriaService categoriaService;
+    private final SinonimoService sinonimoService;
 
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE')")
     @GetMapping("/categorias/crear")
-    public String cargarFormCrearCategoria(Model model){
-        model.addAttribute("categoriaForm", new CategoriaInputDTO());
+    public String cargarFormCrearCategoria(){
         return "crearCategoria";
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE')")
-    @PostMapping("/categorias")
-    public String crearCategoria(@Valid @ModelAttribute("categoriaForm") CategoriaInputDTO dtoInput, RedirectAttributes ra) {
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PostMapping("/categorias/crear")
+    public String crearCategoria(@RequestParam String categoria, RedirectAttributes ra) {
 
-        ResponseEntity<?> rta = this.gestionService.crearCategoria(dtoInput);
+        System.out.println("SOY LA CATEGORIA DE TITULO: " + categoria);
+
+        ResponseEntity<?> rta = this.categoriaService.crearCategoria(categoria);
 
         if(rta.getStatusCode().is2xxSuccessful()){
             ra.addFlashAttribute("msgExito", "Categoría creada correctamente");
@@ -50,7 +52,7 @@ public class GestionController {
         return "crearSinonimo";
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE')")
+    /*@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE')")
     @PostMapping("/sinonimos")
     public String crearSinonimo(@Valid @ModelAttribute("sinonimoForm") SinonimoInputDTO dtoInput, RedirectAttributes ra) {
 
@@ -63,5 +65,5 @@ public class GestionController {
             ra.addFlashAttribute("msgError", rta.getBody().toString());
         }
         return "redirect:/" + rta.getStatusCode().value();
-    }
+    }*/
 }

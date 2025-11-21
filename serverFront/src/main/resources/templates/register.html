@@ -292,20 +292,20 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Nombre *</label>
-                            <input class="form-control" th:field="*{nombre}" placeholder="Juan" required>
+                            <input class="form-control" th:field="*{nombre}" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Apellido</label>
-                            <input class="form-control" th:field="*{apellido}" placeholder="Pérez">
+                            <input class="form-control" th:field="*{apellido}" >
                         </div>
                         <div class="col-12">
                             <label class="form-label">Nombre de usuario *</label>
-                            <input class="form-control" th:field="*{nombreUsuario}" placeholder="juanperez" required>
+                            <input class="form-control" th:field="*{nombreUsuario}"  required>
                             <div class="form-text">Debe ser único</div>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Edad</label>
-                            <input type="number" class="form-control" th:field="*{edad}" min="0" max="120" placeholder="25">
+                            <input type="number" class="form-control" th:field="*{edad}" min="0" max="120">
                         </div>
                     </div>
                 </div>
@@ -321,14 +321,14 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label">Contraseña *</label>
-                            <input type="password" class="form-control" th:field="*{contrasenia}" placeholder="••••••••" required onkeyup="checkPasswordStrength(this.value)">
+                            <input type="password" class="form-control" th:field="*{contrasenia}" required onkeyup="checkPasswordStrength(this.value)">
                             <div class="password-strength">
                                 <div id="psBar" class="password-strength-bar"></div>
                             </div>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Confirmar contraseña *</label>
-                            <input type="password" class="form-control" id="confirmContrasenia" placeholder="••••••••" required>
+                            <input type="password" class="form-control" id="confirmContrasenia" required>
                             <div id="confirmHelp" class="small mt-1"></div>
                         </div>
                     </div>

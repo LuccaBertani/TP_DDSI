@@ -13,7 +13,7 @@
                          th:text="${usuario != null and usuario.nombreDeUsuario != null ? #strings.toUpperCase(usuario.nombreDeUsuario.substring(0,1)) : 'U'}">U</div>
                 </div>
                 <div class="col">
-                    <div class="profile-badge mb-2">
+                    <div class="profile-badge mb-2" sec:authorize="hasRole('ADMINISTRADOR')">
                         <i class="bi bi-shield-check me-2"></i>Cuenta verificada
                     </div>
                     <h1 class="display-6 fw-bold mb-2">
@@ -91,8 +91,7 @@
                                     <div class="input-group-modern">
                                         <span class="input-icon"><i class="bi bi-at"></i></span>
                                         <input id="nombreDeUsuarioNuevo" type="text" class="form-control"
-                                               name="nombreDeUsuarioNuevo"
-                                               placeholder="nuevo_usuario" minlength="3" maxlength="30" required>
+                                               name="nombreDeUsuarioNuevo">
                                     </div>
                                     <small class="form-text-modern">
                                         <i class="bi bi-info-circle me-1"></i>Debe ser único y sin espacios
@@ -103,8 +102,7 @@
                                     <div class="input-group-modern">
                                         <span class="input-icon"><i class="bi bi-lock"></i></span>
                                         <input id="contrasenia" type="password" class="form-control"
-                                               name="contrasenia" required autocomplete="current-password"
-                                               placeholder="••••••••">
+                                               name="contrasenia" required autocomplete="current-password">
                                     </div>
                                     <small class="form-text-modern">
                                         <i class="bi bi-shield-lock me-1"></i>Requerida para confirmar cambios
@@ -137,8 +135,7 @@
                                     <div class="input-group-modern">
                                         <span class="input-icon"><i class="bi bi-lock"></i></span>
                                         <input type="password" class="form-control" id="contrasenia_actual"
-                                               name="contrasenia_actual" required autocomplete="current-password"
-                                               placeholder="••••••••">
+                                               name="contrasenia_actual" required autocomplete="current-password">
                                     </div>
                                 </div>
 
@@ -147,8 +144,7 @@
                                     <div class="input-group-modern">
                                         <span class="input-icon"><i class="bi bi-key"></i></span>
                                         <input type="password" class="form-control" id="contrasenia_nueva"
-                                               name="contrasenia_nueva" autocomplete="new-password"
-                                               placeholder="••••••••">
+                                               name="contrasenia_nueva" autocomplete="new-password">
                                     </div>
                                 </div>
 
@@ -157,7 +153,7 @@
                                     <div class="input-group-modern">
                                         <span class="input-icon"><i class="bi bi-key-fill"></i></span>
                                         <input type="password" class="form-control" id="repetir_contrasenia"
-                                               autocomplete="new-password" placeholder="••••••••">
+                                               autocomplete="new-password">
                                     </div>
                                     <div class="invalid-feedback">Las contraseñas no coinciden</div>
                                 </div>
@@ -274,11 +270,11 @@
                                 <i class="bi bi-filetype-csv me-1"></i>
                                 Importar CSV de hechos
                             </a>
-                            <a th:href="@{/categorias/crear}" class="btn btn-admin-secondary w-100">
+                            <a th:href="@{/gestion/categorias/crear}" class="btn btn-admin-secondary w-100">
                                 <i class="bi bi-tags me-1"></i>
                                 Crear categoría
                             </a>
-                            <a th:href="@{/sinonimos/crear}" class="btn btn-admin-secondary w-100">
+                            <a th:href="@{/gestion/sinonimos/crear}" class="btn btn-admin-secondary w-100">
                                 <i class="bi bi-link-45deg me-1"></i>
                                 Crear sinónimo
                             </a>

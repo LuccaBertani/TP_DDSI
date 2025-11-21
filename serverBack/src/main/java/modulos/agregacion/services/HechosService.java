@@ -583,25 +583,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         return (root, query, cb) -> root.get("id").in(idsHechosDeColeccionYConsensuados);
     }
 
-    public ResponseEntity<?> addCategoria(Jwt principal, String categoriaStr, List<String> sinonimosString) {
-
-        ResponseEntity<?> rta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
-
-        if (!rta.getStatusCode().equals(HttpStatus.OK)){
-            return rta;
-        }
-        Categoria categoria = new Categoria();
-        categoria.setTitulo(categoriaStr);
-        List<Sinonimo> sinonimos = new ArrayList<>();
-        if (sinonimosString!=null && !sinonimosString.isEmpty()){
-            for (String sinonimo: sinonimosString){
-                sinonimos.add(new Sinonimo(sinonimo));
-            }
-        }
-        categoria.setSinonimos(sinonimos);
-        categoriaRepository.save(categoria);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Se creó la categoría correctamente");
-    }
 
     public ResponseEntity<?> addSinonimoCategoria(Jwt principal, Long idCategoria, String sinonimo_str) {
 

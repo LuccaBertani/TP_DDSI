@@ -39,7 +39,7 @@ public class HechosController {
     @PostMapping(value="/subir", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> subirHecho(
             @RequestPart("meta") SolicitudHechoInputDTO dto,
-            @RequestPart("contenidosMultimedia") List<MultipartFile> files,
+            @RequestPart(value = "contenidosMultimedia", required = false) List<MultipartFile> files,
             @AuthenticationPrincipal String username){
         return hechosService.subirHecho(dto, files, username); // 201 o 401
     }
@@ -133,10 +133,7 @@ fecha_acontecimiento_desde, fecha_acontecimiento_hasta, ubicacion BARBARO!!.
 
     // TODO OOOOOOOOOOOOOOO
     // Anda
-    @PostMapping("/add/categoria")
-    public ResponseEntity<?> addCategoria(@AuthenticationPrincipal Jwt principal, @RequestParam String categoriaStr, @RequestParam(required = false) List<String> sinonimos){
-        return hechosService.addCategoria(principal, categoriaStr, sinonimos);
-    }
+
 
     // Anda
     @PostMapping("/add/sinonimo/categoria")
