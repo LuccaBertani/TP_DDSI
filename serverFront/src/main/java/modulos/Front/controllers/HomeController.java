@@ -250,11 +250,24 @@ public class HomeController {
         return "gestion";
     }
 
+    @GetMapping("/400")
+    public String badRequest(){
+        return "400";
+    }
 
+    @GetMapping("/403")
+    public String accessDenied(){
+        return "403";
+    }
 
     @GetMapping("/404")
     public String notFound(){
         return "404";
+    }
+
+    @GetMapping("/409")
+    public String conflict(){
+        return "409";
     }
 
     @GetMapping("/500")
@@ -262,8 +275,5 @@ public class HomeController {
         return "500";
     }
 
-    @GetMapping("/403")
-    public String accessDenied(){
-        return "403";
-    }
+
 }

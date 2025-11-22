@@ -68,6 +68,7 @@ modulos\shared\utils\FormateadorHecho.class
 modulos\agregacion\entities\fuentes\FuenteDinamica.class
 modulos\shared\dtos\output\AuthResponseDTO.class
 modulos\agregacion\repositories\DbMain\IPaisRepository.class
+modulos\agregacion\services\SinonimoService.class
 modulos\buscadores\BuscadorHecho.class
 modulos\shared\dtos\input\CambiarContraseniaDtoInput.class
 modulos\agregacion\converters\AlgoritmoConsensoConverter.class
@@ -137,6 +138,7 @@ modulos\agregacion\entities\DbMain\RespuestaHttp.class
 modulos\agregacion\controllers\CategoriaController.class
 modulos\shared\dtos\output\DatosPersonalesOutputDTO.class
 modulos\shared\dtos\input\HechoModificarInputDTO$HechoModificarInputDTOBuilder.class
+modulos\shared\dtos\input\SinonimoInputDto.class
 modulos\shared\dtos\input\EditarNombreDeUsuarioDtoInput.class
 modulos\shared\dtos\input\EditarUsuarioDtoInput.class
 modulos\agregacion\entities\DbDinamica\solicitudes\SolicitudHecho.class
@@ -177,6 +179,7 @@ modulos\agregacion\entities\atributosHecho\AtributosHecho$AtributosHechoBuilder.
 modulos\servicioEstadistica\entities\ColeccionProvincia.class
 modulos\agregacion\entities\DbMain\projections\CategoriaCantidadProjection.class
 modulos\agregacion\repositories\DbProxy\IHechosProxyRepository.class
+modulos\agregacion\controllers\SinonimoController.class
 modulos\agregacion\entities\atributosHecho\AtributosHechoModificar.class
 modulos\agregacion\entities\DbMain\Fuente.class
 modulos\shared\dtos\output\ProvinciaDto.class

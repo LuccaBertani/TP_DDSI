@@ -180,6 +180,10 @@ public class ColeccionController {
 
         ResponseEntity<?> rta = coleccionService.getColeccion(id_coleccion);
 
+        if (!rta.getStatusCode().is2xxSuccessful()){
+            return "redirect:/" + rta.getStatusCode().value();
+        }
+
         if (rta.getStatusCode().is2xxSuccessful() && rta.getBody() != null) {
             System.out.println("HOLA CHICOS NO SOY NULL!!");
             ColeccionOutputDTO coleccion = (ColeccionOutputDTO) rta.getBody();

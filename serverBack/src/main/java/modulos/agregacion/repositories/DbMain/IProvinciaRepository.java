@@ -27,9 +27,17 @@ SELECT p
 FROM Provincia p
 WHERE
     p.pais.id = :pais_id AND
+    (
   REPLACE(LOWER(p.provincia), ' ', '') =
   REPLACE(LOWER(:nombre), ' ', '')
-  
+  OR EXISTS (
+    SELECT 1
+    FROM Sinonimo s
+    WHERE s MEMBER OF p.sinonimos
+      AND REPLACE(LOWER(s.sinonimoStr), ' ', '') =
+          REPLACE(LOWER(:nombre), ' ', '')
+  )
+  )
 """)
     Optional<Provincia> findByNombreNormalizadoAndPaisId(@Param("nombre") String nombre, @Param("pais_id") Long pais_id);
 

@@ -247,9 +247,6 @@ public class HechosController {
             return "detalleHecho";
         }
 
-        else if (rtaDto.getBody() != null){
-            model.addAttribute("errorMsg", rtaDto.getBody().toString());
-        }
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
 
