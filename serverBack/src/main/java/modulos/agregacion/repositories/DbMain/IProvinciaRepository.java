@@ -50,6 +50,11 @@ WHERE
     select p from Provincia p where p.pais.id = :id
 """)
     List<Provincia> findAllByPaisId(@Param("id") Long id);
+
+    @Query("""
+    SELECT p from Provincia p where p.id = :entidad AND p.pais.id = :pais
+    """)
+    Optional<Provincia> findByIdAndPaisId(@Param("pais") Long id_pais, @Param("entidad") Long id_entidad);
 }
 
 

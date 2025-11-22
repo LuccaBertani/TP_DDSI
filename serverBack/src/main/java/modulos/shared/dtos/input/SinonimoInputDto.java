@@ -1,9 +1,9 @@
-package modulos.Front.dtos.input;
+package modulos.shared.dtos.input;
 
 import lombok.Data;
 
 @Data
-public class SinonimoInputDTO {
+public class SinonimoInputDto {
     private String tipo;
 
     private Long id_entidad;

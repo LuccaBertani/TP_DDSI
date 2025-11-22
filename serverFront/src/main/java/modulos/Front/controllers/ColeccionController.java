@@ -183,7 +183,9 @@ public class ColeccionController {
         if (rta.getStatusCode().is2xxSuccessful() && rta.getBody() != null) {
             System.out.println("HOLA CHICOS NO SOY NULL!!");
             ColeccionOutputDTO coleccion = (ColeccionOutputDTO) rta.getBody();
-            coleccion.getCriterios().getFuentes().forEach(f -> System.out.println("Fuente " + f));
+            if(coleccion.getCriterios().getFuentes() != null) {
+                coleccion.getCriterios().getFuentes().forEach(f -> System.out.println("Fuente " + f));
+            }
             System.out.println("Algoritmo de consenso: " + coleccion.getAlgoritmoDeConsenso());
             model.addAttribute("coleccion", coleccion);
             ResponseEntity<?> rtaCategorias = hechosService.getCategorias();

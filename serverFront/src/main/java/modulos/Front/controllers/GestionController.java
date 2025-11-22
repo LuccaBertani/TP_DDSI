@@ -6,7 +6,6 @@ import modulos.Front.BodyToListConverter;
 import modulos.Front.dtos.input.SinonimoInputDTO;
 import modulos.Front.dtos.output.CategoriaDto;
 import modulos.Front.dtos.output.PaisDto;
-import modulos.Front.dtos.output.PaisProvinciaDTO;
 import modulos.Front.dtos.output.ProvinciaDto;
 import modulos.Front.services.CategoriaService;
 import modulos.Front.services.HechosService;
@@ -18,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -54,21 +54,27 @@ public class GestionController {
 
 
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR')")
     @GetMapping("/sinonimos/crear")
     public String cargarFormCrearSinonimo(
             Model model,
             @ModelAttribute("sinonimoForm") SinonimoInputDTO sinonimoInputDTO
     ) {
-        // Si entro por primera vez y no hay form en el modelo
-        if (!model.containsAttribute("sinonimoForm")) {
-            model.addAttribute("sinonimoForm", new SinonimoInputDTO());
+        // Si entro por primera vez, pongo form vacío
+        if (sinonimoInputDTO == null) {
+            sinonimoInputDTO = new SinonimoInputDTO();
         }
 
+        if (!model.containsAttribute("sinonimoForm")) {
+            model.addAttribute("sinonimoForm", sinonimoInputDTO);
+        }
+
+        // Traigo países y categorías
         ResponseEntity<?> rtaPaises = hechosService.getPaises();
         ResponseEntity<?> rtaCategorias = hechosService.getCategorias();
 
-        if (!rtaPaises.getStatusCode().is2xxSuccessful() || !rtaCategorias.getStatusCode().is2xxSuccessful()) {
+        if (!rtaPaises.getStatusCode().is2xxSuccessful()
+                || !rtaCategorias.getStatusCode().is2xxSuccessful()) {
             return "redirect:/404";
         }
 
@@ -78,16 +84,42 @@ public class GestionController {
         model.addAttribute("paises", paises);
         model.addAttribute("categorias", categorias);
 
-        // Las provincias las vamos a traer por AJAX según el país elegido
+        // ------------------------------------------
+        // 🔥 LÓGICA DE RECARGA DE PROVINCIAS (un solo país)
+        // ------------------------------------------
+
+        if (sinonimoInputDTO.getId_pais() != null) {
+            ResponseEntity<?> rtaProvincia = hechosService.getProvinciasByIdPais(sinonimoInputDTO.getId_pais());
+
+            if (rtaProvincia.getBody() != null) {
+                List<ProvinciaDto> provincias = BodyToListConverter.bodyToList(rtaProvincia, ProvinciaDto.class);
+                model.addAttribute("provincias", provincias);
+            }
+        }
+
+        // Setear nuevamente el form en el modelo
+        model.addAttribute("sinonimoForm", sinonimoInputDTO);
+
         return "crearSinonimo";
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE')")
+
+
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR')")
     @PostMapping("/sinonimos/crear")
     public String crearSinonimo(@Valid @ModelAttribute("sinonimoForm") SinonimoInputDTO dtoInput, RedirectAttributes ra) {
         ResponseEntity<?> rta = null;
+
+        System.out.println("Sinonimo: " + dtoInput.getSinonimo());
+        System.out.println("Entidad: " + dtoInput.getId_entidad());
+        System.out.println("Pais: " + dtoInput.getId_pais());
+
         if (dtoInput.getTipo().equals("categoria")){
-            rta = this.categoriaService.addSinonimo(dtoInput.getSinonimo(), dtoInput.getId_entidad());
+            rta = this.sinonimoService.crearSinonimoCategoria(dtoInput);
+        } else if (dtoInput.getTipo().equals("pais")){
+            rta = this.sinonimoService.crearSinonimoPais(dtoInput);
+        } else if (dtoInput.getTipo().equals("provincia")){
+            rta = this.sinonimoService.crearSinonimoProvincia(dtoInput);
         }
 
         if (rta!=null){
