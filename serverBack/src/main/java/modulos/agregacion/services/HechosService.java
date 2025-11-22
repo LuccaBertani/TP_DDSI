@@ -585,34 +585,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     }
 
 
-    public ResponseEntity<?> addSinonimoCategoria(Jwt principal, Long idCategoria, String sinonimo_str) {
-
-        ResponseEntity<?> respuesta = checkeoAdmin(JwtClaimExtractor.getUsernameFromToken(principal));
-
-        if (!respuesta.getStatusCode().equals(HttpStatus.OK)){
-            return respuesta;
-        }
-
-    Categoria categoria = categoriaRepository.findById(idCategoria).orElse(null);
-
-        if(categoria == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message","El id de la categoria no es valido"));
-        }
-
-        Sinonimo sinonimo = repoSinonimo.findByIdCategoriaAndNombre(idCategoria, sinonimo_str).orElse(null);
-
-        if(sinonimo != null){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("El sinonimo ya existe");
-        }
-
-        sinonimo = new Sinonimo(sinonimo_str);
-
-        categoria.getSinonimos().add(sinonimo);
-
-        categoriaRepository.save(categoria);
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
 
     public ResponseEntity<?> addSinonimoPais(Jwt principal, Long idPais, String sinonimo_str) {
 

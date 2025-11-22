@@ -20,4 +20,10 @@ public class CategoriaController {
     public ResponseEntity<?> addCategoria(@AuthenticationPrincipal String username, @RequestParam String categoria){
         return categoriaService.addCategoria(username, categoria);
     }
+
+    // Anda
+    @PostMapping("/add/sinonimo/categoria")
+    public ResponseEntity<?> addSinonimoCategoria(@AuthenticationPrincipal String username, @RequestParam Long id_categoria, @RequestParam String sinonimo){
+        return categoriaService.addSinonimoCategoria(username, id_categoria, sinonimo);
+    }
 }

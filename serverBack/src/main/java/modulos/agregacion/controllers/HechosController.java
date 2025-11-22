@@ -136,12 +136,6 @@ fecha_acontecimiento_desde, fecha_acontecimiento_hasta, ubicacion BARBARO!!.
 
 
     // Anda
-    @PostMapping("/add/sinonimo/categoria")
-    public ResponseEntity<?> addSinonimoCategoria(@AuthenticationPrincipal Jwt principal, @RequestParam Long id_categoria, @RequestParam String sinonimo){
-        return hechosService.addSinonimoCategoria(principal, id_categoria, sinonimo);
-    }
-
-    // Anda
     @PostMapping("/add/sinonimo/pais")
     public ResponseEntity<?> addSinonimoPais(@AuthenticationPrincipal Jwt principal, @RequestParam Long id_pais, @RequestParam String sinonimo){
         return hechosService.addSinonimoPais(principal, id_pais, sinonimo);

@@ -6,7 +6,7 @@ import lombok.Data;
 public class SinonimoInputDTO {
     private String tipo;
 
-    private String principal;
+    private Long id_entidad;
 
     private String sinonimo;
 }

@@ -134,6 +134,7 @@ modulos\agregacion\entities\DbMain\filtros\FiltroCategoria.class
 modulos\agregacion\entities\DbMain\Hecho$HechoBuilder.class
 modulos\config\SecurityConfig.class
 modulos\agregacion\entities\DbMain\RespuestaHttp.class
+modulos\agregacion\controllers\CategoriaController.class
 modulos\shared\dtos\output\DatosPersonalesOutputDTO.class
 modulos\shared\dtos\input\HechoModificarInputDTO$HechoModificarInputDTOBuilder.class
 modulos\shared\dtos\input\EditarNombreDeUsuarioDtoInput.class
@@ -168,6 +169,7 @@ modulos\buscadores\BuscadorPais.class
 modulos\buscadores\BuscadorFiltro.class
 modulos\agregacion\entities\DbEstatica\HechoEstatica$HechoEstaticaBuilderImpl.class
 modulos\agregacion\entities\atributosHecho\Origen.class
+modulos\agregacion\services\CategoriaService.class
 modulos\agregacion\entities\DbMain\DatosColeccion.class
 modulos\agregacion\controllers\SolicitudHechoController.class
 modulos\servicioEstadistica\repositories\ICategoriaProvinciaRepository.class
