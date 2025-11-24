@@ -220,6 +220,7 @@ public class SolicitudHechoService {
             solicitudEliminarHechoRepo.save(solicitud);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Se detectó spam"); // 400 - solicitud rechazada por spam
         }
+        System.out.println("LA JUSTIFICACION DE PORONGUITA TIENE LENGTH: " + solicitud.getJustificacion().length());
         solicitudEliminarHechoRepo.save(solicitud);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

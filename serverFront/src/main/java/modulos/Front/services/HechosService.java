@@ -7,6 +7,7 @@ import modulos.Front.dtos.input.GetHechosColeccionInputDTO;
 import modulos.Front.dtos.input.ImportacionHechosInputDTO;
 import modulos.Front.dtos.input.SolicitudHechoInputDTO;
 import modulos.Front.sessionHandlers.ActiveSessionTracker;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +41,10 @@ public class HechosService {
         return webApiCallerService.postMultipartHecho(this.hechoServiceUrl + "/subir", hechoInputDTO, Void.class);
     }
 
-    public ResponseEntity<?> importarHechos(ImportacionHechosInputDTO dtoInput, MultipartFile file) {
-        return webApiCallerService.importarHecho(file, dtoInput);
+    public Mono<ResponseEntity<Void>> importarHechos(ImportacionHechosInputDTO dto,
+                                                     ByteArrayResource fileResource,
+                                                     String contentType){
+        return webApiCallerService.importarHecho(dto, fileResource, contentType);
     }
 
     public ResponseEntity<?> getHechos() {

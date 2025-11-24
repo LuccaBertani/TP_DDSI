@@ -5,6 +5,7 @@ import modulos.Front.dtos.input.AuthResponseDTO;
 import modulos.Front.dtos.input.ImportacionHechosInputDTO;
 import modulos.Front.dtos.input.SolicitudHechoInputDTO;
 import modulos.Front.dtos.input.TokenResponse;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import reactor.netty.http.client.HttpClient;
 
 import java.util.List;
+import java.util.function.Function;
 
 @Service
 public class WebApiCallerService {
@@ -97,6 +101,67 @@ public class WebApiCallerService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    public <T> Mono<ResponseEntity<T>> executeWithTokenRetryAsync(
+            Function<String, Mono<ResponseEntity<T>>> apiCall) {
+
+        String accessToken = getAccessTokenFromSession();
+        String refreshToken = getRefreshTokenFromSession();
+
+        if (accessToken == null) {
+            return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).<T>build());
+        }
+
+        TokenResponse tr = TokenResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+
+        // 1) Primer intento
+        return apiCall.apply(accessToken)
+
+                // si da error HTTP
+                .onErrorResume(WebClientResponseException.class, e -> {
+
+                    if ((e.getStatusCode() == HttpStatus.UNAUTHORIZED ||
+                            e.getStatusCode() == HttpStatus.FORBIDDEN)
+                            && refreshToken != null) {
+
+                        return Mono.fromCallable(() -> refreshToken(tr))
+                                .subscribeOn(Schedulers.boundedElastic())
+                                .flatMap(newTokens -> {
+
+                                    if (newTokens == null || newTokens.getAccessToken() == null) {
+                                        return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).<T>build());
+                                    }
+
+                                    // actualizar sesión
+                                    ServletRequestAttributes attrs =
+                                            (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+                                    HttpServletRequest request = attrs.getRequest();
+                                    request.getSession().setAttribute("accessToken", newTokens.getAccessToken());
+                                    if (newTokens.getRefreshToken() != null) {
+                                        request.getSession().setAttribute("refreshToken", newTokens.getRefreshToken());
+                                    }
+
+                                    // reintentar
+                                    return apiCall.apply(newTokens.getAccessToken());
+                                })
+                                .onErrorResume(ex ->
+                                        Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).<T>build())
+                                );
+                    }
+
+                    return Mono.just(ResponseEntity.status(e.getStatusCode()).<T>build());
+                })
+
+                .onErrorResume(ex ->
+                        Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).<T>build())
+                );
+    }
+
+
+
 
     /**
      * Refresca el access token usando el refresh token
@@ -446,24 +511,31 @@ public class WebApiCallerService {
         }
     }
 
-    public ResponseEntity<Void> importarHecho(MultipartFile file, ImportacionHechosInputDTO dto){
+    public Mono<ResponseEntity<Void>> importarHecho(ImportacionHechosInputDTO dto,
+                                                     ByteArrayResource fileResource,
+                                                     String contentType) {
+
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
 
         builder.part("meta", dto).contentType(MediaType.APPLICATION_JSON);
-        builder.part("file", file.getResource())
-                .header("Content-Disposition", "form-data; name=\"file\"; filename=\"" + file.getOriginalFilename() + "\"");
+        builder.part("file", fileResource)
+                .header("Content-Disposition",
+                        "form-data; name=\"file\"; filename=\"" + fileResource.getFilename() + "\"")
+                .contentType(MediaType.parseMediaType(
+                        contentType != null ? contentType : "text/csv"
+                ));
 
-        return executeWithTokenRetry(token-> webClient.post()
-                .uri("/api/hechos/importar")
-                .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData(builder.build()))
-                .retrieve()
-                .toEntity(Void.class)
+        return executeWithTokenRetryAsync(token ->
+                webClient.post()
+                        .uri("/api/hechos/importar")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .body(BodyInserters.fromMultipartData(builder.build()))
+                        .retrieve()
+                        .toEntity(Void.class)
         );
-
-
     }
+
 
 
 

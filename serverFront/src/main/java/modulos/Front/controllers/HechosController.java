@@ -15,6 +15,7 @@ import modulos.Front.services.SolicitudHechoService;
 import modulos.Front.services.UsuarioService;
 import modulos.Front.usuario.Rol;
 import modulos.Front.usuario.Usuario;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -22,7 +23,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -97,21 +100,40 @@ public class HechosController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/importar")
     public String importarHechos(@Valid @RequestPart("meta") ImportacionHechosInputDTO dtoInput,
-                                 @RequestPart("file") MultipartFile file, RedirectAttributes ra){
+                                 @RequestPart("file") MultipartFile file,
+                                 RedirectAttributes ra) {
 
         System.out.println("ENTRE A IMPORTAR CON ESTO: " + dtoInput.getFuenteString());
 
-        ResponseEntity <?> rtaDto = this.hechosService.importarHechos(dtoInput, file);
+        // Copiás el contenido del archivo ANTES de que termine la request
+        String originalFilename = file.getOriginalFilename();
+        String contentType = file.getContentType();
 
-        if(rtaDto.getStatusCode().is2xxSuccessful()){
-            ra.addFlashAttribute("msgExito", "Csv subido correctamente");
+        ByteArrayResource resource;
+        try {
+            byte[] bytes = file.getBytes();
+            resource = new ByteArrayResource(bytes) {
+                @Override
+                public String getFilename() {
+                    return originalFilename;
+                }
+            };
+        } catch (IOException e) {
+            ra.addFlashAttribute("msgError", "No se pudo leer el archivo subido.");
             return "redirect:importar";
         }
-        else if(rtaDto.getBody() != null){
-            ra.addAttribute("msgError", rtaDto.getBody().toString());
-        }
-        return "redirect:/" + rtaDto.getStatusCode().value();
+
+        Mono<ResponseEntity<Void>> rta = this.hechosService.importarHechos(dtoInput, resource, contentType);
+
+        rta.subscribe(
+                response -> System.out.println("Importación terminó con status: " + response.getStatusCode()),
+                error -> System.err.println("Error importando CSV: " + error.getMessage())
+        );
+
+        ra.addFlashAttribute("msgExito", "El csv se está procesando, muchas gracias por su cooperación!!");
+        return "redirect:importar";
     }
+
 
 
 
@@ -253,11 +275,11 @@ public class HechosController {
                     }
                 }
                 else {
-                    model.addAttribute("puedeReportar", true);
+                    model.addAttribute("puedeReportar", false);
                 }
             }
             else {
-                model.addAttribute("puedeReportar", true);
+                model.addAttribute("puedeReportar", false);
             }
 
             return "detalleHecho";

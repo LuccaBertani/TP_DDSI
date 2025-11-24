@@ -146,7 +146,8 @@ public class LectorCSV {
                     }
 
                     ubicacion = buscadores.getBuscadorUbicacion().buscarOCrear(pais, provincia);
-                    hecho.getAtributosHecho().setUbicacion_id(ubicacion.getId());
+                    if (ubicacion != null)
+                        hecho.getAtributosHecho().setUbicacion_id(ubicacion.getId());
 
                 }else{
                     hecho.getAtributosHecho().setUbicacion_id(null);
