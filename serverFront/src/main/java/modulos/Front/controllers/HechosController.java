@@ -142,10 +142,20 @@ public class HechosController {
     public String getHecho(Model model, Long id_hecho, String fuente,
                            @RequestParam(name = "id_solicitud", required = false) Long id_solicitud){
         ResponseEntity<?> rtaDto = this.hechosService.getHecho(id_hecho, fuente);
+
+
         System.out.println("ID DE SOLICITUD DEL CULO: " + id_solicitud);
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
             VisualizarHechosOutputDTO hecho = (VisualizarHechosOutputDTO) rtaDto.getBody();
             model.addAttribute("hecho", hecho);
+
+            if (id_solicitud == null){
+                model.addAttribute("esSolicitud", false);
+            }
+            else{
+                model.addAttribute("esSolicitud", true);
+            }
+
 
 
             model.addAttribute("puedeReportar", false);
@@ -170,21 +180,24 @@ public class HechosController {
                     System.out.println("SOY UNA FUENTE FELIZ: " + hecho.getFuente());
 
                     if (usuarioOutputDto.getRol().equals(Rol.ADMINISTRADOR)){
-                        HechoModificarInputDTO dtoModificar = HechoModificarInputDTO.builder()
-                                .id_hecho(hecho.getId())
-                                .titulo(hecho.getTitulo())
-                                .descripcion(hecho.getDescripcion())
-                                .latitud(hecho.getLatitud())
-                                .longitud(hecho.getLongitud())
-                                .fechaAcontecimiento(hecho.getFechaAcontecimiento())
-                                .id_pais(hecho.getId_pais())
-                                .id_provincia(hecho.getId_provincia())
-                                .id_categoria(hecho.getId_categoria())
-                                .fuente(hecho.getFuente())
-                                .build();
-                        model.addAttribute("HechoModificarInputDTO", dtoModificar);
 
-                        if (id_solicitud != null){
+                        if (id_solicitud == null){
+                            HechoModificarInputDTO dtoModificar = HechoModificarInputDTO.builder()
+                                    .id_hecho(hecho.getId())
+                                    .titulo(hecho.getTitulo())
+                                    .descripcion(hecho.getDescripcion())
+                                    .latitud(hecho.getLatitud())
+                                    .longitud(hecho.getLongitud())
+                                    .fechaAcontecimiento(hecho.getFechaAcontecimiento())
+                                    .id_pais(hecho.getId_pais())
+                                    .id_provincia(hecho.getId_provincia())
+                                    .id_categoria(hecho.getId_categoria())
+                                    .fuente(hecho.getFuente())
+                                    .build();
+                            model.addAttribute("HechoModificarInputDTO", dtoModificar);
+                        }
+
+                        else{
                             System.out.println("ID SOLICITUD: " + id_solicitud);
                             ResponseEntity<?> rtaAtributosModificar = solicitudHechoService.getAtributosHechoAModificar(id_solicitud);
                             if (rtaAtributosModificar.getStatusCode().is2xxSuccessful() && rtaAtributosModificar.hasBody()){
@@ -293,6 +306,7 @@ public class HechosController {
     @PostMapping("/modificar-hecho")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public String modificarHecho(@Valid @ModelAttribute HechoModificarInputDTO dto, RedirectAttributes ra) {
+
         ResponseEntity<?> rta = this.hechosService.modificarHecho(dto);
 
         if(rta.getStatusCode().is2xxSuccessful()){

@@ -221,7 +221,7 @@
                 <i class="bi bi-trash3 me-1"></i> Solicitar eliminación
             </button>
 
-            <form th:if="${SolicitudHechoEliminarInputDTO == null}"
+            <form th:if="${!esSolicitud}"
                   sec:authorize="hasRole('ADMINISTRADOR')"
                   th:action="@{/hechos/eliminar-hecho(id=${hecho.id}, fuente=${hecho.fuente})}"
                   method="post">
@@ -252,7 +252,7 @@
                 </button>
             </form>
 
-            <form th:if="${HechoModificarInputDTO != null and #authorization.expression('hasRole(''ADMINISTRADOR'')')}"
+            <form th:if="${!esSolicitud && HechoModificarInputDTO != null and #authorization.expression('hasRole(''ADMINISTRADOR'')')}"
                   th:object="${HechoModificarInputDTO}"
                   th:action="@{/modificacion-hecho}"
                   method="post"
@@ -333,13 +333,13 @@
                               th:field="*{justificacion}"
                               rows="5"
                               minlength="500"
-                              maxlength="2000"
+                              maxlength="1000"
                               placeholder="Explicá con el mayor detalle posible por qué querés que se elimine este hecho..."
                               required></textarea>
 
                     <div class="form-text text-end mt-2">
                         <i class="bi bi-info-circle me-1"></i>
-                        Mínimo 500 caracteres (describí bien el motivo).
+                        Mínimo 500 caracteres y máximo 1000 caracteres (describí bien el motivo).
                     </div>
                 </div>
 

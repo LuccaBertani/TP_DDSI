@@ -226,6 +226,15 @@ public class HomeController {
         }
         model.addAttribute("provincias", provincias);
 
+
+        String fecha = dto.getFechaAcontecimiento();
+
+        if (fecha != null && fecha.contains("T")) {
+            fecha = fecha.substring(0, fecha.indexOf("T"));
+        }
+
+        dto.setFechaAcontecimiento(fecha);
+
         model.addAttribute("camposViejos", dto);
 
         return "modificar";

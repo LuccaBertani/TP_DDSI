@@ -909,6 +909,9 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
         ResponseEntity<?> rta = checkeoAdmin(username);
 
+        RolCambiadoDTO dto = new RolCambiadoDTO();
+        dto.setRolModificado(false);
+
         if (rta.getStatusCode().equals(HttpStatus.FORBIDDEN)){
             return rta;
         }
@@ -943,10 +946,16 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 mensaje.setTextoMensaje("Se eliminó su hecho de título " + hecho.getAtributosHecho().getTitulo());
                 mensaje.setReceptor(usuario);
                 mensajeRepository.save(mensaje);
+                if (usuario.getCantHechosSubidos() == 0 && usuario.getRol().equals(Rol.CONTRIBUYENTE)){
+                    dto.setRolModificado(true);
+                    dto.setRol(Rol.VISUALIZADOR);
+                    dto.setUsername(usuario.getNombreDeUsuario());
+                    GestorRoles.ContribuyenteAVisualizador(usuario);
+                }
             }
 
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(dto);
     }
 
     @Transactional
