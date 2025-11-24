@@ -27,6 +27,44 @@
 
   <!-- FORMULARIO -->
   <div class="container pb-5">
+    <!-- Mini-form GET para recargar provincias sin perder datos -->
+    <!-- Versión contribuyente -->
+    <form id="filtroPaisFormModificar"
+          th:action="@{/modificar-hecho-cont}"
+          method="get"
+          style="display:none;"
+          sec:authorize="hasRole('CONTRIBUYENTE')">
+      <input type="hidden" name="id_hecho">
+      <input type="hidden" name="titulo">
+      <input type="hidden" name="descripcion">
+      <input type="hidden" name="fechaAcontecimiento">
+      <input type="hidden" name="latitud">
+      <input type="hidden" name="longitud">
+      <input type="hidden" name="id_categoria">
+      <input type="hidden" name="id_provincia">
+      <input type="hidden" name="id_pais" id="filtroPaisInputModificar">
+      <input type="hidden" name="fuente">
+    </form>
+
+    <!-- Versión admin -->
+    <form id="filtroPaisFormModificar"
+          th:action="@{/modificar-hecho-adm}"
+          method="get"
+          style="display:none;"
+          sec:authorize="hasRole('ADMINISTRADOR')">
+      <input type="hidden" name="id_hecho">
+      <input type="hidden" name="titulo">
+      <input type="hidden" name="descripcion">
+      <input type="hidden" name="fechaAcontecimiento">
+      <input type="hidden" name="latitud">
+      <input type="hidden" name="longitud">
+      <input type="hidden" name="id_categoria">
+      <input type="hidden" name="id_provincia">
+      <input type="hidden" name="id_pais" id="filtroPaisInputModificar">
+      <input type="hidden" name="fuente">
+    </form>
+
+    <!-- Ambos forms tienen el mismo id, pero solo uno existe en el DOM porque están controlados por sec:authorize, así que no hay conflicto real. -->
 
     <form id="formModificar"
           class="mt-4"
@@ -117,12 +155,29 @@
               <select id="selectPais"
                       class="form-select-collection"
                       th:field="*{id_pais}"
-                      th:attr="data-pais-id=${pais != null} ? ${pais.id} : null">
+                      th:attr="data-pais-id=${pais != null} ? ${pais.id} : null"
+                      onchange="
+          const post = document.getElementById('formModificar');
+          const getF = document.getElementById('filtroPaisFormModificar');
+
+          ['id_hecho','titulo','descripcion','fechaAcontecimiento','latitud','longitud','id_categoria','id_provincia','fuente']
+            .forEach(n => {
+              const src = post.querySelector(`[name='${n}']`);
+              const dst = getF.querySelector(`[name='${n}']`);
+              if (src && dst) dst.value = src.value ?? '';
+            });
+
+          getF.querySelector('[name=id_pais]').value = this.value;
+          getF.querySelector('[name=id_provincia]').value = '';
+
+          getF.submit();
+        ">
                 <option value="">Seleccionar país</option>
                 <option th:each="paisItem : ${paises}"
                         th:value="${paisItem.id}"
                         th:text="${paisItem.pais}"></option>
               </select>
+
             </div>
 
             <div class="col-md-6">
@@ -200,6 +255,40 @@
 
     </form>
   </div>
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const selPais = document.getElementById('selectPais');
+      const selProv = document.getElementById('selectProvincia');
+
+      const detectedPaisId = selPais?.dataset?.paisId || '';
+      const detectedProvId = selProv?.dataset?.provId || '';
+
+      if (detectedPaisId && !selPais.value) {
+        const post = document.getElementById('formModificar');
+        const getF  = document.getElementById('filtroPaisFormModificar');
+
+        ['id_hecho','titulo','descripcion','fechaAcontecimiento','latitud','longitud','id_categoria','id_provincia','fuente']
+                .forEach(n => {
+                  const src = post.querySelector(`[name='${n}']`);
+                  const dst = getF.querySelector(`[name='${n}']`);
+                  if (src && dst) dst.value = src.value ?? '';
+                });
+
+        getF.querySelector('[name=id_pais]').value = detectedPaisId;
+        getF.submit();
+        return;
+      }
+
+      if (detectedPaisId && selPais && !selPais.value) {
+        selPais.value = detectedPaisId;
+      }
+      if (detectedProvId && selProv) {
+        selProv.value = detectedProvId;
+      }
+    });
+  </script>
 
   <!-- Misma hoja de estilo de contribuir -->
   <style th:insert="~{contribuir :: style}"></style>

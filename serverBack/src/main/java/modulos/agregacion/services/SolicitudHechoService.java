@@ -265,96 +265,61 @@ public class SolicitudHechoService {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Terminó la fecha límite para solicitar modificar el hecho"); // Error 409: cuando la solicitud es válida, pero no puede procesarse por estado actual del recurso
         }
 
-        AtributosHecho atributosOriginal = hecho.getAtributosHecho();
         AtributosHechoModificar atributos = new AtributosHechoModificar();
+        Optional.ofNullable(dto.getTitulo()).ifPresent(atributos::setTitulo);
 
-// ---------- TÍTULO ----------
-        atributos.setTitulo(
-                safeMerge(dto.getTitulo(), atributosOriginal.getTitulo())
-        );
-
-// ---------- UBICACIÓN ----------
-        Ubicacion ubicacion = null;
-
-        if (dto.getId_pais() != null || dto.getId_provincia() != null) {
-            Pais pais = Optional.ofNullable(dto.getId_pais())
-                    .map(buscadorPais::buscar)
-                    .orElse(null);
-
-            Provincia provincia = Optional.ofNullable(dto.getId_provincia())
-                    .map(buscadorProvincia::buscar)
-                    .orElse(null);
-
-            ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
+        if(dto.getId_pais() !=null || dto.getId_provincia() != null){
+            Pais pais = buscadorPais.buscar(dto.getId_pais());
+            Provincia provincia = buscadorProvincia.buscar(dto.getId_provincia());
+            Ubicacion ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
+            atributos.setUbicacion_id(ubicacion != null ? ubicacion.getId() : null);
         }
 
-        atributos.setUbicacion_id(
-                safeMerge(
-                        (ubicacion != null ? ubicacion.getId() : null),
-                        atributosOriginal.getUbicacion_id()
-                )
-        );
+        if (dto.getLongitud() != null && dto.getLatitud()!=null){
+            atributos.setLatitud(dto.getLatitud());
+            atributos.setLongitud(dto.getLongitud());
+        }
 
-// ---------- LAT / LONG ----------
-        atributos.setLatitud(
-                safeMerge(dto.getLatitud(), atributosOriginal.getLatitud())
-        );
+        Optional.ofNullable(dto.getId_categoria()).flatMap(categoriaRepository::findById).
+                ifPresent(categoria -> atributos.setCategoria_id(categoria.getId()));
 
-        atributos.setLongitud(
-                safeMerge(dto.getLongitud(), atributosOriginal.getLongitud())
-        );
 
-// ---------- CATEGORÍA ----------
-        Long categoriaId = Optional.ofNullable(dto.getId_categoria())
-                .flatMap(categoriaRepository::findById)
-                .map(Categoria::getId)
-                .orElse(atributosOriginal.getCategoria_id());
+        Optional.ofNullable(dto.getFechaAcontecimiento()).ifPresent(fechaStr -> {
+            atributos.setFechaAcontecimiento(FechaParser.parsearFecha(fechaStr));
+        });
 
-        atributos.setCategoria_id(categoriaId);
+        List<ContenidoMultimedia> contenidosMultimediaParaAgregar = new ArrayList<>();
 
-// ---------- FECHA ACONTECIMIENTO ----------
-        atributos.setFechaAcontecimiento(
-                dto.getFechaAcontecimiento() != null
-                        ? FechaParser.parsearFecha(dto.getFechaAcontecimiento())
-                        : atributosOriginal.getFechaAcontecimiento()
-        );
-
-// ---------- MULTIMEDIA ----------
-        List<ContenidoMultimedia> contenidosAgregar = new ArrayList<>();
-
-        if (dto.getContenidosMultimediaParaAgregar() != null) {
+        if(dto.getContenidosMultimediaParaAgregar() != null) {
             for (MultipartFile file : dto.getContenidosMultimediaParaAgregar()) {
                 try {
                     String url = GestorArchivos.guardarArchivo(file);
 
-                    ContenidoMultimedia contenido = new ContenidoMultimedia();
-                    contenido.setUrl(url);
-                    contenido.almacenarTipoDeArchivo(file.getContentType());
+                    ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
 
-                    contenidosAgregar.add(contenido);
-
-                } catch (IOException ignored) {}
+                    contenidoMultimedia.setUrl(url);
+                    contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
+                    contenidosMultimediaParaAgregar.add(contenidoMultimedia);
+                } catch(IOException ignore){
+                }
             }
+
+            atributos.setContenidoMultimediaAgregar(contenidosMultimediaParaAgregar);
+
         }
+        Optional.ofNullable(dto.getContenidosMultimediaAEliminar()).ifPresent(atributos::setContenidoMultimediaEliminar);
+        Optional.ofNullable(dto.getDescripcion()).ifPresent(atributos::setDescripcion);
+        // hecho.getAtributosHechoAModificar().add(atributos);
 
-        atributos.setContenidoMultimediaAgregar(contenidosAgregar);
-        atributos.setContenidoMultimediaEliminar(
-                safeMerge(dto.getContenidosMultimediaAEliminar(), new ArrayList<>())
-        );
+        this.setearModificadoAOficial(hecho, atributos);
+        hecho.getAtributosHecho().setFechaUltimaActualizacion(LocalDateTime.now());
+        hecho.getAtributosHecho().setModificado(true);
 
-// ---------- DESCRIPCIÓN ----------
-        atributos.setDescripcion(
-                safeMerge(dto.getDescripcion(), atributosOriginal.getDescripcion())
-        );
 
         hechosDinamicaRepository.save(hecho);
         solicitud.setAtributosModificar(atributos);
         solicitudModificarHechoRepo.save(solicitud);
         return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    private <T> T safeMerge(T nuevo, T original) {
-        return nuevo != null ? nuevo : original;
     }
 
     // @Transacional:

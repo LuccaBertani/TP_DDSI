@@ -1037,7 +1037,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             Usuario usuario = usuariosRepo.findById(hecho.getUsuario_id()).orElse(null);
 
             if (usuario != null) {
-                usuario.disminuirHechosSubidos();
                 Mensaje mensaje = new Mensaje();
                 mensaje.setTextoMensaje("Se modificó su hecho de título " + hecho.getAtributosHecho().getTitulo());
                 mensaje.setReceptor(usuario);
@@ -1051,15 +1050,23 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
     private void setearModificadoAOficial(Hecho hecho, AtributosHechoModificar atributos){
 
-        Optional.ofNullable(atributos.getCategoria_id()).ifPresent(hecho.getAtributosHecho()::setCategoria_id);
-        Optional.ofNullable(atributos.getDescripcion()).ifPresent(hecho.getAtributosHecho()::setDescripcion);
-        Optional.ofNullable(atributos.getFechaAcontecimiento()).ifPresent(hecho.getAtributosHecho()::setFechaAcontecimiento);
-        Optional.ofNullable(atributos.getTitulo()).ifPresent(hecho.getAtributosHecho()::setTitulo);
-        Optional.ofNullable(atributos.getUbicacion_id()).ifPresent(hecho.getAtributosHecho()::setUbicacion_id);
+        // Campos “simples”: siempre se pisan, aunque vengan en null
+        hecho.getAtributosHecho().setCategoria_id(atributos.getCategoria_id());
+        hecho.getAtributosHecho().setDescripcion(atributos.getDescripcion());
+        hecho.getAtributosHecho().setFechaAcontecimiento(atributos.getFechaAcontecimiento());
+        hecho.getAtributosHecho().setTitulo(atributos.getTitulo());
+        hecho.getAtributosHecho().setUbicacion_id(atributos.getUbicacion_id());
+        hecho.getAtributosHecho().setLatitud(atributos.getLatitud());
+        hecho.getAtributosHecho().setLongitud(atributos.getLongitud());
 
-        if(atributos.getContenidoMultimediaAgregar() != null){
-            hecho.getAtributosHecho().getContenidosMultimedia().addAll(atributos.getContenidoMultimediaAgregar());
+        // Contenido multimedia a agregar: solo si hay lista
+        if (atributos.getContenidoMultimediaAgregar() != null){
+            hecho.getAtributosHecho()
+                    .getContenidosMultimedia()
+                    .addAll(atributos.getContenidoMultimediaAgregar());
         }
+
+        // Contenido multimedia a eliminar: solo si hay ids a eliminar
         if (atributos.getContenidoMultimediaEliminar() != null){
             hecho.getAtributosHecho().getContenidosMultimedia()
                     .removeIf(contenidoMultimedia ->
@@ -1067,10 +1074,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                                     .contains(contenidoMultimedia.getId())
                     );
         }
-
-
-        Optional.ofNullable(atributos.getLatitud()).ifPresent(hecho.getAtributosHecho()::setLatitud);
-        Optional.ofNullable(atributos.getLongitud()).ifPresent(hecho.getAtributosHecho()::setLongitud);
     }
 
 

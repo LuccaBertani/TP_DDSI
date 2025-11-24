@@ -240,6 +240,107 @@ public class HomeController {
         return "modificar";
     }
 
+    @PreAuthorize("hasRole('CONTRIBUYENTE')")
+    @GetMapping("/modificar-hecho-cont")
+    public String mostrarFormModificarContribuyente(@ModelAttribute("camposViejos") SolicitudHechoModificarInputDTO dto,
+                                                    Model model) {
+
+        // --- MISMA LÓGICA QUE EN solicitudModificacion ---
+        ResponseEntity<?> rtaPaises = hechosService.getPaises();
+        ResponseEntity<?> rtaCategorias = hechosService.getCategorias();
+        if (!rtaPaises.getStatusCode().is2xxSuccessful() || !rtaCategorias.getStatusCode().is2xxSuccessful()) {
+            return "redirect:/404";
+        }
+
+        List<PaisDto> paises = BodyToListConverter.bodyToList(rtaPaises, PaisDto.class);
+        List<CategoriaDto> categorias = BodyToListConverter.bodyToList(rtaCategorias, CategoriaDto.class);
+        model.addAttribute("paises", paises);
+        model.addAttribute("categorias", categorias);
+
+        Double latitud = dto.getLatitud();
+        Double longitud = dto.getLongitud();
+
+        if (latitud != null && longitud != null){
+            ResponseEntity<?> rtaLatLon = hechosService.getPaisYProvincia(latitud, longitud);
+            if (rtaLatLon.hasBody()){
+                PaisProvinciaDTO paisProvinciaDTO = (PaisProvinciaDTO) rtaLatLon.getBody();
+                model.addAttribute("pais", paisProvinciaDTO.getPaisDto());
+                model.addAttribute("provincia", paisProvinciaDTO.getProvinciaDto());
+            }
+        }
+
+        List<ProvinciaDto> provincias = java.util.Collections.emptyList();
+        if (dto.getId_pais() != null) {
+            ResponseEntity<?> rtaProv = hechosService.getProvinciasByIdPais(dto.getId_pais());
+            if (!rtaProv.getStatusCode().is2xxSuccessful()) {
+                return "redirect:/404";
+            }
+            provincias = BodyToListConverter.bodyToList(rtaProv, ProvinciaDto.class);
+        }
+        model.addAttribute("provincias", provincias);
+
+        String fecha = dto.getFechaAcontecimiento();
+        if (fecha != null && fecha.contains("T")) {
+            fecha = fecha.substring(0, fecha.indexOf("T"));
+        }
+        dto.setFechaAcontecimiento(fecha);
+
+        model.addAttribute("camposViejos", dto);
+
+        return "modificar";
+    }
+
+
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @GetMapping("/modificar-hecho-adm")
+    public String mostrarFormModificarAdmin(@ModelAttribute("camposViejos") HechoModificarInputDTO dto,
+                                            Model model) {
+
+        ResponseEntity<?> rtaPaises = hechosService.getPaises();
+        ResponseEntity<?> rtaCategorias = hechosService.getCategorias();
+        if (!rtaPaises.getStatusCode().is2xxSuccessful() || !rtaCategorias.getStatusCode().is2xxSuccessful()) {
+            return "redirect:/404";
+        }
+
+        List<PaisDto> paises = BodyToListConverter.bodyToList(rtaPaises, PaisDto.class);
+        List<CategoriaDto> categorias = BodyToListConverter.bodyToList(rtaCategorias, CategoriaDto.class);
+        model.addAttribute("paises", paises);
+        model.addAttribute("categorias", categorias);
+
+        Double latitud = dto.getLatitud();
+        Double longitud = dto.getLongitud();
+
+        if (latitud != null && longitud != null){
+            ResponseEntity<?> rtaLatLon = hechosService.getPaisYProvincia(latitud, longitud);
+            if (rtaLatLon.hasBody()){
+                PaisProvinciaDTO paisProvinciaDTO = (PaisProvinciaDTO) rtaLatLon.getBody();
+                model.addAttribute("pais", paisProvinciaDTO.getPaisDto());
+                model.addAttribute("provincia", paisProvinciaDTO.getProvinciaDto());
+            }
+        }
+
+        List<ProvinciaDto> provincias = java.util.Collections.emptyList();
+        if (dto.getId_pais() != null) {
+            ResponseEntity<?> rtaProv = hechosService.getProvinciasByIdPais(dto.getId_pais());
+            if (!rtaProv.getStatusCode().is2xxSuccessful()) {
+                return "redirect:/404";
+            }
+            provincias = BodyToListConverter.bodyToList(rtaProv, ProvinciaDto.class);
+        }
+        model.addAttribute("provincias", provincias);
+
+        String fecha = dto.getFechaAcontecimiento();
+        if (fecha != null && fecha.contains("T")) {
+            fecha = fecha.substring(0, fecha.indexOf("T"));
+        }
+        dto.setFechaAcontecimiento(fecha);
+
+        model.addAttribute("camposViejos", dto);
+
+        return "modificar";
+    }
+
+
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping("/solicitudes")
