@@ -61,17 +61,17 @@
                 <!-- Contenido principal (clickeable si hay hechoId) -->
                 <a class="request-content"
                    th:if="${s.hechoId != null}"
-                   th:href="${esModificar} ?
+                   th:href="(${esModificar} ?
         @{/hechos/public/get(
             id_hecho=${s.hechoId},
             fuente='DINAMICA',
             id_solicitud=${s.id}
-        )}
-        :
+        )} :
         @{/hechos/public/get(
             id_hecho=${s.hechoId},
             fuente='DINAMICA'
-        )}">
+        )})">
+
 
 
 
