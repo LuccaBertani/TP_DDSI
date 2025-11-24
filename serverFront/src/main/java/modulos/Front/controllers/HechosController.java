@@ -204,6 +204,7 @@ public class HechosController {
                                 AtributosModificarDTO atributosModificarDTO = (AtributosModificarDTO) rtaAtributosModificar.getBody();
                                 System.out.println("TITULO A MODIFICAR: " + atributosModificarDTO.getTitulo());
                                 System.out.println("CATEGORIA: " + atributosModificarDTO.getCategoria());
+                                System.out.println("PAIS: " + atributosModificarDTO.getPais());
 
                                 model.addAttribute("AtributosModificarDTO", atributosModificarDTO);
                             }
