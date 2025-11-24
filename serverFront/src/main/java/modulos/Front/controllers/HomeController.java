@@ -139,7 +139,7 @@ public class HomeController {
     @PostMapping("/solicitud-modificacion")
     public String solicitudModificacion(@Valid @ModelAttribute SolicitudHechoModificarInputDTO dto, Model model){
         // Catálogos base
-        System.out.println("JAAA SOY UN SORETITO");
+        System.out.println("FECHA ACONTECIMIENTO: " + dto.getFechaAcontecimiento());
         ResponseEntity<?> rtaPaises = hechosService.getPaises();
         ResponseEntity<?> rtaCategorias = hechosService.getCategorias();
         if (!rtaPaises.getStatusCode().is2xxSuccessful() || !rtaCategorias.getStatusCode().is2xxSuccessful()) {
@@ -173,6 +173,14 @@ public class HomeController {
             provincias = BodyToListConverter.bodyToList(rtaProv, ProvinciaDto.class);
         }
         model.addAttribute("provincias", provincias);
+
+        String fecha = dto.getFechaAcontecimiento();
+
+        if (fecha != null && fecha.contains("T")) {
+            fecha = fecha.substring(0, fecha.indexOf("T"));
+        }
+
+        dto.setFechaAcontecimiento(fecha);
 
         model.addAttribute("camposViejos", dto);
 

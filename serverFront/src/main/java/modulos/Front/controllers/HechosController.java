@@ -153,10 +153,7 @@ public class HechosController {
 
             boolean esContribuyenteDelHecho = false;
 
-
-
             String usuarioActual = usuarioService.getUsernameFromSession();
-
 
             if (usuarioActual != null){
 
@@ -193,6 +190,8 @@ public class HechosController {
                             if (rtaAtributosModificar.getStatusCode().is2xxSuccessful() && rtaAtributosModificar.hasBody()){
                                 AtributosModificarDTO atributosModificarDTO = (AtributosModificarDTO) rtaAtributosModificar.getBody();
                                 System.out.println("TITULO A MODIFICAR: " + atributosModificarDTO.getTitulo());
+                                System.out.println("CATEGORIA: " + atributosModificarDTO.getCategoria());
+
                                 model.addAttribute("AtributosModificarDTO", atributosModificarDTO);
                             }
                         }
@@ -216,7 +215,10 @@ public class HechosController {
 
                                 // 7 días máximo para solicitar modificar el hecho
                                 if (ChronoUnit.DAYS.between(FechaParser.parsearFecha(hecho.getFechaCarga()), LocalDateTime.now()) <= 7){
-                                SolicitudHechoModificarInputDTO dtoModificar = SolicitudHechoModificarInputDTO.builder()
+
+                                    System.out.println("FECHA: " + hecho.getFechaAcontecimiento());
+
+                                    SolicitudHechoModificarInputDTO dtoModificar = SolicitudHechoModificarInputDTO.builder()
                                         .id_hecho(hecho.getId())
                                         .titulo(hecho.getTitulo())
                                         .descripcion(hecho.getDescripcion())

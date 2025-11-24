@@ -33,6 +33,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import modulos.agregacion.entities.atributosHecho.AtributosHecho;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -248,6 +249,7 @@ public class SolicitudHechoService {
 
         SolicitudModificarHecho solicitud = new SolicitudModificarHecho(usuario.getId(), hecho);
         solicitud.setFecha(LocalDateTime.now());
+
         /*
         if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion()))
         {
@@ -263,56 +265,98 @@ public class SolicitudHechoService {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Terminó la fecha límite para solicitar modificar el hecho"); // Error 409: cuando la solicitud es válida, pero no puede procesarse por estado actual del recurso
         }
 
+        AtributosHecho atributosOriginal = hecho.getAtributosHecho();
         AtributosHechoModificar atributos = new AtributosHechoModificar();
-        Optional.ofNullable(dto.getTitulo()).ifPresent(atributos::setTitulo);
 
-        if(dto.getId_pais() !=null || dto.getId_provincia() != null){
-            Pais pais = buscadorPais.buscar(dto.getId_pais());
-            Provincia provincia = buscadorProvincia.buscar(dto.getId_provincia());
-            Ubicacion ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
-            atributos.setUbicacion_id(ubicacion != null ? ubicacion.getId() : null);
+// ---------- TÍTULO ----------
+        atributos.setTitulo(
+                safeMerge(dto.getTitulo(), atributosOriginal.getTitulo())
+        );
+
+// ---------- UBICACIÓN ----------
+        Ubicacion ubicacion = null;
+
+        if (dto.getId_pais() != null || dto.getId_provincia() != null) {
+            Pais pais = Optional.ofNullable(dto.getId_pais())
+                    .map(buscadorPais::buscar)
+                    .orElse(null);
+
+            Provincia provincia = Optional.ofNullable(dto.getId_provincia())
+                    .map(buscadorProvincia::buscar)
+                    .orElse(null);
+
+            ubicacion = buscadorUbicacion.buscarOCrear(pais, provincia);
         }
 
-        if (dto.getLongitud() != null && dto.getLatitud()!=null){
-            atributos.setLatitud(dto.getLatitud());
-            atributos.setLongitud(dto.getLongitud());
-        }
+        atributos.setUbicacion_id(
+                safeMerge(
+                        (ubicacion != null ? ubicacion.getId() : null),
+                        atributosOriginal.getUbicacion_id()
+                )
+        );
 
-        Optional.ofNullable(dto.getId_categoria()).flatMap(categoriaRepository::findById).
-                ifPresent(categoria -> atributos.setCategoria_id(categoria.getId()));
+// ---------- LAT / LONG ----------
+        atributos.setLatitud(
+                safeMerge(dto.getLatitud(), atributosOriginal.getLatitud())
+        );
 
+        atributos.setLongitud(
+                safeMerge(dto.getLongitud(), atributosOriginal.getLongitud())
+        );
 
-        Optional.ofNullable(dto.getFechaAcontecimiento()).ifPresent(fechaStr -> {
-            atributos.setFechaAcontecimiento(FechaParser.parsearFecha(fechaStr));
-        });
+// ---------- CATEGORÍA ----------
+        Long categoriaId = Optional.ofNullable(dto.getId_categoria())
+                .flatMap(categoriaRepository::findById)
+                .map(Categoria::getId)
+                .orElse(atributosOriginal.getCategoria_id());
 
-        List<ContenidoMultimedia> contenidosMultimediaParaAgregar = new ArrayList<>();
+        atributos.setCategoria_id(categoriaId);
 
-        if(dto.getContenidosMultimediaParaAgregar() != null) {
+// ---------- FECHA ACONTECIMIENTO ----------
+        atributos.setFechaAcontecimiento(
+                dto.getFechaAcontecimiento() != null
+                        ? FechaParser.parsearFecha(dto.getFechaAcontecimiento())
+                        : atributosOriginal.getFechaAcontecimiento()
+        );
+
+// ---------- MULTIMEDIA ----------
+        List<ContenidoMultimedia> contenidosAgregar = new ArrayList<>();
+
+        if (dto.getContenidosMultimediaParaAgregar() != null) {
             for (MultipartFile file : dto.getContenidosMultimediaParaAgregar()) {
                 try {
                     String url = GestorArchivos.guardarArchivo(file);
 
-                    ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
+                    ContenidoMultimedia contenido = new ContenidoMultimedia();
+                    contenido.setUrl(url);
+                    contenido.almacenarTipoDeArchivo(file.getContentType());
 
-                    contenidoMultimedia.setUrl(url);
-                    contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
-                    contenidosMultimediaParaAgregar.add(contenidoMultimedia);
-                } catch(IOException ignore){
-                }
+                    contenidosAgregar.add(contenido);
+
+                } catch (IOException ignored) {}
             }
-
-            atributos.setContenidoMultimediaAgregar(contenidosMultimediaParaAgregar);
-
         }
-        Optional.ofNullable(dto.getContenidosMultimediaAEliminar()).ifPresent(atributos::setContenidoMultimediaEliminar);
-        Optional.ofNullable(dto.getDescripcion()).ifPresent(atributos::setDescripcion);
-        // hecho.getAtributosHechoAModificar().add(atributos);
+
+        atributos.setContenidoMultimediaAgregar(contenidosAgregar);
+        atributos.setContenidoMultimediaEliminar(
+                safeMerge(dto.getContenidosMultimediaAEliminar(), new ArrayList<>())
+        );
+
+// ---------- DESCRIPCIÓN ----------
+        atributos.setDescripcion(
+                safeMerge(dto.getDescripcion(), atributosOriginal.getDescripcion())
+        );
+
         hechosDinamicaRepository.save(hecho);
         solicitud.setAtributosModificar(atributos);
         solicitudModificarHechoRepo.save(solicitud);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    private <T> T safeMerge(T nuevo, T original) {
+        return nuevo != null ? nuevo : original;
+    }
+
     // @Transacional:
     // Así, la SolicitudHecho que traés con findById queda managed durante el method y all lo que le modifiques
     //  (y a sus asociaciones cargadas) se hace UPDATE al hacer commit, sin llamar a save(...).
@@ -698,56 +742,117 @@ public class SolicitudHechoService {
         return tipo;
     }
 
-    public ResponseEntity<?> getAtributosSolicitudHecho(Long id_solicitud, String username){
+    public ResponseEntity<?> getAtributosSolicitudHecho(Long id_solicitud, String username) {
+
+        // --- 1. Solo admin ---
         ResponseEntity<?> rta = checkeoAdmin(username);
+        if (rta.getStatusCode().equals(HttpStatus.FORBIDDEN)) return rta;
 
-        if (rta.getStatusCode().equals(HttpStatus.FORBIDDEN)){
-            return rta;
-        }
-        if (id_solicitud!=null){
-            SolicitudModificarHecho solicitudModificarHecho = (SolicitudModificarHecho) solicitudModificarHechoRepo.findById(id_solicitud).orElse(null);
-            if (solicitudModificarHecho != null){
-                AtributosHechoModificar atributosHechoModificar = solicitudModificarHecho.getAtributosModificar();
+        if (id_solicitud == null) return ResponseEntity.notFound().build();
 
-                Long id_ubicacion = atributosHechoModificar.getUbicacion_id();
-                Long pais_id = null;
-                Long provincia_id = null;
-                if (id_ubicacion != null){
-                    Ubicacion ubicacion = buscadorUbicacion.buscarUbicacion(id_ubicacion);
-                    if (ubicacion != null){
-                        Pais pais = ubicacion.getPais();
-                        if (pais != null){
-                            pais_id = pais.getId();
-                            Provincia provincia = ubicacion.getProvincia();
-                            if (provincia != null){
-                                provincia_id = provincia.getId();
-                            }
-                        }
+        // --- 2. Buscar la solicitud ---
+        SolicitudModificarHecho solicitud = (SolicitudModificarHecho) solicitudModificarHechoRepo.findById(id_solicitud).orElse(null);
+        if (solicitud == null) return ResponseEntity.notFound().build();
 
-                    }
+        AtributosHechoModificar attrs = solicitud.getAtributosModificar();
+        Hecho hecho = solicitud.getHecho();                 // hecho original
+        AtributosHecho attrOriginal = hecho.getAtributosHecho(); // atributos originales del hecho
+
+        // --- 3. Resolver ubicación (pais + provincia) ---
+        Long pais_id = null;
+        Long provincia_id = null;
+        String paisNombre = null;
+        String provinciaNombre = null;
+
+        Long ubicacionId = attrs.getUbicacion_id() != null
+                ? attrs.getUbicacion_id()
+                : attrOriginal.getUbicacion_id();
+
+        if (ubicacionId != null) {
+            Ubicacion u = buscadorUbicacion.buscarUbicacion(ubicacionId);
+
+            if (u != null) {
+                if (u.getPais() != null) {
+                    pais_id = u.getPais().getId();
+                    paisNombre = u.getPais().getPais();
                 }
-
-                AtributosModificarDTO atributosModificarDTO = AtributosModificarDTO.builder()
-                        .titulo(atributosHechoModificar.getTitulo())
-                        .descripcion(atributosHechoModificar.getDescripcion())
-                        .latitud(atributosHechoModificar.getLatitud())
-                        .longitud(atributosHechoModificar.getLongitud())
-                        .fechaAcontecimiento(atributosHechoModificar.getFechaAcontecimiento().toString())
-                        .id_pais(pais_id)
-                        .id_provincia(provincia_id)
-                        .id_categoria(atributosHechoModificar.getCategoria_id())
-                        .build();
-
-                return ResponseEntity.ok(atributosModificarDTO);
-
+                if (u.getProvincia() != null) {
+                    provincia_id = u.getProvincia().getId();
+                    provinciaNombre = u.getProvincia().getProvincia();
+                }
             }
         }
-        return ResponseEntity.notFound().build();
 
+        // --- 4. Resolver categoría ---
+        Long categoriaId = attrs.getCategoria_id() != null
+                ? attrs.getCategoria_id()
+                : attrOriginal.getCategoria_id();
 
+        String categoriaNombre = null;
 
+        if (categoriaId != null) {
+            categoriaNombre = categoriaRepository.findById(categoriaId)
+                    .map(Categoria::getTitulo)
+                    .orElse(null);
+        }
 
+        // --- 5. Armar DTO final ---
+        AtributosModificarDTO dto = AtributosModificarDTO.builder()
+
+                // usuario + fuente original
+                .fuente(attrOriginal.getFuente().codigoEnString())
+
+                // datos modificables
+                .titulo(attrs.getTitulo() != null ? attrs.getTitulo() : attrOriginal.getTitulo())
+                .descripcion(attrs.getDescripcion() != null ? attrs.getDescripcion() : attrOriginal.getDescripcion())
+
+                // categoría final
+                .id_categoria(categoriaId)
+                .categoria(categoriaNombre)
+
+                // ubicación final
+                .id_pais(pais_id)
+                .pais(paisNombre)
+                .id_provincia(provincia_id)
+                .provincia(provinciaNombre)
+
+                // fecha acontecimiento
+                .fechaAcontecimiento(
+                        attrs.getFechaAcontecimiento() != null
+                                ? attrs.getFechaAcontecimiento().toString()
+                                : (attrOriginal.getFechaAcontecimiento() != null
+                                ? attrOriginal.getFechaAcontecimiento().toString()
+                                : null)
+                )
+
+                // fecha carga original
+                .fechaCarga(
+                        attrOriginal.getFechaCarga() != null
+                                ? attrOriginal.getFechaCarga().toString()
+                                : null
+                )
+
+                // coordenadas
+                .latitud(
+                        attrs.getLatitud() != null
+                                ? attrs.getLatitud()
+                                : attrOriginal.getLatitud()
+                )
+
+                .longitud(
+                        attrs.getLongitud() != null
+                                ? attrs.getLongitud()
+                                : attrOriginal.getLongitud()
+                )
+
+                // NO setear contenido
+                .contenido(null)
+
+                .build();
+
+        return ResponseEntity.ok(dto);
     }
+
 
 }
 
