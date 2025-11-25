@@ -60,11 +60,20 @@
 
                 <a class="request-content"
                    th:if="${s.hechoId != null}"
-                   th:href="@{/hechos/public/get(
-        id_hecho=${s.hechoId},
-        fuente='DINAMICA',
-        id_solicitud=${s.id}
-   )}">
+                   th:href="${esModificar} ?
+        @{/hechos/public/modificar(
+            id_hecho=${s.hechoId},
+            fuente='DINAMICA',
+            id_solicitud=${s.id},
+            es-de-modificar=true
+        )}
+        :
+        @{/hechos/public/get(
+            id_hecho=${s.hechoId},
+            fuente='DINAMICA',
+            id_solicitud=${s.id},
+            es-de-modificar=false
+        )}">
 
 
 
@@ -147,10 +156,28 @@
                     </form>
 
                     <button class="btn btn-reject"
+                            th:if="${s.username != null}"
                             data-bs-toggle="modal" data-bs-target="#modalRechazo"
                             th:attr="data-id=${s.id}, data-tipo=${s.tipo}, data-action=${actionUrl}">
                         <i class="bi bi-x-circle me-1"></i>Rechazar
                     </button>
+
+                    <!-- RECHAZAR DIRECTO (usuario anónimo) -->
+                    <form th:if="${s.username == null}"
+                          method="post"
+                          th:action="${actionUrl}"
+                          class="w-100">
+                        <input type="hidden" name="id_solicitud" th:value="${s.id}">
+                        <input type="hidden" name="respuesta" value="false">
+                        <!-- mensaje fijo para cumplir con el DTO -->
+                        <input type="hidden" name="mensaje"
+                               value="Solicitud anónima rechazada automáticamente.">
+                        <input type="hidden" th:if="${_csrf != null}"
+                               th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <button class="btn btn-reject w-100" type="submit">
+                            <i class="bi bi-x-circle me-1"></i>Rechazar
+                        </button>
+                    </form>
                 </div>
             </article>
 

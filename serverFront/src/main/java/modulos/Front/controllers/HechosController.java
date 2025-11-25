@@ -162,7 +162,8 @@ public class HechosController {
 
     @GetMapping("/public/get")
     public String getHecho(Model model, Long id_hecho, String fuente,
-                           @RequestParam(name = "id_solicitud", required = false) Long id_solicitud){
+                           @RequestParam(name = "id_solicitud", required = false) Long id_solicitud,
+                           @RequestParam(name = "es-de-modificar", required = false) Boolean esDeModificar){
         ResponseEntity<?> rtaDto = this.hechosService.getHecho(id_hecho, fuente);
 
 
@@ -219,7 +220,7 @@ public class HechosController {
                             model.addAttribute("HechoModificarInputDTO", dtoModificar);
                         }
 
-                        else{
+                        else if (esDeModificar){
                             System.out.println("ID SOLICITUD: " + id_solicitud);
                             ResponseEntity<?> rtaAtributosModificar = solicitudHechoService.getAtributosHechoAModificar(id_solicitud);
                             if (rtaAtributosModificar.getStatusCode().is2xxSuccessful() && rtaAtributosModificar.hasBody()){
@@ -235,26 +236,26 @@ public class HechosController {
 
 
 
-                        if (hecho.getUsername() != null){
-                            esContribuyenteDelHecho = hecho.getUsername().equals(usuarioActual);
-                        }
+                    if (hecho.getUsername() != null){
+                        esContribuyenteDelHecho = hecho.getUsername().equals(usuarioActual);
+                    }
 
-                        if (esContribuyenteDelHecho) {
+                    if (esContribuyenteDelHecho) {
 
-                            if (usuarioOutputDto.getRol().equals(Rol.CONTRIBUYENTE)){
-                                SolicitudHechoEliminarInputDTO solicitudHechoEliminarInputDTO = new SolicitudHechoEliminarInputDTO();
-                                solicitudHechoEliminarInputDTO.setId_hecho(hecho.getId());
-                                model.addAttribute("SolicitudHechoEliminarInputDTO", solicitudHechoEliminarInputDTO);
+                        if (usuarioOutputDto.getRol().equals(Rol.CONTRIBUYENTE)){
+                            SolicitudHechoEliminarInputDTO solicitudHechoEliminarInputDTO = new SolicitudHechoEliminarInputDTO();
+                            solicitudHechoEliminarInputDTO.setId_hecho(hecho.getId());
+                            model.addAttribute("SolicitudHechoEliminarInputDTO", solicitudHechoEliminarInputDTO);
 
 
-                                System.out.println("ID DEL HECHO DE RE MIL MIERDA: " + hecho.getId());
+                            System.out.println("ID DEL HECHO DE RE MIL MIERDA: " + hecho.getId());
 
-                                // 7 días máximo para solicitar modificar el hecho
-                                if (ChronoUnit.DAYS.between(FechaParser.parsearFecha(hecho.getFechaCarga()), LocalDateTime.now()) <= 7){
+                            // 7 días máximo para solicitar modificar el hecho
+                            if (ChronoUnit.DAYS.between(FechaParser.parsearFecha(hecho.getFechaCarga()), LocalDateTime.now()) <= 7){
 
-                                    System.out.println("FECHA: " + hecho.getFechaAcontecimiento());
+                                System.out.println("FECHA: " + hecho.getFechaAcontecimiento());
 
-                                    SolicitudHechoModificarInputDTO dtoModificar = SolicitudHechoModificarInputDTO.builder()
+                                SolicitudHechoModificarInputDTO dtoModificar = SolicitudHechoModificarInputDTO.builder()
                                         .id_hecho(hecho.getId())
                                         .titulo(hecho.getTitulo())
                                         .descripcion(hecho.getDescripcion())
