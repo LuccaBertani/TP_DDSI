@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import modulos.Front.BodyToListConverter;
 import modulos.Front.FechaParser;
+import modulos.Front.GestorArchivos;
 import modulos.Front.dtos.input.*;
 import modulos.Front.dtos.output.AtributosModificarDTO;
 import modulos.Front.dtos.output.HechosResponse;
@@ -29,6 +30,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -40,7 +42,7 @@ public class HechosController {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final SolicitudHechoService solicitudHechoService;
 
-    @PreAuthorize("isAuthenticated()") // Solo usuarios logueados
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'ADMINISTRADOR')") // Solo usuarios logueados
     @GetMapping("/mis-hechos")
     public String getHechosDelUsuario(Model model){
         System.out.println("ENTRO A GET HECHOS DEL USUARIO (Front)");
@@ -216,6 +218,7 @@ public class HechosController {
                                     .id_provincia(hecho.getId_provincia())
                                     .id_categoria(hecho.getId_categoria())
                                     .fuente(hecho.getFuente())
+                                    .contenidosMultimedia(hecho.getContenido())
                                     .build();
                             model.addAttribute("HechoModificarInputDTO", dtoModificar);
                         }
@@ -329,20 +332,50 @@ public class HechosController {
 
     @PostMapping("/modificar-hecho")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public String modificarHecho(@Valid @ModelAttribute HechoModificarInputDTO dto, RedirectAttributes ra) {
+    public String modificarHecho(
+            @ModelAttribute HechoModificarInputDTO dto,
+            @RequestParam(name = "contenidosMultimediaParaAgregar", required = false)
+            java.util.List<MultipartFile> archivos,
+            RedirectAttributes ra) {
 
-        ResponseEntity<?> rta = this.hechosService.modificarHecho(dto);
+        System.out.println("DTO FORM: " + dto);
+        System.out.println("ARCHIVOS: " + archivos);
 
-        if(rta.getStatusCode().is2xxSuccessful()){
+
+        if (archivos != null) {
+            List<ContenidoMultimediaDTO> dtos = new ArrayList<>();
+            for (MultipartFile file : archivos) {
+                if (!file.isEmpty()) {
+                    try {
+                        String ruta = GestorArchivos.guardarArchivo(file); // tu clase de antes
+                        String contentType = file.getContentType();
+                        dtos.add(new ContenidoMultimediaDTO(ruta, contentType));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        ra.addFlashAttribute("error",
+                                "Error guardando archivo: " + file.getOriginalFilename());
+                    }
+                }
+            }
+            dto.setNuevasRutasMultimedia(!dtos.isEmpty() ? dtos : null);
+        }
+
+
+
+
+        // 3) Llamar al back: ahora el DTO ya no tiene MultipartFile en el JSON
+        ResponseEntity<?> rta = hechosService.modificarHecho(dto);
+
+        System.out.println("RESPUESTA SERVICE: " + rta);
+
+        if (rta != null && rta.getStatusCode().is2xxSuccessful()) {
             return "redirect:/hechos/public/get-all";
         }
-        else if(rta.getBody() != null){
-            ra.addFlashAttribute(rta.getBody().toString());
+        if (rta != null && rta.getBody() != null) {
+            ra.addFlashAttribute("error", rta.getBody().toString());
         }
-        return "redirect:/" + rta.getStatusCode().value();
+        return "redirect:/500";
     }
 
-
-    //todo falta
 
 }

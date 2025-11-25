@@ -291,23 +291,20 @@ public class SolicitudHechoService {
 
         List<ContenidoMultimedia> contenidosMultimediaParaAgregar = new ArrayList<>();
 
-        if(dto.getContenidosMultimediaParaAgregar() != null) {
-            for (MultipartFile file : dto.getContenidosMultimediaParaAgregar()) {
-                try {
-                    String url = GestorArchivos.guardarArchivo(file);
 
-                    ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
-
-                    contenidoMultimedia.setUrl(url);
-                    contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
-                    contenidosMultimediaParaAgregar.add(contenidoMultimedia);
-                } catch(IOException ignore){
-                }
+        if(dto.getNuevasRutasMultimedia() != null) {
+            for (ContenidoMultimediaDTO contenidoMultimediaDTO : dto.getNuevasRutasMultimedia()) {
+                ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
+                contenidoMultimedia.setUrl(contenidoMultimediaDTO.getUrl());
+                contenidoMultimedia.almacenarTipoDeArchivo(contenidoMultimediaDTO.getContentType());
+                contenidosMultimediaParaAgregar.add(contenidoMultimedia);
             }
 
             atributos.setContenidoMultimediaAgregar(contenidosMultimediaParaAgregar);
 
         }
+
+
         Optional.ofNullable(dto.getContenidosMultimediaAEliminar()).ifPresent(atributos::setContenidoMultimediaEliminar);
         Optional.ofNullable(dto.getDescripcion()).ifPresent(atributos::setDescripcion);
         // hecho.getAtributosHechoAModificar().add(atributos);
@@ -708,6 +705,7 @@ public class SolicitudHechoService {
         return tipo;
     }
 
+
     public ResponseEntity<?> getAtributosSolicitudHecho(Long id_solicitud, String username) {
 
         // --- 1. Solo admin ---
@@ -756,6 +754,25 @@ public class SolicitudHechoService {
                     .orElse(null);
         }
 
+        List<ContenidoMultimedia> contenidoMultimediaFinal = new ArrayList<>();
+
+        contenidoMultimediaFinal.addAll(attrs.getContenidoMultimediaAgregar());
+
+        List<ContenidoMultimedia> contenidoMultimediaAMantener = new ArrayList<>();
+        System.out.println("CONTENIDO A ELIMINAR: " + attrs.getContenidoMultimediaEliminar());
+
+        if (attrs.getContenidoMultimediaEliminar() == null || attrs.getContenidoMultimediaEliminar().isEmpty()){
+            contenidoMultimediaAMantener.addAll(attrOriginal.getContenidosMultimedia());
+        }
+        else{
+            List<Long> idsContenidosAEliminar = attrs.getContenidoMultimediaEliminar();
+            contenidoMultimediaAMantener.addAll(attrOriginal.getContenidosMultimedia().stream().filter(
+                    contenidoMultimediaOriginal -> !idsContenidosAEliminar.contains(contenidoMultimediaOriginal.getId())
+            ).toList());
+        }
+
+        contenidoMultimediaFinal.addAll(contenidoMultimediaAMantener);
+
         // --- 5. Armar DTO final ---
         AtributosModificarDTO dto = AtributosModificarDTO.builder()
                 .titulo(attrs.getTitulo())
@@ -783,8 +800,7 @@ public class SolicitudHechoService {
 
                 .longitud(attrs.getLongitud())
 
-                // NO setear contenido
-                .contenido(null)
+                .contenido(contenidoMultimediaFinal)
 
                 .build();
 

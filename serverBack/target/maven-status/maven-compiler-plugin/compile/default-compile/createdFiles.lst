@@ -25,6 +25,7 @@ modulos\shared\dtos\input\SolicitudHechoModificarInputDTO.class
 modulos\agregacion\repositories\DbDinamica\IHechosDinamicaRepository.class
 modulos\agregacion\entities\DbProxy\HechoProxy$HechoProxyBuilderImpl.class
 modulos\agregacion\entities\fuentes\Responses\HechoMetamapaResponse.class
+modulos\shared\dtos\input\ContenidoMultimediaDTO.class
 modulos\shared\dtos\input\LoginDtoInput.class
 modulos\agregacion\entities\DbMain\Coleccion.class
 modulos\agregacion\entities\fuentes\LectorCSV.class

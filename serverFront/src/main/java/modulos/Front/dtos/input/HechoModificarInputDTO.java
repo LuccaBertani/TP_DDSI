@@ -1,8 +1,10 @@
 package modulos.Front.dtos.input;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
+import modulos.Front.ContenidoMultimedia;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -11,11 +13,9 @@ import java.util.List;
 @Data
 @Builder
 public class HechoModificarInputDTO {
-    @NotNull(message = "El id_hecho es obligatorio")
-    private Long id_hecho; // Id del hecho que se quiere modificar
+    private Long id_hecho;
     private String titulo;
     private String descripcion;
-
     private String fechaAcontecimiento;
     private Double latitud;
     private Double longitud;
@@ -24,9 +24,11 @@ public class HechoModificarInputDTO {
     private Long id_categoria;
 
 
-    private List<MultipartFile> contenidosMultimediaParaAgregar;
     private List<Long> contenidosMultimediaAEliminar;
-
-    @NotNull(message = "La fuente es obligatoria")
     private String fuente;
+
+    // 👉 NUEVO: esto sí se manda al back
+    private List<ContenidoMultimediaDTO> nuevasRutasMultimedia;
+
+    private List<ContenidoMultimedia> contenidosMultimedia;
 }

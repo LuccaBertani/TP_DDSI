@@ -252,6 +252,95 @@
           </div>
         </div>
       </div>
+      <!-- CONTENIDO MULTIMEDIA -->
+      <!-- CONTENIDO MULTIMEDIA -->
+      <div class="form-card-collection mb-4">
+        <div class="form-card-header-collection">
+          <div class="form-card-icon-collection bg-gradient-blue">
+            <i class="bi bi-images"></i>
+          </div>
+          <h5 class="mb-0">Contenido multimedia</h5>
+        </div>
+
+        <div class="form-card-body-collection">
+          <div class="row g-3">
+
+            <!-- EXISTENTES: marcar para eliminar -->
+            <div class="col-12"
+                 th:if="${camposViejos != null
+                and camposViejos.id_hecho != null
+                and camposViejos.contenidosMultimedia != null}">
+              <label class="form-label-collection">
+                Contenidos actuales
+              </label>
+
+              <div class="row g-2">
+                <div class="col-md-4"
+                     th:each="cont : ${camposViejos.contenidosMultimedia}">
+                  <div class="card h-100 p-2">
+                    <div class="mb-2 text-center">
+
+                      <!-- Imagen -->
+                      <img th:if="${cont.tipo != null and cont.tipo.name() == 'IMAGEN'}"
+                           th:src="${cont.url}"
+                           alt="Multimedia"
+                           class="img-fluid rounded">
+
+                      <!-- Video -->
+                      <video th:if="${cont.tipo != null and cont.tipo.name() == 'VIDEO'}"
+                             class="w-100"
+                             controls>
+                        <source th:src="${cont.url}" type="video/mp4"/>
+                      </video>
+
+                      <!-- Otro tipo o tipo nulo -->
+                      <div th:if="${cont.tipo == null
+                          or (cont.tipo.name() != 'IMAGEN'
+                           and cont.tipo.name() != 'VIDEO')}"
+                           class="text-muted small">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span th:text="${cont.tipo != null ? cont.tipo : 'ARCHIVO'}"></span>
+                      </div>
+                    </div>
+
+                    <div class="form-check">
+                      <input class="form-check-input"
+                             type="checkbox"
+                             name="contenidosMultimediaAEliminar"
+                             th:value="${cont.id}"
+                             id="eliminar-cont-[[${cont.id}]]">
+                      <label class="form-check-label"
+                             th:for="${'eliminar-cont-' + cont.id}">
+                        Marcar para eliminar
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <small class="form-text-collection text-muted">
+                Los elementos marcados se eliminarán al confirmar la modificación.
+              </small>
+            </div>
+
+            <!-- NUEVOS: subir archivos -->
+            <div class="col-12">
+              <label class="form-label-collection">
+                Agregar nuevos archivos
+              </label>
+              <input type="file"
+                     class="form-control-collection"
+                     name="contenidosMultimediaParaAgregar"
+                     multiple>
+              <small class="form-text-collection text-muted">
+                Podés subir imágenes, videos, audio o texto. Se detecta el tipo automáticamente.
+              </small>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
 
     </form>
   </div>

@@ -481,7 +481,7 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
     }
 
     @Async
-    @Scheduled(cron = "0 * * * * *") // cada hora
+    @Scheduled(cron = "0 0 * * * *") // cada hora
     @Transactional
     public void refrescarColeccionesCronjob() {
 

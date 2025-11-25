@@ -1,8 +1,10 @@
 package modulos.Front.dtos.input;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
+import modulos.Front.ContenidoMultimedia;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -23,6 +25,13 @@ public class SolicitudHechoModificarInputDTO { //datos del hecho y el id del usu
     private Long id_categoria;
 
 
+    @JsonIgnore
     private List<MultipartFile> contenidosMultimediaParaAgregar;
     private List<Long> contenidosMultimediaAEliminar;
+
+
+    // 👉 NUEVO: esto sí se manda al back
+    private List<ContenidoMultimediaDTO> nuevasRutasMultimedia;
+
+    private List<ContenidoMultimedia> contenidosMultimedia;
 }

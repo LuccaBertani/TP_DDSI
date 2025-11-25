@@ -8,12 +8,10 @@ import modulos.agregacion.entities.DbDinamica.solicitudes.SolicitudHecho;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.*;
 import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
-import modulos.agregacion.entities.atributosHecho.AtributosHechoModificar;
-import modulos.agregacion.entities.atributosHecho.ContenidoMultimedia;
+import modulos.agregacion.entities.atributosHecho.*;
 import modulos.agregacion.entities.DbMain.filtros.*;
 import modulos.agregacion.entities.DbProxy.HechoProxy;
 import modulos.agregacion.entities.HechoMemoria;
-import modulos.agregacion.entities.atributosHecho.OrigenConexion;
 import modulos.agregacion.entities.fuentes.Responses.HechoMetamapaResponse;
 import modulos.agregacion.repositories.DbDinamica.IHechosDinamicaRepository;
 import modulos.agregacion.repositories.DbEstatica.IDatasetsRepository;
@@ -31,7 +29,6 @@ import org.springframework.http.ResponseEntity;
 import modulos.agregacion.entities.fuentes.FuenteEstatica;
 import modulos.agregacion.entities.DbMain.usuario.Rol;
 import modulos.agregacion.entities.DbMain.usuario.Usuario;
-import modulos.agregacion.entities.atributosHecho.AtributosHecho;
 import modulos.shared.dtos.input.ImportacionHechosInputDTO;
 import modulos.shared.dtos.input.SolicitudHechoInputDTO;
 import org.springframework.http.HttpStatus;
@@ -961,6 +958,8 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     @Transactional
     public ResponseEntity<?> modificarHecho(HechoModificarInputDTO dto, String username) {
 
+        System.out.println("LLEGO ACÁ");
+
         ResponseEntity<?> rta = checkeoAdmin(username);
 
         if (rta.getStatusCode().equals(HttpStatus.FORBIDDEN)){
@@ -998,18 +997,12 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
         List<ContenidoMultimedia> contenidosMultimediaParaAgregar = new ArrayList<>();
 
-        if(dto.getContenidosMultimediaParaAgregar() != null) {
-            for (MultipartFile file : dto.getContenidosMultimediaParaAgregar()) {
-                try {
-                    String url = GestorArchivos.guardarArchivo(file);
-
-                    ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
-
-                    contenidoMultimedia.setUrl(url);
-                    contenidoMultimedia.almacenarTipoDeArchivo(file.getContentType());
-                    contenidosMultimediaParaAgregar.add(contenidoMultimedia);
-                } catch(IOException ignore){
-                }
+        if(dto.getNuevasRutasMultimedia() != null) {
+            for (ContenidoMultimediaDTO contenidoMultimediaDTO : dto.getNuevasRutasMultimedia()) {
+                ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
+                contenidoMultimedia.setUrl(contenidoMultimediaDTO.getUrl());
+                contenidoMultimedia.almacenarTipoDeArchivo(contenidoMultimediaDTO.getContentType());
+                contenidosMultimediaParaAgregar.add(contenidoMultimedia);
             }
 
             atributos.setContenidoMultimediaAgregar(contenidosMultimediaParaAgregar);
@@ -1085,4 +1078,18 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             return ResponseEntity.ok().body(repoFuentes.getCantFuentes());
         }
     }
+
+    public ResponseEntity<?> getContenidoMultimediaHecho(Long id_hecho, String fuente){
+        Hecho hecho = this.getHechoEntity(id_hecho, fuente);
+        if (hecho!=null){
+            List<ContenidoMultimedia> contenidoMultimedia = hecho.getAtributosHecho().getContenidosMultimedia();
+            if (contenidoMultimedia != null && !contenidoMultimedia.isEmpty()){
+                return ResponseEntity.ok().body(hecho.getAtributosHecho().getContenidosMultimedia());
+            }
+
+        }
+        return ResponseEntity.ok().build(); // No mando error pero no mando body. Se encarga el back de no rellenar contenido multimedia
+    }
+
+
 }

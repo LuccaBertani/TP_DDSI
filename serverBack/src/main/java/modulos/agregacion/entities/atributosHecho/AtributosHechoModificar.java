@@ -31,7 +31,7 @@ public class AtributosHechoModificar {
     @JoinColumn(name = "id_hechoModificar")
     private List<ContenidoMultimedia> contenidoMultimediaAgregar;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<Long> contenidoMultimediaEliminar;
 
     @Column(name = "fechaAcontecimiento")

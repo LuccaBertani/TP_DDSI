@@ -61,7 +61,7 @@
                 <a class="request-content"
                    th:if="${s.hechoId != null}"
                    th:href="${esModificar} ?
-        @{/hechos/public/modificar(
+        @{/hechos/public/get(
             id_hecho=${s.hechoId},
             fuente='DINAMICA',
             id_solicitud=${s.id},

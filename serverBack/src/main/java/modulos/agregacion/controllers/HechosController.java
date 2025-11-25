@@ -107,34 +107,6 @@ public class HechosController {
         return hechosService.getHechosDestacados();
     }
 
-
-    /*
-    * COLECCION 4:
-    * CRITERIOS:
-    * PAIS: 10
-    *
-    * HECHO 1
-    * PAIS: 10
-    * HECHO 2
-    * PAIS: 10
-    * HECH 3
-    * PAIS: 10
-    *
-    * * */
-
-    /*
-    Esta ruta expone todos los hechos del sistema y los devuelve como una lista en formato JSON. La misma acepta parámetros para filtrar los resultados:
-categoría, fecha_reporte_desde, fecha_reporte_hasta,
-fecha_acontecimiento_desde, fecha_acontecimiento_hasta, ubicacion BARBARO!!.
-
-    */
-
-//hechos filtrados de all el sistema
-
-    // TODO OOOOOOOOOOOOOOO
-    // Anda
-
-
     // Anda
     @PostMapping("/add/sinonimo/pais")
     public ResponseEntity<?> addSinonimoPais(@AuthenticationPrincipal Jwt principal, @RequestParam Long id_pais, @RequestParam String sinonimo){
@@ -152,7 +124,6 @@ fecha_acontecimiento_desde, fecha_acontecimiento_hasta, ubicacion BARBARO!!.
         return hechosService.getPaisProvincia(latitud, longitud);
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONTRIBUYENTE')")
     @GetMapping("/mis-hechos")
     public ResponseEntity<?> getHechosDelUsuario(@AuthenticationPrincipal String username){
         System.out.println("ENTRO A GET HECHOS DEL USUARIO: " + username);
@@ -166,12 +137,18 @@ fecha_acontecimiento_desde, fecha_acontecimiento_hasta, ubicacion BARBARO!!.
 
     @PostMapping("/modificar-hecho")
     public ResponseEntity<?> modificarHecho(@Valid @RequestBody HechoModificarInputDTO dtoInput, @AuthenticationPrincipal String username){
+        System.out.println("ENTRÉ A MODIFICAR HECHO WAZAAAAAAA");
         return hechosService.modificarHecho(dtoInput, username);
     }
 
     @GetMapping("/cantFuentes")
     public ResponseEntity<?>  getCantFuentes(@AuthenticationPrincipal String username){
         return hechosService.getCantFuentes(username);
+    }
+
+    @GetMapping("/contenido-multimedia")
+    public ResponseEntity<?> getContenidoMultimediaHecho(@RequestParam Long id_hecho, @RequestParam String fuente){
+        return hechosService.getContenidoMultimediaHecho(id_hecho, fuente);
     }
 
 }

@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import modulos.Front.BodyToListConverter;
+import modulos.Front.ContenidoMultimedia;
 import modulos.Front.dtos.input.*;
 import modulos.Front.dtos.output.*;
 import modulos.Front.services.ColeccionService;
@@ -182,6 +183,15 @@ public class HomeController {
 
         dto.setFechaAcontecimiento(fecha);
 
+        ResponseEntity<?> rta = hechosService.getContenidoMultimediaHecho(dto.getId_hecho(), "DINAMICA");
+        System.out.println("RTA DE MIERDA: " + rta.getStatusCode());
+        if (rta.getStatusCode().is2xxSuccessful() && rta.hasBody()){
+
+            List<ContenidoMultimedia> contenidoMultimedia = BodyToListConverter.bodyToList(rta, ContenidoMultimedia.class);
+            System.out.println("ENCONTRE CONTENIDO MULTIVERGA JAA: " + contenidoMultimedia);
+            dto.setContenidosMultimedia(contenidoMultimedia);
+        }
+
         model.addAttribute("camposViejos", dto);
 
         return "modificar";
@@ -237,6 +247,15 @@ public class HomeController {
 
         model.addAttribute("camposViejos", dto);
 
+        ResponseEntity<?> rta = hechosService.getContenidoMultimediaHecho(dto.getId_hecho(), dto.getFuente());
+        System.out.println("RTA DE MIERDA: " + rta.getStatusCode());
+        if (rta.getStatusCode().is2xxSuccessful() && rta.hasBody()){
+
+            List<ContenidoMultimedia> contenidoMultimedia = BodyToListConverter.bodyToList(rta, ContenidoMultimedia.class);
+            System.out.println("ENCONTRE CONTENIDO MULTIVERGA JAA: " + contenidoMultimedia);
+            dto.setContenidosMultimedia(contenidoMultimedia);
+        }
+
         return "modificar";
     }
 
@@ -284,6 +303,15 @@ public class HomeController {
             fecha = fecha.substring(0, fecha.indexOf("T"));
         }
         dto.setFechaAcontecimiento(fecha);
+
+        ResponseEntity<?> rta = hechosService.getContenidoMultimediaHecho(dto.getId_hecho(), "DINAMICA");
+        System.out.println("RTA DE MIERDA: " + rta.getStatusCode());
+        if (rta.getStatusCode().is2xxSuccessful() && rta.hasBody()){
+
+            List<ContenidoMultimedia> contenidoMultimedia = BodyToListConverter.bodyToList(rta, ContenidoMultimedia.class);
+            System.out.println("ENCONTRE CONTENIDO MULTIVERGA JAA: " + contenidoMultimedia);
+            dto.setContenidosMultimedia(contenidoMultimedia);
+        }
 
         model.addAttribute("camposViejos", dto);
 
@@ -334,6 +362,16 @@ public class HomeController {
             fecha = fecha.substring(0, fecha.indexOf("T"));
         }
         dto.setFechaAcontecimiento(fecha);
+
+
+        ResponseEntity<?> rta = hechosService.getContenidoMultimediaHecho(dto.getId_hecho(), dto.getFuente());
+        System.out.println("RTA DE MIERDA: " + rta.getStatusCode());
+        if (rta.getStatusCode().is2xxSuccessful() && rta.hasBody()){
+
+            List<ContenidoMultimedia> contenidoMultimedia = BodyToListConverter.bodyToList(rta, ContenidoMultimedia.class);
+            System.out.println("ENCONTRE CONTENIDO MULTIVERGA JAA: " + contenidoMultimedia);
+            dto.setContenidosMultimedia(contenidoMultimedia);
+        }
 
         model.addAttribute("camposViejos", dto);
 

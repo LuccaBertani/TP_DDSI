@@ -3,6 +3,7 @@ package modulos.shared.dtos.input;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import modulos.agregacion.entities.atributosHecho.ContenidoMultimedia;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -22,6 +23,10 @@ public class SolicitudHechoModificarInputDTO { //datos del hecho y el id del usu
     private Long id_categoria;
 
 
-    private List<MultipartFile> contenidosMultimediaParaAgregar;
+    //private List<MultipartFile> contenidosMultimediaParaAgregar;
     private List<Long> contenidosMultimediaAEliminar;
+
+    private List<ContenidoMultimedia> contenidosMultimedia;
+
+    private List<ContenidoMultimediaDTO> nuevasRutasMultimedia;
 }

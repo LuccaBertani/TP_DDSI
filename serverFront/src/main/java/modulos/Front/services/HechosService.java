@@ -1,6 +1,7 @@
 package modulos.Front.services;
 
 import jakarta.servlet.http.HttpSession;
+import modulos.Front.ContenidoMultimedia;
 import modulos.Front.dtos.input.HechoModificarInputDTO;
 import modulos.Front.dtos.output.*;
 import modulos.Front.dtos.input.GetHechosColeccionInputDTO;
@@ -104,6 +105,10 @@ public class HechosService {
 
     public ResponseEntity<Integer> getCantFuentes() {
         return webApiCallerService.getEntity(this.hechoServiceUrl + "/cantFuentes", Integer.class);
+    }
+
+    public ResponseEntity<?> getContenidoMultimediaHecho(Long id_hecho, String fuente){
+        return webApiCallerService.getList(this.hechoServiceUrl + "/contenido-multimedia?id_hecho=" + id_hecho + "&fuente=" + fuente, ContenidoMultimedia.class);
     }
 
     private void actualizarSesiones(ResponseEntity<?> rta) {

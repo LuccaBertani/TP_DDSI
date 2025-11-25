@@ -1,6 +1,8 @@
+modulos\Front\controllers\HechosController$1.class
 modulos\Front\ApiCall.class
 modulos\Front\dtos\output\CategoriaDto.class
 modulos\Front\dtos\input\HechoModificarInputDTO$HechoModificarInputDTOBuilder.class
+modulos\Front\GestorArchivos.class
 modulos\Front\FechaParser.class
 modulos\Front\dtos\output\DatosPersonalesOutputDTO.class
 modulos\Front\dtos\input\CriteriosColeccionDTO$CriteriosColeccionDTOBuilder.class
@@ -71,6 +73,7 @@ modulos\Front\dtos\output\HechosResponse.class
 modulos\Front\dtos\input\ColeccionUpdateInputDTO.class
 modulos\Front\dtos\input\ModificarConsensoInputDTO.class
 modulos\Front\services\HechosService.class
+modulos\Front\dtos\input\ContenidoMultimediaDTO.class
 modulos\Front\dtos\output\UsuarioOutputDto.class
 modulos\Front\services\SinonimoService.class
 modulos\Front\dtos\input\SinonimoInputDTO.class

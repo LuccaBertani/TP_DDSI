@@ -103,6 +103,54 @@
                         <div class="col-md-6"><div class="detail-item bg-light-soft"><span class="detail-label">Fecha del Acontecimiento</span><div class="detail-value"  th:text="${AtributosModificarDTO != null && AtributosModificarDTO.fechaAcontecimiento != null ? AtributosModificarDTO.fechaAcontecimiento : '--'}"> </div></div></div>
                         <div class="col-md-6"><div class="detail-item bg-light-soft"><span class="detail-label">Latitud</span><div class="detail-value" th:text="${AtributosModificarDTO.latitud != null ? AtributosModificarDTO.latitud : '—'}"></div></div></div>
                         <div class="col-md-6"><div class="detail-item bg-light-soft"><span class="detail-label">Longitud</span><div class="detail-value" th:text="${AtributosModificarDTO.longitud != null ? AtributosModificarDTO.longitud : '—'}"></div></div></div>
+                        <div class="detail-card mb-4">
+                            <div class="detail-card-header">
+                                <div class="detail-card-icon bg-gradient-green">
+                                    <i class="bi bi-file-earmark-play-fill"></i>
+                                </div>
+                                <h5 class="mb-0 text-dark fw-bold">Contenido Multimedia</h5>
+                            </div>
+                            <div class="detail-card-body">
+                                <div class="row g-4 justify-content-center">
+
+                                    <div th:if="${AtributosModificarDTO.contenido == null or #lists.isEmpty(AtributosModificarDTO.contenido)}"
+                                         class="col-12 text-center text-muted py-3">
+                                        No hay contenido multimedia asociado a este hecho.
+                                    </div>
+
+                                    <div th:each="media : ${AtributosModificarDTO.contenido}"
+                                         class="col-md-6 col-lg-4">
+
+                                        <div class="media-preview-item">
+
+                                            <img th:if="${#strings.endsWith(media.url, '.png') or #strings.endsWith(media.url, '.jpg') or #strings.endsWith(media.url, '.jpeg') or #strings.endsWith(media.url, '.gif')}"
+                                                 th:src="${media.url}"
+                                                 class="img-fluid rounded media-item-img"
+                                                 alt="Contenido multimedia" />
+
+                                            <video th:if="${#strings.endsWith(media.url, '.mp4') or #strings.endsWith(media.url, '.webm') or #strings.endsWith(media.url, '.ogg')}"
+                                                   class="img-fluid rounded media-item-img"
+                                                   controls>
+                                                <source th:src="${media.url}">
+                                                Tu navegador no soporta video.
+                                            </video>
+
+                                            <div th:if="${#strings.endsWith(media.url, '.txt') or #strings.endsWith(media.url, '.pdf') or #strings.endsWith(media.url, '.docx') or #strings.endsWith(media.url, '.csv') or #strings.endsWith(media.url, '.xlsx')}"
+                                                 class="p-4 text-center file-download-box">
+
+                                                <i class="bi bi-file-earmark-text fs-1 text-secondary"></i>
+                                                <div class="mt-2">
+                                                    <a th:href="${media.url}" target="_blank" class="small fw-bold btn btn-download-link">
+                                                        <i class="bi bi-download me-1"></i> Descargar archivo
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -148,7 +196,7 @@
             </div>
         </div>
 
-        <div class="detail-card mb-4">
+        <div class="detail-card mb-4" id="multimedia-original">
             <div class="detail-card-header">
                 <div class="detail-card-icon bg-gradient-green">
                     <i class="bi bi-file-earmark-play-fill"></i>
@@ -412,6 +460,7 @@
             const btnPropuesta = document.getElementById('btn-tab-propuesta');
             const vistaAntes = document.getElementById('vista-antes');
             const vistaPropuesta = document.getElementById('vista-propuesta');
+            const multimediaOriginal = document.getElementById('multimedia-original');
 
             if (!btnAntes || !btnPropuesta || !vistaAntes || !vistaPropuesta) {
                 return;
@@ -420,9 +469,16 @@
             function activar(tab) {
                 const esAntes = (tab === 'antes');
 
+                // tarjetas de datos
                 vistaAntes.classList.toggle('d-none', !esAntes);
                 vistaPropuesta.classList.toggle('d-none', esAntes);
 
+                // multimedia original SOLO en la vista "antes"
+                if (multimediaOriginal) {
+                    multimediaOriginal.classList.toggle('d-none', !esAntes);
+                }
+
+                // estilos de botones
                 btnAntes.classList.toggle('btn-tab-primary', esAntes);
                 btnAntes.classList.toggle('btn-tab-outline', !esAntes);
 
@@ -430,6 +486,7 @@
                 btnPropuesta.classList.toggle('btn-tab-outline', esAntes);
             }
 
+            // estado inicial: versión original
             activar('antes');
 
             btnAntes.addEventListener('click', function () {
@@ -441,5 +498,6 @@
             });
         })();
     </script>
+
 </main>
 </html>
