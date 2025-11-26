@@ -11,6 +11,7 @@ public class StaticResourceConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
         String basePath = System.getProperty("user.dir");
+
         String uploadPath = "file:///" + basePath.replace("\\", "/") + "/uploads/";
 
         System.out.println("STATIC UPLOADS PATH → " + uploadPath);

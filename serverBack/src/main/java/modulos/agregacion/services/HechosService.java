@@ -196,6 +196,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
             // === Opción A: guardar en disco ===
             Path base = Paths.get("uploads/datasets").toAbsolutePath().normalize();
+            System.out.println("PATH BASE: " + base);
             Files.createDirectories(base);
             String storedName = UUID.randomUUID() + "_" + file.getOriginalFilename();
             Path destino = base.resolve(storedName);
