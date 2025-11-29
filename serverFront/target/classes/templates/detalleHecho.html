@@ -69,7 +69,7 @@
                         <div class="col-md-6"><div class="detail-item"><span class="detail-label">Categoría</span><div class="detail-value" th:text="${hecho.categoria ?: '—'}"></div></div></div>
                         <div class="col-md-6"><div class="detail-item"><span class="detail-label">País</span><div class="detail-value" th:text="${hecho.pais ?: '—'}"></div></div></div>
                         <div class="col-md-6"><div class="detail-item"><span class="detail-label">Provincia</span><div class="detail-value" th:text="${hecho.provincia ?: '—'}"></div></div></div>
-                        <div class="col-md-6"><div class="detail-item"><span class="detail-label">Fecha del Acontecimiento</span><div class="detail-value" th:text="${hecho.fechaAcontecimiento != null ? hecho.fechaAcontecimiento : '—'}"></div></div></div>
+                        <div class="col-md-6"><div class="detail-item"><span class="detail-label">Fecha del Acontecimiento</span><div class="detail-value" th:text="${hecho.fechaAcontecimiento != null ? #strings.substringBefore(hecho.fechaAcontecimiento, 'T') : '—'}"></div></div></div>
                         <div class="col-md-6"><div class="detail-item"><span class="detail-label">Latitud</span><div class="detail-value" th:text="${hecho.latitud != null ? hecho.latitud : '—'}"></div></div></div>
                         <div class="col-md-6"><div class="detail-item"><span class="detail-label">Longitud</span><div class="detail-value" th:text="${hecho.longitud != null ? hecho.longitud : '—'}"></div></div></div>
                     </div>
@@ -100,7 +100,7 @@
                         <div class="col-md-6"><div class="detail-item bg-light-soft"><span class="detail-label">Categoría</span><div class="detail-value" th:text="${AtributosModificarDTO.categoria != null ? AtributosModificarDTO.categoria : '—'}"></div></div></div>
                         <div class="col-md-6"><div class="detail-item bg-light-soft"><span class="detail-label">País</span><div class="detail-value" th:text="${AtributosModificarDTO.pais != null ? AtributosModificarDTO.pais : '—'}"></div></div></div>
                         <div class="col-md-6"><div class="detail-item bg-light-soft"><span class="detail-label">Provincia</span><div class="detail-value" th:text="${AtributosModificarDTO.provincia != null ? AtributosModificarDTO.provincia : '—'}"></div></div></div>
-                        <div class="col-md-6"><div class="detail-item bg-light-soft"><span class="detail-label">Fecha del Acontecimiento</span><div class="detail-value"  th:text="${AtributosModificarDTO != null && AtributosModificarDTO.fechaAcontecimiento != null ? AtributosModificarDTO.fechaAcontecimiento : '--'}"> </div></div></div>
+                        <div class="col-md-6"><div class="detail-item bg-light-soft"><span class="detail-label">Fecha del Acontecimiento</span><div class="detail-value"  th:text="${AtributosModificarDTO != null && AtributosModificarDTO.fechaAcontecimiento != null ? #strings.substringBefore(AtributosModificarDTO.fechaAcontecimiento, 'T') : '--'}"> </div></div></div>
                         <div class="col-md-6"><div class="detail-item bg-light-soft"><span class="detail-label">Latitud</span><div class="detail-value" th:text="${AtributosModificarDTO.latitud != null ? AtributosModificarDTO.latitud : '—'}"></div></div></div>
                         <div class="col-md-6"><div class="detail-item bg-light-soft"><span class="detail-label">Longitud</span><div class="detail-value" th:text="${AtributosModificarDTO.longitud != null ? AtributosModificarDTO.longitud : '—'}"></div></div></div>
                         <div class="detail-card mb-4">
@@ -184,8 +184,8 @@
                         <div class="detail-item">
                             <span class="detail-label">Fecha del Acontecimiento</span>
                             <span th:text="${AtributosModificarDTO != null && AtributosModificarDTO.fechaAcontecimiento != null
-                        ? AtributosModificarDTO.fechaAcontecimiento
-                        : hecho.fechaAcontecimiento}">
+                        ? #strings.substringBefore(AtributosModificarDTO.fechaAcontecimiento, 'T')
+                        : (hecho.fechaAcontecimiento != null ? #strings.substringBefore(hecho.fechaAcontecimiento, 'T') : '—')}">
         </span>
                         </div>
                     </div>

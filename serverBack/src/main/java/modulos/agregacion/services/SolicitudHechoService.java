@@ -136,7 +136,7 @@ public class SolicitudHechoService {
 
         List<ContenidoMultimedia> contenidosMultimedia = new ArrayList<>();
 
-        System.out.println("VOY A ENTRAR A CONTENIDO MULTIMIERDA");
+        System.out.println("VOY A ENTRAR A CONTENIDO MULTIMEDIA");
         if (files != null){
             System.out.println("ENTRE!! QUE EMOCION");
             for(MultipartFile file : files) {
@@ -220,7 +220,7 @@ public class SolicitudHechoService {
             solicitudEliminarHechoRepo.save(solicitud);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Se detectó spam"); // 400 - solicitud rechazada por spam
         }
-        System.out.println("LA JUSTIFICACION DE PORONGUITA TIENE LENGTH: " + solicitud.getJustificacion().length());
+        System.out.println("LA JUSTIFICACION TIENE LENGTH: " + solicitud.getJustificacion().length());
         solicitudEliminarHechoRepo.save(solicitud);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -455,15 +455,20 @@ public class SolicitudHechoService {
 
         solicitud.setProcesada(true);
 
+        Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
+
         if (dtoInput.getRespuesta()) {
             // El hecho debe modificarse
             this.setearModificadoAOficial(solicitud.getHecho(), solicitud.getAtributosModificar());
             solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(LocalDateTime.now());
             solicitud.getHecho().getAtributosHecho().setModificado(true);
+            if (usuario!=null){
+                this.enviarMensaje(usuario, solicitud, "Se aceptó su solicitud de modificar el hecho de título " + solicitud.getHecho().getAtributosHecho().getTitulo());
+            }
             hechosDinamicaRepository.save(solicitud.getHecho());
         }
         else{
-            Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
+
             // X si se borró la cuenta del usuario chequeo si es null o no
             if (dtoInput.getMensaje() != null && usuario != null){
                 this.enviarMensaje(usuario,solicitud, dtoInput.getMensaje());

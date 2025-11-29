@@ -54,44 +54,6 @@ public class HomeController {
         return "mapa";
     }
 
-    /*@GetMapping("/contribuir")
-    public String contribuir(@RequestParam(required = false) Long pais_id,
-                             @ModelAttribute SolicitudHechoInputDTO solicitudHecho,
-                             Model model) {
-
-        ResponseEntity <?> rta = this.hechosService.getPaises();
-        ResponseEntity <?> rta2 = this.hechosService.getCategorias();
-
-        if(!rta.getStatusCode().is2xxSuccessful() || !rta2.getStatusCode().is2xxSuccessful()){
-            return "redirect:/404";
-        }
-
-        List<PaisDto> paises = BodyToListConverter.bodyToList(rta, PaisDto.class);
-        List<CategoriaDto> categorias = BodyToListConverter.bodyToList(rta2, CategoriaDto.class);
-
-        model.addAttribute("paises", paises);
-        model.addAttribute("categorias", categorias);
-
-
-        if (solicitudHecho == null){
-            System.out.println("soli hecho de mierda es null");
-            model.addAttribute("solicitudHecho", new SolicitudHechoInputDTO());
-            return "contribuir";
-        }
-        else{
-            System.out.println("soli hecho de mierda NOOO es null");
-            model.addAttribute("solicitudHecho", solicitudHecho);
-            ResponseEntity <?> rta3 = this.hechosService.getProvinciasByIdPais(pais_id);
-            if(!rta3.getStatusCode().is2xxSuccessful()){
-                return "redirect:/404";
-            }
-            List<ProvinciaDto> provincias = BodyToListConverter.bodyToList(rta3, ProvinciaDto.class);
-            model.addAttribute("provincias", provincias);
-            return "contribuir";
-        }
-
-    }*/
-
 
     @GetMapping("/public/contribuir")
     public String contribuir(
@@ -184,11 +146,9 @@ public class HomeController {
         dto.setFechaAcontecimiento(fecha);
 
         ResponseEntity<?> rta = hechosService.getContenidoMultimediaHecho(dto.getId_hecho(), "DINAMICA");
-        System.out.println("RTA DE MIERDA: " + rta.getStatusCode());
-        if (rta.getStatusCode().is2xxSuccessful() && rta.hasBody()){
 
+        if (rta.getStatusCode().is2xxSuccessful() && rta.hasBody()){
             List<ContenidoMultimedia> contenidoMultimedia = BodyToListConverter.bodyToList(rta, ContenidoMultimedia.class);
-            System.out.println("ENCONTRE CONTENIDO MULTIVERGA JAA: " + contenidoMultimedia);
             dto.setContenidosMultimedia(contenidoMultimedia);
         }
 
@@ -201,7 +161,6 @@ public class HomeController {
     @PostMapping("/modificacion-hecho")
     public String modificarHecho(@Valid @ModelAttribute HechoModificarInputDTO dto, Model model){
         // Catálogos base
-        System.out.println("JAAA SOY UN SORETITO");
         ResponseEntity<?> rtaPaises = hechosService.getPaises();
         ResponseEntity<?> rtaCategorias = hechosService.getCategorias();
         if (!rtaPaises.getStatusCode().is2xxSuccessful() || !rtaCategorias.getStatusCode().is2xxSuccessful()) {
@@ -248,11 +207,11 @@ public class HomeController {
         model.addAttribute("camposViejos", dto);
 
         ResponseEntity<?> rta = hechosService.getContenidoMultimediaHecho(dto.getId_hecho(), dto.getFuente());
-        System.out.println("RTA DE MIERDA: " + rta.getStatusCode());
+
         if (rta.getStatusCode().is2xxSuccessful() && rta.hasBody()){
 
             List<ContenidoMultimedia> contenidoMultimedia = BodyToListConverter.bodyToList(rta, ContenidoMultimedia.class);
-            System.out.println("ENCONTRE CONTENIDO MULTIVERGA JAA: " + contenidoMultimedia);
+            System.out.println("ENCONTRE CONTENIDO MULTIMEDIA JAA: " + contenidoMultimedia);
             dto.setContenidosMultimedia(contenidoMultimedia);
         }
 
@@ -305,11 +264,11 @@ public class HomeController {
         dto.setFechaAcontecimiento(fecha);
 
         ResponseEntity<?> rta = hechosService.getContenidoMultimediaHecho(dto.getId_hecho(), "DINAMICA");
-        System.out.println("RTA DE MIERDA: " + rta.getStatusCode());
+
         if (rta.getStatusCode().is2xxSuccessful() && rta.hasBody()){
 
             List<ContenidoMultimedia> contenidoMultimedia = BodyToListConverter.bodyToList(rta, ContenidoMultimedia.class);
-            System.out.println("ENCONTRE CONTENIDO MULTIVERGA JAA: " + contenidoMultimedia);
+            System.out.println("ENCONTRE CONTENIDO MULTIMEDIA JAA: " + contenidoMultimedia);
             dto.setContenidosMultimedia(contenidoMultimedia);
         }
 
@@ -365,11 +324,11 @@ public class HomeController {
 
 
         ResponseEntity<?> rta = hechosService.getContenidoMultimediaHecho(dto.getId_hecho(), dto.getFuente());
-        System.out.println("RTA DE MIERDA: " + rta.getStatusCode());
+
         if (rta.getStatusCode().is2xxSuccessful() && rta.hasBody()){
 
             List<ContenidoMultimedia> contenidoMultimedia = BodyToListConverter.bodyToList(rta, ContenidoMultimedia.class);
-            System.out.println("ENCONTRE CONTENIDO MULTIVERGA JAA: " + contenidoMultimedia);
+            System.out.println("ENCONTRE CONTENIDO MULTIMEDIA JAA: " + contenidoMultimedia);
             dto.setContenidosMultimedia(contenidoMultimedia);
         }
 

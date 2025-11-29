@@ -23,7 +23,8 @@
     <div class="container pb-5">
         <div class="row justify-content-center">
             <div class="col-xl-8">
-                <form id="importForm" enctype="multipart/form-data" class="mt-4">
+                <form id="importForm" method="POST" enctype="multipart/form-data" class="mt-4" th:action="@{/hechos/importar}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
                     <div class="import-card mb-4">
                         <div class="import-card-header">
@@ -89,7 +90,7 @@
                                 <span class="csv-column">categoria</span>
                                 <span class="csv-column">latitud</span>
                                 <span class="csv-column">longitud</span>
-                                <span class="csv-column">fecha</span>
+                                <span class="csv-column">fecha del hecho</span>
                                 <span class="csv-column">pais</span>
                                 <span class="csv-column">provincia</span>
                             </div>
@@ -177,39 +178,28 @@
             const fileUploadZone = document.querySelector('.file-upload-zone');
             const importForm = document.getElementById('importForm');
 
-            // --- Funciones de Validación ---
+            // --- 1. Funciones de Validación ---
             const validateForm = () => {
                 const isFileSelected = fileInput.files.length > 0 && fileInput.files[0].name.toLowerCase().endsWith('.csv');
                 const isFuenteFilled = inputFuente.value.trim().length > 0;
-                // El botón se habilita SOLAMENTE si ambos campos cumplen la condición
                 uploadButton.disabled = !(isFileSelected && isFuenteFilled);
             };
 
-            // --- Event Listeners (File & Input) ---
+            // --- 2. Event Listeners (File & Input) ---
             fileInput.addEventListener('change', function() {
                 if (fileInput.files.length > 0 && fileInput.files[0].name.toLowerCase().endsWith('.csv')) {
                     fileNameDisplay.innerHTML = `<i class="bi bi-file-earmark-check-fill"></i>Archivo: ${fileInput.files[0].name}`;
                     fileNameDisplay.classList.add('active');
                 } else {
-                    fileNameDisplay.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i>Error: Solo se permiten archivos .csv';
-                    fileNameDisplay.style.background = 'linear-gradient(135deg,rgba(220,38,38,.1),rgba(185,28,28,.1))';
-                    fileNameDisplay.style.borderColor = 'rgba(220,38,38,.2)';
-                    fileNameDisplay.style.color = '#991b1b';
-                    fileNameDisplay.classList.add('active');
+                    showError('Error: Solo se permiten archivos .csv');
                     fileInput.value = "";
-                    setTimeout(() => {
-                        fileNameDisplay.classList.remove('active');
-                        fileNameDisplay.style.background = '';
-                        fileNameDisplay.style.borderColor = '';
-                        fileNameDisplay.style.color = '';
-                    }, 3000);
                 }
                 validateForm();
             });
 
             inputFuente.addEventListener('input', validateForm);
 
-            // Drag and Drop listeners
+            // --- 3. Drag and Drop ---
             fileUploadZone.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 fileUploadZone.style.borderColor = '#10b981';
@@ -232,65 +222,56 @@
                     fileNameDisplay.innerHTML = `<i class="bi bi-file-earmark-check-fill"></i>Archivo: ${files[0].name}`;
                     fileNameDisplay.classList.add('active');
                 } else {
-                    fileNameDisplay.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i>Error: Por favor, suelta un archivo .csv válido';
-                    fileNameDisplay.style.background = 'linear-gradient(135deg,rgba(220,38,38,.1),rgba(185,28,28,.1))';
-                    fileNameDisplay.style.borderColor = 'rgba(220,38,38,.2)';
-                    fileNameDisplay.style.color = '#991b1b';
-                    fileNameDisplay.classList.add('active');
+                    showError('Error: Por favor, suelta un archivo .csv válido');
                     fileInput.value = "";
-                    setTimeout(() => {
-                        fileNameDisplay.classList.remove('active');
-                        fileNameDisplay.style.background = '';
-                        fileNameDisplay.style.borderColor = '';
-                        fileNameDisplay.style.color = '';
-                    }, 3000);
                 }
                 validateForm();
             });
 
-            // --- Manejo del Submit del Formulario (Fetch API) ---
-            importForm.addEventListener('submit', function(e) {
-                e.preventDefault();
+            // Helper para mostrar error de archivo visualmente
+            function showError(msg) {
+                fileNameDisplay.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i>${msg}`;
+                fileNameDisplay.style.background = 'linear-gradient(135deg,rgba(220,38,38,.1),rgba(185,28,28,.1))';
+                fileNameDisplay.style.borderColor = 'rgba(220,38,38,.2)';
+                fileNameDisplay.style.color = '#991b1b';
+                fileNameDisplay.classList.add('active');
+                setTimeout(() => {
+                    fileNameDisplay.classList.remove('active');
+                    fileNameDisplay.style.background = '';
+                    fileNameDisplay.style.borderColor = '';
+                    fileNameDisplay.style.color = '';
+                }, 3000);
+            }
 
-                // 1. Deshabilitar botón para evitar doble envío
+            // --- 4. Manejo del Submit (MODIFICADO PARA ENVÍO ESTÁNDAR) ---
+            importForm.addEventListener('submit', function(e) {
+                // NO usamos e.preventDefault() -> dejamos que el navegador haga el POST y el Redirect
+
+                // A. Feedback visual inmediato
                 uploadButton.disabled = true;
                 uploadButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Importando...';
 
-                // 2. Obtener datos y construir el JSON para 'meta'
-                const fuente = inputFuente.value.trim();
-                const file = fileInput.files[0];
-
-                const metaDto = JSON.stringify({
-                    fuenteString: fuente
-                });
-
-                // 3. Crear FormData para multipart/form-data
-                const formData = new FormData();
-                formData.append('meta', new Blob([metaDto], { type: 'application/json' }));
-                formData.append('file', file);
-
-                // 4. LECTURA Y PREPARACIÓN DEL CSRF
-                const csrfMeta = document.querySelector("meta[name='_csrf']");
-
-                if (csrfMeta) {
-                    const csrfToken = csrfMeta.getAttribute("content");
-                    formData.append('_csrf', csrfToken);
+                // B. Asegurar mapeo de datos para Spring
+                // Como ya no enviamos un JSON manual, asignamos el 'name' al input para que viaje como parámetro
+                if (!inputFuente.name) {
+                    // Asumiendo que en tu DTO el campo se llama "fuenteString"
+                    inputFuente.name = 'fuenteString';
                 }
 
-                // 5. Enviar usando Fetch API
-                fetch('/hechos/importar', {
-                    method: 'POST',
-                    body: formData,
-                })
-                    .then(response => {
-                        window.location.href = response.url;
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Error al subir el archivo: ' + error.message);
-                        uploadButton.innerHTML = '<i class="bi bi-cloud-upload me-2"></i>Importar archivo';
-                        validateForm();
-                    });
+                // C. Inyección dinámica del CSRF (por si faltaba en el HTML)
+                if (!importForm.querySelector('input[name="_csrf"]')) {
+                    const csrfMeta = document.querySelector("meta[name='_csrf']");
+                    if (csrfMeta) {
+                        const csrfInput = document.createElement('input');
+                        csrfInput.type = 'hidden';
+                        csrfInput.name = '_csrf';
+                        csrfInput.value = csrfMeta.getAttribute("content");
+                        importForm.appendChild(csrfInput);
+                    }
+                }
+
+                // El formulario se enviará ahora, Spring procesará, redireccionará y
+                // al recargar la página verás el mensaje de éxito.
             });
         });
     </script>

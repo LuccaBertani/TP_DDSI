@@ -94,18 +94,16 @@ public class UsuarioController {
 
             model.addAttribute("solicitudesPendientes", cantPendientes);
         }
-        else {
-            ResponseEntity<?> mensajesDto = this.usuarioService.obtenerMensajes();
 
-            System.out.println("RECIBI ESTA PIJA: " + mensajesDto.getBody());
+        ResponseEntity<?> mensajesDto = this.usuarioService.obtenerMensajes();
 
-            if(mensajesDto.getStatusCode().is2xxSuccessful() && mensajesDto.getBody() != null) {
-                List<MensajeOutputDTO> mensajes = BodyToListConverter.bodyToList(mensajesDto, MensajeOutputDTO.class);
 
-                mensajes.forEach(mensaje -> System.out.println("MENSAJE: " + mensaje.getMensaje()));
+        if(mensajesDto.getStatusCode().is2xxSuccessful() && mensajesDto.getBody() != null) {
+            List<MensajeOutputDTO> mensajes = BodyToListConverter.bodyToList(mensajesDto, MensajeOutputDTO.class);
 
-                model.addAttribute("mensajes", mensajes);
-            }
+            mensajes.forEach(mensaje -> System.out.println("MENSAJE: " + mensaje.getMensaje()));
+
+            model.addAttribute("mensajes", mensajes);
         }
 
         return "perfil";

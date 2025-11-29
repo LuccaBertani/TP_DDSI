@@ -165,9 +165,7 @@ public class ColeccionController {
             model.addAttribute("titulo", "Listado de colecciones");
             return "colecciones";
         }
-        else{
-            System.out.println("SOY UN ESTORBO");
-        }
+
         return "redirect:/" + rta.getStatusCode().value();
     }
 
@@ -259,7 +257,7 @@ public class ColeccionController {
     @PostMapping("/update")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public String updateColeccion(@Valid @ModelAttribute ColeccionUpdateInputDTO inputDTO, RedirectAttributes ra){
-        System.out.println("ALGORITMO DE MIERDASENSO: " +inputDTO.getAlgoritmoConsenso());
+        System.out.println("ALGORITMO DE CONSENSO: " +inputDTO.getAlgoritmoConsenso());
         ResponseEntity<?> rta = coleccionService.updateColeccion(inputDTO);
 
         if (rta.getStatusCode().is2xxSuccessful()){

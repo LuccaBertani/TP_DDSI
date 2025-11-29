@@ -84,7 +84,7 @@
                         <div class="fact-metadata">
                             <div class="metadata-item" th:if="${h.fechaAcontecimiento != null}">
                                 <div class="metadata-icon"><i class="bi bi-calendar-event"></i></div>
-                                <span th:text="${h.fechaAcontecimiento}">01/01/2000</span>
+                                <span th:text="${h.fechaAcontecimiento != null ? #strings.substringBefore(h.fechaAcontecimiento, 'T') : '—'}"></span>
                             </div>
 
                             <div class="metadata-item" th:if="${h.getPais() != null}" th:attr="data-pais-id=${h.getId_pais()}">

@@ -5,6 +5,7 @@ import modulos.Front.dtos.input.AuthResponseDTO;
 import modulos.Front.dtos.input.ImportacionHechosInputDTO;
 import modulos.Front.dtos.input.SolicitudHechoInputDTO;
 import modulos.Front.dtos.input.TokenResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -38,7 +39,7 @@ public class WebApiCallerService {
 
     // Method de ezequiel
     public <T> ResponseEntity<T> executeWithTokenRetry(
-            java.util.function.Function<String, reactor.core.publisher.Mono<ResponseEntity<T>>> apiCall) {
+            Function<String, Mono<ResponseEntity<T>>> apiCall) {
 
 
         String accessToken = getAccessTokenFromSession();

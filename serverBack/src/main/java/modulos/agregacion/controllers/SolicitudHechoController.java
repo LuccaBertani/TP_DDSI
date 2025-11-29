@@ -57,8 +57,6 @@ public class SolicitudHechoController {
     public ResponseEntity<?> enviarSolicitudSubirHecho(@RequestPart("meta") SolicitudHechoInputDTO dto,
                                                        @RequestPart(value = "contenidosMultimedia", required = false) List<MultipartFile> files,
                                                        @AuthenticationPrincipal String username){
-        System.out.println("HOLAAA");
-        System.out.println("SOY UN PELOTUDO DE MIERDA " + username);
         return solicitudHechoService.solicitarSubirHecho(dto, files, username); // 200 o 401
     }
 

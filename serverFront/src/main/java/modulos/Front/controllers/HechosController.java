@@ -101,7 +101,7 @@ public class HechosController {
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/importar")
-    public String importarHechos(@Valid @RequestPart("meta") ImportacionHechosInputDTO dtoInput,
+    public String importarHechos(@Valid @ModelAttribute ImportacionHechosInputDTO dtoInput,
                                  @RequestPart("file") MultipartFile file,
                                  RedirectAttributes ra) {
 
@@ -169,10 +169,13 @@ public class HechosController {
         ResponseEntity<?> rtaDto = this.hechosService.getHecho(id_hecho, fuente);
 
 
-        System.out.println("ID DE SOLICITUD DEL CULO: " + id_solicitud);
+
+
+        System.out.println("ID DE SOLICITUD: " + id_solicitud);
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
             VisualizarHechosOutputDTO hecho = (VisualizarHechosOutputDTO) rtaDto.getBody();
             model.addAttribute("hecho", hecho);
+            System.out.println("CONTENIDO MULTIMEDIA: " +  hecho.getContenido());
 
             if (id_solicitud == null){
                 model.addAttribute("esSolicitud", false);
@@ -199,7 +202,7 @@ public class HechosController {
                     UsuarioOutputDto usuarioOutputDto = (UsuarioOutputDto) rtaUsuario.getBody();
 
                     System.out.println("FECHA SIN PARSEAR: " + hecho.getFechaAcontecimiento());
-                    System.out.println("FECHA PARSEADA DE MIERDA: " + FechaParser.parsearFecha(hecho.getFechaAcontecimiento()));
+                    System.out.println("FECHA PARSEADA: " + FechaParser.parsearFecha(hecho.getFechaAcontecimiento()));
 
 
                     System.out.println("SOY UNA FUENTE FELIZ: " + hecho.getFuente());
@@ -251,7 +254,7 @@ public class HechosController {
                             model.addAttribute("SolicitudHechoEliminarInputDTO", solicitudHechoEliminarInputDTO);
 
 
-                            System.out.println("ID DEL HECHO DE RE MIL MIERDA: " + hecho.getId());
+                            System.out.println("ID DEL HECHO: " + hecho.getId());
 
                             // 7 días máximo para solicitar modificar el hecho
                             if (ChronoUnit.DAYS.between(FechaParser.parsearFecha(hecho.getFechaCarga()), LocalDateTime.now()) <= 7){
@@ -299,6 +302,11 @@ public class HechosController {
 
         inputDTO.setOrigenConexion(0);
 
+        if (inputDTO.getPaisId() != null)
+            System.out.println("PAISES EN GET HECHOS FILTRADOS: " + inputDTO.getPaisId());
+        if (inputDTO.getProvinciaId()!=null)
+            System.out.println("PROVINCIAS EN GET HECHOS FILTRADOS: " + inputDTO.getProvinciaId());
+
         ResponseEntity<?> rtaDto = this.hechosService.getHechosFiltradosColeccion(inputDTO);
 
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
@@ -335,7 +343,7 @@ public class HechosController {
     public String modificarHecho(
             @ModelAttribute HechoModificarInputDTO dto,
             @RequestParam(name = "contenidosMultimediaParaAgregar", required = false)
-            java.util.List<MultipartFile> archivos,
+            List<MultipartFile> archivos,
             RedirectAttributes ra) {
 
         System.out.println("DTO FORM: " + dto);

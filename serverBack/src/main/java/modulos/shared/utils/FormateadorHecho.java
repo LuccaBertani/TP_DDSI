@@ -517,7 +517,6 @@ public class FormateadorHecho {
         // ---------- PAÍSES ----------
         System.out.println("VOY A ENTRAR A PAIS EN FORMAT");
         if (inputDTO.getPaisId() != null && !inputDTO.getPaisId().isEmpty()) {
-            System.out.println("SORETE");
             List<FiltroPais> filtrosPais = inputDTO.getPaisId().stream()
                     .map(buscadorPais::buscar)
                     .filter(Objects::nonNull)
@@ -527,14 +526,15 @@ public class FormateadorHecho {
                                     buscadorUbicacion.buscarUbicacionesConPais(pais.getId()))))
                     .toList();
             for(FiltroPais filtro : filtrosPais){
-                System.out.println("SOY ESTE PAIS FOROROROROOR " + filtro.getPais().getPais());
+                System.out.println("SOY ESTE PAIS: " + filtro.getPais().getPais());
             }
+            filtrosPais.forEach(a -> a.refrescarUbicaciones_ids(buscadorUbicacion.buscarUbicacionesConPais(a.getPais().getId())));
             filtros.setFiltroPais(filtrosPais);
         }
 
         // ---------- PROVINCIAS ----------
         if (inputDTO.getProvinciaId() != null && !inputDTO.getProvinciaId().isEmpty()) {
-            System.out.println("PROVINCIA ID DE MIERDA: " + inputDTO.getProvinciaId());
+            System.out.println("PROVINCIA ID: " + inputDTO.getProvinciaId());
             List<FiltroProvincia> filtrosProvincia = inputDTO.getProvinciaId().stream()
                     .map(buscadorProvincia::buscar)
                     .filter(Objects::nonNull)
@@ -549,7 +549,7 @@ public class FormateadorHecho {
                     System.out.println("Ubicaciones ids:" + id);
                 }
             }
-
+            filtrosProvincia.forEach(a -> a.refrescarUbicaciones_ids(buscadorUbicacion.buscarUbicacionesConProvincia(a.getProvincia().getId())));
             filtros.setFiltroProvincia(filtrosProvincia);
         }
 

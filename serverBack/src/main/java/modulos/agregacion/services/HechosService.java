@@ -147,7 +147,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
         if (files != null){
             for(MultipartFile contenidoMultimedia : files){
-                System.out.println("VOY A GUARDAR UN CONTENIDO MULTIMIERDA");
+                System.out.println("VOY A GUARDAR UN CONTENIDO MULTIMEDIA");
                 this.guardarContenidoMultimedia(contenidoMultimedia, hecho);
             }
         }
@@ -186,6 +186,8 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 return rta;
             }
 
+            Usuario usuario = (Usuario) rta.getBody();
+
             // 1) Validaciones básicas
             if (file == null || file.isEmpty()) {
                 return ResponseEntity.badRequest().body("Debés adjuntar un archivo CSV");
@@ -202,7 +204,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             Path destino = base.resolve(storedName);
             Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
 
-
             FuenteEstatica fuente = new FuenteEstatica();
 
 
@@ -217,7 +218,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 dataset.setStoragePath(destino.toString());
             }
 
-            System.out.println("ARCHIVO DE MIERDA A LEER: " + dataset.getStoragePath());
+            System.out.println("ARCHIVO A LEER: " + dataset.getStoragePath());
 
             fuente.setDataSet(dataset);
 
@@ -230,14 +231,26 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 hecho.getAtributosHecho().setFechaCarga(fechaActual);
                 hecho.getAtributosHecho().setFechaUltimaActualizacion(fechaActual);
 
+
+
                 hechosEstaticaRepo.saveAndFlush(hecho);
                 hechoRefRepository.saveAndFlush(new HechoRef(hecho.getId(), hecho.getAtributosHecho().getFuente()));
             }
 
+
+            this.enviarMensaje(usuario, "Se importaron los hechos del dataset " + dtoInput.getFuenteString() + " correctamente");
             return ResponseEntity.status(HttpStatus.CREATED).body("Se importaron los hechos correctamente");
         } catch (IOException io) {
             return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo debe ser CSV");
         }
+    }
+
+    private void enviarMensaje(Usuario usuario, String texto){
+        Mensaje mensaje = new Mensaje();
+        mensaje.setSolicitud_hecho_id(null);
+        mensaje.setTextoMensaje(texto);
+        mensaje.setReceptor(usuario);
+        mensajeRepository.save(mensaje);
     }
 
 
@@ -245,6 +258,9 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         // TODO: Criterio de fuente
 
         CriteriosColeccionDTO criterios;
+
+        if(inputDTO.getProvinciaId() != null)
+            inputDTO.getProvinciaId().forEach(a -> System.out.println("ID DE LA PROVINCIA: " + a));
 
         if(OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.FRONT)) {
             criterios = CriteriosColeccionDTO.builder()
@@ -349,7 +365,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         Specification<HechoDinamica> specsDinamica = this.crearSpecs(filtros, HechoDinamica.class);
         Specification<HechoProxy> specsProxy = this.crearSpecs(filtros, HechoProxy.class);
         List<Hecho> hechosFiltrados = new ArrayList<>();
-        if(inputDTO.getNavegacionCurada()) {
+        if(inputDTO.getNavegacionCurada() && coleccion.getAlgoritmoConsenso() != null) {
 
             List<Long> hechosIds = new ArrayList<>(coleccion.getHechosConsensuados().stream().map(h -> h.getKey().getId()).toList());
 
@@ -403,7 +419,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             hechosFiltrados.addAll(hechosFiltradosEstatica);
 
             for (HechoDinamica hd: hechosFiltradosDinamica){
-                System.out.println("HECHO DE MIERDA CON TITULO: " + hd.getAtributosHecho().getTitulo());
+                System.out.println("HECHO CON TITULO: " + hd.getAtributosHecho().getTitulo());
             }
 
             hechosFiltrados.addAll(hechosFiltradosDinamica);
@@ -417,7 +433,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                     .map(hecho -> crearHechoDto(hecho, VisualizarHechosOutputDTO.class))
                     .toList();
             for (VisualizarHechosOutputDTO hecho: outputDTO){
-                System.out.println("HECHO DE MIERDA CON TITULO: " + hecho.getTitulo());
+                System.out.println("HECHO FILTRADO DE LA COLECCION: " + hecho.getTitulo());
             }
             return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
         } else if (OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.PROXY)) {
@@ -452,11 +468,8 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                     .ifPresent(dto::setFechaCarga);
 
             System.out.println("TITULO HECHO: " + hecho.getAtributosHecho().getTitulo());
-            if (hecho.getAtributosHecho().getFuente() == null)
-                System.out.println("soretito");
-            else
+            if (hecho.getAtributosHecho().getFuente() != null)
                 dto.setFuente(hecho.getAtributosHecho().getFuente().codigoEnString());
-
 
             Optional.ofNullable(hecho.getAtributosHecho().getLatitud())
                     .ifPresent(dto::setLatitud);
@@ -841,7 +854,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                         paisProvinciaDTO.setProvinciaDto(provinciaDto);
                     }
                     else{
-                        System.out.println("SOY UNA PROVINCIA ESTORBO");
+                        System.out.println("SOY UNA PROVINCIA DE TITULO: " + provincia.getProvincia());
                     }
                 }
             }
