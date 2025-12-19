@@ -9,7 +9,7 @@ import lombok.Setter;
 
 public class DatosPersonalesPublicador {
 
-    private String nombre; // Campo obligatorio si se quiere subir un hecho
+    private String nombre;
 
     private String apellido;
 

@@ -93,26 +93,20 @@ public class SolicitudHechoService {
                         Authentication oldAuth = context.getAuthentication();
 
                         if (oldAuth != null) {
-                            // Copiamos las authorities actuales en una lista mutable
                             List<GrantedAuthority> nuevasAuthorities = new ArrayList<>(oldAuth.getAuthorities());
 
-                            // Eliminamos los roles anteriores (ROLE_)
                             nuevasAuthorities.removeIf(a -> a.getAuthority().startsWith("ROLE_"));
 
-                            // Agregamos el nuevo rol
                             nuevasAuthorities.add(new SimpleGrantedAuthority("ROLE_" + dtoOutput.getRol().name()));
 
-                            // Creamos una nueva Authentication con las nuevas authorities
                             Authentication newAuth = new UsernamePasswordAuthenticationToken(
                                     oldAuth.getPrincipal(),
                                     oldAuth.getCredentials(),
                                     nuevasAuthorities
                             );
 
-                            // Reemplazamos el Authentication en el SecurityContext
                             context.setAuthentication(newAuth);
 
-                            // Persistimos el cambio en la sesión
                             sesion.setAttribute("SPRING_SECURITY_CONTEXT", context);
                         }
                     }
@@ -122,7 +116,6 @@ public class SolicitudHechoService {
     }
 
     public ResponseEntity<Integer> getPorcentajeSolicitudesProcesadas() {
-        System.out.println("VOY A ENTRAR A SOLICITUD!!");
         return webApiCallerService.getEntityTokenOpcional(this.solicitudHechoServiceUrl + "/public/porcentajeSolicitudes", Integer.class);
     }
 

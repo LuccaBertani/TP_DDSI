@@ -15,6 +15,5 @@ public class ColeccionUpdateInputDTO {
 
     private CriteriosColeccionDTO criterios;
 
-    // Algoritmo de consenso (opcional)
     private String algoritmoConsenso;
 }

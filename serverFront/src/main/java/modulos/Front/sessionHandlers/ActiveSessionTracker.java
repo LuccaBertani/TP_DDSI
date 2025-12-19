@@ -20,8 +20,7 @@ public class ActiveSessionTracker implements HttpSessionListener {
     public List<HttpSession> sesionesAsociadasAUsuario(String usuario){
         List<HttpSession> sesionesUsuario = new ArrayList<>();
         for (Map.Entry<String, HttpSession> entry : activeSessions.entrySet()) {
-            //String key = entry.getKey();          // la clave (por ejemplo el sessionId)
-            HttpSession value = entry.getValue(); // el valor (la sesión)
+            HttpSession value = entry.getValue();
             String usuarioSesion = (String) value.getAttribute("username");
             if (usuarioSesion != null){
                 if (usuarioSesion.equals(usuario)){

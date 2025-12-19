@@ -13,8 +13,3 @@ public class SolicitudHechoEvaluarInputDTO {
 
     private String mensaje;
 }
-
-
-
-// Usuario -> solicitud (datos del hecho) -> crear instancia SolicitudHecho (usuario,hecho) -> valido = false
-//Administrador -> evaluarsolicitud(id_solicitud,respuesta) -> if(respuesta) -> valido = true

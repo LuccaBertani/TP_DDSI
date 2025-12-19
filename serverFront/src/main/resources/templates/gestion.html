@@ -401,10 +401,8 @@
         (function() {
             const choicesInstances = [];
 
-            // Función para inicializar Choices.js con valores seleccionados
             function initializeChoices() {
                 document.querySelectorAll('.js-choices').forEach(el => {
-                    // Obtener valores seleccionados antes de inicializar Choices
                     const selectedValues = Array.from(el.selectedOptions).map(opt => opt.value);
 
                     const inst = new Choices(el, {
@@ -415,7 +413,6 @@
                         shouldSort: false
                     });
 
-                    // Establecer valores seleccionados después de la inicialización
                     if (selectedValues.length > 0) {
                         inst.setChoiceByValue(selectedValues);
                     }
@@ -424,7 +421,6 @@
                 });
             }
 
-            // Inicializar Choices después de que el DOM esté completamente cargado
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', initializeChoices);
             } else {
@@ -480,7 +476,6 @@
                         return;
                     }
 
-                    // Capturar campos de fecha incluso si están vacíos (para preservar valores)
                     if (el.type === 'date') {
                         if (el.value) {
                             params.set(el.name, el.value);
@@ -496,8 +491,6 @@
                 const url = refreshUrl + (params.toString() ? ('?' + params.toString()) : '');
                 window.location.assign(url);
             }
-
-            // Cuando cambia País -> refresca para traer provincias
             document.getElementById('criterios_paisId')?.addEventListener('change', () => {
                 setProvinciasEnabled(true);
                 refreshWithCurrentState();

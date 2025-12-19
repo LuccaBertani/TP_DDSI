@@ -178,14 +178,12 @@
             const fileUploadZone = document.querySelector('.file-upload-zone');
             const importForm = document.getElementById('importForm');
 
-            // --- 1. Funciones de Validación ---
             const validateForm = () => {
                 const isFileSelected = fileInput.files.length > 0 && fileInput.files[0].name.toLowerCase().endsWith('.csv');
                 const isFuenteFilled = inputFuente.value.trim().length > 0;
                 uploadButton.disabled = !(isFileSelected && isFuenteFilled);
             };
 
-            // --- 2. Event Listeners (File & Input) ---
             fileInput.addEventListener('change', function() {
                 if (fileInput.files.length > 0 && fileInput.files[0].name.toLowerCase().endsWith('.csv')) {
                     fileNameDisplay.innerHTML = `<i class="bi bi-file-earmark-check-fill"></i>Archivo: ${fileInput.files[0].name}`;
@@ -199,7 +197,6 @@
 
             inputFuente.addEventListener('input', validateForm);
 
-            // --- 3. Drag and Drop ---
             fileUploadZone.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 fileUploadZone.style.borderColor = '#10b981';
@@ -228,7 +225,6 @@
                 validateForm();
             });
 
-            // Helper para mostrar error de archivo visualmente
             function showError(msg) {
                 fileNameDisplay.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i>${msg}`;
                 fileNameDisplay.style.background = 'linear-gradient(135deg,rgba(220,38,38,.1),rgba(185,28,28,.1))';
@@ -243,22 +239,15 @@
                 }, 3000);
             }
 
-            // --- 4. Manejo del Submit (MODIFICADO PARA ENVÍO ESTÁNDAR) ---
             importForm.addEventListener('submit', function(e) {
-                // NO usamos e.preventDefault() -> dejamos que el navegador haga el POST y el Redirect
 
-                // A. Feedback visual inmediato
                 uploadButton.disabled = true;
                 uploadButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Importando...';
 
-                // B. Asegurar mapeo de datos para Spring
-                // Como ya no enviamos un JSON manual, asignamos el 'name' al input para que viaje como parámetro
                 if (!inputFuente.name) {
-                    // Asumiendo que en tu DTO el campo se llama "fuenteString"
                     inputFuente.name = 'fuenteString';
                 }
 
-                // C. Inyección dinámica del CSRF (por si faltaba en el HTML)
                 if (!importForm.querySelector('input[name="_csrf"]')) {
                     const csrfMeta = document.querySelector("meta[name='_csrf']");
                     if (csrfMeta) {
@@ -270,8 +259,6 @@
                     }
                 }
 
-                // El formulario se enviará ahora, Spring procesará, redireccionará y
-                // al recargar la página verás el mensaje de éxito.
             });
         });
     </script>

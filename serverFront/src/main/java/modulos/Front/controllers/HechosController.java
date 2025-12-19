@@ -42,10 +42,9 @@ public class HechosController {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final SolicitudHechoService solicitudHechoService;
 
-    @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'ADMINISTRADOR')") // Solo usuarios logueados
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'ADMINISTRADOR')")
     @GetMapping("/mis-hechos")
     public String getHechosDelUsuario(Model model){
-        System.out.println("ENTRO A GET HECHOS DEL USUARIO (Front)");
 
         ResponseEntity<?> rtaDto = this.hechosService.getHechosDelUsuario();
 
@@ -60,7 +59,6 @@ public class HechosController {
 
     @GetMapping("/public/get-all")
     public String getHechos(Model model){
-        System.out.println("ENTRO A GET ALL HECHOS");
         ResponseEntity<?> rtaDto = this.hechosService.getHechos();
 
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
@@ -77,11 +75,7 @@ public class HechosController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/subir")
     public String subirHecho(RedirectAttributes ra, @Valid @ModelAttribute SolicitudHechoInputDTO hechoInputDTO){
-        System.out.println("ARCHIVO: " + hechoInputDTO.getContenidosMultimedia());
 
-        if(!hechoInputDTO.getContenidosMultimedia().isEmpty()){
-            System.out.println("SIZE LISTA DE ARCHIVOS: " + hechoInputDTO.getContenidosMultimedia().size());
-        }
         ResponseEntity<?> rtaDto = this.hechosService.subirHecho(hechoInputDTO);
         if(rtaDto.getStatusCode().is2xxSuccessful()){
             return "redirect:/public/contribuir";
@@ -105,9 +99,6 @@ public class HechosController {
                                  @RequestPart("file") MultipartFile file,
                                  RedirectAttributes ra) {
 
-        System.out.println("ENTRE A IMPORTAR CON ESTO: " + dtoInput.getFuenteString());
-
-        // Copiás el contenido del archivo ANTES de que termine la request
         String originalFilename = file.getOriginalFilename();
         String contentType = file.getContentType();
 
@@ -147,7 +138,6 @@ public class HechosController {
             List<VisualizarHechosOutputDTO> hechos =
                     BodyToListConverter.bodyToList(rtaDto, VisualizarHechosOutputDTO.class);
 
-            // Serializamos a JSON para evitar problemas de Thymeleaf con objetos complejos
             String hechosJson;
             try {
                 hechosJson = objectMapper.writeValueAsString(hechos);
@@ -157,7 +147,7 @@ public class HechosController {
 
             model.addAttribute("hechosJson", hechosJson);
             model.addAttribute("SolicitudHechoInputDTO", new SolicitudHechoInputDTO());
-            return "mapa"; // nombre del template
+            return "mapa";
         }
         return "redirect:/" + rtaDto.getStatusCode().value();
     }
@@ -168,14 +158,9 @@ public class HechosController {
                            @RequestParam(name = "es-de-modificar", required = false) Boolean esDeModificar){
         ResponseEntity<?> rtaDto = this.hechosService.getHecho(id_hecho, fuente);
 
-
-
-
-        System.out.println("ID DE SOLICITUD: " + id_solicitud);
         if(rtaDto.getStatusCode().is2xxSuccessful() && rtaDto.getBody() != null){
             VisualizarHechosOutputDTO hecho = (VisualizarHechosOutputDTO) rtaDto.getBody();
             model.addAttribute("hecho", hecho);
-            System.out.println("CONTENIDO MULTIMEDIA: " +  hecho.getContenido());
 
             if (id_solicitud == null){
                 model.addAttribute("esSolicitud", false);
@@ -201,12 +186,6 @@ public class HechosController {
 
                     UsuarioOutputDto usuarioOutputDto = (UsuarioOutputDto) rtaUsuario.getBody();
 
-                    System.out.println("FECHA SIN PARSEAR: " + hecho.getFechaAcontecimiento());
-                    System.out.println("FECHA PARSEADA: " + FechaParser.parsearFecha(hecho.getFechaAcontecimiento()));
-
-
-                    System.out.println("SOY UNA FUENTE FELIZ: " + hecho.getFuente());
-
                     if (usuarioOutputDto.getRol().equals(Rol.ADMINISTRADOR)){
 
                         if (id_solicitud == null){
@@ -227,13 +206,9 @@ public class HechosController {
                         }
 
                         else if (esDeModificar){
-                            System.out.println("ID SOLICITUD: " + id_solicitud);
                             ResponseEntity<?> rtaAtributosModificar = solicitudHechoService.getAtributosHechoAModificar(id_solicitud);
                             if (rtaAtributosModificar.getStatusCode().is2xxSuccessful() && rtaAtributosModificar.hasBody()){
                                 AtributosModificarDTO atributosModificarDTO = (AtributosModificarDTO) rtaAtributosModificar.getBody();
-                                System.out.println("TITULO A MODIFICAR: " + atributosModificarDTO.getTitulo());
-                                System.out.println("CATEGORIA: " + atributosModificarDTO.getCategoria());
-                                System.out.println("PAIS: " + atributosModificarDTO.getPais());
 
                                 model.addAttribute("AtributosModificarDTO", atributosModificarDTO);
                             }
@@ -253,13 +228,8 @@ public class HechosController {
                             solicitudHechoEliminarInputDTO.setId_hecho(hecho.getId());
                             model.addAttribute("SolicitudHechoEliminarInputDTO", solicitudHechoEliminarInputDTO);
 
-
-                            System.out.println("ID DEL HECHO: " + hecho.getId());
-
                             // 7 días máximo para solicitar modificar el hecho
                             if (ChronoUnit.DAYS.between(FechaParser.parsearFecha(hecho.getFechaCarga()), LocalDateTime.now()) <= 7){
-
-                                System.out.println("FECHA: " + hecho.getFechaAcontecimiento());
 
                                 SolicitudHechoModificarInputDTO dtoModificar = SolicitudHechoModificarInputDTO.builder()
                                         .id_hecho(hecho.getId())
@@ -298,14 +268,7 @@ public class HechosController {
     @PostMapping("/public/get/filtrar")
     public String getHechosFiltradosColeccion(@Valid @ModelAttribute GetHechosColeccionInputDTO inputDTO, Model model){
 
-        System.out.println("HOLA!");
-
         inputDTO.setOrigenConexion(0);
-
-        if (inputDTO.getPaisId() != null)
-            System.out.println("PAISES EN GET HECHOS FILTRADOS: " + inputDTO.getPaisId());
-        if (inputDTO.getProvinciaId()!=null)
-            System.out.println("PROVINCIAS EN GET HECHOS FILTRADOS: " + inputDTO.getProvinciaId());
 
         ResponseEntity<?> rtaDto = this.hechosService.getHechosFiltradosColeccion(inputDTO);
 
@@ -313,9 +276,6 @@ public class HechosController {
             List<VisualizarHechosOutputDTO> hechos = BodyToListConverter.bodyToList(rtaDto, VisualizarHechosOutputDTO.class);
 
             if(hechos != null) {
-                for (VisualizarHechosOutputDTO hecho : hechos) {
-                    System.out.println("Titulo de hecho: " + hecho.getTitulo());
-                }
 
                 model.addAttribute("listaHechos", hechos);
                 return "hecho";
@@ -346,16 +306,13 @@ public class HechosController {
             List<MultipartFile> archivos,
             RedirectAttributes ra) {
 
-        System.out.println("DTO FORM: " + dto);
-        System.out.println("ARCHIVOS: " + archivos);
-
 
         if (archivos != null) {
             List<ContenidoMultimediaDTO> dtos = new ArrayList<>();
             for (MultipartFile file : archivos) {
                 if (!file.isEmpty()) {
                     try {
-                        String ruta = GestorArchivos.guardarArchivo(file); // tu clase de antes
+                        String ruta = GestorArchivos.guardarArchivo(file);
                         String contentType = file.getContentType();
                         dtos.add(new ContenidoMultimediaDTO(ruta, contentType));
                     } catch (IOException e) {
@@ -368,13 +325,7 @@ public class HechosController {
             dto.setNuevasRutasMultimedia(!dtos.isEmpty() ? dtos : null);
         }
 
-
-
-
-        // 3) Llamar al back: ahora el DTO ya no tiene MultipartFile en el JSON
         ResponseEntity<?> rta = hechosService.modificarHecho(dto);
-
-        System.out.println("RESPUESTA SERVICE: " + rta);
 
         if (rta != null && rta.getStatusCode().is2xxSuccessful()) {
             return "redirect:/hechos/public/get-all";

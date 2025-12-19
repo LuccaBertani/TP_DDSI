@@ -36,17 +36,12 @@ public class WebApiCallerService {
             ))
             .build();
 
-
-    // Method de ezequiel
     public <T> ResponseEntity<T> executeWithTokenRetry(
             Function<String, Mono<ResponseEntity<T>>> apiCall) {
 
 
         String accessToken = getAccessTokenFromSession();
-        System.out.println("ACCESS TOKEN DE x: " + accessToken);
         String refreshToken = getRefreshTokenFromSession();
-
-        System.out.println("REFRESH TOKEN DE x: " + refreshToken);
 
         TokenResponse tr = TokenResponse.builder()
                 .accessToken(accessToken)
@@ -58,11 +53,9 @@ public class WebApiCallerService {
         }
 
         try {
-            // 1) Primer intento con el access token actual
             return apiCall.apply(accessToken).block();
 
         } catch (WebClientResponseException e) {
-            // 2) Si expiró (401/403) y tengo refresh → intento refrescar y reintentar
             if ((e.getStatusCode() == HttpStatus.UNAUTHORIZED || e.getStatusCode() == HttpStatus.FORBIDDEN)
                     && refreshToken != null) {
                 try {
@@ -72,7 +65,6 @@ public class WebApiCallerService {
                         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
                     }
 
-                    // Guardar nuevos tokens en sesión
                     ServletRequestAttributes attrs =
                             (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
                     HttpServletRequest request = attrs.getRequest();
@@ -81,7 +73,6 @@ public class WebApiCallerService {
                         request.getSession().setAttribute("refreshToken", newTokens.getRefreshToken());
                     }
 
-                    // 3) Reintento con el nuevo access token
                     try {
                         return apiCall.apply(newTokens.getAccessToken()).block();
                     } catch (WebClientResponseException e2) {
@@ -94,11 +85,9 @@ public class WebApiCallerService {
                 }
             }
 
-            // 4) Otros códigos HTTP → devuelvo el status correspondiente
             return ResponseEntity.status(e.getStatusCode()).build();
 
         } catch (Exception e) {
-            // 5) Errores no HTTP (timeout, conexión, etc.)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -118,10 +107,8 @@ public class WebApiCallerService {
                 .refreshToken(refreshToken)
                 .build();
 
-        // 1) Primer intento
         return apiCall.apply(accessToken)
 
-                // si da error HTTP
                 .onErrorResume(WebClientResponseException.class, e -> {
 
                     if ((e.getStatusCode() == HttpStatus.UNAUTHORIZED ||
@@ -136,7 +123,6 @@ public class WebApiCallerService {
                                         return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).<T>build());
                                     }
 
-                                    // actualizar sesión
                                     ServletRequestAttributes attrs =
                                             (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
                                     HttpServletRequest request = attrs.getRequest();
@@ -145,7 +131,6 @@ public class WebApiCallerService {
                                         request.getSession().setAttribute("refreshToken", newTokens.getRefreshToken());
                                     }
 
-                                    // reintentar
                                     return apiCall.apply(newTokens.getAccessToken());
                                 })
                                 .onErrorResume(ex ->
@@ -161,12 +146,6 @@ public class WebApiCallerService {
                 );
     }
 
-
-
-
-    /**
-     * Refresca el access token usando el refresh token
-     */
     private AuthResponseDTO refreshToken(TokenResponse tokenResponse) {
         try {
 
@@ -179,7 +158,6 @@ public class WebApiCallerService {
                     .bodyToMono(AuthResponseDTO.class)
                     .block();
 
-            // Actualizar tokens en sesión
             updateTokensInSession(response.getAccessToken(), response.getRefreshToken());
             return response;
 
@@ -188,10 +166,6 @@ public class WebApiCallerService {
         }
     }
 
-
-    /**
-     * Actualiza los tokens en la sesión HTTP actual.
-     */
     private void updateTokensInSession(String newAccessToken, String newRefreshToken) {
         ServletRequestAttributes attributes =
                 (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
@@ -207,11 +181,6 @@ public class WebApiCallerService {
 
     }
 
-
-
-    /**
-     * Obtiene el access token de la sesión
-     */
     private String getAccessTokenFromSession() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
@@ -224,33 +193,11 @@ public class WebApiCallerService {
         return (String) request.getSession().getAttribute("username");
     }
 
-
-
-    /**
-     * Obtiene el refresh token de la sesión
-     */
     private String getRefreshTokenFromSession() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         return (String) request.getSession().getAttribute("refreshToken");
     }
-
-    /**
-     * Ejecuta una llamada HTTP GET que retorna una lista
-     */
-    // Method de ezequiel
-    /*public <T> List<T> getList(String url, Class<T> responseType) {
-        return executeWithTokenRetry(accessToken ->
-                webClient
-                        .get()
-                        .uri(url)
-                        .header("Authorization", "Bearer " + accessToken)
-                        .retrieve()
-                        .bodyToFlux(responseType)
-                        .collectList()
-                        .block()
-        );
-    }*/
 
     public <T> ResponseEntity<List<T>> getList(String url, Class<T> elementType) {
         return executeWithTokenRetry(token ->
@@ -258,7 +205,7 @@ public class WebApiCallerService {
                         .uri(url)
                         .header("Authorization", "Bearer " + token)
                         .retrieve()
-                        .toEntityList(elementType) // Mono<ResponseEntity<List<T>>>
+                        .toEntityList(elementType)
         );
     }
 
@@ -337,18 +284,10 @@ public class WebApiCallerService {
 
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
 
-        System.out.println("→ Construyendo multipart para subir hecho");
-
-        // =========================================
-        // 1) PARTE META (SIEMPRE JSON)
-        // =========================================
         builder
                 .part("meta", dto)
                 .contentType(MediaType.APPLICATION_JSON);
 
-        // =========================================
-        // 2) ARCHIVOS contenidosMultimedia
-        // =========================================
         if (dto.getContenidosMultimedia() != null) {
 
             for (MultipartFile file : dto.getContenidosMultimedia()) {
@@ -372,9 +311,6 @@ public class WebApiCallerService {
             }
         }
 
-        // =========================================
-        // 3) EJECUTAR REQUEST CON TOKEN
-        // =========================================
         return executeWithTokenRetry(token ->
                 webClient.post()
                         .uri(url)
@@ -393,21 +329,14 @@ public class WebApiCallerService {
             Class<T> type
     ) {
 
-        // Si NO hay usuario logueado → NO se envía token
         if (getUsernameFromSession() == null) {
 
             MultipartBodyBuilder builder = new MultipartBodyBuilder();
 
-            // =========================================
-            // 1) META (JSON)
-            // =========================================
             builder
                     .part("meta", dto)
                     .contentType(MediaType.APPLICATION_JSON);
 
-            // =========================================
-            // 2) ARCHIVOS contenidosMultimedia
-            // =========================================
             if (dto.getContenidosMultimedia() != null) {
 
                 for (MultipartFile file : dto.getContenidosMultimedia()) {
@@ -430,9 +359,6 @@ public class WebApiCallerService {
                 }
             }
 
-            // =========================================
-            // 3) REQUEST SIN TOKEN
-            // =========================================
             return webClient.post()
                     .uri(url)
                     .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -441,7 +367,6 @@ public class WebApiCallerService {
                     .toEntity(type)
                     .block();
         }
-        // Si HAY token → usar método con token
         return postMultipartHecho(url, dto, type);
     }
 
@@ -501,10 +426,8 @@ public class WebApiCallerService {
         } catch (WebClientResponseException e) {
 
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                // Login fallido - credenciales incorrectas
                 return null;
             }
-            // Otros errores HTTP
             throw new RuntimeException("Error en el servicio de autenticación: " + e.getMessage(), e);
 
         } catch (Exception e) {

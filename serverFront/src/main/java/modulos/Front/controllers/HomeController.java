@@ -60,7 +60,6 @@ public class HomeController {
             @ModelAttribute("solicitudHecho") SolicitudHechoInputDTO solicitudHecho,
             Model model, HttpSession httpSession) {
 
-        // Catálogos base
         ResponseEntity<?> rtaPaises = hechosService.getPaises();
         ResponseEntity<?> rtaCategorias = hechosService.getCategorias();
         if (!rtaPaises.getStatusCode().is2xxSuccessful() || !rtaCategorias.getStatusCode().is2xxSuccessful()) {
@@ -84,7 +83,6 @@ public class HomeController {
             }
         }
 
-        // Provincias si ya hay país seleccionado
         List<ProvinciaDto> provincias = java.util.Collections.emptyList();
         if (solicitudHecho.getId_pais() != null) {
             ResponseEntity<?> rtaProv = hechosService.getProvinciasByIdPais(solicitudHecho.getId_pais());
@@ -101,8 +99,6 @@ public class HomeController {
     @PreAuthorize("hasRole('CONTRIBUYENTE')")
     @PostMapping("/solicitud-modificacion")
     public String solicitudModificacion(@Valid @ModelAttribute SolicitudHechoModificarInputDTO dto, Model model){
-        // Catálogos base
-        System.out.println("FECHA ACONTECIMIENTO: " + dto.getFechaAcontecimiento());
         ResponseEntity<?> rtaPaises = hechosService.getPaises();
         ResponseEntity<?> rtaCategorias = hechosService.getCategorias();
         if (!rtaPaises.getStatusCode().is2xxSuccessful() || !rtaCategorias.getStatusCode().is2xxSuccessful()) {
@@ -126,7 +122,6 @@ public class HomeController {
             }
         }
 
-        // Provincias si ya hay país seleccionado
         List<ProvinciaDto> provincias = java.util.Collections.emptyList();
         if (dto.getId_pais() != null) {
             ResponseEntity<?> rtaProv = hechosService.getProvinciasByIdPais(dto.getId_pais());
@@ -160,7 +155,6 @@ public class HomeController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/modificacion-hecho")
     public String modificarHecho(@Valid @ModelAttribute HechoModificarInputDTO dto, Model model){
-        // Catálogos base
         ResponseEntity<?> rtaPaises = hechosService.getPaises();
         ResponseEntity<?> rtaCategorias = hechosService.getCategorias();
         if (!rtaPaises.getStatusCode().is2xxSuccessful() || !rtaCategorias.getStatusCode().is2xxSuccessful()) {
@@ -184,7 +178,6 @@ public class HomeController {
             }
         }
 
-        // Provincias si ya hay país seleccionado
         List<ProvinciaDto> provincias = java.util.Collections.emptyList();
         if (dto.getId_pais() != null) {
             ResponseEntity<?> rtaProv = hechosService.getProvinciasByIdPais(dto.getId_pais());
@@ -211,7 +204,6 @@ public class HomeController {
         if (rta.getStatusCode().is2xxSuccessful() && rta.hasBody()){
 
             List<ContenidoMultimedia> contenidoMultimedia = BodyToListConverter.bodyToList(rta, ContenidoMultimedia.class);
-            System.out.println("ENCONTRE CONTENIDO MULTIMEDIA JAA: " + contenidoMultimedia);
             dto.setContenidosMultimedia(contenidoMultimedia);
         }
 
@@ -223,7 +215,6 @@ public class HomeController {
     public String mostrarFormModificarContribuyente(@ModelAttribute("camposViejos") SolicitudHechoModificarInputDTO dto,
                                                     Model model) {
 
-        // --- MISMA LÓGICA QUE EN solicitudModificacion ---
         ResponseEntity<?> rtaPaises = hechosService.getPaises();
         ResponseEntity<?> rtaCategorias = hechosService.getCategorias();
         if (!rtaPaises.getStatusCode().is2xxSuccessful() || !rtaCategorias.getStatusCode().is2xxSuccessful()) {
@@ -268,7 +259,6 @@ public class HomeController {
         if (rta.getStatusCode().is2xxSuccessful() && rta.hasBody()){
 
             List<ContenidoMultimedia> contenidoMultimedia = BodyToListConverter.bodyToList(rta, ContenidoMultimedia.class);
-            System.out.println("ENCONTRE CONTENIDO MULTIMEDIA JAA: " + contenidoMultimedia);
             dto.setContenidosMultimedia(contenidoMultimedia);
         }
 
@@ -328,7 +318,6 @@ public class HomeController {
         if (rta.getStatusCode().is2xxSuccessful() && rta.hasBody()){
 
             List<ContenidoMultimedia> contenidoMultimedia = BodyToListConverter.bodyToList(rta, ContenidoMultimedia.class);
-            System.out.println("ENCONTRE CONTENIDO MULTIMEDIA JAA: " + contenidoMultimedia);
             dto.setContenidosMultimedia(contenidoMultimedia);
         }
 
@@ -343,8 +332,6 @@ public class HomeController {
     @GetMapping("/solicitudes")
     public String solicitudes(Model model, RedirectAttributes ra) {
         ResponseEntity<?> rta = solicitudHechoService.getSolicitudesPendientes();
-
-        System.out.println(rta.getBody());
 
         if (rta.getStatusCode().is2xxSuccessful()) {
             List<SolicitudHechoOutputDTO> solicitudes = BodyToListConverter.bodyToList(rta, SolicitudHechoOutputDTO.class);

@@ -17,11 +17,8 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 
 @EnableMethodSecurity(prePostEnabled = true)
 @Configuration
-//@RequiredArgsConstructor
 public class SecurityConfig {
 
-    //private final CustomAuthProvider customAuthProvider;
-    // Ahora, estoy diciendole a spring security que haga el login con CustomAuthProvider
     @Bean
     public AuthenticationManager authManager(HttpSecurity http, CustomAuthProvider provider) throws Exception{
         return http.getSharedObject(AuthenticationManagerBuilder.class)
@@ -37,7 +34,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Autorizaciones básicas
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/",
                                 "/login",
@@ -49,34 +45,26 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        // indico a donde se encuentra el login
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        // Una vez el login sea exitoso, lo redirijo a...
-                        // (despues ver a donde redirigir)
                         .defaultSuccessUrl("/", true)
                         .failureUrl("/login?error")
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        // el logout success
-                        .logoutSuccessUrl("/login?logout") // redirigir tras logout
+                        .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 )
                 .exceptionHandling(ex -> ex
-                        // usuario no autenticado -> redirigir a login
                         .authenticationEntryPoint((request, response, authException) ->
                                 response.sendRedirect("/login?unauthorized"))
-                        // usuario autenticado pero sin permisos -> redirigir a pagina de error
                         .accessDeniedHandler((request, response, accessDeniedException) ->
                                 response.sendRedirect("/403"))
                 )
                 .sessionManagement(session -> session
                         .sessionFixation().migrateSession()
                 );
-                //.authenticationProvider(customAuthProvider);
-
 
         return http.build();
     }

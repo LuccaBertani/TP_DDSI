@@ -39,8 +39,6 @@ public class GestionController {
     @PostMapping("/categorias/crear")
     public String crearCategoria(@RequestParam String categoria, RedirectAttributes ra) {
 
-        System.out.println("SOY LA CATEGORIA DE TITULO: " + categoria);
-
         ResponseEntity<?> rta = this.categoriaService.crearCategoria(categoria);
 
         if(rta.getStatusCode().is2xxSuccessful()){
@@ -60,7 +58,6 @@ public class GestionController {
             Model model,
             @ModelAttribute("sinonimoForm") SinonimoInputDTO sinonimoInputDTO
     ) {
-        // Si entro por primera vez, pongo form vacío
         if (sinonimoInputDTO == null) {
             sinonimoInputDTO = new SinonimoInputDTO();
         }
@@ -69,7 +66,6 @@ public class GestionController {
             model.addAttribute("sinonimoForm", sinonimoInputDTO);
         }
 
-        // Traigo países y categorías
         ResponseEntity<?> rtaPaises = hechosService.getPaises();
         ResponseEntity<?> rtaCategorias = hechosService.getCategorias();
 
@@ -84,10 +80,6 @@ public class GestionController {
         model.addAttribute("paises", paises);
         model.addAttribute("categorias", categorias);
 
-        // ------------------------------------------
-        // 🔥 LÓGICA DE RECARGA DE PROVINCIAS (un solo país)
-        // ------------------------------------------
-
         if (sinonimoInputDTO.getId_pais() != null) {
             ResponseEntity<?> rtaProvincia = hechosService.getProvinciasByIdPais(sinonimoInputDTO.getId_pais());
 
@@ -97,7 +89,6 @@ public class GestionController {
             }
         }
 
-        // Setear nuevamente el form en el modelo
         model.addAttribute("sinonimoForm", sinonimoInputDTO);
 
         return "crearSinonimo";
@@ -109,10 +100,6 @@ public class GestionController {
     @PostMapping("/sinonimos/crear")
     public String crearSinonimo(@Valid @ModelAttribute("sinonimoForm") SinonimoInputDTO dtoInput, RedirectAttributes ra) {
         ResponseEntity<?> rta = null;
-
-        System.out.println("Sinonimo: " + dtoInput.getSinonimo());
-        System.out.println("Entidad: " + dtoInput.getId_entidad());
-        System.out.println("Pais: " + dtoInput.getId_pais());
 
         if (dtoInput.getTipo().equals("categoria")){
             rta = this.sinonimoService.crearSinonimoCategoria(dtoInput);

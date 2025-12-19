@@ -469,11 +469,9 @@
             function activar(tab) {
                 const esAntes = (tab === 'antes');
 
-                // tarjetas de datos
                 vistaAntes.classList.toggle('d-none', !esAntes);
                 vistaPropuesta.classList.toggle('d-none', esAntes);
 
-                // multimedia original SOLO en la vista "antes"
                 if (multimediaOriginal) {
                     multimediaOriginal.classList.toggle('d-none', !esAntes);
                 }

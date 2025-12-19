@@ -21,10 +21,6 @@ public class ColeccionService {
         this.webApiCallerService = webApiCallerService;
     }
 
-    // en los methods de web api caller service que se usan acá, el primer parámetro es la url,
-    // el segundo (en algunos casos) el body de json
-    // el tercero el tipo de dato que retorna server back
-
     public ResponseEntity<?> obtenerTodasLasColecciones() {
         return webApiCallerService.getListTokenOpcional(coleccionServiceUrl + "/public/get-all", ColeccionOutputDTO.class);
     }

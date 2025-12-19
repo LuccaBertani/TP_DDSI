@@ -11,9 +11,9 @@ import java.util.List;
 
 @Data
 @Builder
-public class SolicitudHechoModificarInputDTO { //datos del hecho y el id del usuario
+public class SolicitudHechoModificarInputDTO {
     @NotNull(message = "El id_hecho es obligatorio")
-    private Long id_hecho; // Id del hecho que se quiere modificar
+    private Long id_hecho;
     private String titulo;
     private String descripcion;
 
@@ -29,8 +29,6 @@ public class SolicitudHechoModificarInputDTO { //datos del hecho y el id del usu
     private List<MultipartFile> contenidosMultimediaParaAgregar;
     private List<Long> contenidosMultimediaAEliminar;
 
-
-    // 👉 NUEVO: esto sí se manda al back
     private List<ContenidoMultimediaDTO> nuevasRutasMultimedia;
 
     private List<ContenidoMultimedia> contenidosMultimedia;

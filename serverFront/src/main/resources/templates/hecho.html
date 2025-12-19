@@ -159,7 +159,6 @@
             const select = document.getElementById('pageSize');
             const info   = document.getElementById('rangeInfo');
 
-            // Preferencia previa (opcional)
             const saved = localStorage.getItem('hechosPageSize');
             if (saved !== null && select.querySelector(`option[value="${saved}"]`)) {
                 select.value = saved;

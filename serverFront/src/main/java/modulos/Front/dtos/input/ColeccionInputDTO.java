@@ -11,10 +11,8 @@ public class ColeccionInputDTO {
     @NotNull(message = "La descripción es obligatoria")
     private String descripcion;
 
-    //Criterios (es decir los filtros)
     private CriteriosColeccionDTO criterios;
 
-    // Algoritmo de consenso (opcional)
     private String algoritmoConsenso;
 
     public ColeccionInputDTO() {

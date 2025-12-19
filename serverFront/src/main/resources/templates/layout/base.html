@@ -20,7 +20,6 @@
         :root{
             --mm-primary:#667eea;--mm-secondary:#764ba2;--mm-accent:#8b5cf6;--mm-muted:#64748b;--mm-dark:#1a202c;--mm-light:#f8f9ff;
 
-            /* Tipografías */
             --bs-font-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
             --mm-heading: "DM Serif Display", Georgia, "Times New Roman", serif;
         }
@@ -38,14 +37,12 @@
             text-rendering: optimizeLegibility;
         }
 
-        /* Títulos con la fuente display */
         h1, h2, h3, h4, h5, h6,
         .display-1, .display-2, .display-3, .display-4, .display-5, .display-6{
             font-family: var(--mm-heading);
             letter-spacing:.2px;
         }
 
-        /* Navbar moderna */
         .navbar{background:#fff;border-bottom:1px solid rgba(0,0,0,.06);backdrop-filter:blur(10px);box-shadow:0 2px 12px rgba(0,0,0,.04);position:sticky;top:0;z-index:1000}
         .navbar-brand{font-weight:700;color:var(--mm-dark);transition:transform .2s ease}
         .navbar-brand:hover{transform:translateY(-2px)}
@@ -56,15 +53,12 @@
         .nav-link:hover{color:var(--mm-primary);background:rgba(102,126,234,.08);transform:translateY(-1px)}
         .nav-link.active{color:var(--mm-primary);background:rgba(102,126,234,.1)}
 
-        /* Botones del navbar */
         .navbar .btn{border-radius:10px;font-weight:600;padding:.5rem 1.25rem;transition:all .2s ease}
         .navbar .btn-primary{background:linear-gradient(135deg,var(--mm-primary) 0%,var(--mm-secondary) 100%);border:none;box-shadow:0 4px 12px rgba(102,126,234,.25)}
         .navbar .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(102,126,234,.35)}
 
-        /* Main content */
         main{flex:1}
 
-        /* Footer moderno */
         footer{background:linear-gradient(135deg,#0b1220 0%,#1a202c 100%);color:#cbd5e1;border-top:1px solid rgba(255,255,255,.05);margin-top:auto;position:relative;overflow:hidden}
         footer::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23fff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
         footer .brand-pill{box-shadow:0 4px 12px rgba(102,126,234,.4)}
@@ -74,7 +68,6 @@
         footer a:hover i{transform:scale(1.1)}
         .text-secondary{color:#94a3b8!important}
 
-        /* Utilidades globales */
         .btn{border-radius:12px;font-weight:600;transition:all .2s ease}
         .btn:hover{transform:translateY(-2px)}
         .card{border-radius:16px;border:1px solid rgba(0,0,0,.06);transition:all .3s ease}
@@ -87,17 +80,14 @@
         .btn-icon-top-action { background: linear-gradient(135deg, #f97316, #ea580c); border: none;color: #fff;padding: .6rem 1.5rem;border-radius: 10px;font-size: .88rem;font-weight: 600;display: inline-flex;align-items: center;text-decoration: none;transition: all .2s ease;box-shadow: 0 4px 10px rgba(234, 88, 12, .3);}
         .btn-icon-top-action:hover {transform: translateY(-2px);box-shadow: 0 6px 16px rgba(234, 88, 12, .4);color: #fff;}
 
-        /* Scroll suave */
         html{scroll-behavior:smooth}
 
-        /* Estilo para el texto con gradiente animado, para que se vea con degrade y violeta */
         .animated-gradient-text {
             background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: gradient-animation 4s ease infinite;
-            /* CAMBIO CLAVE: Usa display: block para que ocupe toda la línea */
             display: block;
             padding: 0 5px;
         }
@@ -108,7 +98,6 @@
             100% { background-position: 0% center; }
         }
 
-        /* Responsive */
         @media (max-width:991px){
             .navbar-collapse{background:#fff;margin-top:1rem;padding:1rem;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
             .nav-item{margin:.25rem 0}

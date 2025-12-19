@@ -30,7 +30,6 @@ public class SolicitudHechoController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping("/evaluar/subir")
     public String evaluarSolicitudSubida(@Valid @ModelAttribute SolicitudHechoEvaluarInputDTO dtoInput){
-        System.out.println("JUSTIFICACION: " + dtoInput.getMensaje());
         ResponseEntity<?> rta = solicitudHechoService.evaluarSolicitudSubida(dtoInput);
 
         if (rta.getStatusCode().is2xxSuccessful()) {
@@ -70,14 +69,7 @@ public class SolicitudHechoController {
     @PostMapping("/public/subir-hecho")
     public String enviarSolicitudSubirHecho(@Valid @ModelAttribute SolicitudHechoInputDTO dto, RedirectAttributes ra){
 
-        System.out.println("HOLA SOY UNA DESCRIPCION FELIZ: " + dto.getDescripcion());
-
         ResponseEntity<?> rta = this.solicitudHechoService.enviarSolicitudSubirHecho(dto);
-
-        System.out.println("HOLA YA ME COMUNIQUÉ AAA");
-
-        System.out.println("RECIBI ESTE CODIGO: " +rta.getStatusCode().value());
-
 
         if(rta.getStatusCode().is2xxSuccessful()){
             return "redirect:/public/contribuir";
@@ -129,7 +121,7 @@ public class SolicitudHechoController {
 
                 if (!file.isEmpty()) {
                     try {
-                        String ruta = GestorArchivos.guardarArchivo(file); // tu clase de antes
+                        String ruta = GestorArchivos.guardarArchivo(file);
                         String contentType = file.getContentType();
                         dtos.add(new ContenidoMultimediaDTO(ruta, contentType));
                     } catch (IOException e) {
@@ -159,7 +151,7 @@ public class SolicitudHechoController {
         ResponseEntity<?> rta = this.solicitudHechoService.getAllReportes();
 
         if(rta.getStatusCode().is2xxSuccessful()){
-            return "reportes"; // TODO vista de lista de reportes
+            return "reportes";
 
         }
         else if(rta.getBody() != null) {
@@ -182,7 +174,7 @@ public class SolicitudHechoController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
-    // Anda
+
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping("/get/all")
     public String getAllSolicitudes(Model model, RedirectAttributes ra){
@@ -215,46 +207,4 @@ public class SolicitudHechoController {
         return "redirect:/" + rta.getStatusCode().value();
     }
 
-/*
-
-🧩 1. Model — datos para la misma vista (sin redirect)
-
-Usás el Model cuando estás devolviendo directamente una vista (HTML) en el mismo request.
-
-🔹 Los datos del Model se pierden si hacés un redirect.
-🔹 Se usan cuando hacés algo como return "vista" (no redirect:).
-
-Ejemplo:
-
-@GetMapping("/form")
-public String mostrarFormulario(Model model) {
-    model.addAttribute("usuario", new UsuarioDTO());
-    return "formulario"; // Se muestra la vista "formulario.html"
-}
-
-
-👉 Se usa para renderizar datos en el mismo renderizado de la vista, típico de un GET.
-
-
-    (a) addAttribute()
-
-👉 Agrega datos como parámetros en la URL (/destino?key=value).
-
-    @PostMapping("/procesar")
-    public String procesar(RedirectAttributes ra) {
-        ra.addAttribute("id", 42);
-        return "redirect:/detalle"; // redirige a /detalle?id=42
-    }
-
-    (b) addFlashAttribute()
-
-👉 Agrega datos que no van en la URL, se guardan temporalmente en sesión y se eliminan luego del redirect.
-
-    @PostMapping("/crear")
-    public String crear(@Valid FormDTO dto, RedirectAttributes ra) {
-        ra.addFlashAttribute("mensaje", "Se creó correctamente");
-        ra.addFlashAttribute("tipo", "success");
-        return "redirect:/form";
-    }
-    */
 }
