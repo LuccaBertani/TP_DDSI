@@ -143,7 +143,6 @@
           const select = document.getElementById('pageSize');
           const info   = document.getElementById('rangeInfo');
 
-          // Preferencia previa
           const saved = localStorage.getItem('coleccionesPageSize');
           if (saved !== null && select.querySelector(`option[value="${saved}"]`)) {
             select.value = saved;

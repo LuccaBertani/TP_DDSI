@@ -393,12 +393,10 @@
     </style>
 
     <script>
-        // 1. Obtener los elementos del DOM
         const inputFiles = document.getElementById('multimediaFiles');
         const dropZone = document.getElementById('dropZone');
         const fileListDisplay = document.getElementById('fileListDisplay');
 
-        // Función para convertir bytes a un formato legible (KB, MB, GB)
         function formatBytes(bytes, decimals = 2) {
             if (bytes === 0) return '0 Bytes';
 
@@ -411,31 +409,25 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
         }
 
-        // Función principal para listar y mostrar los archivos seleccionados
         function handleFiles(files) {
-            // Limpiar la vista previa anterior
             fileListDisplay.innerHTML = '';
 
             if (files.length === 0) {
                 return;
             }
 
-            // Crear el encabezado de la lista
             let header = document.createElement('div');
             header.className = 'file-list-header';
             header.textContent = `Archivos seleccionados (${files.length}):`;
             fileListDisplay.appendChild(header);
 
-            // Iterar sobre la colección de archivos
             Array.from(files).forEach(file => {
                 let fileItem = document.createElement('div');
                 fileItem.className = 'file-item';
 
-                // Nombre e icono del archivo
                 let fileNameDiv = document.createElement('div');
                 fileNameDiv.className = 'file-name';
 
-                // Determinar el icono basado en el tipo MIME o extensión
                 let iconClass;
                 if (file.type.startsWith('image/')) {
                     iconClass = 'bi-image';
@@ -456,7 +448,6 @@
 
                 fileNameDiv.innerHTML = `<i class="bi ${iconClass}"></i> ${file.name}`;
 
-                // Tamaño del archivo
                 let fileSizeSpan = document.createElement('span');
                 fileSizeSpan.className = 'file-size';
                 fileSizeSpan.textContent = formatBytes(file.size);
@@ -466,19 +457,12 @@
                 fileListDisplay.appendChild(fileItem);
             });
 
-            // En este punto, los archivos están en la variable `files` y listos para ser enviados.
         }
 
-
-        // 2. Evento para el input de archivo (cuando el usuario hace click y selecciona)
         inputFiles.addEventListener('change', (event) => {
             handleFiles(event.target.files);
         });
 
-
-        // 3. Eventos para la funcionalidad de Drag and Drop (Arrastrar y Soltar)
-
-        // Evitar el comportamiento por defecto del navegador (abrir el archivo)
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropZone.addEventListener(eventName, preventDefaults, false);
             document.body.addEventListener(eventName, preventDefaults, false);
@@ -489,7 +473,6 @@
             e.stopPropagation();
         }
 
-        // Cambiar la clase CSS para el efecto visual de "arrastrar sobre"
         ['dragenter', 'dragover'].forEach(eventName => {
             dropZone.addEventListener(eventName, () => {
                 dropZone.classList.add('dragover');
@@ -502,12 +485,9 @@
             }, false);
         });
 
-        // Manejar el archivo cuando se suelta
         dropZone.addEventListener('drop', (event) => {
             const dt = event.dataTransfer;
             const files = dt.files;
-
-            // Pasar los archivos a la función de manejo
             handleFiles(files);
         }, false);
 

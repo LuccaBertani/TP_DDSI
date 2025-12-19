@@ -385,7 +385,7 @@
     </div>
 
     <style>
-        :root{--color-primary:#667eea;--color-primary-dark:#5568d3;--color-secondary:#475569;--color-success:#10b981;--color-warning:#f59e0b;--color-danger:#b91c1c;--color-info:#8b5cf6;--color-light:#f8f9ff;--color-border:#e9ecef;--color-primary-violet:#4f46e5;--color-primary-violet-focus:rgba(79,70,229,.12)} /* Nuevo color violeta */
+        :root{--color-primary:#667eea;--color-primary-dark:#5568d3;--color-secondary:#475569;--color-success:#10b981;--color-warning:#f59e0b;--color-danger:#b91c1c;--color-info:#8b5cf6;--color-light:#f8f9ff;--color-border:#e9ecef;--color-primary-violet:#4f46e5;--color-primary-violet-focus:rgba(79,70,229,.12)}
         .collection-detail-hero{padding:80px 0 60px;background:radial-gradient(ellipse 1400px 800px at 50% -100px,rgba(139, 92, 246, .15) 0%,transparent 50%);position:relative;overflow:hidden}
         .collection-detail-hero + .container{margin-top:-30px}
         .collection-detail-hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b5cf6' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
@@ -407,32 +407,28 @@
         .detail-badge{font-weight:600;padding:.4em .8em;border-radius:6px}
         .badge.bg-info-soft{background-color:rgba(139, 92, 246, .15) !important;color:var(--color-info) !important}
         .badge.bg-secondary-soft{background-color:rgba(71, 85, 105, .1) !important;color:var(--color-secondary) !important}
-        .text-primary{color:var(--color-primary-violet) !important} /* Iconos primarios en violeta */
+        .text-primary{color:var(--color-primary-violet) !important}
 
-        /* Estilos de Filtros */
         .form-detail-item{padding:1rem !important;border:1px solid var(--color-border) !important;box-shadow:0 1px 3px rgba(0,0,0,0.03) !important}
         .form-detail-item .detail-label{border-bottom:none;margin-bottom:0;padding-bottom:.75rem}
-        .form-detail-item-compact .form-text-filter{margin-top:0 !important;height:0;overflow:hidden;padding-top:0 !important} /* Ocultar espacio extra */
+        .form-detail-item-compact .form-text-filter{margin-top:0 !important;height:0;overflow:hidden;padding-top:0 !important}
 
         .form-label-filter{display:flex;align-items:center;font-size:.9rem;font-weight:600;color:var(--color-secondary);margin-bottom:.75rem}
-        .form-control-filter,.form-select-filter{background:#fff;border:1px solid var(--color-border);border-radius:12px;padding:.7rem 1rem;font-size:.9rem;color:#1a202c;transition:all .2s ease;height:44px} /* Altura consistente */
+        .form-control-filter,.form-select-filter{background:#fff;border:1px solid var(--color-border);border-radius:12px;padding:.7rem 1rem;font-size:.9rem;color:#1a202c;transition:all .2s ease;height:44px}
         .form-control-filter:focus,.form-select-filter:focus{border-color:var(--color-primary-violet);background:#fff;box-shadow:0 0 0 .18rem var(--color-primary-violet-focus);outline:none}
         .form-text-filter{display:block;margin-top:.5rem;font-size:.8rem;color:#64748b}
 
-        /* Ajustes Choices.js para que se parezca a contribute.html */
-        .choices__inner{background:#fff !important;border:1px solid var(--color-border) !important;border-radius:12px !important;padding:.3rem 1rem !important;min-height:44px !important} /* Altura consistente */
+        .choices__inner{background:#fff !important;border:1px solid var(--color-border) !important;border-radius:12px !important;padding:.3rem 1rem !important;min-height:44px !important}
         .choices.is-focused .choices__inner{border-color:var(--color-primary-violet) !important;box-shadow:0 0 0 .18rem var(--color-primary-violet-focus) !important}
         .choices__list--single .choices__item{color:var(--color-secondary)}
         .choices__list--multiple .choices__item{background-color:var(--color-primary-violet) !important;border:1px solid var(--color-primary-violet) !important;border-radius:6px !important;font-size:.85rem;padding:4px 10px}
         .choices__list--multiple .choices__item.is-highlighted{background-color:var(--color-primary-dark) !important}
-        .choices__placeholder{color:#9ca3af !important} /* Placeholder en gris sutil */
-        .choices__list--dropdown .choices__item--selectable{padding-right:10px !important} /* Remover checkmark */
-        .choices__list--dropdown .choices__item.is-highlighted{background-color:var(--color-primary-violet-focus) !important;color:#1a202c !important} /* Violeta suave al pasar el ratón */
-        .choices__input{background-color:#fff !important;border:none !important;padding:0 !important} /* Ocultar el input de búsqueda clonado */
+        .choices__placeholder{color:#9ca3af !important}
+        .choices__list--dropdown .choices__item--selectable{padding-right:10px !important}
+        .choices__list--dropdown .choices__item.is-highlighted{background-color:var(--color-primary-violet-focus) !important;color:#1a202c !important}
         .choices[data-type*=select-multiple] .choices__button{background-image:url("data:image/svg+xml;charset=utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='%23FFFFFF'%3E%3Cpath%20d='M12%2010.586l4.95-4.95a1%201%200%201%201%201.414%201.414L13.414%2012l4.95%204.95a1%201%200%201%201-1.414%201.414L12%2013.414l-4.95%204.95a1%201%200%200%201-1.414-1.414L10.586%2012l-4.95-4.95a1%201%200%200%201%201.414-1.414z'/%3E%3C/svg%3E") !important}
         .choices[data-type*=select-multiple] .choices__button:hover{background-image:url("data:image/svg+xml;charset=utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='%23FFFFFF'%3E%3Cpath%20d='M12%2010.586l4.95-4.95a1%201%200%201%201%201.414%201.414L13.414%2012l4.95%204.95a1%201%200%201%201-1.414%201.414L12%2013.414l-4.95%204.95a1%201%200%200%201-1.414-1.414L10.586%2012l-4.95-4.95a1%201%200%200%201%201.414-1.414z'/%3E%3C/svg%3E") !important}
 
-        /* Botones de Acción */
         .btn{padding:.75rem 1.5rem;border-radius:12px;font-weight:600;transition:all .2s ease}
         .btn-primary-filter{background:linear-gradient(135deg, var(--color-primary), #764ba2);border:none;color:#fff;box-shadow:0 4px 12px rgba(102, 126, 234, .3)}
         .btn-primary-filter:hover{background:linear-gradient(135deg, var(--color-primary-dark), #63408b);transform:translateY(-2px);box-shadow:0 6px 16px rgba(102, 126, 234, .4);color:#fff}
