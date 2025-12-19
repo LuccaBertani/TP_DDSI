@@ -113,7 +113,6 @@ public class SolicitudHechoService {
 
     @Transactional
     public ResponseEntity<?> solicitarSubirHecho(SolicitudHechoInputDTO dto, List<MultipartFile> files, String username){
-        // Los visualizadores o contribuyentes llaman al metodo, no los admins
         Usuario usuario = null;
         usuario = usuariosRepository.findByNombreDeUsuario(username).orElse(null);
         if (username!=null && !username.isEmpty()){
@@ -136,9 +135,7 @@ public class SolicitudHechoService {
 
         List<ContenidoMultimedia> contenidosMultimedia = new ArrayList<>();
 
-        System.out.println("VOY A ENTRAR A CONTENIDO MULTIMEDIA");
         if (files != null){
-            System.out.println("ENTRE!! QUE EMOCION");
             for(MultipartFile file : files) {
                 try {
                     String url = GestorArchivos.guardarArchivo(file);
@@ -172,7 +169,6 @@ public class SolicitudHechoService {
         }
 
         if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion())) {
-            System.out.println("SOY UNA x AL IGUAL QUE EL DETECTOR DE SPAM");
             solicitudHecho.setProcesada(true);
             solicitudHecho.setRechazadaPorSpam(true);
             hechosDinamicaRepository.saveAndFlush(hecho);
@@ -193,10 +189,8 @@ public class SolicitudHechoService {
         return ResponseEntity.status(HttpStatus.OK).body("Se envió su solicitud para subir hecho");
     }
 
-    //El usuario manda una solicitud para eliminar un hecho -> guardar la solicitud en la base de datos
     @Transactional
     public ResponseEntity<?> solicitarEliminacionHecho(SolicitudHechoEliminarInputDTO dto, String username){
-        // Un admin no debería solicitar eliminar, los elimina directamente
 
             ResponseEntity<?> rta = this.checkeoNoAdmin(username);
             Usuario usuario = (Usuario) rta.getBody();
@@ -204,23 +198,19 @@ public class SolicitudHechoService {
                 return rta;
             }
 
-        // El hecho debe estar asociado al usuario
         HechoDinamica hecho = hechosDinamicaRepository.findByIdAndUsuario(dto.getId_hecho(), usuario.getId()).orElse(null);
         if (hecho == null){
-            // Puede ser que se haya encontrado el hecho pero que el usuario no esté asociado al hecho
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tenés permisos para ejecutar esta acción");
         }
 
         SolicitudEliminarHecho solicitud = new SolicitudEliminarHecho(usuario.getId(), hecho, dto.getJustificacion());
         solicitud.setFecha(LocalDateTime.now());
         if (DetectorDeSpam.esSpam(dto.getJustificacion())) {
-            // Marcar como rechazada por spam y guardar
             solicitud.setProcesada(true);
             solicitud.setRechazadaPorSpam(true);
             solicitudEliminarHechoRepo.save(solicitud);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Se detectó spam"); // 400 - solicitud rechazada por spam
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Se detectó spam");
         }
-        System.out.println("LA JUSTIFICACION TIENE LENGTH: " + solicitud.getJustificacion().length());
         solicitudEliminarHechoRepo.save(solicitud);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -244,26 +234,14 @@ public class SolicitudHechoService {
         HechoDinamica hecho = hechosDinamicaRepository.findByIdAndUsuario(dto.getId_hecho(), usuario.getId()).orElse(null);
 
         if (hecho == null){
-            // El hecho no existe o el usuario no tiene permiso
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tenés permisos para ejecutar esta acción");
         }
 
         SolicitudModificarHecho solicitud = new SolicitudModificarHecho(usuario.getId(), hecho);
         solicitud.setFecha(LocalDateTime.now());
 
-        /*
-        if (DetectorDeSpam.esSpam(dto.getTitulo()) || DetectorDeSpam.esSpam(dto.getDescripcion()))
-        {
-            solicitud.setProcesada(true);
-            solicitud.setRechazadaPorSpam(true);
-            solicitudModificarHechoRepo.save(solicitud);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Se detectó spam"); // 400 - solicitud rechazada por spam
-        }
-        */
-
-
         if (ChronoUnit.DAYS.between(hecho.getAtributosHecho().getFechaCarga(), LocalDateTime.now()) >= 7){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Terminó la fecha límite para solicitar modificar el hecho"); // Error 409: cuando la solicitud es válida, pero no puede procesarse por estado actual del recurso
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Terminó la fecha límite para solicitar modificar el hecho");
         }
 
         AtributosHechoModificar atributos = new AtributosHechoModificar();
@@ -307,7 +285,6 @@ public class SolicitudHechoService {
 
         Optional.ofNullable(dto.getContenidosMultimediaAEliminar()).ifPresent(atributos::setContenidoMultimediaEliminar);
         Optional.ofNullable(dto.getDescripcion()).ifPresent(atributos::setDescripcion);
-        // hecho.getAtributosHechoAModificar().add(atributos);
 
         hechosDinamicaRepository.save(hecho);
         solicitud.setAtributosModificar(atributos);
@@ -315,13 +292,8 @@ public class SolicitudHechoService {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    // @Transacional:
-    // Así, la SolicitudHecho que traés con findById queda managed durante el method y all lo que le modifiques
-    //  (y a sus asociaciones cargadas) se hace UPDATE al hacer commit, sin llamar a save(...).
     @Transactional
     public ResponseEntity<?> evaluarSolicitudSubirHecho(SolicitudHechoEvaluarInputDTO dtoInput, String username) {
-
-        System.out.println("JUSTIFICACION: " + dtoInput.getMensaje());
 
         RolCambiadoDTO dto = new RolCambiadoDTO();
         dto.setRolModificado(false);
@@ -346,7 +318,7 @@ public class SolicitudHechoService {
             solicitud.getHecho().setActivo(true);
             solicitud.getHecho().getAtributosHecho().setModificado(true);
             solicitud.getHecho().getAtributosHecho().setFechaCarga(LocalDateTime.now());
-            solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(solicitud.getHecho().getAtributosHecho().getFechaCarga()); // Nueva fecha de modificación
+            solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(solicitud.getHecho().getAtributosHecho().getFechaCarga());
             hechosDinamicaRepository.saveAndFlush(solicitud.getHecho());
             if (usuario != null){
                 usuario.incrementarHechosSubidos();
@@ -374,7 +346,6 @@ public class SolicitudHechoService {
         }
             solicitud.setProcesada(true);
 
-            // Por alguna razon sin saveAndFlush no actualiza el bool procesada en la bdd
             solicitudRepository.saveAndFlush(solicitud);
 
         return ResponseEntity.status(HttpStatus.OK).body(dto);
@@ -401,11 +372,9 @@ public class SolicitudHechoService {
         solicitud.setProcesada(true);
         Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
         if (dtoInput.getRespuesta()) {
-            // No va a haber null pointer exception porque sí o sí hay un usuario asociado al hecho que se solicita eliminar
             solicitud.getHecho().getAtributosHecho().setModificado(true);
             solicitud.getHecho().setActivo(false);
             hechosDinamicaRepository.save(solicitud.getHecho());
-            // El usuario va a existir si o si porque ya se verificó cuando solicitó eliminar un hecho, pero x si pide borrar la cuenta hago el chequeo antes
             if (usuario != null){
                 usuario.disminuirHechosSubidos();
                 Mensaje mensaje = new Mensaje();
@@ -458,7 +427,6 @@ public class SolicitudHechoService {
         Usuario usuario = usuariosRepository.findById(solicitud.getUsuario_id()).orElse(null);
 
         if (dtoInput.getRespuesta()) {
-            // El hecho debe modificarse
             this.setearModificadoAOficial(solicitud.getHecho(), solicitud.getAtributosModificar());
             solicitud.getHecho().getAtributosHecho().setFechaUltimaActualizacion(LocalDateTime.now());
             solicitud.getHecho().getAtributosHecho().setModificado(true);
@@ -468,8 +436,6 @@ public class SolicitudHechoService {
             hechosDinamicaRepository.save(solicitud.getHecho());
         }
         else{
-
-            // X si se borró la cuenta del usuario chequeo si es null o no
             if (dtoInput.getMensaje() != null && usuario != null){
                 this.enviarMensaje(usuario,solicitud, dtoInput.getMensaje());
             }
@@ -480,7 +446,6 @@ public class SolicitudHechoService {
 
     private void setearModificadoAOficial(Hecho hecho, AtributosHechoModificar atributos){
 
-        // Campos “simples”: siempre se pisan, aunque vengan en null
         hecho.getAtributosHecho().setCategoria_id(atributos.getCategoria_id());
         hecho.getAtributosHecho().setDescripcion(atributos.getDescripcion());
         hecho.getAtributosHecho().setFechaAcontecimiento(atributos.getFechaAcontecimiento());
@@ -489,14 +454,12 @@ public class SolicitudHechoService {
         hecho.getAtributosHecho().setLatitud(atributos.getLatitud());
         hecho.getAtributosHecho().setLongitud(atributos.getLongitud());
 
-        // Contenido multimedia a agregar: solo si hay lista
         if (atributos.getContenidoMultimediaAgregar() != null){
             hecho.getAtributosHecho()
                     .getContenidosMultimedia()
                     .addAll(atributos.getContenidoMultimediaAgregar());
         }
 
-        // Contenido multimedia a eliminar: solo si hay ids a eliminar
         if (atributos.getContenidoMultimediaEliminar() != null){
             hecho.getAtributosHecho().getContenidosMultimedia()
                     .removeIf(contenidoMultimedia ->
@@ -605,8 +568,6 @@ public class SolicitudHechoService {
         reportesHechoRepository.save(reporte);
         return ResponseEntity.ok().build();
     }
-
-    // Para buscar bien el hecho despues con un boton rápido agrego un endpoint en HechoController para obtener hecho por id y fuente
     public ResponseEntity<?> getAllReportes(String username) {
         ResponseEntity<?> rta = checkeoAdmin(username);
 
@@ -641,7 +602,6 @@ public class SolicitudHechoService {
         if (!rta.getStatusCode().equals(HttpStatus.OK)) {
             return rta;
         }
-        // Al pedo pq ya está con jakarta en el dto pero bue
         if (inputDTO.getReporte_id() == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -671,7 +631,6 @@ public class SolicitudHechoService {
             hecho.setActivo(false);
             hecho.getAtributosHecho().setModificado(true);
             Usuario usuario = usuariosRepository.findById(hecho.getUsuario_id()).orElse(null);
-            // x si pide borrar la cuenta hago el chequeo antes
             if (usuario != null) {
                 usuario.disminuirHechosSubidos();
                 if (usuario.getCantHechosSubidos() == 0) {
@@ -689,9 +648,7 @@ public class SolicitudHechoService {
 
     public ResponseEntity<Integer> getPorcentajeSolicitudesProcesadas() {
 
-        System.out.println("Entre a solicitudes");
         Integer porcentaje = solicitudRepository.porcentajeProcesadas().intValue();
-        System.out.println("PORCENTAJE: " + porcentaje);
         return ResponseEntity.ok().body(porcentaje);
     }
 
@@ -713,21 +670,18 @@ public class SolicitudHechoService {
 
     public ResponseEntity<?> getAtributosSolicitudHecho(Long id_solicitud, String username) {
 
-        // --- 1. Solo admin ---
         ResponseEntity<?> rta = checkeoAdmin(username);
         if (rta.getStatusCode().equals(HttpStatus.FORBIDDEN)) return rta;
 
         if (id_solicitud == null) return ResponseEntity.notFound().build();
 
-        // --- 2. Buscar la solicitud ---
         SolicitudModificarHecho solicitud = (SolicitudModificarHecho) solicitudModificarHechoRepo.findById(id_solicitud).orElse(null);
         if (solicitud == null) return ResponseEntity.notFound().build();
 
         AtributosHechoModificar attrs = solicitud.getAtributosModificar();
-        Hecho hecho = solicitud.getHecho();                 // hecho original
-        AtributosHecho attrOriginal = hecho.getAtributosHecho(); // atributos originales del hecho
+        Hecho hecho = solicitud.getHecho();
+        AtributosHecho attrOriginal = hecho.getAtributosHecho();
 
-        // --- 3. Resolver ubicación (pais + provincia) ---
         String paisNombre = null;
         String provinciaNombre = null;
 
@@ -746,7 +700,6 @@ public class SolicitudHechoService {
             }
         }
 
-        // --- 4. Resolver categoría ---
         Long categoriaId = attrs.getCategoria_id() != null
                 ? attrs.getCategoria_id()
                 : attrOriginal.getCategoria_id();
@@ -764,7 +717,6 @@ public class SolicitudHechoService {
         contenidoMultimediaFinal.addAll(attrs.getContenidoMultimediaAgregar());
 
         List<ContenidoMultimedia> contenidoMultimediaAMantener = new ArrayList<>();
-        System.out.println("CONTENIDO A ELIMINAR: " + attrs.getContenidoMultimediaEliminar());
 
         if (attrs.getContenidoMultimediaEliminar() == null || attrs.getContenidoMultimediaEliminar().isEmpty()){
             contenidoMultimediaAMantener.addAll(attrOriginal.getContenidosMultimedia());
@@ -778,7 +730,6 @@ public class SolicitudHechoService {
 
         contenidoMultimediaFinal.addAll(contenidoMultimediaAMantener);
 
-        // --- 5. Armar DTO final ---
         AtributosModificarDTO dto = AtributosModificarDTO.builder()
                 .titulo(attrs.getTitulo())
                 .descripcion(attrs.getDescripcion())
@@ -786,21 +737,18 @@ public class SolicitudHechoService {
                 .pais(paisNombre)
                 .provincia(provinciaNombre)
 
-                // fecha acontecimiento
                 .fechaAcontecimiento(
                         attrs.getFechaAcontecimiento() != null
                                 ? attrOriginal.getFechaAcontecimiento().toString()
                                 : null
                 )
 
-                // fecha carga original
                 .fechaCarga(
                         attrOriginal.getFechaCarga() != null
                                 ? attrOriginal.getFechaCarga().toString()
                                 : null
                 )
 
-                // coordenadas
                 .latitud(attrs.getLatitud())
 
                 .longitud(attrs.getLongitud())

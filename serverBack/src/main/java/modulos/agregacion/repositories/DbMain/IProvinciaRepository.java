@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IProvinciaRepository extends JpaRepository<Provincia, Long> {
-    // ¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
     @Query(value = """
         SELECT p.id AS provinciaId, h.categoria_id AS categoriaId, COUNT(h.id) as cantHechos
         FROM hecho h
@@ -21,7 +20,6 @@ public interface IProvinciaRepository extends JpaRepository<Provincia, Long> {
         limit 1""",nativeQuery = true)
     List<CategoriaProvinciaProjection> obtenerCategoriaMayorHechosProvincia();
 
-    // TODO: SINONIMOS DE PROVINCIAS QUE SE CORRESPONDAN CON EL PAIS ASOCIADO
     @Query("""
 SELECT p
 FROM Provincia p
@@ -64,15 +62,3 @@ WHERE
     """)
     Optional<Provincia> findByIdAndPaisId(@Param("pais") Long id_pais, @Param("entidad") Long id_entidad);
 }
-
-
-//¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
-
-/*¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?*/
-/*
-select p.id, h.categoria_id from hecho h
-join ubicacion u on h.ubicacion_id = u.id
-join provincia p on u.id = p.id
-group by p.id, h.categoria_id
-order by count(h.id)
-limit 1*/

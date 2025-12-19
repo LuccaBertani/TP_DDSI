@@ -51,7 +51,6 @@ public class AtributosHecho {
     @Column(name = "fechaUltimaActualizacion")
     private LocalDateTime fechaUltimaActualizacion;
 
-    //se persiste porque si se corta la luz, se tiene que saber los hechos que estan modificados y todavia no revisados
     @Column(name = "modificado")
     private Boolean modificado;
 

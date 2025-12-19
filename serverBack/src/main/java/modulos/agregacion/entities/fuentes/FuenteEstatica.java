@@ -17,15 +17,12 @@ public class FuenteEstatica {
     public List<HechoEstatica> leerFuente(Usuario usuario, BuscadoresRegistry buscadores){
 
         String[] nombreArchivo = this.dataSet.getStoragePath().split("\\.");
-        // nombreArchivo[0] = nombre archivo
-        // nombreArchivo[1] = tipo de archivo
         String formato = nombreArchivo[1].toLowerCase();
         if (formato.equals("csv")){
             var lectorCSV = new LectorCSV(this.dataSet);
             return lectorCSV.leerCSV(usuario, buscadores);
         }
         else if (formato.equals("json")){
-            //TODO el lector del formato JSON
             List<HechoEstatica> lista = new ArrayList<>();
             return lista;
         }

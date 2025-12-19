@@ -8,7 +8,7 @@ import java.util.List;
 
 
 @Data
-public class SolicitudHechoInputDTO { //datos del hecho y el id del usuario
+public class SolicitudHechoInputDTO {
 
     private String titulo;
 

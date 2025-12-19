@@ -80,27 +80,8 @@ public class ColeccionService  {
         this.filtroRepository = filtroRepository;
     }
 
-
-    /*
-    Colecciones
-Las colecciones representan conjuntos de hechos. Las mismas pueden ser consultadas por cualquier persona, de forma
-pública, y no pueden ser editadas ni eliminadas manualmente (esto último, con una sola excepción, ver más adelante).
-
-Las colecciones tienen un título, como por ejemplo “Desapariciones vinculadas a crímenes de odio”, o “Incendios
-forestales en Argentina 2025” y una descripción. Las personas administradoras pueden crear tantas colecciones como deseen.
-
-Las colecciones están asociadas a una fuente y tomarán los hechos de las mismas: para esto las colecciones también contarán con un criterio de
-pertenencia configurable, que dictará si un hecho pertenece o no a las mismas. Por ejemplo, la colección de “Incendios forestales…” deberá
-incluir automáticamente todos los hechos de categoría “Incendio forestal” ocurrido en Argentina, acontecido entre el 1 de enero de 2025 a las
-0:00 y el 31 de diciembre de 20205 a las 23:59.
-
-    */
-
     @Transactional
     public ResponseEntity<?> crearColeccion(ColeccionInputDTO dtoInput, String username) {
-
-
-        System.out.println("PAISES DEL ORTO IDS: " + dtoInput.getCriterios().getPaisId());
 
         ResponseEntity<?> rta = checkeoAdmin(username);
 
@@ -115,7 +96,6 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         coleccion.setActivo(true);
         coleccion.setModificado(false);
 
-//todo endpoint get all algoritmo consenso con (nombre)
         if (dtoInput.getAlgoritmoConsenso() != null){
             switch (dtoInput.getAlgoritmoConsenso()) {
                 case "MAYORIA_ABSOLUTA":
@@ -134,49 +114,11 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
 
         List<List<IFiltro>> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadores, dtoInput.getCriterios()));
 
-        for (int i = 0; i < filtros.size(); i++) {
-            List<IFiltro> grupo = filtros.get(i);
-            System.out.println("🧩 Grupo #" + i + " (" + grupo.size() + " filtro/s):");
-
-            for (IFiltro filtro : grupo) {
-                if (filtro instanceof FiltroCategoria fc) {
-                    System.out.println("  [FiltroCategoria] id=" + fc.getCategoria().getId() +
-                            ", nombre=" + fc.getCategoria().getTitulo());
-                } else if (filtro instanceof FiltroContenidoMultimedia fcm) {
-                    System.out.println("  [FiltroContenidoMultimedia] tipo=" + fcm.getTipoContenido());
-                } else if (filtro instanceof FiltroDescripcion fd) {
-                    System.out.println("  [FiltroDescripcion] texto=" + fd.getDescripcion());
-                } else if (filtro instanceof FiltroFechaAcontecimiento ffa) {
-                    System.out.println("  [FiltroFechaAcontecimiento] desde=" + ffa.getFechaInicial() +
-                            ", hasta=" + ffa.getFechaFinal());
-                } else if (filtro instanceof FiltroFechaCarga ffc) {
-                    System.out.println("  [FiltroFechaCarga] desde=" + ffc.getFechaInicial() +
-                            ", hasta=" + ffc.getFechaFinal());
-                } else if (filtro instanceof FiltroFuente ff) {
-                    System.out.println("  [FiltroFuente] fuente=" + ff.getFuenteDeseada());
-                } else if (filtro instanceof FiltroPais fp) {
-                    System.out.println("  [FiltroPais] id=" + fp.getPais().getId() +
-                            ", nombre=" + fp.getPais().getPais());
-                } else if (filtro instanceof FiltroProvincia fprov) {
-                    System.out.println("  [FiltroProvincia] id=" + fprov.getProvincia().getId() +
-                            ", nombre=" + fprov.getProvincia().getProvincia());
-                } else if (filtro instanceof FiltroTitulo ft) {
-                    System.out.println("  [FiltroTitulo] titulo=" + ft.getTitulo());
-                } else {
-                    System.out.println("  [Otro tipo de filtro] " + filtro.getClass().getSimpleName());
-                }
-            }
-        }
-
         List<Filtro> filtrosJuntos = filtros.stream()
-                .flatMap(List::stream)     // aplana las sublistas
-                .map(f -> (Filtro) f)      // castea cada elemento individual
-                .collect(Collectors.toCollection(ArrayList::new)); // mutable ✅
+                .flatMap(List::stream)
+                .map(f -> (Filtro) f)
+                .collect(Collectors.toCollection(ArrayList::new));
         coleccion.setCriterios(filtrosJuntos);
-
-        for(Filtro filtro : filtrosJuntos){
-            System.out.println("SKIBIDI " + filtro.getClass());
-        }
 
         coleccionesRepo.saveAndFlush(coleccion);
         return ResponseEntity.status(HttpStatus.CREATED).body("La colección se creó correctamente");
@@ -207,40 +149,6 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la colección");
         }
 
-        for (int i = 0; i < coleccion.getCriterios().size(); i++) {
-            List<IFiltro> grupo = Collections.singletonList(coleccion.getCriterios().get(i));
-            System.out.println("🧩 Grupo #" + i + " (" + grupo.size() + " filtro/s):");
-
-            for (IFiltro filtro : grupo) {
-                if (filtro instanceof FiltroCategoria fc) {
-                    System.out.println("  [FiltroCategoria] id=" + fc.getCategoria().getId() +
-                            ", nombre=" + fc.getCategoria().getTitulo());
-                } else if (filtro instanceof FiltroContenidoMultimedia fcm) {
-                    System.out.println("  [FiltroContenidoMultimedia] tipo=" + fcm.getTipoContenido());
-                } else if (filtro instanceof FiltroDescripcion fd) {
-                    System.out.println("  [FiltroDescripcion] texto=" + fd.getDescripcion());
-                } else if (filtro instanceof FiltroFechaAcontecimiento ffa) {
-                    System.out.println("  [FiltroFechaAcontecimiento] desde=" + ffa.getFechaInicial() +
-                            ", hasta=" + ffa.getFechaFinal());
-                } else if (filtro instanceof FiltroFechaCarga ffc) {
-                    System.out.println("  [FiltroFechaCarga] desde=" + ffc.getFechaInicial() +
-                            ", hasta=" + ffc.getFechaFinal());
-                } else if (filtro instanceof FiltroFuente ff) {
-                    System.out.println("  [FiltroFuente] fuente=" + ff.getFuenteDeseada());
-                } else if (filtro instanceof FiltroPais fp) {
-                    System.out.println("  [FiltroPais] id=" + fp.getPais().getId() +
-                            ", nombre=" + fp.getPais().getPais());
-                } else if (filtro instanceof FiltroProvincia fprov) {
-                    System.out.println("  [FiltroProvincia] id=" + fprov.getProvincia().getId() +
-                            ", nombre=" + fprov.getProvincia().getProvincia());
-                } else if (filtro instanceof FiltroTitulo ft) {
-                    System.out.println("  [FiltroTitulo] titulo=" + ft.getTitulo());
-                } else {
-                    System.out.println("  [Otro tipo de filtro] " + filtro.getClass().getSimpleName());
-                }
-            }
-        }
-
         coleccion.incrementarAccesos();
         coleccionesRepo.save(coleccion);
 
@@ -262,8 +170,6 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         } else if (coleccion.getAlgoritmoConsenso() instanceof AlgoritmoConsensoMultiplesMenciones){
             dto.setAlgoritmoDeConsenso("Múltiples menciones");
         }
-
-        System.out.println("ALGORITMO DE CONSENSO: " + dto.getAlgoritmoDeConsenso());
 
         dto.setCriterios(FormateadorHecho.filtrosColeccionToString(coleccion.getCriterios()));
 
@@ -319,34 +225,6 @@ incluir automáticamente todos los hechos de categoría “Incendio forestal” 
         coleccion.addHechos(hechosRef);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
-    /*
-    * Muy buena lectura 👌
-Sí, lo que el enunciado te está pidiendo indirectamente es eso:
-
-🔹 Cuando agregás una fuente a una colección
-
-Esa colección ahora “escucha” también a esa fuente/dataset.
-
-Por lo tanto, todos los hechos de esa fuente que cumplan los criterios de la colección deben incorporarse.
-
-Técnicamente:
-
-Asociás la fuente a la colección.
-
-Leés todos los hechos de esa fuente.
-
-Filtrás por los criterios de la colección (categoría, fechas, etc.).
-
-Los agregás a la colección.
-
-🔹 Cuando quitás una fuente de una colección
-
-Dejás de usar esa fuente como input de hechos.
-
-Por lo tanto, todos los hechos que provienen de esa fuente deben eliminarse de la colección (o al menos dejar de estar vinculados).
-
-Esto asegura que la colección refleje solo los hechos de las fuentes actualmente asociadas*/
 
     public ResponseEntity<?> eliminarFuente(Long idColeccion, Long id_dataset, Jwt principal) {
 
@@ -410,9 +288,9 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
 
 
         List<Filtro> filtrosJuntos = filtros.stream()
-                .flatMap(List::stream)     // aplana las sublistas
-                .map(f -> (Filtro) f)      // castea cada elemento individual
-                .collect(Collectors.toCollection(ArrayList::new)); // mutable ✅
+                .flatMap(List::stream)
+                .map(f -> (Filtro) f)
+                .collect(Collectors.toCollection(ArrayList::new));
         coleccion.setCriterios(filtrosJuntos);
 
         coleccion.setCriterios(filtrosJuntos);
@@ -442,7 +320,6 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
     @Transactional
     @Scheduled(cron = "0 * * * * *")
     public void ejecutarAlgoritmoConsenso(){
-        System.out.println("ENTRO a algoritmo de consenso");
         List<Coleccion> colecciones = coleccionesRepo.findAllByActivoTrue();
         List<Dataset> datasets = datasetsRepo.findAll();
         colecciones.forEach(coleccion-> {if(coleccion.getAlgoritmoConsenso() != null) coleccion.getAlgoritmoConsenso().ejecutarAlgoritmoConsenso(buscadores.getBuscadorHecho(), datasets, coleccion);});
@@ -460,8 +337,6 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
         if (coleccion == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la colección");
         }
-
-        //no habría que recibir el id del algoritmo?
 
         if (input.getTipoConsenso() == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -489,25 +364,20 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
     @Transactional
     public void refrescarColeccionesCronjob() {
 
-        System.out.println("Iniciando refrescar colecciones");
-
         Specification<HechoEstatica> specs1 = (root, query, cb) -> {
-            if (query != null) query.distinct(true); // útil si después hay JOINs
-            // activo = true AND atributosHecho.modificado = true (null => false)
+            if (query != null) query.distinct(true);
             var activo = root.<Boolean>get("activo");
             return cb.and(cb.isTrue(activo));
         };
 
         Specification<HechoDinamica> specs2 = (root, query, cb) -> {
-            if (query != null) query.distinct(true); // útil si después hay JOINs
-            // activo = true AND atributosHecho.modificado = true (null => false)
+            if (query != null) query.distinct(true);
             var activo = root.<Boolean>get("activo");
             return cb.and(cb.isTrue(activo));
         };
 
         Specification<HechoProxy> specs3 = (root, query, cb) -> {
-            if (query != null) query.distinct(true); // útil si después hay JOINs
-            // activo = true AND atributosHecho.modificado = true (null => false)
+            if (query != null) query.distinct(true);
             var activo = root.<Boolean>get("activo");
             return cb.and(cb.isTrue(activo));
         };
@@ -522,37 +392,13 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
 
             for (int i = 0; i < filtrosXCategoria.size(); i++) {
                 List<IFiltro> grupo = filtrosXCategoria.get(i);
-                System.out.println("🧩 Grupo #" + i + " (" + grupo.size() + " filtro/s):");
 
                 for (IFiltro filtro : grupo) {
-                    if (filtro instanceof FiltroCategoria fc) {
-                        System.out.println("  [FiltroCategoria] id=" + fc.getCategoria().getId() +
-                                ", nombre=" + fc.getCategoria().getTitulo());
-                    } else if (filtro instanceof FiltroContenidoMultimedia fcm) {
-                        System.out.println("  [FiltroContenidoMultimedia] tipo=" + fcm.getTipoContenido());
-                    } else if (filtro instanceof FiltroDescripcion fd) {
-                        System.out.println("  [FiltroDescripcion] texto=" + fd.getDescripcion());
-                    } else if (filtro instanceof FiltroFechaAcontecimiento ffa) {
-                        System.out.println("  [FiltroFechaAcontecimiento] desde=" + ffa.getFechaInicial() +
-                                ", hasta=" + ffa.getFechaFinal());
-                    } else if (filtro instanceof FiltroFechaCarga ffc) {
-                        System.out.println("  [FiltroFechaCarga] desde=" + ffc.getFechaInicial() +
-                                ", hasta=" + ffc.getFechaFinal());
-                    } else if (filtro instanceof FiltroFuente ff) {
-                        System.out.println("  [FiltroFuente] fuente=" + ff.getFuenteDeseada());
-                    } else if (filtro instanceof FiltroPais fp) {
-                        fp.refrescarUbicaciones_ids(this.buscadores.getBuscadorUbicacion().buscarUbicacionesConPais(fp.getPais().getId())); //TODO OJO CON BORRAR ESTO CUANDO BORREMOS LOS PRINTS
-                        System.out.println("  [FiltroPais] id=" + fp.getPais().getId() +
-                                ", nombre=" + fp.getPais().getPais());
-                        System.out.println("    ubicaciones_ids = " + fp.getUbicaciones_ids());
+
+                    if (filtro instanceof FiltroPais fp) {
+                        fp.refrescarUbicaciones_ids(this.buscadores.getBuscadorUbicacion().buscarUbicacionesConPais(fp.getPais().getId()));
                     } else if (filtro instanceof FiltroProvincia fprov) {
-                        fprov.refrescarUbicaciones_ids(this.buscadores.getBuscadorUbicacion().buscarUbicacionesConProvincia(fprov.getProvincia().getId()));//TODO LO MISMO QUE ARRIBA
-                        System.out.println("  [FiltroProvincia] id=" + fprov.getProvincia().getId() +
-                                ", nombre=" + fprov.getProvincia().getProvincia());
-                    } else if (filtro instanceof FiltroTitulo ft) {
-                        System.out.println("  [FiltroTitulo] titulo=" + ft.getTitulo());
-                    } else {
-                        System.out.println("  [Otro tipo de filtro] " + filtro.getClass().getSimpleName());
+                        fprov.refrescarUbicaciones_ids(this.buscadores.getBuscadorUbicacion().buscarUbicacionesConProvincia(fprov.getProvincia().getId()));
                     }
                 }
             }
@@ -581,25 +427,12 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
             List<HechoDinamica> hechosDinamica = hechosDinamicaRepository.findAll(specFinalDinamica);
             List<HechoProxy> hechosProxy = hechosProxyRepository.findAll(specFinalProxy);
 
-            hechosEstatica.forEach(h-> System.out.println("Hecho estatica filtrado: " + h.getAtributosHecho().getTitulo()));
-
-            hechosDinamica.forEach(h-> System.out.println("Hecho dinamica filtrado: " + h.getAtributosHecho().getTitulo()));
-
-
-            System.out.println("== RESULTADOS PARA COLECCION: " + coleccion.getTitulo() + " ==");
-            System.out.println("HechosEstatica: " + hechosEstatica.size());
-            System.out.println("HechosDinamica: " + hechosDinamica.size());
-            System.out.println("HechosProxy: " + hechosProxy.size());
-
-
             List<Hecho> hechosFiltrados = new ArrayList<>();
             hechosFiltrados.addAll(hechosEstatica);
             hechosFiltrados.addAll(hechosDinamica);
             hechosFiltrados.addAll(hechosProxy);
 
             hechosFiltrados.forEach(hecho -> hecho.getAtributosHecho().setModificado(false));
-
-            hechosFiltrados.forEach(hecho -> System.out.println("Titulo hecho filtrado: " + hecho.getAtributosHecho().getTitulo()));
 
             if(!hechosFiltrados.isEmpty()) {
                 coleccion.setModificado(false);
@@ -644,13 +477,9 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
 
     private <T> Specification<T> crearSpecs(List<List<IFiltro>> filtrosXCategoria, Class<T> clazz) {
 
-        System.out.println("ENTRO A crearSpecs");
-        System.out.println("Total categorías: " + (filtrosXCategoria != null ? filtrosXCategoria.size() : "null"));
-
         Specification<T> specFinal = null;
 
         if (filtrosXCategoria == null || filtrosXCategoria.isEmpty()) {
-            System.out.println("La lista de filtros por categoría está vacía o es null.");
             return null;
         }
 
@@ -658,16 +487,12 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
             List<IFiltro> categoria = filtrosXCategoria.get(i);
 
             if (categoria == null || categoria.isEmpty()) {
-                System.out.println("Categoría " + i + " vacía o null, se saltea.");
                 continue;
             }
-
-            System.out.println("Procesando categoría " + i + " con " + categoria.size() + " filtros.");
 
             Specification<T> specCategoria = categoria.stream()
                     .map(f -> {
                         Specification<T> spec = f.toSpecification(clazz);
-                        System.out.println("  Filtro: " + f + " -> Spec: " + (spec != null ? "OK" : "null"));
                         return spec;
                     })
                     .filter(Objects::nonNull)
@@ -675,14 +500,11 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
                     .orElse(null);
 
             if (specCategoria == null) {
-                System.out.println("No se generó spec para categoría " + i + ".");
                 continue;
             }
 
             specFinal = (specFinal == null) ? specCategoria : specFinal.and(specCategoria);
         }
-
-        System.out.println("Spec final generada: " + (specFinal != null ? "OK" : "null"));
 
         return specFinal;
     }
@@ -690,7 +512,7 @@ Esto asegura que la colección refleje solo los hechos de las fuentes actualment
     private <T> Specification<T> distinct(Class <T> clazz) {
         return (root, query, cb) -> {
             query.distinct(true);
-            return cb.conjunction(); // no agrega condición extra
+            return cb.conjunction();
         };
     }
 

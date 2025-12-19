@@ -17,7 +17,7 @@ public interface IUbicacionRepository extends JpaRepository<Ubicacion, Long> {
       AND
         ((:provinciaId IS NULL AND u.provincia_id IS NULL) OR (:provinciaId IS NOT NULL AND u.provincia_id = :provinciaId))
     LIMIT 1
-""", nativeQuery = true) // El limit 1 porque sin querer ya guardé ubicaciones con fks repetidas
+""", nativeQuery = true)
     Optional<Ubicacion> findByPaisIdAndProvinciaId(@Param("paisId") Long paisId,
                                                    @Param("provinciaId") Long provinciaId);
 

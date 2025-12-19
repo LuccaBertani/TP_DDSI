@@ -32,11 +32,9 @@ public class BuscadorPais {
     public Pais buscar(Long id){
         return id != null ? this.repoPais.findById(id).orElse(null) : null;
     }
-
-    // Corre cuando la app está lista (después de los context refresh); lo ordenamos bien abajo
     @EventListener(ApplicationReadyEvent.class)
-    @Order(Integer.MAX_VALUE) // último, por las dudas
-    @Transactional(transactionManager = "mainTransactionManager") // <- CLAVE en multi-DB
+    @Order(Integer.MAX_VALUE)
+    @Transactional(transactionManager = "mainTransactionManager")
     public void init() {
 
         if (repoPais.count() > 0) return;

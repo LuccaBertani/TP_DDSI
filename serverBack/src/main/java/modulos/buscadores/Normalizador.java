@@ -9,7 +9,6 @@ public class Normalizador {
 
     public static String normalizar(String texto) {
         if (texto == null) return "";
-        // Quitar BOM y espacios invisibles (ZWSP, NBSP, etc.)
         String cleaned = texto
                 .replace("\uFEFF", "")   // BOM
                 .replace("\u200B", "")   // zero-width space

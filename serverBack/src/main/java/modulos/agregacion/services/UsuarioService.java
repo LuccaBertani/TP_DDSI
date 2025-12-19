@@ -34,7 +34,6 @@ public class UsuarioService {
         this.mensajesRepo = mensajesRepo;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
-    //Momento en el que un usuario se registra y guarda datos personales (NO LLAMAR A ESTE METODO SI ES ANONIMO)
     public ResponseEntity<?> crearUsuario(UsuarioInputDTO inputDTO){
 
         Usuario usuario = usuarioRepo.findByNombreDeUsuario(inputDTO.getNombreUsuario()).orElse(null);
@@ -162,7 +161,6 @@ public class UsuarioService {
         Usuario usuario = usuarioRepo.findByNombreDeUsuario(username).orElse(null);
 
         if (usuario != null){
-            System.out.println("HOLAA SOY ESTE USUARIO:" + usuario.getNombreDeUsuario());
             UsuarioOutputDto usuarioDto = new UsuarioOutputDto();
             usuarioDto.setId(usuario.getId());
             usuarioDto.setNombreDeUsuario(usuario.getNombreDeUsuario());

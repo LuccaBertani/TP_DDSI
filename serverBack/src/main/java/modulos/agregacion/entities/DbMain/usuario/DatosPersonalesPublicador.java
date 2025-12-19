@@ -10,7 +10,7 @@ import lombok.Setter;
 @Embeddable
 public class DatosPersonalesPublicador {
     @Column (name = "nombre")
-    private String nombre; // Campo obligatorio si se quiere subir un hecho
+    private String nombre;
     @Column (name = "apellido")
     private String apellido;
     @Column (name = "edad")

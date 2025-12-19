@@ -18,8 +18,8 @@ public class Reporte {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumns({
-            @JoinColumn(name = "hecho_id",     referencedColumnName = "id"),     // 1º id
-            @JoinColumn(name = "hecho_fuente", referencedColumnName = "fuente")  // 2º fuente
+            @JoinColumn(name = "hecho_id",     referencedColumnName = "id"),
+            @JoinColumn(name = "hecho_fuente", referencedColumnName = "fuente")
     })
     private HechoRef hecho_asociado;
 

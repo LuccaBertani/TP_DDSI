@@ -38,7 +38,7 @@ public class DbEstadisticaConfig {
             @Qualifier("estadisticaDataSource") DataSource ds) {
 
         Map<String, Object> jpaProps = new HashMap<>();
-        jpaProps.put("hibernate.hbm2ddl.auto", "update"); // usar "create" solo en la primera corrida si necesitás forzar creación
+        jpaProps.put("hibernate.hbm2ddl.auto", "update");
         jpaProps.put("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
         jpaProps.put("hibernate.show_sql", true);
         jpaProps.put("hibernate.format_sql", true);
@@ -47,7 +47,7 @@ public class DbEstadisticaConfig {
                 .dataSource(ds)
                 .packages("modulos.servicioEstadistica.entities")
                 .persistenceUnit("db5")
-                .properties(jpaProps) // <- clave para que se aplique a este EMF
+                .properties(jpaProps)
                 .build();
     }
 

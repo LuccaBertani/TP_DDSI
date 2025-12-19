@@ -44,7 +44,6 @@ public class DatosQuery implements IDatosQuery{
 
     @Override
     public List<ColeccionProvincia> obtenerMayorCantHechosProvinciaEnColeccion() {
-        // De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados?
 
         List<Coleccion> colecciones = repoColeccion.findAllByActivoTrue();
 
@@ -178,11 +177,7 @@ public class DatosQuery implements IDatosQuery{
 
     @Override
     public List<CategoriaProvincia> mayorCantHechosCategoriaXProvincia() {
-        // De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados?
 
-        // ¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
-
-        // Primero, se parte de las categorias
         List<Categoria> categorias = repoCategoria.findAll();
 
         List<CategoriaProvincia> categoriaProvincias = new ArrayList<>();
@@ -344,57 +339,3 @@ public class DatosQuery implements IDatosQuery{
         return this.repoColeccion.findById(id).orElse(null);
     }
 }
-
-/*
--- De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados?
-
-SELECT
-p.id         AS provincia_id,
-p.nombre     AS provincia,
-COUNT(*)     AS total_hechos
-FROM coleccion c
-JOIN coleccion_hecho ch ON ch.coleccion_id = c.id
-JOIN hecho h            ON h.id = ch.hecho_id
-JOIN ubicacion u        ON u.id = h.ubicacion_id
-JOIN provincia p        ON p.id = h.provincia_id
-WHERE c.id = ?                      -- ← id de la colección
-GROUP BY p.id, p.nombre
-ORDER BY total_hechos DESC;
-
-        -- ¿Cuál es la categoría con mayor cantidad de hechos reportados?
-
-SELECT *
-FROM coleccion as c
-JOIN coleccion_hecho as ch ON ch.coleccion_id = c.id
-JOIN hecho as h ON c.id = ch.hecho_id
-ORDER BY COUNT(h.id) DESC
-LIMIT 1;
-
-        -- ¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
-
-SELECT p.id, p.nombre, COUNT(h.id) AS cant_hechos
-FROM provincia as p
-JOIN ubicacion AS u ON u.provincia_id = p.id
-JOIN hecho AS h ON h.ubicacion_id = u.id
-WHERE h.categoria_id = categoriaId -- variable que se trae de java
-GROUP BY p.id, p.nombre
-ORDER BY cant_hechos DESC
-LIMIT 1;
-
-        -- ¿A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría?
-
-SELECT
-HOUR(h.fecha_hora) AS hora_del_dia,
-COUNT(*)           AS total
-FROM hecho h
-WHERE h.categoria_id = categoriaId -- variable que se trae de java
-GROUP BY HOUR(h.fecha_hora)
-ORDER BY total DESC
-LIMIT 1;
-
-        -- ¿Cuántas solicitudes de eliminación son spam?
-
-SELECT COUNT (s.id) as total_spam
-FROM solicitud_hecho AS s
-WHERE s.rechazada_por_spam = 1 AND s.tipoSolicitud = 'SOLICITUD_ELIMINAR';
-*/

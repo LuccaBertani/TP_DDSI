@@ -32,8 +32,6 @@ WHERE REPLACE(LOWER(h.atributosHecho.titulo), ' ', '') =
 """)
     Optional<HechoProxy> findByNombreNormalizado(@Param("nombre") String nombre);
 
-
-    // ¿Cuál es la categoría con mayor cantidad de hechos reportados?
     @Query(value = """
         select categoria_id as categoriaId, count(h.id) as cantHechos
         from hecho_proxy h

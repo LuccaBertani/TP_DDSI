@@ -11,7 +11,7 @@ import modulos.agregacion.entities.DbMain.Hecho;
 public abstract class Filtro implements IFiltro{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // tablas por subclase + join por PK
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Override

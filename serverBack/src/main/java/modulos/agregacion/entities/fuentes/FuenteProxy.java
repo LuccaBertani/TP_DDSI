@@ -36,7 +36,6 @@ public class FuenteProxy {
         request.setEmail(email);
         request.setPassword(contrasenia);
 
-        // devolvés el token
         return webClient.post()
                 .uri("/login")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -152,7 +151,6 @@ public class FuenteProxy {
         hecho.getAtributosHecho().setFuente(Fuente.valueOf(hechoDto.getFuente()));
         hecho.getAtributosHecho().setContenidosMultimedia(hechoDto.getContenido());
 
-        // Crear y setear atributosHecho
         AtributosHecho atributos = new AtributosHecho();
         atributos.setTitulo(hechoDto.getTitulo());
         atributos.setDescripcion(hechoDto.getDescripcion());
@@ -224,7 +222,7 @@ public class FuenteProxy {
                         .queryParam("id_hecho", id_hecho)
                         .queryParam("motivo", motivo).build())
                 .retrieve()
-                .toBodilessEntity() // <- indica que no se espera body
+                .toBodilessEntity()
                 .subscribe();
     }
 

@@ -9,7 +9,7 @@ import lombok.Data;
         name = "ubicacion",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_pais_provincia",     // nombre de la constraint en DB
+                        name = "uk_pais_provincia",
                         columnNames = {"pais_id", "provincia_id"}
                 )
         }

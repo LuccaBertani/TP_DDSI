@@ -11,9 +11,7 @@ public static Boolean VisualizadorAContribuyente(Usuario usuario){
 
     if (!Objects.isNull(usuario) && usuario.getRol().equals(Rol.VISUALIZADOR)) {
 
-        // Cambio el "rol" a contribuyente
         usuario.setRol(Rol.CONTRIBUYENTE);
-
         return true;
     }
 
@@ -23,8 +21,6 @@ public static Boolean VisualizadorAContribuyente(Usuario usuario){
 public static Boolean ContribuyenteAVisualizador(Usuario usuario){
 
     if (usuario.getCantHechosSubidos() == 0) {
-
-        // CAMBIAR ROL A VISUALIZADOR
         usuario.setRol(Rol.VISUALIZADOR);
 
         return true;

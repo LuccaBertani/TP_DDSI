@@ -38,7 +38,7 @@ public class Usuario {
     @Setter
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "rol", nullable = false, length = 20)
-    private Rol rol; // 0 visualizador, 1 contribuyente, 2 admin
+    private Rol rol;
 
     @Getter
     @Setter

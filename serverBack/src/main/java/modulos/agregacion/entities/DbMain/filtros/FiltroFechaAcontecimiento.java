@@ -38,7 +38,6 @@ public class FiltroFechaAcontecimiento extends Filtro {
 
     }
 
-    /// Paso entre dos fechas?
     @Override
     public Boolean aprobarHecho(Hecho hecho){
 

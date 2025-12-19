@@ -34,9 +34,3 @@ public class CategoriaHora {
 
     }
 }
-
-/*
-* CATEGORIA HORA
-* ID 1 INCENDIO 4:00 100
-* ID 2 INCENDIO 5:00 200
-* */

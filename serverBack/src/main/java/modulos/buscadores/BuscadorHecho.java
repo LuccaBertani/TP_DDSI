@@ -102,17 +102,13 @@ public class BuscadorHecho {
     }
 
     private static boolean normEq(String a, String b) {
-        // Evita NPE dentro del normalizador
         String s1 = (a == null) ? "" : a;
         String s2 = (b == null) ? "" : b;
         return Normalizador.normalizarYComparar(s1, s2);
     }
-
-    // --- helpers null-safe ---
     private static boolean eqDouble(Double a, Double b, double eps) {
         if (a == null && b == null) return true;
         if (a == null || b == null) return false;
-        // también evita NaN/Infinity si querés:
         if (!Double.isFinite(a) || !Double.isFinite(b)) return false;
         return Math.abs(a - b) <= eps;
     }
@@ -120,14 +116,10 @@ public class BuscadorHecho {
 
     public List<HechoEstatica> existenHechosIdenticos(HechoEstatica hecho, List<HechoEstatica> hechosASubir) {
 
-        // Si bien ahora ya no van a haber hechos identicos repetidos, hago array list de hechos identicos pq ya hay algunos en la BDD
-
         List<HechoEstatica> hechos = new ArrayList<>();
 
         if (hecho != null && hecho.getAtributosHecho() != null) {
             for(HechoEstatica h : hechosASubir){
-                System.out.println("LATITUD 1 " + hecho.getAtributosHecho().getLatitud());
-                System.out.println("LATITUD 2 " + h.getAtributosHecho().getLatitud());
 
                 if(normEq(h.getAtributosHecho().getTitulo(), hecho.getAtributosHecho().getTitulo())
                 && normEq(h.getAtributosHecho().getDescripcion(), hecho.getAtributosHecho().getDescripcion())
@@ -146,9 +138,6 @@ public class BuscadorHecho {
         assert hecho.getAtributosHecho() != null;
 
         AtributosHecho atributos = hecho.getAtributosHecho();
-        /*LocalDateTime fecha = atributos.getFechaAcontecimiento() != null
-                ? atributos.getFechaAcontecimiento()
-                : LocalDateTime.of(9999, 12, 31, 23, 59);*/
 
         hechos.addAll(hechoRepoEstatica.findHechosIdenticos(
                 atributos.getTitulo(),

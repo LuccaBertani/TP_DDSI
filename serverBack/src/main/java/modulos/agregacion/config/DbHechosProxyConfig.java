@@ -1,4 +1,4 @@
-// DbHechosProxyConfig.java
+
 package modulos.agregacion.config;
 
 import jakarta.persistence.EntityManagerFactory;
@@ -38,7 +38,7 @@ public class DbHechosProxyConfig {
             @Qualifier("proxyDataSource") DataSource ds) {
 
         Map<String, Object> jpaProps = new HashMap<>();
-        jpaProps.put("hibernate.hbm2ddl.auto", "update"); // "create" la 1ª vez si necesitás
+        jpaProps.put("hibernate.hbm2ddl.auto", "update");
         jpaProps.put("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
         jpaProps.put("hibernate.show_sql", false);
         jpaProps.put("hibernate.format_sql", false);

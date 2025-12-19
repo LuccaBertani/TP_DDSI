@@ -43,8 +43,6 @@ public class FechaParser {
         }
 
         fechaStr = fechaStr.trim();
-
-        // Intentar con formatos que ya son ZonedDateTime
         for (DateTimeFormatter formatter : FORMATOS_ZONED) {
             try {
                 ZonedDateTime zdt = ZonedDateTime.parse(fechaStr, formatter);
@@ -52,16 +50,11 @@ public class FechaParser {
             } catch (DateTimeParseException ignored) {
             }
         }
-
-        // Intentar con formatos locales con hora
         for (DateTimeFormatter formatter : FORMATOS_LOCAL) {
             try {
                 return LocalDateTime.parse(fechaStr, formatter);
             } catch (DateTimeParseException ignored) {
-                // Ignorar y probar siguiente
             }
-
-            // Fallback a LocalDate si no tiene hora
             try {
                 LocalDate date = LocalDate.parse(fechaStr, formatter);
                 return date.atStartOfDay();

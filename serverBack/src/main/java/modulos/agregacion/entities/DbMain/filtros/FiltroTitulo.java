@@ -36,7 +36,6 @@ public class FiltroTitulo extends Filtro {
         List<String> palabrasHecho = Normalizador.normalizarSeparado(hecho.getAtributosHecho().getTitulo());
         List<String> palabrasFiltro = Normalizador.normalizarSeparado(this.titulo);
 
-        // Si la descripcion del hecho enviado por parametro tiene todas sus palabras contenidas en el filtro de la descripcion
         return palabrasHecho.containsAll(palabrasFiltro);
     }
 
@@ -45,7 +44,6 @@ public class FiltroTitulo extends Filtro {
         return (root, query, cb) -> {
             if (this.titulo == null || this.titulo.isBlank()) return cb.conjunction();
 
-            // dividimos en palabras, quitamos espacios extras
             List<String> palabras = Normalizador.normalizarSeparado(this.titulo);
 
             List<Predicate> ands = new ArrayList<>();

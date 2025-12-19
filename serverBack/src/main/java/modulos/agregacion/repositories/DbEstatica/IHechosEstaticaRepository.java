@@ -52,7 +52,6 @@ WHERE REPLACE(LOWER(h.atributosHecho.titulo), ' ', '') =
     """)
     List<HechoEstatica> findHechosByDataset(@Param("datasetId") Long datasetId);
 
-    // ¿Cuál es la categoría con mayor cantidad de hechos reportados?
     @Query(value = """
         select categoria_id as categoriaId, count(h.id) as cantHechos
         from hecho_estatica h
@@ -92,10 +91,6 @@ LIMIT 1;
 """, nativeQuery = true)
     Long findCantDatasetsHecho(@Param("hecho_id") Long hecho_id);
 
-    // h1 es el hecho distinto al que mando x parametro
-    // Se verificó antes que h2 esté activo
-    // Elijo no comparar al usuario
-    // COALESCE es como el ISNULL de sql server
     @Query(value = """
     select count(*) 
     from hecho_estatica h1
@@ -114,7 +109,6 @@ LIMIT 1;
     """, nativeQuery = true)
     Long findCantHechosIgualTituloDiferentesAtributos(@Param("hecho_id") Long hechoId);
 
-    //TODO ESTA QUERY MUGROSA NO ANDA, ME PUDRI
     @Query(value = """
         SELECT h1.*
         FROM hecho_estatica h1

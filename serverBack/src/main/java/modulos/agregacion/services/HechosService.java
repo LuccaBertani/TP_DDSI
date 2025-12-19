@@ -71,27 +71,6 @@ public class HechosService {
     private final BuscadorPais buscadorPais;
     private final BuscadorProvincia buscadorProvincia;
 
-
-
-    /*
-
-    Resumen lógico
-
-Si solo cambian hechos → reviso solo esos hechos contra todas las colecciones.
-
-Si solo cambian colecciones → reviso todos los hechos contra esas colecciones.
-
-Si cambian ambos →
-
-Para colecciones modificadas → reviso todos los hechos.
-
-Para colecciones no modificadas → reviso solo los hechos cambiados
-
-    */
-
-    // MODIFICADO -> TRUE SI HAY QUE EVALUARLO
-    // MODIFICADO -> FALSE SI NO!!!!
-
     private ResponseEntity<?> checkeoAdmin(String username){
 
         if (username == null){
@@ -111,7 +90,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     }
 
 
-    //lo sube un administrador (lo considero carga dinamica)
     @Transactional
     public ResponseEntity<?> subirHecho(SolicitudHechoInputDTO dtoInput, List<MultipartFile> files, String username){
 
@@ -131,7 +109,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
         HechoDinamica hecho = new HechoDinamica();
 
-        System.out.println("SOY UN ID PAIS CONTENTO: " + dtoInput.getId_pais());
         AtributosHecho atributos = FormateadorHecho.formatearAtributosHecho(buscadores, dtoInput);
 
         hecho.setUsuario_id(usuario.getId());
@@ -140,14 +117,11 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         hecho.getAtributosHecho().setModificado(true);
         hecho.getAtributosHecho().setFuente(Fuente.DINAMICA);
         LocalDateTime fecha = LocalDateTime.now();
-        System.out.printf("FECHA:" + fecha);
         hecho.getAtributosHecho().setFechaCarga(fecha);
-        System.out.println("FECHA:" + fecha);
         hecho.getAtributosHecho().setFechaUltimaActualizacion(hecho.getAtributosHecho().getFechaCarga());
 
         if (files != null){
             for(MultipartFile contenidoMultimedia : files){
-                System.out.println("VOY A GUARDAR UN CONTENIDO MULTIMEDIA");
                 this.guardarContenidoMultimedia(contenidoMultimedia, hecho);
             }
         }
@@ -178,8 +152,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     public ResponseEntity<?> importarHechos(ImportacionHechosInputDTO dtoInput, MultipartFile file, String username) {
         try {
 
-            System.out.println("ENTRE AL BACK JIJI: " + file.getContentType() + " " + dtoInput.getFuenteString());
-
             ResponseEntity<?> rta = checkeoAdmin(username);
 
             if (!rta.getStatusCode().equals(HttpStatus.OK)) {
@@ -188,7 +160,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
             Usuario usuario = (Usuario) rta.getBody();
 
-            // 1) Validaciones básicas
             if (file == null || file.isEmpty()) {
                 return ResponseEntity.badRequest().body("Debés adjuntar un archivo CSV");
             }
@@ -196,18 +167,13 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 return ResponseEntity.badRequest().body("El archivo debe ser CSV");
             }
 
-            // === Opción A: guardar en disco ===
             Path base = Paths.get("uploads/datasets").toAbsolutePath().normalize();
-            System.out.println("PATH BASE: " + base);
             Files.createDirectories(base);
             String storedName = UUID.randomUUID() + "_" + file.getOriginalFilename();
             Path destino = base.resolve(storedName);
             Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
 
             FuenteEstatica fuente = new FuenteEstatica();
-
-
-            System.out.println("FUENTE: " + dtoInput.getFuenteString());
 
             Dataset dataset = datasetsRepo.findByFuente(dtoInput.getFuenteString()).orElse(null);
             if (dataset == null) {
@@ -218,14 +184,11 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 dataset.setStoragePath(destino.toString());
             }
 
-            System.out.println("ARCHIVO A LEER: " + dataset.getStoragePath());
-
             fuente.setDataSet(dataset);
 
             List<HechoEstatica> hechos = fuente.leerFuente((Usuario) rta.getBody(), buscadores);
 
             for (HechoEstatica hecho : hechos) {
-                System.out.println("VOY A SUBIR ESTE HECHO: " + hecho.getAtributosHecho().getTitulo());
                 hecho.setActivo(true);
                 LocalDateTime fechaActual = LocalDateTime.now();
                 hecho.getAtributosHecho().setFechaCarga(fechaActual);
@@ -255,12 +218,10 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
 
     public ResponseEntity<?> getHechosColeccion(GetHechosColeccionInputDTO inputDTO){
-        // TODO: Criterio de fuente
 
-        CriteriosColeccionDTO criterios;
+        CriteriosColeccionDTO criterios = null;
 
         if(inputDTO.getProvinciaId() != null)
-            inputDTO.getProvinciaId().forEach(a -> System.out.println("ID DE LA PROVINCIA: " + a));
 
         if(OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.FRONT)) {
             criterios = CriteriosColeccionDTO.builder()
@@ -320,40 +281,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         }
 
         List<List<IFiltro>> filtros = FormateadorHecho.obtenerListaDeFiltros(FormateadorHecho.formatearFiltrosColeccionDinamica(buscadores, criterios));
-
-        for (int i = 0; i < filtros.size(); i++) {
-            List<IFiltro> grupo = filtros.get(i);
-            System.out.println("🧩 Grupo #" + i + " (" + grupo.size() + " filtro/s):");
-
-            for (IFiltro filtro : grupo) {
-                if (filtro instanceof FiltroCategoria fc) {
-                    System.out.println("  [FiltroCategoria] id=" + fc.getCategoria().getId() +
-                            ", nombre=" + fc.getCategoria().getTitulo());
-                } else if (filtro instanceof FiltroContenidoMultimedia fcm) {
-                    System.out.println("  [FiltroContenidoMultimedia] tipo=" + fcm.getTipoContenido());
-                } else if (filtro instanceof FiltroDescripcion fd) {
-                    System.out.println("  [FiltroDescripcion] texto=" + fd.getDescripcion());
-                } else if (filtro instanceof FiltroFechaAcontecimiento ffa) {
-                    System.out.println("  [FiltroFechaAcontecimiento] desde=" + ffa.getFechaInicial() +
-                            ", hasta=" + ffa.getFechaFinal());
-                } else if (filtro instanceof FiltroFechaCarga ffc) {
-                    System.out.println("  [FiltroFechaCarga] desde=" + ffc.getFechaInicial() +
-                            ", hasta=" + ffc.getFechaFinal());
-                } else if (filtro instanceof FiltroFuente ff) {
-                    System.out.println("  [FiltroFuente] fuente=" + ff.getFuenteDeseada().codigoEnString());
-                } else if (filtro instanceof FiltroPais fp) {
-                    System.out.println("  [FiltroPais] id=" + fp.getPais().getId() +
-                            ", nombre=" + fp.getPais().getPais());
-                } else if (filtro instanceof FiltroProvincia fprov) {
-                    System.out.println("  [FiltroProvincia] id=" + fprov.getProvincia().getId() +
-                            ", nombre=" + fprov.getProvincia().getProvincia());
-                } else if (filtro instanceof FiltroTitulo ft) {
-                    System.out.println("  [FiltroTitulo] titulo=" + ft.getTitulo());
-                } else {
-                    System.out.println("  [Otro tipo de filtro] " + filtro.getClass().getSimpleName());
-                }
-            }
-        }
 
         Coleccion coleccion = coleccionRepo.findByIdAndActivoTrue(inputDTO.getId_coleccion()).orElse(null);
 
@@ -418,23 +345,15 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
             hechosFiltrados.addAll(hechosFiltradosEstatica);
 
-            for (HechoDinamica hd: hechosFiltradosDinamica){
-                System.out.println("HECHO CON TITULO: " + hd.getAtributosHecho().getTitulo());
-            }
-
             hechosFiltrados.addAll(hechosFiltradosDinamica);
             hechosFiltrados.addAll(hechosFiltradosProxy);
 
         }
 
         if (OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.FRONT)) {
-            System.out.println("VOY A MAPEAR HECHOS A VISUALIZARHECHOSOUTPUTDTO");
             List<VisualizarHechosOutputDTO> outputDTO = hechosFiltrados.stream()
                     .map(hecho -> crearHechoDto(hecho, VisualizarHechosOutputDTO.class))
                     .toList();
-            for (VisualizarHechosOutputDTO hecho: outputDTO){
-                System.out.println("HECHO FILTRADO DE LA COLECCION: " + hecho.getTitulo());
-            }
             return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
         } else if (OrigenConexion.fromCodigo(inputDTO.getOrigenConexion()).equals(OrigenConexion.PROXY)) {
             List<HechoMetamapaResponse> outputDTO = hechosFiltrados.stream()
@@ -446,9 +365,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     }
 
     private <T> T crearHechoDto(Hecho hecho, Class<T> tipo) {
-
-        System.out.println("ID DEL HECHO: " + hecho.getId());
-
 
         HechoMemoria hechoMemoria = formateadorHechoMemoria.formatearHechoMemoria(hecho);
 
@@ -467,7 +383,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                     .map(Object::toString)
                     .ifPresent(dto::setFechaCarga);
 
-            System.out.println("TITULO HECHO: " + hecho.getAtributosHecho().getTitulo());
             if (hecho.getAtributosHecho().getFuente() != null)
                 dto.setFuente(hecho.getAtributosHecho().getFuente().codigoEnString());
 
@@ -540,8 +455,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
     public ResponseEntity<?> getAllHechos(Integer origen) {
 
-        System.out.println("ORIGEN: " +  origen);
-
         List<Hecho> hechosTotales = new ArrayList<>();
         hechosTotales.addAll(hechosEstaticaRepo.findAllByActivoTrue());
         hechosTotales.addAll(hechosDinamicaRepo.findAllByActivoTrue());
@@ -563,8 +476,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     }
 
     public ResponseEntity<?> getHechosConLatitudYLongitud(Integer origen) {
-
-        System.out.println("ORIGEN: " +  origen);
 
         List<Hecho> hechosTotales = new ArrayList<>();
         hechosTotales.addAll(hechosEstaticaRepo.findAllByActivoTrueAndLatitudYLongitudNotNull());
@@ -588,7 +499,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
     private <T> Specification<T> perteneceAColeccionYesConsensuadoSiAplica(List<Long> idsHechosDeColeccionYConsensuados, Class<T> clazz) {
         if (idsHechosDeColeccionYConsensuados == null || idsHechosDeColeccionYConsensuados.isEmpty()) {
-            // devuelve false siempre -> WHERE 1=0
             return (root, query, cb) -> cb.disjunction();
         }
 
@@ -657,13 +567,9 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
     private <T> Specification<T> crearSpecs(List<List<IFiltro>> filtrosXCategoria, Class<T> clazz) {
 
-        System.out.println("ENTRO A crearSpecs");
-        System.out.println("Total categorías: " + (filtrosXCategoria != null ? filtrosXCategoria.size() : "null"));
-
         Specification<T> specFinal = null;
 
         if (filtrosXCategoria == null || filtrosXCategoria.isEmpty()) {
-            System.out.println("La lista de filtros por categoría está vacía o es null.");
             return null;
         }
 
@@ -671,16 +577,12 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             List<IFiltro> categoria = filtrosXCategoria.get(i);
 
             if (categoria == null || categoria.isEmpty()) {
-                System.out.println("Categoría " + i + " vacía o null, se saltea.");
                 continue;
             }
-
-            System.out.println("Procesando categoría " + i + " con " + categoria.size() + " filtros.");
 
             Specification<T> specCategoria = categoria.stream()
                     .map(f -> {
                         Specification<T> spec = f.toSpecification(clazz);
-                        System.out.println("  Filtro: " + f + " -> Spec: " + (spec != null ? "OK" : "null"));
                         return spec;
                     })
                     .filter(Objects::nonNull)
@@ -688,14 +590,11 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                     .orElse(null);
 
             if (specCategoria == null) {
-                System.out.println("No se generó spec para categoría " + i + ".");
                 continue;
             }
 
             specFinal = (specFinal == null) ? specCategoria : specFinal.and(specCategoria);
         }
-
-        System.out.println("Spec final generada: " + (specFinal != null ? "OK" : "null"));
 
         return specFinal;
     }
@@ -704,7 +603,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     private <T> Specification<T> distinct(Class <T> clazz) {
         return (root, query, cb) -> {
             query.distinct(true);
-            return cb.conjunction(); // no agrega condición extra
+            return cb.conjunction();
         };
     }
 
@@ -834,7 +733,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         if (ubicacionString != null){
             PaisProvinciaDTO paisProvinciaDTO = new PaisProvinciaDTO();
             String paisStr = ubicacionString.getPais();
-            System.out.println("SOY UN PAIS MUY FELIZ, Y ME LLAMO: " + paisStr);
             Pais pais = null;
             if (paisStr != null){
                 pais = repoPais.findByNombreNormalizado(paisStr).orElse(null);
@@ -846,15 +744,10 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             if (pais!=null){
                 String provinciaStr = ubicacionString.getProvincia();
                 if (provinciaStr != null){
-                    System.out.println("SOY UNA PROVINCIA FELIZ, Y ME LLAMO: " + provinciaStr);
                     Provincia provincia = repoProvincia.findByNombreNormalizadoAndPaisId(provinciaStr, pais.getId()).orElse(null);
                     if (provincia != null){
-                        System.out.println("SIUU NO SOY PROVINCIA NULL Y ME LLAMO: " + provincia.getProvincia());
                         ProvinciaDto provinciaDto = ProvinciaDto.builder().provincia(provinciaStr).id(provincia.getId()).build();
                         paisProvinciaDTO.setProvinciaDto(provinciaDto);
-                    }
-                    else{
-                        System.out.println("SOY UNA PROVINCIA DE TITULO: " + provincia.getProvincia());
                     }
                 }
             }
@@ -862,7 +755,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
             return ResponseEntity.ok(paisProvinciaDTO);
         }
-        return ResponseEntity.ok().build(); // Si bien sería un not found, envío esto para evitar problemas con el retrieve
+        return ResponseEntity.ok().build();
 
     }
 
@@ -875,7 +768,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         Usuario usuario = usuariosRepo.findByNombreDeUsuario(username).orElse(null);
 
         if (usuario == null){
-            // Si el token es válido, esto no debería suceder, pero es un buen chequeo de seguridad.
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
         }
 
@@ -887,8 +779,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
                 .map(hecho -> crearHechoDto(hecho, VisualizarHechosOutputDTO.class))
                 .toList();
 
-        System.out.println("Hechos encontrados para " + username + ": " + outputDTO.size());
-
         return ResponseEntity.status(HttpStatus.OK).body(outputDTO);
     }
 
@@ -898,12 +788,12 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         List<HechoProxy> hechosProxy = hechosProxyRepo.findHechosDestacados();
 
         List<Hecho> top3Hechos = Stream.of(hechosEstatica, hechosDinamica, hechosProxy)
-                .flatMap(list -> list.stream().map(h -> (Hecho) h))  // 👈 conversión explícita
+                .flatMap(list -> list.stream().map(h -> (Hecho) h))
                 .filter(Objects::nonNull)
                 .sorted(Comparator.comparingLong(Hecho::getCant_accesos).reversed())
                 .limit(3)
                 .toList();
-        // Devuelve lista inmutable
+
 
         List<VisualizarHechosOutputDTO> hechosDto = new ArrayList<>();
 
@@ -972,8 +862,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
     @Transactional
     public ResponseEntity<?> modificarHecho(HechoModificarInputDTO dto, String username) {
 
-        System.out.println("LLEGO ACÁ");
-
         ResponseEntity<?> rta = checkeoAdmin(username);
 
         if (rta.getStatusCode().equals(HttpStatus.FORBIDDEN)){
@@ -1024,7 +912,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         }
         Optional.ofNullable(dto.getContenidosMultimediaAEliminar()).ifPresent(atributos::setContenidoMultimediaEliminar);
         Optional.ofNullable(dto.getDescripcion()).ifPresent(atributos::setDescripcion);
-        // hecho.getAtributosHechoAModificar().add(atributos);
 
         this.setearModificadoAOficial(hecho, atributos);
         hecho.getAtributosHecho().setFechaUltimaActualizacion(LocalDateTime.now());
@@ -1057,7 +944,6 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
 
     private void setearModificadoAOficial(Hecho hecho, AtributosHechoModificar atributos){
 
-        // Campos “simples”: siempre se pisan, aunque vengan en null
         hecho.getAtributosHecho().setCategoria_id(atributos.getCategoria_id());
         hecho.getAtributosHecho().setDescripcion(atributos.getDescripcion());
         hecho.getAtributosHecho().setFechaAcontecimiento(atributos.getFechaAcontecimiento());
@@ -1066,14 +952,12 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
         hecho.getAtributosHecho().setLatitud(atributos.getLatitud());
         hecho.getAtributosHecho().setLongitud(atributos.getLongitud());
 
-        // Contenido multimedia a agregar: solo si hay lista
         if (atributos.getContenidoMultimediaAgregar() != null){
             hecho.getAtributosHecho()
                     .getContenidosMultimedia()
                     .addAll(atributos.getContenidoMultimediaAgregar());
         }
 
-        // Contenido multimedia a eliminar: solo si hay ids a eliminar
         if (atributos.getContenidoMultimediaEliminar() != null){
             hecho.getAtributosHecho().getContenidosMultimedia()
                     .removeIf(contenidoMultimedia ->
@@ -1102,7 +986,7 @@ Para colecciones no modificadas → reviso solo los hechos cambiados
             }
 
         }
-        return ResponseEntity.ok().build(); // No mando error pero no mando body. Se encarga el back de no rellenar contenido multimedia
+        return ResponseEntity.ok().build();
     }
 
 

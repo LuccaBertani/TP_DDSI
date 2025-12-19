@@ -33,8 +33,6 @@ public class BuscadorProvincia {
     }
 
     public List<Provincia> buscarTodos() {
-        System.out.println("ENTRO EN BUSCAR TODOS");
-
         return this.repoProvincia.findAll();
     }
 

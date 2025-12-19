@@ -30,30 +30,26 @@ public class ColeccionController {
         return coleccionService.getCantColecciones();
     }
 
-    //anda
+
     @PostMapping("/crear")
     public ResponseEntity<?> crearColeccion(@Valid @RequestBody ColeccionInputDTO inputDTO, @AuthenticationPrincipal String username){
-            System.out.println("SOY EL USUARIO: " + username);
             return coleccionService.crearColeccion(inputDTO, username); // 201 o 401
     }
 
-    //anda
+
     @GetMapping("/public/get-all")
     public ResponseEntity<?> obtenerTodasLasColecciones() {
         return coleccionService.obtenerTodasLasColecciones();
     }
 
-    //anda
     @GetMapping("/public/get/{id_coleccion}")
     public ResponseEntity<?> getColeccion(@PathVariable Long id_coleccion){
         return coleccionService.getColeccion(id_coleccion);
     }
-    //anda
     @PostMapping("/delete/{id_coleccion}")
     public ResponseEntity<?> deleteColeccion(@PathVariable Long id_coleccion, @AuthenticationPrincipal String username){
         return coleccionService.deleteColeccion(id_coleccion, username);
     }
-    //anda
     @PostMapping("/update")
     public ResponseEntity<?> updateColeccion(@Valid @RequestBody ColeccionUpdateInputDTO dto, @AuthenticationPrincipal String username){
         return coleccionService.updateColeccion(dto, username);
@@ -81,7 +77,6 @@ public class ColeccionController {
 
     @GetMapping("/public/destacadas")
     public ResponseEntity<?> getColeccionesDestacadas(){
-        System.out.println("Entro a colecciones destacadas");
         return coleccionService.getColeccionDestacados();
     }
 

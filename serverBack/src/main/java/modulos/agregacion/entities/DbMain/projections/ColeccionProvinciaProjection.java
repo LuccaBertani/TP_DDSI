@@ -5,4 +5,3 @@ public interface ColeccionProvinciaProjection {
     Integer getTotalHechos();
     Long getColeccionId();
 }
-//De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados?

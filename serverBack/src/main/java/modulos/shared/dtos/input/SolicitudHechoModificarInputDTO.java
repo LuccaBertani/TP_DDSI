@@ -9,9 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @Data
-public class SolicitudHechoModificarInputDTO { //datos del hecho y el id del usuario
+public class SolicitudHechoModificarInputDTO {
     @NotNull(message = "El id_hecho es obligatorio")
-    private Long id_hecho; // Id del hecho que se quiere modificar
+    private Long id_hecho;
     private String titulo;
     private String descripcion;
 
@@ -22,8 +22,6 @@ public class SolicitudHechoModificarInputDTO { //datos del hecho y el id del usu
     private Long id_provincia;
     private Long id_categoria;
 
-
-    //private List<MultipartFile> contenidosMultimediaParaAgregar;
     private List<Long> contenidosMultimediaAEliminar;
 
     private List<ContenidoMultimedia> contenidosMultimedia;

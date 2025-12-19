@@ -26,7 +26,6 @@ public class HechoModificarInputDTO {
     private List<Long> contenidosMultimediaAEliminar;
     private String fuente;
 
-    // 👉 NUEVO: esto sí se manda al back
     private List<ContenidoMultimediaDTO> nuevasRutasMultimedia;
 
     private List<ContenidoMultimedia> contenidosMultimedia;

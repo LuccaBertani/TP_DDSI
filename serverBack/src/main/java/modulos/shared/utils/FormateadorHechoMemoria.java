@@ -1,18 +1,12 @@
 package modulos.shared.utils;
 
 import modulos.AtributosHechoMemoria;
-import modulos.agregacion.entities.AtributosHechoModificarMemoria;
 import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.Hecho;
 import modulos.agregacion.entities.HechoMemoria;
-import modulos.agregacion.entities.atributosHecho.AtributosHechoModificar;
 import modulos.buscadores.BuscadoresRegistry;
 import org.springframework.stereotype.Component;
-import java.util.ArrayList;
-import java.util.List;
 
-
-//AURA
 @Component
 public class FormateadorHechoMemoria {
     private final BuscadoresRegistry buscadores;
@@ -35,14 +29,11 @@ public class FormateadorHechoMemoria {
                 .ubicacion(buscadores.getBuscadorUbicacion().buscarUbicacion(hecho.getAtributosHecho().getUbicacion_id()))
                 .build();
 
-        //List<AtributosHechoModificar> listaAtributosHechoModificar = hecho.getAtributosHechoAModificar();
-
         HechoMemoria hecho123 = HechoMemoria.builder().
                 id(hecho.getId()).
                 activo(hecho.getActivo()).
                 usuario_id(hecho.getUsuario_id()).
                 atributosHecho(atributos).
-                //atributosHechoAModificar(listaAtributosHechoModificar).
                 build();
 
         if(hecho instanceof HechoEstatica hechoEstatica){

@@ -10,7 +10,6 @@ import modulos.agregacion.entities.DbMain.algoritmosConsenso.IAlgoritmoConsenso;
 @Converter(autoApply = true)
 public class AlgoritmoConsensoConverter implements AttributeConverter<IAlgoritmoConsenso, String> {
 
-    // Códigos estables para persistir
     private static final String COD_MS  = "MAYORIA_SIMPLE";
     private static final String COD_MA  = "MAYORIA_ABSOLUTA";
     private static final String COD_MM  = "MULTIPLES_MENCIONES";
@@ -19,12 +18,10 @@ public class AlgoritmoConsensoConverter implements AttributeConverter<IAlgoritmo
     public String convertToDatabaseColumn(IAlgoritmoConsenso atributo) {
         if (atributo == null) return null;
 
-        // Evitar depender de getSimpleName()
         if (atributo instanceof AlgoritmoConsensoMayoriaSimple)    return COD_MS;
         if (atributo instanceof AlgoritmoConsensoMayoriaAbsoluta)  return COD_MA;
         if (atributo instanceof AlgoritmoConsensoMultiplesMenciones) return COD_MM;
 
-        // Fallback defensivo
         throw new IllegalArgumentException("AlgoritmoConsenso desconocido: " + atributo.getClass());
     }
 
@@ -38,7 +35,6 @@ public class AlgoritmoConsensoConverter implements AttributeConverter<IAlgoritmo
             case COD_MA: return new AlgoritmoConsensoMayoriaAbsoluta();
             case COD_MM: return new AlgoritmoConsensoMultiplesMenciones();
             default:
-                // Podés retornar null, pero es mejor fallar explícito para detectar datos inválidos:
                 throw new IllegalArgumentException("Código de algoritmo inválido en BD: " + dbData);
         }
     }

@@ -30,7 +30,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        // Intenta obtener en el header el authorization bearer (el token)
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
@@ -41,9 +40,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 Usuario usuario = usuarioRepository.findByNombreDeUsuario(username).orElse(null);
 
-                if (usuario!=null){
+                if (usuario != null) {
                     List<GrantedAuthority> auths = new ArrayList<>();
-                    // Para evitar error
                     auths.add(new SimpleGrantedAuthority("ROLE_USER"));
 
                     UsernamePasswordAuthenticationToken auth =
@@ -56,13 +54,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
                 return;
             }
-        } else {
-            System.out.println("No hay token de autorización");
+
+            filterChain.doFilter(request, response);
         }
-
-        filterChain.doFilter(request, response);
     }
-
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();

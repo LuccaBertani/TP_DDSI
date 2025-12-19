@@ -34,13 +34,11 @@ public class SolicitudHechoController {
         return solicitudHechoService.getPorcentajeSolicitudesProcesadas();
     }
 
-    // Anda
     @PostMapping("/evaluar/subir")
     public ResponseEntity<?> evaluarSolicitudSubida(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput, @AuthenticationPrincipal String username){
         return solicitudHechoService.evaluarSolicitudSubirHecho(dtoInput, username); // 200 o 401
     }
 
-    // Anda
     @PostMapping("/evaluar/eliminar")
     public ResponseEntity<?> evaluarSolicitudEliminacion(@Valid @RequestBody SolicitudHechoEvaluarInputDTO dtoInput, @AuthenticationPrincipal String username){
         return solicitudHechoService.evaluarEliminacionHecho(dtoInput, username); // 200, 401
@@ -52,7 +50,6 @@ public class SolicitudHechoController {
         return solicitudHechoService.evaluarModificacionHecho(dtoInput, username); // 200, 401
     }
 
-    // Anda
     @PostMapping("/public/subir-hecho")
     public ResponseEntity<?> enviarSolicitudSubirHecho(@RequestPart("meta") SolicitudHechoInputDTO dto,
                                                        @RequestPart(value = "contenidosMultimedia", required = false) List<MultipartFile> files,
@@ -60,19 +57,15 @@ public class SolicitudHechoController {
         return solicitudHechoService.solicitarSubirHecho(dto, files, username); // 200 o 401
     }
 
-    // Anda
     @PostMapping("/eliminar-hecho")
     public ResponseEntity<?> enviarSolicitudEliminarHecho(@Valid @RequestBody SolicitudHechoEliminarInputDTO dtoInput, @AuthenticationPrincipal String username){
         return solicitudHechoService.solicitarEliminacionHecho(dtoInput, username); // 200 o 401
     }
-
-    // Anda
     @PostMapping("/modificar-hecho")
     public ResponseEntity<?> enviarSolicitudModificarHecho(@Valid @RequestBody SolicitudHechoModificarInputDTO dtoInput, @AuthenticationPrincipal String username){
         return solicitudHechoService.solicitarModificacionHecho(dtoInput, username); // 200, 401 o 409 (recurso ya modificado)
     }
 
-    // Anda
     @PostMapping("/reportes/reportar")
     public ResponseEntity<?> reportar(@Valid @RequestParam Long id_hecho, @Valid @RequestParam String fuente, @Valid @RequestParam String motivo){
         return solicitudHechoService.reportarHecho(motivo, id_hecho, fuente);
@@ -100,7 +93,6 @@ public class SolicitudHechoController {
 
     @GetMapping("/atributos-hecho")
     public ResponseEntity<?> getAtributosSolicitudHecho(@Valid @RequestParam Long id_solicitud, @AuthenticationPrincipal String username){
-        System.out.println("WAZAAA ME ENCANTA OBTENER ATRIBUTOS DEL HECHO A MODIFICAR");
         return solicitudHechoService.getAtributosSolicitudHecho(id_solicitud, username);
     }
 

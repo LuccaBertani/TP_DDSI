@@ -29,32 +29,26 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    // Anda
     @PostMapping("/public/crear")
     public ResponseEntity<?> crearUsuario(@Valid @RequestBody UsuarioInputDTO dtoInput){
-        System.out.println("HOLA QUIERO CREAR USUARIO EN EL BACK");
         return usuarioService.crearUsuario(dtoInput);
     }
 
-    // Anda
     @PostMapping("/editar/contrasenia")
     public ResponseEntity<?> cambiarContrasenia(@RequestBody CambiarContraseniaDtoInput dtoImput, @AuthenticationPrincipal String username){
         return usuarioService.cambiarContrasenia(dtoImput, username);
     }
 
-    // Anda
     @PostMapping("/editar/campos-escalares")
     public ResponseEntity<?> editarUsuario(@RequestBody EditarUsuarioDtoInput dtoImput, @AuthenticationPrincipal String username){
         return usuarioService.editarUsuario(dtoImput, username);
     }
 
-    // Anda
     @PostMapping("/editar/nombre-usuario")
     public ResponseEntity<?> editarNombreDeUsuario(@RequestBody EditarNombreDeUsuarioDtoInput dtoImput, @AuthenticationPrincipal String username){
         return usuarioService.editarNombreDeUsuario(dtoImput, username);
     }
 
-    // Anda
     @GetMapping("/get-all")
     public ResponseEntity<?> getAll(@AuthenticationPrincipal String username){
         return usuarioService.getAll(username);
@@ -62,11 +56,9 @@ public class UsuarioController {
 
     @GetMapping("/get/usuario")
     public ResponseEntity<?> getUsuarioByNombreUsuario(@AuthenticationPrincipal String username){
-        System.out.println("SOY UN FOROROROROORORORORORO");
         return usuarioService.getUsuarioByNombreUsuarioConToken(username);
     }
 
-    // Anda
     @GetMapping("/get-mensajes")
     public ResponseEntity<?> getMensajesUsuario(@AuthenticationPrincipal String username){
         return usuarioService.obtenerMensajes(username);
@@ -75,18 +67,14 @@ public class UsuarioController {
     @PostMapping("/auth")
     public ResponseEntity<?> loginApi(@RequestBody LoginDtoInput dtoInput) {
 
-        System.out.println("LOGIN");
-
         String username = dtoInput.getNombreDeUsuario();
         String password = dtoInput.getContrasenia();
 
-        // Validación básica de credenciales
         if (username == null || username.trim().isEmpty() ||
                 password == null || password.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
 
-        // Autenticar usuario usando el LoginService
         ResponseEntity<?> rta = usuarioService.iniciarSesion(username, password);
 
         if (!rta.getStatusCode().is2xxSuccessful()){

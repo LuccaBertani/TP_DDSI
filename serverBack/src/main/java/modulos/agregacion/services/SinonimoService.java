@@ -94,10 +94,6 @@ public class SinonimoService {
             return respuesta;
         }
 
-        System.out.println("Sinonimo: " + sinonimoDTO.getSinonimo());
-        System.out.println("Entidad: " + sinonimoDTO.getId_entidad());
-        System.out.println("Pais: " + sinonimoDTO.getId_pais());
-
         Pais pais = this.paisRepository.findById(sinonimoDTO.getId_entidad()).orElse(null);
 
         if(pais == null){

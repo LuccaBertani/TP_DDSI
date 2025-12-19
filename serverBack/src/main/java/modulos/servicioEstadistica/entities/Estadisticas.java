@@ -54,9 +54,3 @@ public class Estadisticas {
         this.coleccionProvincias = new ArrayList<>();
     }
 }
-
-/*
-*Estadistica
-*ID CANT_SPAM
-*
-* */

@@ -8,7 +8,7 @@ public class SinonimoInputDto {
 
     private Long id_entidad;
 
-    private Long id_pais; //solo se rellena si el tipo es provincia
+    private Long id_pais;
 
     private String sinonimo;
 }

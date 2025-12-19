@@ -35,11 +35,9 @@ public class FiltroContenidoMultimedia extends Filtro {
     @Override
     public <T> Specification<T> toSpecification(Class<T> clazz) {
         return (root, query, cb) -> {
-            // join a la lista de contenidos
             Join<Object, Object> joinContenidos = root
                     .join("atributosHecho")
                     .join("contenidosMultimedia");
-            // condicion: tipo == this.tipoContenido
             return cb.equal(joinContenidos.get("tipo"), this.tipoContenido);
         };
     }

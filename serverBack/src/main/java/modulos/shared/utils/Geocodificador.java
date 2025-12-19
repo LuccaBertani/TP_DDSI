@@ -35,7 +35,6 @@ public final class Geocodificador {
                     "/reverse?format=jsonv2&lat=%f&lon=%f&addressdetails=1&zoom=10&accept-language=es",
                     lat, lon);
 
-            // Petición HTTP reactiva
             String response = webClient.get()
                     .uri(url)
                     .retrieve()
@@ -44,7 +43,7 @@ public final class Geocodificador {
                         e.printStackTrace();
                         return Mono.empty();
                     })
-                    .block(); // Bloquea solo hasta recibir respuesta (puede quitarse en contexto reactivo)
+                    .block();
 
             if (response == null) return null;
 
@@ -77,13 +76,10 @@ public final class Geocodificador {
 
     public static List<PaisProvincias> obtenerTodosLosPaises() {
         try {
-            // 1) Países (RestCountries: nombre + ISO2)
             List<PaisIso2> paises = fetchPaisesRestCountries();
 
-            // 2) Subdivisiones (Overpass: todas las relaciones con ISO3166-2)
             Map<String, List<String>> provinciasPorIso2 = fetchSubdivisionesISO31662Overpass();
 
-            // 3) Armar resultado
             List<PaisProvincias> out = new ArrayList<>(paises.size());
             Collator coll = Collator.getInstance(new Locale("es"));
 
@@ -93,7 +89,6 @@ public final class Geocodificador {
 
                 List<String> nombresProv = provinciasPorIso2.getOrDefault(row.iso2, Collections.emptyList());
 
-                // construir entidades Provincia (deduplicadas, ordenadas)
                 List<Provincia> provincias = new ArrayList<>(nombresProv.size());
                 Set<String> vistos = new HashSet<>();
                 for (String n : nombresProv) {
@@ -107,19 +102,9 @@ public final class Geocodificador {
                 }
                 provincias.sort(Comparator.comparing(Provincia::getProvincia, coll));
 
-                // Si tenés constructor (Pais, List<Provincia>):
                 out.add(new PaisProvincias(pais, provincias));
-
-                // Si NO lo tenés, usá esta variante:
-                /*
-                PaisProvincias pp = new PaisProvincias();
-                pp.setPais(pais);
-                pp.setProvincias(provincias);
-                out.add(pp);
-                */
             }
 
-            // Orden final por nombre de país
             out.sort(Comparator.comparing(
                     pp -> pp.getPais() != null ? pp.getPais().getPais() : "",
                     Collator.getInstance(new Locale("es"))
@@ -132,9 +117,6 @@ public final class Geocodificador {
         }
     }
 
-    // ============================
-    // 1) RESTCOUNTRIES (PAÍSES)
-    // ============================
     private static List<PaisIso2> fetchPaisesRestCountries() throws IOException {
         String url = "https://restcountries.com/v3.1/all?fields=name,cca2";
         String json = httpGet(url, "metamapa/1.0 (contacto: tu-email@dominio)");
@@ -153,20 +135,11 @@ public final class Geocodificador {
             out.add(new PaisIso2(common.trim(), iso2.trim().toUpperCase(Locale.ROOT)));
         }
 
-        // Orden por nombre
         out.sort(Comparator.comparing(p -> p.nombre, Collator.getInstance(new Locale("es"))));
         return out;
     }
 
-    // ==================================================
-    // 2) OVERPASS (TODAS LAS SUBDIVISIONES ISO3166-2)
-    // ==================================================
-    /**
-     * Trae en UNA llamada todas las rels con tag ISO3166-2 y agrupa por ISO2 (prefijo antes del guión).
-     * Ej.: "AR-B" => clave "AR" con valor "Buenos Aires"
-     */
     private static Map<String, List<String>> fetchSubdivisionesISO31662Overpass() throws IOException {
-        // Query: todas las relaciones administrativas que tienen ISO3166-2
         String q = """
             [out:json][timeout:300];
             rel["boundary"="administrative"]["ISO3166-2"];
@@ -202,7 +175,6 @@ public final class Geocodificador {
             porIso2.computeIfAbsent(iso2, k -> new ArrayList<>()).add(nombre.trim());
         }
 
-        // Ordenar listas por nombre
         Collator coll = Collator.getInstance(new Locale("es"));
         for (List<String> lista : porIso2.values()) {
             lista.sort(coll);
@@ -210,9 +182,6 @@ public final class Geocodificador {
         return porIso2;
     }
 
-    // ============================
-    // HTTP helpers
-    // ============================
     private static String httpGet(String url, String userAgent) throws IOException {
         HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
         c.setRequestMethod("GET");
@@ -251,15 +220,10 @@ public final class Geocodificador {
             return sb.toString();
         } finally { c.disconnect(); }
     }
-
-    // ============================
-    // Utils
-    // ============================
     private static String firstNonBlank(String... vs) {
         for (String v : vs) if (v != null && !v.isBlank()) return v;
         return null;
     }
 
-    /** Par (nombre país, ISO2) para armar después Pais + Provincias. */
     private record PaisIso2(String nombre, String iso2) {}
 }

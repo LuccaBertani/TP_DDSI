@@ -10,12 +10,6 @@ import modulos.agregacion.entities.DbMain.hechoRef.HechoRef;
 
 import java.util.*;
 
-/*
-* Colecciones: conjuntos de hechos organizados bajo un título y descripción, creados y gestionados por administradores.
-* Son públicas y no pueden ser editadas ni eliminadas manualmente.
-*/
-
-
 @Getter
 @Setter
 @Entity
@@ -45,14 +39,13 @@ public class Coleccion {
     @Column (name = "descripcion")
     private String descripcion;
 
-    //relacion muchos a muchos
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "coleccion_hecho",
-            joinColumns = @JoinColumn(name = "coleccion_id"),  // FK a la PK simple de Coleccion
+            joinColumns = @JoinColumn(name = "coleccion_id"),
             inverseJoinColumns = {
-                    @JoinColumn(name = "hecho_id",     referencedColumnName = "id"),     // 1º id
-                    @JoinColumn(name = "hecho_fuente", referencedColumnName = "fuente")  // 2º fuente
+                    @JoinColumn(name = "hecho_id",     referencedColumnName = "id"),
+                    @JoinColumn(name = "hecho_fuente", referencedColumnName = "fuente")
             },
             uniqueConstraints = @UniqueConstraint(
                     name = "uk_coleccion_hecho",
@@ -61,7 +54,6 @@ public class Coleccion {
     )
     private List<HechoRef> hechos;
 
-    //relacion 1 a 1
     @Convert(converter = AlgoritmoConsensoConverter.class)
     @Column(name = "algoritmoConsenso", length = 50)
     private IAlgoritmoConsenso algoritmoConsenso;
@@ -78,14 +70,13 @@ public class Coleccion {
     )
     private List<Filtro> criterios;
 
-    // relación muchos-a-muchos con HechoRef (PK compuesta id+fuente)
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "coleccion_hecho_consensuado",
-            joinColumns = @JoinColumn(name = "coleccion_id"),  // FK a la PK simple de Coleccion
+            joinColumns = @JoinColumn(name = "coleccion_id"),
             inverseJoinColumns = {
-                    @JoinColumn(name = "hecho_id",     referencedColumnName = "id"),     // 1º id
-                    @JoinColumn(name = "hecho_fuente", referencedColumnName = "fuente")  // 2º fuente
+                    @JoinColumn(name = "hecho_id",     referencedColumnName = "id"),
+                    @JoinColumn(name = "hecho_fuente", referencedColumnName = "fuente")
             },
             uniqueConstraints = @UniqueConstraint(
                     name = "uk_coleccion_hecho_consensuado",

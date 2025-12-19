@@ -4,11 +4,7 @@ import jakarta.persistence.*;
 import jakarta.persistence.criteria.Path;
 import lombok.Getter;
 import lombok.Setter;
-import modulos.agregacion.entities.DbDinamica.HechoDinamica;
-import modulos.agregacion.entities.DbEstatica.HechoEstatica;
 import modulos.agregacion.entities.DbMain.Categoria;
-import modulos.agregacion.entities.DbMain.Hecho;
-import modulos.agregacion.entities.DbProxy.HechoProxy;
 import org.springframework.data.jpa.domain.Specification;
 
 @Getter
@@ -37,33 +33,4 @@ public class FiltroCategoria extends Filtro {
         };
     }
 
-    /*@Override
-    public Boolean aprobarHecho(Hecho hecho){
-        return hecho.getAtributosHecho().getCategoria().getId().equals(this.categoria.getId());
-    }*/
-
 }
-
-/*
-* Una Specification<T> es básicamente una función que recibe:
-
-root → el root de la entidad (ej: Publicacion).
-
-query → la consulta que se está armando.
-
-cb → el CriteriaBuilder que te da métodos como equal, lessThan, like, etc.
-
-Y devuelve un Predicate, o sea, la condición.
-*
-*
-* @Override
-public Specification<Publicacion> toSpecification() {
-    return (root, query, cb) -> {
-        Path<Long> categoriaIdPath = root.get("lote").get("categoria").get("id");
-        return cb.equal(categoriaIdPath, this.categoria.getId());
-    };
-}
-*
-*
-*
-* */

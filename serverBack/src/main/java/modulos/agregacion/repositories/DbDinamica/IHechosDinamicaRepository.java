@@ -1,33 +1,14 @@
 package modulos.agregacion.repositories.DbDinamica;
 
 import modulos.agregacion.entities.DbDinamica.HechoDinamica;
-import modulos.agregacion.entities.DbEstatica.HechoEstatica;
-import modulos.agregacion.entities.DbMain.Categoria;
-import modulos.agregacion.entities.DbMain.Hecho;
 import modulos.agregacion.entities.DbMain.projections.CategoriaCantidadProjection;
 import modulos.agregacion.entities.DbMain.projections.HoraCategoriaProjection;
-import modulos.servicioEstadistica.entities.CategoriaCantidad;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-
-/*
-
-@Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Transactional
-    @Query("""
-   UPDATE Hecho h
-   SET h.atributosHecho.modificado = false
-   WHERE COALESCE(h.atributosHecho.modificado, false) = true
-""")
-    int resetAllModificado();
-
-*/
 
 public interface IHechosDinamicaRepository extends JpaRepository<HechoDinamica, Long>, JpaSpecificationExecutor<HechoDinamica> {
 
@@ -55,7 +36,6 @@ WHERE REPLACE(LOWER(h.atributosHecho.titulo), ' ', '') =
 """)
     Optional<HechoDinamica> findByNombreNormalizado(@Param("nombre") String nombre);
 
-    // ¿Cuál es la categoría con mayor cantidad de hechos reportados?
     @Query(value = """
         select categoria_id as categoriaId, count(h.id) as cantHechos
         from hecho_dinamica h

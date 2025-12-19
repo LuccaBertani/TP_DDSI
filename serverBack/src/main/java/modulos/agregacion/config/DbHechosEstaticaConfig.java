@@ -2,7 +2,6 @@ package modulos.agregacion.config;
 
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
-// NO existe uno de jakarta/javax con ese nombre
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -41,7 +40,7 @@ public class DbHechosEstaticaConfig {
             @Qualifier("estaticaDataSource") DataSource ds) {
 
         Map<String, Object> jpaProps = new HashMap<>();
-        jpaProps.put("hibernate.hbm2ddl.auto", "update"); // o "create" la 1° vez
+        jpaProps.put("hibernate.hbm2ddl.auto", "update");
         jpaProps.put("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
         jpaProps.put("hibernate.show_sql", false);
         jpaProps.put("hibernate.format_sql", false);
@@ -53,7 +52,7 @@ public class DbHechosEstaticaConfig {
                         "modulos.agregacion.entities.atributosHecho"
                 )
                 .persistenceUnit("db1")
-                .properties(jpaProps) // <- CLAVE
+                .properties(jpaProps)
                 .build();
     }
 

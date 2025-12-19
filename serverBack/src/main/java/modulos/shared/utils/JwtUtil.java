@@ -31,12 +31,11 @@ public class JwtUtil {
                 .setSubject(username)
                 .setIssuer("gestion-alumnos-server")
                 .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY))
-                .claim("type", "refresh") // diferenciamos refresh del access
+                .claim("type", "refresh")
                 .signWith(key)
                 .compact();
     }
 
-    // Podemos descifrar el código -> es válido
     public static Claims parseClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)

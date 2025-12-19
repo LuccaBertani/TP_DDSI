@@ -2,10 +2,6 @@ package modulos.shared.dtos.input;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import modulos.shared.dtos.output.RolCambiadoDTO;
-
 
 @Data
 public class SolicitudHechoEvaluarInputDTO {
@@ -16,8 +12,3 @@ public class SolicitudHechoEvaluarInputDTO {
 
     private String mensaje;
 }
-
-
-
-// Usuario -> solicitud (datos del hecho) -> crear instancia SolicitudHecho (usuario,hecho) -> valido = false
-//Administrador -> evaluarsolicitud(id_solicitud,respuesta) -> if(respuesta) -> valido = true
